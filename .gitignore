@@ -11,9 +11,12 @@ pom.xml.asc
 .lein-plugins
 .lein-repl-history
 test*
-*backup*
 src/cadejo/core.clj
 src/cadejo/demo*.clj
 src/cadejo/*test*
-\#*  # emacs temp files
-.\#* 
+
+# Ignore temp emacks files
+*backup*
+*~
+[#]*[#]
+.\#*
