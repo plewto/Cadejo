@@ -1,0 +1,35 @@
+Cadejo BUGS
+
+# ---------------------------------------------------------- BUG 0001 CLOSED
+BUG 0001 2014.02.14 STATUS CLOSED
+MASA does not always produce tones when used in a monophonic layer
+
+(def s (cadejo.midi.scene/scene ...))
+(def algo-0 (cadejo.instruments.algo.engine/algo-mono s 0))
+(def masa-0 (cadejo.instruments.masa.engine/masa-mono s 0))
+
+The order in which the two instruments are created appears to make a
+difference. If MASA is created first it is more likely to work then if it
+is created second.
+
+Solution: This had nothing to do with MASA per se. Not too sure what the
+real cause was but it appears that perhaps Overtone was requesting the SC
+server to compile synths faster then it could keep up. The complation
+proceeded without any errors or warnings yet the synths were in some manner
+"broken" and non-functional. The solution is to insert a short delay via
+Thread/sleep after a number of synth objects are created. By trial a value
+of 100 ms seams to be be adequate. The most logical location for these
+delays is either inside the voice creation loop for poly-phonic instruments
+or as the penultimate statement of mono-phonic instrument.
+
+
+# ---------------------------------------------------------- BUG 0002 CLOSED
+BUG 0002 2014.02.14 STATUS CLOSED
+Performance using mono-keymode with transposition broken.
+
+When a performance using mono-keymode has a non-zero :transpose property
+the note-off event does not transpose the note number. As a result on a
+key-up the instruments pitch abruptly shifts from the transposed to the non
+transposed frequencies.
+
+Made modification to cadejo.midi.mono-keymode
