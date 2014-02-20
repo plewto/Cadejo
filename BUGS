@@ -33,3 +33,7 @@ key-up the instruments pitch abruptly shifts from the transposed to the non
 transposed frequencies.
 
 Made modification to cadejo.midi.mono-keymode
+
+# ---------------------------------------------------------- BUG 0003 
+BUG 0003 2014.02.20 SATUS OPEN
+Pressure has no effect on ALGo lfo2
