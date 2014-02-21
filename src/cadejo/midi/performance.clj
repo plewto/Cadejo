@@ -124,6 +124,9 @@
      may be overridden by assigning a mapping function to the key
     :velocity-map at either the performance of channel levels.")
 
+  (set-tuning-table!
+    [this ttab])
+
   (set-key-range! 
     [this low high]
     "Sets the operational key range for this performance. MIDI key events
@@ -309,6 +312,9 @@
     (map-velocity [this v128]
       (let [mapfn (.get-property this :velocity-map)]
         (mapfn v128)))
+
+    (set-tuning-table! [this ttab]
+      (.put-property! this :tuning-table ttab))
 
     (set-key-range! [this low high]
       (.put-property! this :key-range [low high]))

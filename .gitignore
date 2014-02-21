@@ -12,7 +12,6 @@ pom.xml.asc
 .lein-repl-history
 test*
 src/cadejo/core.clj
-src/cadejo/demo*.clj
 src/cadejo/*test*
 
 # Ignore temp emacks files
