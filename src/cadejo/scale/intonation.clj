@@ -1,3 +1,4 @@
+
 (ns cadejo.scale.intonation
   (:require [cadejo.util.string])
   (:require [cadejo.util.math :as math]))
@@ -101,7 +102,7 @@
 (defn eqtemp-scale 
   ([notes-per-octave a440 octave-size]
      (let [c0 (a69->c0 a440 notes-per-octave octave-size)
-           properties* (atom {name (format "eqtemp-%s/%s" notes-per-octave octave-size)
+           properties* (atom {:name (format "eqtemp-%s/%s" notes-per-octave octave-size)
                               :notes-per-octave (float notes-per-octave)
                               :octave-size (float octave-size)
                               :reference-key 69
