@@ -8,83 +8,10 @@
                 save-program bank]])
   (:require [cadejo.instruments.algo.genpatch]))
 
-(save-program 0 "Random" (list cadejo.instruments.algo.genpatch/algogen))
-
-;; ------------------------------------------------------------ 001 'Default'
+;; ------------------------------------------------------------0 FmRhodes
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
-  (save-program 1 "Default"
-    (algo (common  :amp  0.20 
-                   :lp 10000
-                   :port-time 0.00 
-                   :cc-volume-depth 0.0
-                   :env1->pitch 0.0000
-                   :lfo1->pitch 0.0000 
-                   :lfo2->pitch 0.0000)
-          (env1    0.000 0.100 0.100 0.000   1.00 1.00   :bias 0.00 :scale +1.00)
-          (vibrato :freq 7.00 :depth 0.00 :delay 0.00 :sens 0.03)
-          (lfo1    :freq 7.00  :cca->freq 0.00 :ccb->freq 0.00
-                   :env1  0.00 :pressure 0.00  :cca 0.00 :ccb 0.00
-                   :skew 0.50 :env1->skew 0.0)
-          (lfo2    :freq 7.00 :cca->freq 0.00 :ccb->freq 0.00
-                   :pressure 0.00 :lfo1 0.00 :cca 0.00 :ccb 0.00
-                   :skew 0.50  :lfo1->skew 0.00)
-
-          (op1 (nth enable 0)  :addsr   [0.00 0.10 0.10 0.00   1.00 1.00] 
-               :detune 1.000   :bias +0         :amp 1.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)
-          (op2 (nth enable 1)  :addsr   [0.00 0.10 0.10 0.00   1.00 1.00] :env-bias 0   :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000    
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0 
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00       :hp  50)
-          (op3 (nth enable 2) :addsr   [0.00 0.10 0.10 0.00    1.00 1.00] :env-bias 0  :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)     
-
-          (op4 (nth enable 3) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00]
-               :detune 1.000   :bias +0        :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00  :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)
-          (op5 (nth enable 4) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00] :env-bias 0  :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)
-          (op6 (nth enable 5) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00] :env-bias 0  :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00       :hp  50
-               :fb   0.00      :env->fb 0.00    :lfo1->fb 0.00 
-               :pressure->fb 0.00 :cca->fb 0.00 :ccb->fb 0.00)
-
-          (op7 (nth enable 6) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00]
-               :detune 1.000   :bias +0        :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00  :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)
-          (op8 (nth enable 7) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00] :env-bias 0  :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00       :hp  50
-               :fb   0.00      :env->fb 0.00    :lfo2->fb 0.00 
-               :pressure->fb 0.00 :cca->fb 0.00 :ccb->fb 0.00)
-          (echo :delay-1 0.25       :fb 0.50
-                :delay-2 1.00       :damp 0.0   :mix 0.00)
-          (reverb :size 0.5 :mix 0.00))))
-
-;; ------------------------------------------------------------ 002 'FmRhodes
-;;
-
-(let [enable '[1 1 1   1 1 1   1 1]]
-  (save-program 2 "FmRhodes"
+  (save-program 0 "FmRhodes"
     (algo (common  :amp 0.200
                    :lp 10000
                    :port-time 0.00
@@ -165,7 +92,175 @@
                    :delay-2 1.000    :damp 0.00   :mix 0.00)
           (reverb  :size 0.50        :mix  0.20))))
 
-;; ------------------------------------------------------------ 003 'Fretless'
+;; ------------------------------------------------------------ 1 Celesta
+;;
+(let [enable '[1 1 1   1 1 0   1 1]]
+  (save-program 1 "Celesta"
+    (algo (common  :amp 0.200
+                   :port-time 0.00
+                   :lp  10000
+                   :cc-volume-depth 0.00
+                   :env1->pitch +0.0000 
+                   :lfo1->pitch +0.0000
+                   :lfo2->pitch +0.0000)
+                    ;A    D1    D2    R        BP    SUS
+          (env1     0.000 0.100 0.100 0.000    1.000 1.000
+                    :bias +0.00 :scale +1.00)
+          (vibrato :freq 7.00   :depth 0.00 :delay 0.00 :sens 0.030)
+          (lfo1    :freq 7.000  :cca->freq 0.00 :ccb->freq 0.00
+                   :env1 0.000 :pressure 0.000 :cca 0.00 :ccb 0.00
+                   :skew 0.50   :env1->skew +0.00)
+          (lfo2    :freq 7.000 :cca->freq 0.00 :ccb->freq 0.00
+                   :lfo1 0.000 :pressure 0.000 :cca 0.00 :ccb 0.00
+                   :skew 0.50   :lfo1->skew +0.00)
+          (op1 (nth enable 0)
+               :amp 1.000 :detune 1.0030      :bias   +0
+               :addsr [0.001 0.100 4.100 2.000  0.800 0.000]
+               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0               
+               :velocity 0.60 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+          (op2 (nth enable 1)
+               :amp 1.000 :detune 2.9970      :bias   +0
+               :addsr [0.001 0.500 3.500 2.000  0.800 0.000]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale +6  :right-key  60 :right-scale  +0                       
+               :velocity 0.60 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00 :hp  50)
+          (op3 (nth enable 2)
+               :amp 0.150 :detune 1.3890      :bias   +0
+               :addsr [0.010 0.200 1.100 0.000  0.500 0.200]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0                       
+               :velocity 0.20 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+
+          (op4 (nth enable 3)
+               :amp 1.000 :detune 1.0000      :bias   +0
+               :addsr [0.001 0.200 2.100 2.000  0.600 0.000]
+               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0               
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+          (op5 (nth enable 4)
+               :amp 0.400 :detune 1.0470      :bias   +0
+               :addsr [0.001 0.100 4.100 2.000  0.800 0.000]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale +6  :right-key  60 :right-scale  +0                       
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+          (op6 (nth enable 5)
+               :amp 0.000 :detune 1.0000      :bias   +0
+               :addsr [0.000 0.100 0.100 0.000  1.000 1.000]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0                       
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00 :hp  50
+               :fb      +0.00 :env->fb +0.00 :lfo1->fb  0.00
+               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
+
+          (op7 (nth enable 6)
+               :amp 1.000 :detune 1.0000      :bias   +0
+               :addsr [0.001 0.200 2.100 2.000  0.600 0.000]
+               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0               
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+          (op8 (nth enable 7)
+               :amp 0.500 :detune 2.9900      :bias   +0
+               :addsr [0.001 0.100 4.100 2.000  0.800 0.000]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0                       
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00 :hp  50
+               :fb      +0.50 :env->fb +0.00 :lfo2->fb  0.00
+               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
+          (echo    :delay-1 0.250    :fb 0.50
+                   :delay-2 1.000    :damp 0.00   :mix 0.00)
+          (reverb  :size 0.50        :mix  0.00))))
+
+;; ------------------------------------------------------------ 2 Ice9
+;;
+(let [enable '[1 1 0   1 1 1   1 1]]
+  (save-program 2 "Ice9"
+    (algo (common  :amp 0.200
+                   :port-time 0.00
+                   :lp  10000
+                   :cc-volume-depth 0.00
+                   :env1->pitch +0.0000 
+                   :lfo1->pitch +0.0000
+                   :lfo2->pitch +0.0000)
+                    ;A    D1    D2    R        BP    SUS
+          (env1     0.000 0.100 0.100 0.000    1.000 1.000
+                    :bias +0.00 :scale +1.00)
+          (vibrato :freq 7.00   :depth 0.00 :delay 0.00 :sens 0.030)
+          (lfo1    :freq 7.000  :cca->freq 0.000  :ccb->freq 0.000
+                   :env1 0.000 :pressure 0.000 :cca 0.000 :ccb 0.000
+                   :skew 0.50  :env1->skew +0.00)
+          (lfo2    :freq 7.000  :cca->freq 0.000  :ccb->freq 0.000
+                   ::pressure 0.000 :lfo1 0.000 :cca 0.000 :ccb 0.000
+                   :skew 0.50  :lfo1->skew +0.00)
+          (op1 (nth enable 0)
+               :amp 1.000 :detune 4.9790      :bias   +0
+               :addsr [0.500 0.750 0.500 2.500  0.900 0.800]
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+          (op2 (nth enable 1)
+               :amp 1.000 :detune 15.020      :bias   +0
+               :addsr [0.600 0.850 1.000 2.000  0.850 0.800]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale  +0  :right-key  79  :right-scale  -6
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00 :hp  50)
+          (op3 (nth enable 2)
+               :amp 0.000 :detune 1.0000      :bias   +0
+               :addsr [0.000 0.100 0.100 0.000  1.000 1.000]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+
+          (op4 (nth enable 3)
+               :amp 1.000 :detune 5.0000      :bias   +0
+               :addsr [0.500 0.650 0.450 2.500  0.900 0.800]
+               :left-key  60  :left-scale  +0  :right-key  79  :right-scale  -24
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+          (op5 (nth enable 4)
+               :amp 1.000 :detune 28.050      :bias   +0
+               :addsr [0.600 0.500 0.500 2.100  0.800 0.700]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale  +0  :right-key  72  :right-scale  -18
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+          (op6 (nth enable 5)
+               :amp 0.500 :detune 14.033      :bias   +0
+               :addsr [0.700 0.600 0.600 1.750  0.800 0.700]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale  +0  :right-key  72  :right-scale  -18
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00 :hp  50
+               :fb      +0.00 :env->fb +0.00 :lfo1->fb  0.00
+               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
+
+          (op7 (nth enable 6)
+               :amp 1.000 :detune 5.0390      :bias   +0
+               :addsr [0.600 0.770 0.500 2.900  0.800 0.700]
+               :left-key  60  :left-scale  +0  :right-key  79  :right-scale  -24
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00)
+          (op8 (nth enable 7)
+               :amp 1.000 :detune 28.000      :bias   +0
+               :addsr [0.650 0.600 0.800 1.750  0.950 0.800]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale  +0  :right-key  72  :right-scale  -18
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.00 :lfo2     0.00 :hp  50
+               :fb      +0.50 :env->fb +0.00 :lfo2->fb  0.00
+               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
+          (echo    :delay-1 0.250    :fb 0.70
+                   :delay-2 1.000    :damp 0.80   :mix 0.20)
+          (reverb  :size 0.80        :mix  0.50))))
+
+;; ------------------------------------------------------------ 3 Fretless
 ;;
 (let [enable '[1 1 1   1 1 0   1 1]]
   (save-program 3   "Fretless"
@@ -249,7 +344,7 @@
                    :delay-2 1.000    :damp 0.00   :mix 0.00)
           (reverb  :size 0.50        :mix  0.20))))
 
-;; ------------------------------------------------------------ 004 'BassKeys'
+;; ------------------------------------------------------------ 4 BassKeys
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 4 "BassKeys"
@@ -334,13 +429,8 @@
           (reverb  :size 0.50        :mix  0.20))))
 
 
-;; ------------------------------------------------------------ 005 SteamOrgan
+;; ------------------------------------------------------------ 5 SteamOrgan
 ;;
-;; [op1 2.9875 +0  0.20]<--[op2 0.5024 +0  4.89]<--[op3 0.9951 +0  1.23]
-;; [op4 8.0272 +0  1.00]<--[op5 2.9979 +0  1.57]
-;;                      <--[op6 2.0172 +0  5.61 :fb 0.00]
-;; [op7 1.0030 +0  0.69]<--[op8 1.0099 +0  4.80 :fb 0.00]
-
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 5 "SteamOrgan"
     (algo (common  :amp 0.200
@@ -426,7 +516,6 @@
 
 ;; ------------------------------------------------------------ 6 Alcestis
 ;;
-
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 6 "Alcestis" "cca-->op4 ccb-->op7"
     (algo (common  :amp 0.200
@@ -509,15 +598,8 @@
                    :delay-2 0.776    :damp 0.68   :mix 0.01)
           (reverb  :size 0.56        :mix  0.94))))
 
-
-
 ;; ------------------------------------------------------------ 7 Admetus
 ;;
-;; [op1 1.0087 +0  0.52]<--[op2 3.0039 +0  5.97]<--[op3 1.0102 +0  1.03]
-;; [op4 1.0107 +0  1.00]<--[op5 4.0361 +0  3.36]
-;;                      <--[op6 0.9972 +0  0.03 :fb 1.33]
-;; [op7 1.0013 +0  0.98]<--[op8 8.0135 +0  5.72 :fb 0.72]
-
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 7 "Admetus"
     (algo (common  :amp 0.200
@@ -602,11 +684,6 @@
 
 ;; ------------------------------------------------------------ 8 Klaxon
 ;;
-;; [op1 3.0342 +0  0.80]<--[op2 5.9338 +0  3.72]<--[op3 8.0907 +0  3.11]
-;; [op4 3.9743 +0  0.46]<--[op5 1.0103 +0  5.53]
-;;                      <--[op6 1.0090 +0  4.18 :fb 0.00]
-;; [op7 2.0102 +0  1.00]<--[op8 7.0712 +0  1.79 :fb 0.22]
-
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 8 "Klaxon" "Pressure n-> op6 feedback"
     (algo (common  :amp 0.200
@@ -689,16 +766,10 @@
                    :delay-2 0.917    :damp 0.80   :mix 0.00)
           (reverb  :size 0.85        :mix  0.43))))
 
-
-;; ------------------------------------------------------------ 009 Celesta
+;; ------------------------------------------------------------ 9 NoisePad
 ;;
-;; [op1 1.0000 +0  1.00]<--[op2 1.0000 +0  0.00]<--[op3 1.0000 +0  0.00]
-;; [op4 1.0000 +0  0.00]<--[op5 1.0000 +0  0.00]
-;;                      <--[op6 1.0000 +0  0.00 :fb 0.00]
-;; [op7 1.0000 +0  0.00]<--[op8 1.0000 +0  0.00 :fb 0.00]
-
-(let [enable '[1 1 1   1 1 0   1 1]]
-  (save-program 9 "Celesta"
+(let [enable '[1 1 1   1 1 1   1 1]]
+  (save-program 9 "NoisePad"
     (algo (common  :amp 0.200
                    :port-time 0.00
                    :lp  10000
@@ -707,85 +778,81 @@
                    :lfo1->pitch +0.0000
                    :lfo2->pitch +0.0000)
                     ;A    D1    D2    R        BP    SUS
-          (env1     0.000 0.100 0.100 0.000    1.000 1.000
+          (env1     1.455 1.360 1.803 0.151    0.679 0.208
                     :bias +0.00 :scale +1.00)
-          (vibrato :freq 7.00   :depth 0.00 :delay 0.00 :sens 0.030)
-          (lfo1    :freq 7.000  :cca->freq 0.00 :ccb->freq 0.00
-                   :env1 0.000 :pressure 0.000 :cca 0.00 :ccb 0.00
-                   :skew 0.50   :env1->skew +0.00)
-          (lfo2    :freq 7.000 :cca->freq 0.00 :ccb->freq 0.00
-                   :lfo1 0.000 :pressure 0.000 :cca 0.00 :ccb 0.00
-                   :skew 0.50   :lfo1->skew +0.00)
+          (vibrato :freq 10.53   :depth 0.00 :delay 0.27 :sens 0.030)
+          (lfo1    :freq 10.530  :cca->freq 0.000  :ccb->freq 0.000
+                   :env1 0.000 :pressure 0.000 :cca 0.000 :ccb 0.000
+                   :skew 0.79  :env1->skew +0.00)
+          (lfo2    :freq 7.897  :cca->freq 0.000  :ccb->freq 0.000
+                   ::pressure 0.000 :lfo1 0.000 :cca 0.000 :ccb 0.000
+                   :skew 0.50  :lfo1->skew +0.00)
           (op1 (nth enable 0)
-               :amp 1.000 :detune 1.0030      :bias   +0
-               :addsr [0.001 0.100 4.100 2.000  0.800 0.000]
-               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0               
-               :velocity 0.60 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :amp 1.000 :detune 3.0000      :bias   +0.5
+               :addsr [0.331 0.100 0.100 0.751  1.000 1.000]
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00)
           (op2 (nth enable 1)
-               :amp 1.000 :detune 2.9970      :bias   +0
-               :addsr [0.001 0.500 3.500 2.000  0.800 0.000]
+               :amp 1.321 :detune 2.0000      :bias   +0.5
+               :addsr [0.001 0.100 0.100 0.751  1.000 1.000]
                        :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale +6  :right-key  60 :right-scale  +0                       
-               :velocity 0.60 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :left-key  55  :left-scale  +3  :right-key  60  :right-scale  +0
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00 :hp  50)
           (op3 (nth enable 2)
-               :amp 0.150 :detune 1.3890      :bias   +0
-               :addsr [0.010 0.200 1.100 0.000  0.500 0.200]
+               :amp 2.000 :detune 1.0000      :bias   +0.5
+               :addsr [1.201 0.000 1.100 0.751  1.000 0.700]
                        :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0                       
-               :velocity 0.20 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
+               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00)
 
           (op4 (nth enable 3)
-               :amp 1.000 :detune 1.0000      :bias   +0
-               :addsr [0.001 0.200 2.100 2.000  0.600 0.000]
-               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0               
+               :amp 0.628 :detune 0.5005      :bias   +0
+               :addsr [0.201 0.100 0.100 1.751  1.000 1.000]
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
                :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00)
           (op5 (nth enable 4)
-               :amp 0.400 :detune 1.0470      :bias   +0
-               :addsr [0.001 0.100 4.100 2.000  0.800 0.000]
+               :amp 4.991 :detune 0.5006      :bias   +0
+               :addsr [0.201 0.100 0.100 2.001  1.000 1.000]
                        :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale +6  :right-key  60 :right-scale  +0                       
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :left-key  55  :left-scale  +6  :right-key  60  :right-scale  +0
+               :velocity 0.68 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00)
           (op6 (nth enable 5)
-               :amp 0.000 :detune 1.0000      :bias   +0
-               :addsr [0.000 0.100 0.100 0.000  1.000 1.000]
+               :amp 1.313 :detune 2.0001      :bias   +0
+               :addsr [0.351 0.100 0.100 1.251  1.000 1.000]
                        :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0                       
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
                :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00 :hp  50
-               :fb      +0.00 :env->fb +0.00 :lfo1->fb  0.00
+               :fb      +0.25 :env->fb +0.00 :lfo1->fb  0.00
                :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
 
           (op7 (nth enable 6)
-               :amp 1.000 :detune 1.0000      :bias   +0
-               :addsr [0.001 0.200 2.100 2.000  0.600 0.000]
-               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0               
+               :amp 0.303 :detune 4.0000      :bias   +0
+               :addsr [0.751 0.100 0.100 2.551  1.000 1.000]
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
                :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00)
           (op8 (nth enable 7)
-               :amp 0.500 :detune 2.9900      :bias   +0
-               :addsr [0.001 0.100 4.100 2.000  0.800 0.000]
+               :amp 1.282 :detune 6.9580      :bias   +0
+               :addsr [0.751 0.100 0.100 2.551  1.000 1.000]
                        :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale +0  :right-key  60 :right-scale  +0                       
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
                :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00 :hp  50
-               :fb      +0.50 :env->fb +0.00 :lfo2->fb  0.00
+               :fb      +0.13 :env->fb +7.54 :lfo2->fb  0.00
                :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
-          (echo    :delay-1 0.250    :fb 0.50
-                   :delay-2 1.000    :damp 0.00   :mix 0.00)
-          (reverb  :size 0.50        :mix  0.00))))
+          (echo    :delay-1 0.855    :fb 0.33
+                   :delay-2 1.000    :damp 0.79   :mix 0.11)
+          (reverb  :size 0.86        :mix  0.50))))
+
 
 ;; ------------------------------------------------------------ 10 Poly Something
 ;;
-;; [op1 6.9353 +0  1.00]<--[op2 0.9906 +0  2.17]<--[op3 1.9877 +0  6.91]
-;; [op4 1.0024 +0  0.55]<--[op5 1.5026 +0  2.40]
-;;                      <--[op6 5.9627 +0  0.00 :fb 0.00]
-;; [op7 2.9728 +0  0.53]<--[op8 0.9960 +0  0.00 :fb 0.72]
-
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 10 "Poly Something"
     (algo (common  :amp 0.200
@@ -870,11 +937,6 @@
 
 ;; ------------------------------------------------------------ 11 Lindiwe
 ;;
-;; [op1 0.5013 +0  0.91]<--[op2 2.0000 +0  2.47]<--[op3 0.5006 +0  5.38]
-;; [op4 1.0017 +0  0.40]<--[op5 1.9834 +0  3.57]
-;;                      <--[op6 2.0034 +0  6.27 :fb 0.32]
-;; [op7 1.0095 +0  1.00]<--[op8 7.9483 +0  1.09 :fb 0.64]
-
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 11 "Lindiwe"
     (algo (common  :amp 0.200
@@ -957,9 +1019,8 @@
                    :delay-2 2.048    :damp 0.72   :mix 0.00)
           (reverb  :size 0.11        :mix  0.00))))
 
-;; ------------------------------------------------------------ 12 "HiBells"
+;; ------------------------------------------------------------ 12 HiBells
 ;;
-
 (let [enable '[1 1 0   1 1 1   1 1]
       openv-1 [0.001 1.520 0.750 2.000  0.000 0.500]
       openv-2 [0.011 1.220 2.750 2.000  0.900 0.500]]
@@ -1044,90 +1105,89 @@
                    :delay-2 0.125    :damp 0.73   :mix 0.10)
           (reverb  :size 0.70        :mix  0.50))))
 
-;; ------------------------------------------------------------ 13 'Ice9'
+;; ------------------------------------------------------------ 13 Magali
 ;;
-
-(let [enable '[1 1 0   1 1 1   1 1]]
-  (save-program 13 "Ice9"
+(let [enable '[1 1 1   1 1 1   1 1]]
+  (save-program 13 "Magali"
     (algo (common  :amp 0.200
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
-                   :lfo1->pitch +0.0000
+                   :lfo1->pitch +0.0100
                    :lfo2->pitch +0.0000)
                     ;A    D1    D2    R        BP    SUS
-          (env1     0.000 0.100 0.100 0.000    1.000 1.000
+          (env1     0.427 1.686 0.992 0.068    0.364 0.485
                     :bias +0.00 :scale +1.00)
-          (vibrato :freq 7.00   :depth 0.00 :delay 0.00 :sens 0.030)
-          (lfo1    :freq 7.000  :cca->freq 0.000  :ccb->freq 0.000
-                   :env1 0.000 :pressure 0.000 :cca 0.000 :ccb 0.000
+          (vibrato :freq 7.00   :depth 0.00 :delay 0.08 :sens 0.010)
+          (lfo1    :freq 7.004  :cca->freq 0.000  :ccb->freq 0.000
+                   :env1 0.000 :pressure 1.000 :cca 0.000 :ccb 0.000
                    :skew 0.50  :env1->skew +0.00)
-          (lfo2    :freq 7.000  :cca->freq 0.000  :ccb->freq 0.000
-                   ::pressure 0.000 :lfo1 0.000 :cca 0.000 :ccb 0.000
+          (lfo2    :freq 1.18   :cca->freq 0.000  :ccb->freq 0.000
+                   ::pressure 0.000 :lfo1 0.250 :cca 0.000 :ccb 0.000
                    :skew 0.50  :lfo1->skew +0.00)
           (op1 (nth enable 0)
-               :amp 1.000 :detune 4.9790      :bias   +0
-               :addsr [0.500 0.750 0.500 2.500  0.900 0.800]
+               :amp 1.000 :detune 0.9996      :bias   +0
+               :addsr [0.021 0.100 0.100 0.001  1.000 1.000]
                :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
                :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
+               :lfo1     0.25 :lfo2     0.00)
           (op2 (nth enable 1)
-               :amp 1.000 :detune 15.020      :bias   +0
-               :addsr [0.600 0.850 1.000 2.000  0.850 0.800]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  79  :right-scale  -6
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00 :hp  50)
-          (op3 (nth enable 2)
-               :amp 0.000 :detune 1.0000      :bias   +0
-               :addsr [0.000 0.100 0.100 0.000  1.000 1.000]
+               :amp 4.959 :detune 1.0000      :bias   +0
+               :addsr [0.001 0.100 0.100 0.001  1.000 1.000]
                        :env-bias  +0.00  :env-scale  +1.00
                :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :velocity 0.62 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.10 :lfo2     0.00 :hp  50)
+          (op3 (nth enable 2)
+               :amp 6.668 :detune 1.0004      :bias   +0
+               :addsr [0.001 0.100 0.100 0.001  1.000 1.000]
+                       :env-bias  +0.00  :env-scale  +1.00
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
+               :velocity 0.79 :pressure 0.25 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00)
 
           (op4 (nth enable 3)
-               :amp 1.000 :detune 5.0000      :bias   +0
-               :addsr [0.500 0.650 0.450 2.500  0.900 0.800]
-               :left-key  60  :left-scale  +0  :right-key  79  :right-scale  -24
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :amp 1.000 :detune 1.0000      :bias   +0
+               :addsr [0.121 0.100 0.100 0.001  1.000 1.000]
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
+               :velocity 0.99 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00)
           (op5 (nth enable 4)
-               :amp 1.000 :detune 28.050      :bias   +0
-               :addsr [0.600 0.500 0.500 2.100  0.800 0.700]
+               :amp 5.392 :detune 1.0000      :bias   -0.25
+               :addsr [0.001 0.100 0.100 0.001  1.000 1.000]
                        :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  72  :right-scale  -18
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
+               :left-key  60  :left-scale  +9  :right-key  60  :right-scale  +0
+               :velocity 0.33 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :lfo1     0.10 :lfo2     0.00)
           (op6 (nth enable 5)
-               :amp 0.500 :detune 14.033      :bias   +0
-               :addsr [0.700 0.600 0.600 1.750  0.800 0.700]
+               :amp 2.193 :detune 1.0000      :bias   +0.25
+               :addsr [0.001 0.100 0.100 0.001  1.000 1.000]
                        :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  72  :right-scale  -18
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
                :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00 :hp  50
                :fb      +0.00 :env->fb +0.00 :lfo1->fb  0.00
-               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
+               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.75)
 
           (op7 (nth enable 6)
-               :amp 1.000 :detune 5.0390      :bias   +0
-               :addsr [0.600 0.770 0.500 2.900  0.800 0.700]
-               :left-key  60  :left-scale  +0  :right-key  79  :right-scale  -24
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
+               :amp 0.960 :detune 1.0001      :bias   +0
+               :addsr [0.211 0.100 0.100 0.001  1.000 1.000]
+               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
+               :velocity 0.91 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00)
           (op8 (nth enable 7)
-               :amp 1.000 :detune 28.000      :bias   +0
-               :addsr [0.650 0.600 0.800 1.750  0.950 0.800]
+               :amp 2.179 :detune 2.0000      :bias   +0
+               :addsr [0.201 0.100 0.100 0.001  1.000 1.000]
                        :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  72  :right-scale  -18
+               :left-key  60  :left-scale  +9  :right-key  60  :right-scale  +0
                :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
                :lfo1     0.00 :lfo2     0.00 :hp  50
-               :fb      +0.50 :env->fb +0.00 :lfo2->fb  0.00
-               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
-          (echo    :delay-1 0.250    :fb 0.70
-                   :delay-2 1.000    :damp 0.80   :mix 0.20)
-          (reverb  :size 0.80        :mix  0.50))))
+               :fb      +0.26 :env->fb +0.00 :lfo2->fb  0.00
+               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.75)
+          (echo    :delay-1 1.000    :fb 0.77
+                   :delay-2 0.816    :damp 0.86   :mix 0.10)
+          (reverb  :size 0.28        :mix  0.40))))
 
 ;; ------------------------------------------------------------ 14 'Glass'
 ;;
@@ -1305,7 +1365,6 @@
 
 ;; ------------------------------------------------------------ 16 'Lfe"
 ;;
-
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 16 "Lfe" "cca --> op1 ccb --> op6 w/fb"
     (algo (common  :amp 0.200
@@ -1474,11 +1533,6 @@
 
 ;; ------------------------------------------------------------ 18 Mojisola
 ;;
-;; [op1 5.9559 +0  0.31]<--[op2 1.0104 +0  4.76]<--[op3 1.0081 +0  4.84]
-;; [op4 2.9737 +0  1.00]<--[op5 0.7469 +0  0.83]
-;;                      <--[op6 3.0082 +0  3.98 :fb 1.08]
-;; [op7 0.9906 +0  0.45]<--[op8 1.0081 +0  0.15 :fb 0.94]
-
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program  18 "Mojisola" "cca & ccb --> feedback"
     (algo (common  :amp 0.200
@@ -1560,7 +1614,6 @@
           (echo    :delay-1 1.376    :fb 0.06
                    :delay-2 1.032    :damp 0.52   :mix 0.72)
           (reverb  :size 0.82        :mix  0.00))))
-
 
 ;; ------------------------------------------------------------ 19 Ghost Strings
 ;;
@@ -1646,10 +1699,8 @@
                    :delay-2 0.915    :damp 0.55   :mix 0.00)
           (reverb  :size 0.20        :mix  0.00))))
 
-
 ;; ------------------------------------------------------------ 20 Insane Index
 ;;
-
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 20 "Insane Index" "Very long & evolving sound - intersting aliasing on high notes with pitchbend"
     (algo (common  :amp 0.200
@@ -1731,7 +1782,6 @@
           (echo    :delay-1 0.250    :fb 0.80
                    :delay-2 1.000    :damp 0.80   :mix 0.30)
           (reverb  :size 0.80        :mix  0.40))))
-
 
 ;; ------------------------------------------------------------ 21  NotGamelan
 ;;
@@ -2256,7 +2306,6 @@
                    :delay-2 1.000    :damp 0.00   :mix 0.00)
           (reverb  :size 0.50        :mix  0.30))))
 
-
 ;; ------------------------------------------------------------ 27 FmBrass
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]
@@ -2341,8 +2390,6 @@
           (echo    :delay-1 0.250    :fb 0.50
                    :delay-2 1.000    :damp 0.00   :mix 0.00)
           (reverb  :size 0.60        :mix  0.40))))
-
-
 
 ;; ------------------------------------------------------------ 28 Ibta
 ;;
@@ -2429,7 +2476,6 @@
                    :delay-2 1.000    :damp 0.00   :mix 0.00)
           (reverb  :size 0.60        :mix  0.40))))
 
-
 ;; ------------------------------------------------------------ 29 Bass Poly Something
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
@@ -2514,179 +2560,81 @@
                    :delay-2 1.000    :damp 0.00   :mix 0.00)
           (reverb  :size 0.50        :mix  0.00))))
 
-
-;; ------------------------------------------------------------ 30 Magali
+;; ------------------------------------------------------------ 126 Intial program 
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
-  (save-program 30 "Magali"
-    (algo (common  :amp 0.200
-                   :port-time 0.00
-                   :lp  10000
-                   :cc-volume-depth 0.00
-                   :env1->pitch +0.0000 
-                   :lfo1->pitch +0.0100
-                   :lfo2->pitch +0.0000)
-                    ;A    D1    D2    R        BP    SUS
-          (env1     0.427 1.686 0.992 0.068    0.364 0.485
-                    :bias +0.00 :scale +1.00)
-          (vibrato :freq 7.00   :depth 0.00 :delay 0.08 :sens 0.010)
-          (lfo1    :freq 7.004  :cca->freq 0.000  :ccb->freq 0.000
-                   :env1 0.000 :pressure 1.000 :cca 0.000 :ccb 0.000
-                   :skew 0.50  :env1->skew +0.00)
-          (lfo2    :freq 1.18   :cca->freq 0.000  :ccb->freq 0.000
-                   ::pressure 0.000 :lfo1 0.250 :cca 0.000 :ccb 0.000
-                   :skew 0.50  :lfo1->skew +0.00)
-          (op1 (nth enable 0)
-               :amp 1.000 :detune 0.9996      :bias   +0
-               :addsr [0.021 0.100 0.100 0.001  1.000 1.000]
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.25 :lfo2     0.00)
-          (op2 (nth enable 1)
-               :amp 4.959 :detune 1.0000      :bias   +0
-               :addsr [0.001 0.100 0.100 0.001  1.000 1.000]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.62 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.10 :lfo2     0.00 :hp  50)
-          (op3 (nth enable 2)
-               :amp 6.668 :detune 1.0004      :bias   +0
-               :addsr [0.001 0.100 0.100 0.001  1.000 1.000]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.79 :pressure 0.25 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
+  (save-program 126 "Default Program"
+    (algo (common  :amp  0.20 
+                   :lp 10000
+                   :port-time 0.00 
+                   :cc-volume-depth 0.0
+                   :env1->pitch 0.0000
+                   :lfo1->pitch 0.0000 
+                   :lfo2->pitch 0.0000)
+          (env1    0.000 0.100 0.100 0.000   1.00 1.00   :bias 0.00 :scale +1.00)
+          (vibrato :freq 7.00 :depth 0.00 :delay 0.00 :sens 0.03)
+          (lfo1    :freq 7.00  :cca->freq 0.00 :ccb->freq 0.00
+                   :env1  0.00 :pressure 0.00  :cca 0.00 :ccb 0.00
+                   :skew 0.50 :env1->skew 0.0)
+          (lfo2    :freq 7.00 :cca->freq 0.00 :ccb->freq 0.00
+                   :pressure 0.00 :lfo1 0.00 :cca 0.00 :ccb 0.00
+                   :skew 0.50  :lfo1->skew 0.00)
 
-          (op4 (nth enable 3)
-               :amp 1.000 :detune 1.0000      :bias   +0
-               :addsr [0.121 0.100 0.100 0.001  1.000 1.000]
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.99 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
-          (op5 (nth enable 4)
-               :amp 5.392 :detune 1.0000      :bias   -0.25
-               :addsr [0.001 0.100 0.100 0.001  1.000 1.000]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +9  :right-key  60  :right-scale  +0
-               :velocity 0.33 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.10 :lfo2     0.00)
-          (op6 (nth enable 5)
-               :amp 2.193 :detune 1.0000      :bias   +0.25
-               :addsr [0.001 0.100 0.100 0.001  1.000 1.000]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00 :hp  50
-               :fb      +0.00 :env->fb +0.00 :lfo1->fb  0.00
-               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.75)
+          (op1 (nth enable 0)  :addsr   [0.00 0.10 0.10 0.00   1.00 1.00] 
+               :detune 1.000   :bias +0         :amp 1.000
+               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
+               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
+               :lfo1 0.00      :lfo2 0.00)
+          (op2 (nth enable 1)  :addsr   [0.00 0.10 0.10 0.00   1.00 1.00] :env-bias 0   :env-scale +1
+               :detune 1.000   :bias +0         :amp 0.000    
+               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0 
+               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
+               :lfo1 0.00      :lfo2 0.00       :hp  50)
+          (op3 (nth enable 2) :addsr   [0.00 0.10 0.10 0.00    1.00 1.00] :env-bias 0  :env-scale +1
+               :detune 1.000   :bias +0         :amp 0.000
+               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
+               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
+               :lfo1 0.00      :lfo2 0.00)     
 
-          (op7 (nth enable 6)
-               :amp 0.960 :detune 1.0001      :bias   +0
-               :addsr [0.211 0.100 0.100 0.001  1.000 1.000]
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.91 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
-          (op8 (nth enable 7)
-               :amp 2.179 :detune 2.0000      :bias   +0
-               :addsr [0.201 0.100 0.100 0.001  1.000 1.000]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +9  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00 :hp  50
-               :fb      +0.26 :env->fb +0.00 :lfo2->fb  0.00
-               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.75)
-          (echo    :delay-1 1.000    :fb 0.77
-                   :delay-2 0.816    :damp 0.86   :mix 0.10)
-          (reverb  :size 0.28        :mix  0.40))))
+          (op4 (nth enable 3) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00]
+               :detune 1.000   :bias +0        :amp 0.000
+               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
+               :velocity 0.00  :pressure 0.00  :cca 0.00    :ccb 0.00
+               :lfo1 0.00      :lfo2 0.00)
+          (op5 (nth enable 4) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00] :env-bias 0  :env-scale +1
+               :detune 1.000   :bias +0         :amp 0.000
+               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
+               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
+               :lfo1 0.00      :lfo2 0.00)
+          (op6 (nth enable 5) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00] :env-bias 0  :env-scale +1
+               :detune 1.000   :bias +0         :amp 0.000
+               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
+               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
+               :lfo1 0.00      :lfo2 0.00       :hp  50
+               :fb   0.00      :env->fb 0.00    :lfo1->fb 0.00 
+               :pressure->fb 0.00 :cca->fb 0.00 :ccb->fb 0.00)
 
-;; ------------------------------------------------------------ 31 NPad
+          (op7 (nth enable 6) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00]
+               :detune 1.000   :bias +0        :amp 0.000
+               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
+               :velocity 0.00  :pressure 0.00  :cca 0.00    :ccb 0.00
+               :lfo1 0.00      :lfo2 0.00)
+          (op8 (nth enable 7) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00] :env-bias 0  :env-scale +1
+               :detune 1.000   :bias +0         :amp 0.000
+               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
+               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
+               :lfo1 0.00      :lfo2 0.00       :hp  50
+               :fb   0.00      :env->fb 0.00    :lfo2->fb 0.00 
+               :pressure->fb 0.00 :cca->fb 0.00 :ccb->fb 0.00)
+          (echo :delay-1 0.25       :fb 0.50
+                :delay-2 1.00       :damp 0.0   :mix 0.00)
+          (reverb :size 0.5 :mix 0.00))))
+
+;; ------------------------------------------------------------ 127 Intial program 
 ;;
-(let [enable '[1 1 1   1 1 1   1 1]]
-  (save-program 31 "NPad"
-    (algo (common  :amp 0.200
-                   :port-time 0.00
-                   :lp  10000
-                   :cc-volume-depth 0.00
-                   :env1->pitch +0.0000 
-                   :lfo1->pitch +0.0000
-                   :lfo2->pitch +0.0000)
-                    ;A    D1    D2    R        BP    SUS
-          (env1     1.455 1.360 1.803 0.151    0.679 0.208
-                    :bias +0.00 :scale +1.00)
-          (vibrato :freq 10.53   :depth 0.00 :delay 0.27 :sens 0.030)
-          (lfo1    :freq 10.530  :cca->freq 0.000  :ccb->freq 0.000
-                   :env1 0.000 :pressure 0.000 :cca 0.000 :ccb 0.000
-                   :skew 0.79  :env1->skew +0.00)
-          (lfo2    :freq 7.897  :cca->freq 0.000  :ccb->freq 0.000
-                   ::pressure 0.000 :lfo1 0.000 :cca 0.000 :ccb 0.000
-                   :skew 0.50  :lfo1->skew +0.00)
-          (op1 (nth enable 0)
-               :amp 1.000 :detune 3.0000      :bias   +0.5
-               :addsr [0.331 0.100 0.100 0.751  1.000 1.000]
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
-          (op2 (nth enable 1)
-               :amp 1.321 :detune 2.0000      :bias   +0.5
-               :addsr [0.001 0.100 0.100 0.751  1.000 1.000]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  55  :left-scale  +3  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00 :hp  50)
-          (op3 (nth enable 2)
-               :amp 2.000 :detune 1.0000      :bias   +0.5
-               :addsr [1.201 0.000 1.100 0.751  1.000 0.700]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
-
-          (op4 (nth enable 3)
-               :amp 0.628 :detune 0.5005      :bias   +0
-               :addsr [0.201 0.100 0.100 1.751  1.000 1.000]
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
-          (op5 (nth enable 4)
-               :amp 4.991 :detune 0.5006      :bias   +0
-               :addsr [0.201 0.100 0.100 2.001  1.000 1.000]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  55  :left-scale  +6  :right-key  60  :right-scale  +0
-               :velocity 0.68 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
-          (op6 (nth enable 5)
-               :amp 1.313 :detune 2.0001      :bias   +0
-               :addsr [0.351 0.100 0.100 1.251  1.000 1.000]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00 :hp  50
-               :fb      +0.25 :env->fb +0.00 :lfo1->fb  0.00
-               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
-
-          (op7 (nth enable 6)
-               :amp 0.303 :detune 4.0000      :bias   +0
-               :addsr [0.751 0.100 0.100 2.551  1.000 1.000]
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00)
-          (op8 (nth enable 7)
-               :amp 1.282 :detune 6.9580      :bias   +0
-               :addsr [0.751 0.100 0.100 2.551  1.000 1.000]
-                       :env-bias  +0.00  :env-scale  +1.00
-               :left-key  60  :left-scale  +0  :right-key  60  :right-scale  +0
-               :velocity 0.00 :pressure 0.00 :cca 0.00  :ccb 0.00
-               :lfo1     0.00 :lfo2     0.00 :hp  50
-               :fb      +0.13 :env->fb +7.54 :lfo2->fb  0.00
-               :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
-          (echo    :delay-1 0.855    :fb 0.33
-                   :delay-2 1.000    :damp 0.79   :mix 0.11)
-          (reverb  :size 0.86        :mix  0.50))))
-
-
-
+(save-program 127 "Random" (list cadejo.instruments.algo.genpatch/algogen))
 
 (.dump bank)
 
-(defn rld [](use 'cadejo.instruments.algo.data :reload))
+
 
