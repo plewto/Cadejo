@@ -7,7 +7,7 @@
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])  
   (:require [cadejo.midi.cc])
-  (:require [cadejo.scale.tuning-table])
+  (:require [cadejo.scale.intonation])
   (:require [overtone.midi :as midi]))
 
 (defprotocol SceneProtocol 
@@ -144,7 +144,7 @@
         properties* 
         (atom {:id (str midi-input-device-name)
                :input-device input-device
-               :tuning-table cadejo.scale.tuning-table/default-tuning-table
+               :tuning-table cadejo.scale.intonation/default-tuning-table
                :velocity-map (math/linear-function 0 0.0 127 1.0)
                })
         sobj (Scene. channels* properties*)]
