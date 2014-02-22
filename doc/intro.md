@@ -24,7 +24,9 @@ of polyphonic after-touch. Some of its key features are:
 * Program banks with the ability to execute arbitrary functions via MIDI
   program changes.
 
-It is also possible to establish key-splits and instrument layering.
+* key-splits    
+
+* layering  
 
 #Instruments  
 
@@ -53,7 +55,7 @@ internal Overtone server.
 
 #Configuration  
 
-Currently configuration is hard-coded into the Cadejo source, but this too
+Currently configuration is hard-coded into the Cadejo source. This too
 shale pass. Eventually it is hoped to add user-configuration files. For the
 moment the file cadejo/demo.clj serves as configuration. It is necessary to
 set the value of midi-input-port to match a port available on your machine.
