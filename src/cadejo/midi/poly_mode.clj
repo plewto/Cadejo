@@ -5,6 +5,8 @@
   (:require [cadejo.util.queue :as q])
   (:require [overtone.core :as ot]))
 
+(def enable-trace false)
+
 (def default-voice-count 8)
 
 ;; Operational notes:
@@ -101,4 +103,4 @@
                keymap*
                free*
                in-use*
-               (atom false))))  ; trace flag
+               (atom enable-trace))))
