@@ -6,7 +6,7 @@
   (:require [cadejo.util.string])
   (:require [overtone.core :as ot]))
 
-(def enable-trace true)
+(def enable-trace false)
 
 (deftype Monomode [id parent* keystack* trace*]
   cadejo.midi.keymode/Keymode
