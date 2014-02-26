@@ -113,3 +113,18 @@
                          4)
                :gate gate
                :action NO-ACTION)))
+
+;; Extends addsr envelope with:
+;; - peak level  amplitude after attack stage
+;; - inversion falg 0 = normal, 1 = invert
+;;
+(defcgen addsr2 [attack decay-1 decay-2 release peak breakpoint sustain invert gate]
+  (:kr
+   (+ (select:kr invert [0 1])
+      (* (select:kr invert [1 -1])
+         (env-gen:kr (envelope [0 peak breakpoint sustain sustain 0]
+                               [attack decay-1 decay-2 0 release]
+                               :linear
+                               4)
+                     :gate gate
+                     :action NO-ACTION)))))
