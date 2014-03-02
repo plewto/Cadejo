@@ -144,7 +144,7 @@
 
 
 ;; Returns a 1/2 cycle sine-shaped window for b < x < c, 0 otherwise. 
-;; NOTE: b < c must be true.
+;; NOTE: 0 <= b and b < c must be true.
 ;; NOTE: Due to rounding errors the upper limit may be slightly negative.
 ;;       Use max if this is an issue.
 ;; f(x) = 0  for x <= b

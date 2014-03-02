@@ -4,9 +4,11 @@
   (:require [cadejo.midi.scene])
   (:require [cadejo.scale.just :as just])
   (:require [cadejo.scale.intonation :as intonation])
-  (:require [cadejo.instruments.algo.engine])
-  (:require [cadejo.instruments.masa.engine])
-  (:require [cadejo.instruments.combo.engine]))
+  ;(:require [cadejo.instruments.algo.engine])
+  ;(:require [cadejo.instruments.masa.engine])
+  ;(:require [cadejo.instruments.combo.engine])
+  (:require [cadejo.instruments.alias.engine])
+  )
 
             
 (def midi-input-port "UM1SX")
@@ -14,9 +16,13 @@
 (defonce s (cadejo.midi.scene/scene midi-input-port))
 
 
+;; -------------------------------------- TEST ALIAS
+
+(defonce alias-1 (cadejo.instruments.alias.engine/alias-mono s 0))
 
        
 
+(comment ------
 ;; ------------------------------------- DEMO 1  Basic setup
 ;; 
 ;; 3 poly phonic instruments 
@@ -29,7 +35,7 @@
 (.set-tuning-table! algo-1 (just/just-scale :blue-ji))
 (defonce masa-1 (cadejo.instruments.masa.engine/masa-poly s 1))
 (defonce combo-1 (cadejo.instruments.combo.engine/combo-poly s 2))
-
+------ end comment)
 
 
 
