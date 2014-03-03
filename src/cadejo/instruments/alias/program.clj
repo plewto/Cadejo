@@ -76,12 +76,14 @@
         val))))
 
                      
-(defn common [& {:keys [amp  port-time cc7->volume]
+(defn common [& {:keys [amp  port-time dry-mix cc7->volume]
                  :or {amp 0.20
+                      dry-mix 0
                       port-time 0.0
                       cc7->volume 0.0}}]
   (list :amp (float amp)
         :port-time (float port-time)
+        :dry-mix (float dry-mix)
         :cc7->volume (float cc7->volume)))
 
 
@@ -549,7 +551,7 @@
 (defn pitch-shifter [& {:keys [ratio rand spread mix]
                         :or {ratio [2 0 0]
                              rand 0
-                             mix -1
+                             mix -99
                              spread 0}}]
   (list :pitchshift-ratio (float (first ratio))
         :pitchshift-ratio-source (bus-number (rest ratio))
@@ -564,7 +566,7 @@
                       :or {mod [0 0]
                            lfo [0.25 0.1]
                            fb 0.5
-                           mix -1
+                           mix -99
                            xmix 0.25}}]
   (list :flanger-mod-source (bus-number mod)
         :flanger-mod-depth (float (second mod))
@@ -581,7 +583,7 @@
                      fb 0.5
                      damp 0.0
                      pan -0.75
-                     mix -1
+                     mix -99
                      gate [0 0]}}]
   (list :echo1-delay (float (first delay))
         :echo1-delay-source (bus-number (rest delay))
@@ -599,7 +601,7 @@
                 :or {delay [0.125 0 0]
                      fb 0.5
                      damp 0.0
-                     mix -1
+                     mix -99
                      pan 0.75
                      gate [0 0]}}]
   (list :echo2-delay (float (first delay))

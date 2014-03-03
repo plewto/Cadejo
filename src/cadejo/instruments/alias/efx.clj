@@ -19,13 +19,13 @@
                     pitchshift-ratio-depth 0
                     pitchshift-pitch-dispersion 0 ; 0.0 <= pd <= 1.0
                     pitchshift-time-dispersion 0  ; normalized 0.0 <= td <= 1.0
-                    pitchshift-mix -1.0           ; -1.0 <= mix <= +1.0
+                    pitchshift-mix -99            ; in db
                     flanger-mod-source 0
                     flanger-mod-depth 0
                     flanger-lfo-amp 0.1
                     flanger-lfo-rate 1.0
                     flanger-feedback 0.5
-                    flanger-mix 0.0
+                    flanger-mix -99       
                     flanger-crossmix 0.0  ; 0 <= xmix <= 1
                     echo1-delay  0.25
                     echo1-delay-source 0
@@ -35,16 +35,17 @@
                     echo1-pan -0.25
                     echo1-amp-source 0
                     echo1-amp-depth 0
-                    echo1-mix 0
+                    echo1-mix -99
                     echo2-delay  0.125
                     echo2-delay-source 0
                     echo2-delay-depth 0
                     echo2-feedback 0.5
                     echo2-damp 0.0
-                    echo2-mix 0
+                    echo2-mix -99
                     echo2-amp-source 0
                     echo2-amp-depth 0
                     echo2-pan -0.25
+                    dry-mix 0           ; in db
                     amp 0.20
                     dbscale 0
                     cc7->volume 0
@@ -78,7 +79,7 @@
         ps-pdisp (qu/clamp pitchshift-pitch-dispersion 0 1)
         ps-tdisp (* pitch-shift-window (qu/clamp pitchshift-time-dispersion 0 0.99))
         ps-wetsig (pitch-shift drysig pitch-shift-window ps-ratio ps-pdisp ps-tdisp)
-        ps-out (x-fade2 drysig ps-wetsig pitchshift-mix)
+        ps-out (* (dbamp pitchshift-mix) ps-wetsig)
         ;; Flanger
         fl-feedback (qu/clamp flanger-feedback -1 +1)
         fl-lfo1 (lf-par:kr flanger-lfo-rate 0.0)
@@ -95,7 +96,7 @@
         fl-xmix (- (qu/clamp flanger-crossmix 0 1) 1)
         fl-wetsig-0 (pan2:ar (nth fl-wetsig 0) fl-xmix)
         fl-wetsig-1 (pan2:ar (nth fl-wetsig 1) (* -1 fl-xmix))
-        fl-out (x-fade2:ar drysig (+ fl-wetsig-0 fl-wetsig-1) flanger-mix)
+        fl-out (* (dbamp flanger-mix)(+ fl-wetsig-0 fl-wetsig-1))
         ;; Echo1
         ec1-input (+ (nth drysig 0)(nth fbsig 2))
         ec1-delay (qu/clamp (+ echo1-delay
@@ -106,8 +107,10 @@
         ec1-damp (echo-damp-factor echo1-damp)
         ec1-feedback-sig (lpf (* echo1-feedback ec1-wetsig)
                               ec1-damp)
-        ec1-amp (qu/amp-modulator-depth (select:kr echo1-amp-source sources)
-                                        echo1-amp-depth)
+        ec1-amp (* (dbamp echo1-mix) 
+                   (qu/amp-modulator-depth (select:kr echo1-amp-source sources)
+                                           echo1-amp-depth))
+        ec1-out (* ec1-amp (pan2 ec1-wetsig echo1-pan))
         ;; Echo2
         ec2-input (+ (nth drysig 1)(nth fbsig 3))
         ec2-delay (qu/clamp (+ echo2-delay
@@ -117,17 +120,19 @@
         ec2-wetsig (delay-c ec2-input echo-max-delay ec2-delay)
         ec2-feedback-sig (lpf (* echo2-feedback ec2-wetsig)
                               (echo-damp-factor echo2-damp))
-        ec2-amp (qu/amp-modulator-depth (select:kr echo2-amp-source sources)
-                                        echo2-amp-depth)
-        ec-out (+ (pan2 (x-fade2 (nth drysig 0) (* ec1-amp ec1-wetsig) echo1-mix) echo1-pan)
-                  (pan2 (x-fade2 (nth drysig 1) (* ec2-amp ec2-wetsig) echo2-mix) echo2-pan))
+        ec2-amp (* (dbamp echo2-mix)
+                   (qu/amp-modulator-depth (select:kr echo2-amp-source sources)
+                                           echo2-amp-depth))
+        ec2-out (* ec2-amp (pan2 ec2-wetsig echo2-pan))
         ;; Gain 
         cc7 (qu/amp-modulator-depth (in:kr cc-volume-bus) cc7->volume)
         out-gain (* amp (dbamp dbscale) cc7)
         out-sig (* out-gain 
                    (+ ps-out
                       fl-out
-                      ec-out))]
+                      ec1-out
+                      ec2-out
+                      (* (dbamp dry-mix) drysig)))]
     (local-out:ar [(* fl-feedback (nth fl-wetsig 0))
                    (* fl-feedback (nth fl-wetsig 1))
                    (* echo1-feedback ec1-feedback-sig)

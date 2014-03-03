@@ -64,7 +64,7 @@
     :stepper1-min :stepper1-reset :stepper1-reset-value :stepper1-scale
     :stepper1-step :stepper1-trigger :stepper2-bias :stepper2-max
     :stepper2-min :stepper2-reset :stepper2-reset-value :stepper2-scale
-    :stepper2-step :stepper2-trigger])
+    :stepper2-step :stepper2-trigger :dry-mix])
 
 
 (def control-bus-map
