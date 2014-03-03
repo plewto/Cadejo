@@ -20,6 +20,7 @@
                     pitchshift-pitch-dispersion 0 ; 0.0 <= pd <= 1.0
                     pitchshift-time-dispersion 0  ; normalized 0.0 <= td <= 1.0
                     pitchshift-mix -99            ; in db
+
                     flanger-mod-source 0
                     flanger-mod-depth 0
                     flanger-lfo-amp 0.1
@@ -27,6 +28,7 @@
                     flanger-feedback 0.5
                     flanger-mix -99       
                     flanger-crossmix 0.0  ; 0 <= xmix <= 1
+
                     echo1-delay  0.25
                     echo1-delay-source 0
                     echo1-delay-depth 0
@@ -36,6 +38,7 @@
                     echo1-amp-source 0
                     echo1-amp-depth 0
                     echo1-mix -99
+
                     echo2-delay  0.125
                     echo2-delay-source 0
                     echo2-delay-depth 0

@@ -77,9 +77,26 @@
    :a 23 :b 24 :c 25 :d 26 :e 27 :f 28 :g 28 :h 30
    :gate 31 :off 32})
 
+(def reverse-control-bus-map
+  (let [acc* (atom {})]
+    (doseq [k (keys control-bus-map)]
+      (swap! acc* (fn [n](assoc n (get control-bus-map k) k))))
+    @acc*))
+
+(defn get-control-bus-name [n]
+  (get reverse-control-bus-map (int n)))
+
 (def general-bus-map
   {:con 0 :a 1 :b 2 :c 3 :d 4 :e 5 :f 6 :g 7 :h 8 :off 9})
 
+(def reverse-general-bus-map
+  (let [acc* (atom {})]
+    (doseq [k (keys general-bus-map)]
+      (swap! acc* (fn [n](assoc n (get general-bus-map k) k))))
+    @acc*))
+
+(defn get-general-bus-name [n]
+  (get reverse-general-bus-map (int n)))
 
 (def filter-modes
   {:lp 0.0 :lp*hp 0.25 :hp 0.50 :band 0.75 :bypass 1.0})

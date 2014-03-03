@@ -562,7 +562,7 @@
 ;; lfo [rate depth]
 (defn flanger [mix & {:keys [mod lfo fb xmix]
                       :or {mod [0 0]
-                           lfo [0.25 0.1]
+                           lfo [0.25 0.1]  ; [rate depth]
                            fb 0.5
                            xmix 0.25}}]
   (list :flanger-mod-source (bus-number mod)
