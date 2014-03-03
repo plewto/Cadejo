@@ -61,9 +61,12 @@
     (.add-audio-bus! performance :main-out main-out)
     performance))
 
-(defn- sleep [arg]
-  (Thread/sleep 20)
-  arg)
+(defn- sleep 
+  ([arg]
+     (Thread/sleep 100)
+     arg)
+  ([]
+     (sleep nil)))
 
 
 (defn alias-mono
@@ -107,6 +110,7 @@
            filter1 (sleep (cadejo.instruments.alias.tone/ToneBlock1))
            filter2 (sleep (cadejo.instruments.alias.tone/ToneBlock2))
            efx-block (sleep (cadejo.instruments.alias.efx/EfxBlock))]
+       (sleep)
        (ctl control-block  
             :pressure-bus pressure-bus
             :cca-bus cca-bus
@@ -127,6 +131,7 @@
             :f-bus f-bus
             :g-bus g-bus
             :h-bus h-bus)
+       (sleep)
        (ctl head-block 
             :a-bus a-bus
             :b-bus b-bus
@@ -137,6 +142,7 @@
             :g-bus g-bus
             :h-bus h-bus
             :out-bus filter-in-bus)
+       (sleep)
        (ctl filter1 
             :a-bus a-bus
             :b-bus b-bus
@@ -149,6 +155,7 @@
             :env3-bus env3-bus
             :in-bus filter-in-bus
             :out-bus efx-in-bus)
+       (sleep)
        (ctl filter2
             :a-bus a-bus
             :b-bus b-bus
@@ -161,7 +168,9 @@
             :env3-bus env3-bus
             :in-bus filter-in-bus
             :out-bus efx-in-bus)
-       (ctl efx-block :a-bus a-bus
+       (sleep)
+       (ctl efx-block 
+            :a-bus a-bus
             :b-bus b-bus
             :c-bus c-bus
             :d-bus d-bus
@@ -172,9 +181,12 @@
             :cc-volume-bus volume-bus
             :in-bus efx-in-bus
             :out-bus main-out)
+       (sleep)
+       (ctl head-block :mute-amp 1)
        (.add-synth! performance :control control-block)
        (.add-synth! performance :filter1 filter1)
        (.add-synth! performance :filter2 filter2)
        (.add-synth! performance :efx efx-block)
        (.add-voice! performance head-block)
+       (.reset chanobj)
        performance)))

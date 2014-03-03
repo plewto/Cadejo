@@ -121,6 +121,7 @@
                      ringmod-amp2-depth 0
                      ringmod-amp2-lag 0
                      ringmod-pan +1.0
+                     mute-amp 0         ; mutes output bus until instrument ready
                      bend-bus 0         ; buses
                      a-bus 0
                      b-bus 0
@@ -140,7 +141,7 @@
         f (in:kr f-bus)
         g (in:kr g-bus)
         h (in:kr h-bus)
-        sources [1 a b c d e f g h]
+        sources [1 a b c d e f g h 0]
         f0 (* (lag2:kr freq port-time)
               bend)
         ;; OSC1 sync-saw
@@ -192,9 +193,11 @@
         osc3 (sin-osc-fb freq-3 wave-3)
         ;; NOISE 
         noise-parameter (qu/clamp (+ 1.3 (* 0.7 noise-param)) 1 2)
-        amp-noise (amproc sources noise-amp
-                       noise-amp1-src noise-amp1-depth noise-amp1-lag
-                       noise-amp2-src noise-amp2-depth noise-amp2-lag)
+        noise-gain (dbamp 12)
+        amp-noise (* noise-gain
+                     (amproc sources noise-amp
+                             noise-amp1-src noise-amp1-depth noise-amp1-lag
+                             noise-amp2-src noise-amp2-depth noise-amp2-lag))
         noise (lpf (hpf (crackle:ar noise-parameter)
                         noise-hp)
                    noise-lp)
@@ -206,10 +209,19 @@
                      ringmod-amp2-src ringmod-amp2-depth ringmod-amp2-lag)
         ringmodulator (* rm-carrier rm-modulator)
         ;; MIXER
-        mixer (+ 
-               (pan2:ar (* amp-1 osc1) osc1-pan)
-               (pan2:ar (* amp-2 osc2) osc2-pan)
-               (pan2:ar (* amp-3 osc3) osc3-pan)
-               (pan2:ar (* amp-noise noise) noise-pan)
-               (pan2:ar (* amp-rm ringmodulator) ringmod-pan))]
-    (out:ar out-bus mixer)))
+        mixer (+ (pan2:ar (* amp-1 osc1) osc1-pan)
+                 (pan2:ar (* amp-2 osc2) osc2-pan)
+                 (pan2:ar (* amp-3 osc3) osc3-pan)
+                 (pan2:ar (* amp-noise noise) noise-pan)
+                 (pan2:ar (* amp-rm ringmodulator) ringmod-pan))]
+    ;; START DEBUG
+    (tap :a 5 a)
+    (tap :b 5 b)
+    (tap :c 5 c)
+    (tap :d 5 d)
+    (tap :e 5 e)
+    (tap :f 5 f)
+    (tap :g 5 g)
+    (tap :h 5 h)
+    ;; END DEBUG
+    (out:ar out-bus (* mute-amp mixer))))

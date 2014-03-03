@@ -6,4 +6,6 @@
 
 
 (defn pp-alias [event pid data]
-  (println ";; *** alias pp not implemented"))
+  (println)
+  (println ";; *** alias pp not implemented")
+  (println))

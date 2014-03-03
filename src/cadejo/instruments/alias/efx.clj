@@ -67,7 +67,7 @@
         f (in:kr f-bus)
         g (in:kr g-bus)
         h (in:kr h-bus)
-        sources [1 a b c d e f g h]
+        sources [1 a b c d e f g h 0]
         drysig (in:ar in-bus 2)
         fbsig (local-in:ar 4) ; 0|1 flanger, 2|3 echo
         ;; Pitchshifter

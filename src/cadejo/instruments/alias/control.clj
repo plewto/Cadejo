@@ -37,48 +37,23 @@
 ;; bus h
 ;; constant 1
 ;; constant 0
+;; gate
 
 
 (ns cadejo.instruments.alias.control
   (:use [overtone.core])
+  (:require [cadejo.instruments.alias.constants :as constants])
   (:require [cadejo.modules.env :as cenv])
   (:require [cadejo.modules.qugen :as qu]))
 
 
 ;; Matrix Sources
 ;;
-(def s-one          0)
-(def s-env1         1)
-(def s-env2         2)
-(def s-env3         3)
-(def s-lfo1         4)
-(def s-lfo2         5)
-(def s-lfo3         6)
-(def s-stepper1     7)
-(def s-stepper2     8)
-(def s-divider1     9)
-(def s-divider2    10)
-(def s-divider     11) ; sum of divider1 divider2
-(def s-noise       12)
-(def s-sample-hold 13)
-(def s-freq        14)
-(def s-fperiod     15)
-(def s-keynum      16)
-(def s-pressure    17)
-(def s-velocity    18)
-(def s-cca         19)
-(def s-ccb         20)
-(def s-ccc         21)
-(def s-ccd         22)
-(def s-a           23)
-(def s-b           24)
-(def s-c           25)
-(def s-d           26)
-(def s-e           27)
-(def s-f           28)
-(def s-g           29)
-(def s-h           30)
-(def s-zero        31)
+(def s-one  (:con constants/control-bus-map))
+(def s-zero (:off constants/control-bus-map))
+(def s-lfo1 (:lfo1 constants/control-bus-map))
+(def s-lfo2 (:lfo2 constants/control-bus-map))
+(def s-noise (:lfnse constants/control-bus-map))
 
 ;; Local bus numbers
 ;;
@@ -264,7 +239,7 @@
                  cca ccb ccc ccd 
                  (nth lcbus lb-a)(nth lcbus lb-b)(nth lcbus lb-c)(nth lcbus lb-d)
                  (nth lcbus lb-e)(nth lcbus lb-f)(nth lcbus lb-g)(nth lcbus lb-h) 
-                 0]
+                 gate 0]
         env1-lin (cenv/addsr2 env1-attack env1-decay1 env1-decay2 env1-release
                               env1-peak env1-breakpoint env1-sustain env1-invert gate)
         env1 (* env1-lin env1-lin)
@@ -331,6 +306,7 @@
                       (select:kr divider2-scale-source sources))
         divider2 (+ divider2-bias (* div2-scale (+ div2-p2 div2-p4
                                                    div2-p6 div2-p8)))
+        divider (+ divider1 divider2)
         ;; LFNOISE
         lfnoise-freq (abs (* lfnoise-freq-depth (select:kr lfnoise-freq-source sources)))
         lfnoise (lf-noise2:kr lfnoise-freq)
@@ -354,10 +330,23 @@
              (* g-depth2 (select:kr g-source2 sources)))
         h (* (* h-depth1 (select:kr h-source1 sources))
              (* h-depth2 (select:kr h-source2 sources)))]
-    (local-out:kr [env1 env2 env3 lfo1 lfo2 lfo3 stepper1 stepper2
-                   divider1 divider2 (+ divider1 divider2) lfnoise sh
-                   freq (/ 1.0 (max freq 0.001)) note pressure velocity
-                   cca ccb ccc ccd a b c d e f g])
+    (local-out:kr [env1 env2 env3 lfo1 lfo2 lfo3
+                   stepper1 stepper2 divider1 divider2 divider lfnoise sh
+                   a b c d e f g h])
+
+    ;; START DEBUG
+    (tap :lfo1-freq 5 lfo1-freq)
+    (tap :lfo1-wave 5 lfo1-wave)
+    (tap :lfo1 5 lfo1)
+    (tap :sources-4 5 (nth sources 4))
+    (tap :a-depth1 5 a-depth1)
+    (tap :a-source1 5 a-source1)
+    (tap :a-depth2 5 a-depth2)
+    (tap :a-source2 5 a-source2)
+    (tap :a1-value 5 (* a-depth1 (select:kr a-source1 sources)))
+    (tap :a2-value 5 (* a-depth2 (select:kr a-source2 sources)))
+    (tap :a 5 a)
+    ;; END-DEBUG
     (out:kr env1-bus env1)
     (out:kr env2-bus env2)
     (out:kr env3-bus env3)

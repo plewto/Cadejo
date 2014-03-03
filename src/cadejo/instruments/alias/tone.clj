@@ -44,7 +44,8 @@
         g (in:kr g-bus)
         h (in:kr h-bus)
         env3 (in:kr env3-bus)
-        sources [1 a b c d e f g h]
+        sources [1 a b c d e f g h 0
+]
         dry-sig (in:ar in-bus)
         dist-n (qu/clamp (+ distortion1-param 
                             (* distortion1-param-depth
@@ -119,7 +120,7 @@
         g (in:kr g-bus)
         h (in:kr h-bus)
         env3 (in:kr env3-bus)
-        sources [1 a b c d e f g h]
+        sources [1 a b c d e f g h 0]
         dry-sig (in:ar in-bus)
         fold-in (* distortion2-pregain dry-sig)
         fold-b (+ 1 
@@ -133,15 +134,16 @@
         dist-wet (* fold-gain (fold2 fold-in fold-b))
         filter-in (x-fade2 dry-sig dist-wet distortion2-mix)
         ;; FILTERS
-        res (qu/clamp (* 1/4 (+ filter2-pan 
-                                (* filter2-res-depth
-                                   (select:kr filter2-res-source sources))))
+        res (qu/clamp (* 4 (+ filter2-res
+                              (* filter2-res-depth
+                                 (select:kr filter2-res-source sources))))
                       0 4)
         ffreq (+ filter2-freq 
                  (* filter2-freq1-depth (select:kr filter2-freq1-source sources))
                  (* filter2-freq2-depth (select:kr filter2-freq2-source sources)))
         fpos (+ filter2-pan
                 (* filter2-pan-depth (select:kr sources filter2-pan-source)))
-        lp (moog-ff filter-in ffreq res)
+        lp (moog-ff filter-in ffreq res -1)
         filter-out (* filter2-postgain lp)]
+    (tap :res 5 res)  ;; DEBUG
     (out:ar out-bus (* env3 filter2-postgain (pan2:ar filter-out fpos)))))
