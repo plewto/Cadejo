@@ -214,14 +214,4 @@
                  (pan2:ar (* amp-3 osc3) osc3-pan)
                  (pan2:ar (* amp-noise noise) noise-pan)
                  (pan2:ar (* amp-rm ringmodulator) ringmod-pan))]
-    ;; START DEBUG
-    (tap :a 5 a)
-    (tap :b 5 b)
-    (tap :c 5 c)
-    (tap :d 5 d)
-    (tap :e 5 e)
-    (tap :f 5 f)
-    (tap :g 5 g)
-    (tap :h 5 h)
-    ;; END DEBUG
     (out:ar out-bus (* mute-amp mixer))))

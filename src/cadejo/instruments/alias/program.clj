@@ -76,14 +76,13 @@
         val))))
 
                      
-(defn common [& {:keys [amp  port-time dry-mix cc7->volume]
+(defn dry [mix & {:keys [amp  port-time cc7->volume]
                  :or {amp 0.20
-                      dry-mix 0
                       port-time 0.0
                       cc7->volume 0.0}}]
   (list :amp (float amp)
         :port-time (float port-time)
-        :dry-mix (float dry-mix)
+        :dry-mix (float mix)
         :cc7->volume (float cc7->volume)))
 
 
@@ -548,10 +547,9 @@
         :h-depth2 (float (second h2))))
         
 ;; ratio [bias src depth]
-(defn pitch-shifter [& {:keys [ratio rand spread mix]
+(defn pshifter [mix & {:keys [ratio rand spread]
                         :or {ratio [2 0 0]
                              rand 0
-                             mix -99
                              spread 0}}]
   (list :pitchshift-ratio (float (first ratio))
         :pitchshift-ratio-source (bus-number (rest ratio))
@@ -562,11 +560,10 @@
 
 ;; mod [src depth]
 ;; lfo [rate depth]
-(defn flanger [& {:keys [mod lfo fb mix xmix]
+(defn flanger [mix & {:keys [mod lfo fb xmix]
                       :or {mod [0 0]
                            lfo [0.25 0.1]
                            fb 0.5
-                           mix -99
                            xmix 0.25}}]
   (list :flanger-mod-source (bus-number mod)
         :flanger-mod-depth (float (second mod))
@@ -578,12 +575,11 @@
 
 ;; delay [bias src depth]
 ;; gate [src depth]
-(defn echo1 [& {:keys [delay fb damp gate mix pan]
+(defn echo1 [mix & {:keys [delay fb damp gate pan]
                 :or {delay [0.125 0 0]
                      fb 0.5
                      damp 0.0
                      pan -0.75
-                     mix -99
                      gate [0 0]}}]
   (list :echo1-delay (float (first delay))
         :echo1-delay-source (bus-number (rest delay))
@@ -597,11 +593,10 @@
 
 ;; delay [bias src depth]
 ;; gate [src depth]
-(defn echo2 [& {:keys [delay fb damp gate mix pan]
+(defn echo2 [mix & {:keys [delay fb damp gate pan]
                 :or {delay [0.125 0 0]
                      fb 0.5
                      damp 0.0
-                     mix -99
                      pan 0.75
                      gate [0 0]}}]
   (list :echo2-delay (float (first delay))

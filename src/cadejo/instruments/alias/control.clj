@@ -308,7 +308,7 @@
                                                    div2-p6 div2-p8)))
         divider (+ divider1 divider2)
         ;; LFNOISE
-        lfnoise-freq (abs (* lfnoise-freq-depth (select:kr lfnoise-freq-source sources)))
+        lfnoise-freq (max 0.1 (abs (* lfnoise-freq-depth (select:kr lfnoise-freq-source sources))))
         lfnoise (lf-noise2:kr lfnoise-freq)
         ;; SAMPLE & HOLD
         sh-source (select:kr sh-source sources)
@@ -333,20 +333,6 @@
     (local-out:kr [env1 env2 env3 lfo1 lfo2 lfo3
                    stepper1 stepper2 divider1 divider2 divider lfnoise sh
                    a b c d e f g h])
-
-    ;; START DEBUG
-    (tap :lfo1-freq 5 lfo1-freq)
-    (tap :lfo1-wave 5 lfo1-wave)
-    (tap :lfo1 5 lfo1)
-    (tap :sources-4 5 (nth sources 4))
-    (tap :a-depth1 5 a-depth1)
-    (tap :a-source1 5 a-source1)
-    (tap :a-depth2 5 a-depth2)
-    (tap :a-source2 5 a-source2)
-    (tap :a1-value 5 (* a-depth1 (select:kr a-source1 sources)))
-    (tap :a2-value 5 (* a-depth2 (select:kr a-source2 sources)))
-    (tap :a 5 a)
-    ;; END-DEBUG
     (out:kr env1-bus env1)
     (out:kr env2-bus env2)
     (out:kr env3-bus env3)

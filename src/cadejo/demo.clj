@@ -15,12 +15,39 @@
 
 (defonce s (cadejo.midi.scene/scene midi-input-port))
 
+(defn prog 
+  ([pnum chan]
+     (let [event {:command :program-change
+                  :channel chan
+                  :data1 pnum
+                  :data2 0}
+           chanobj (.channel s chan)]
+       (.handle-event chanobj event)))
+  ([pnum](prog pnum 0))
+  ([](prog 0)))
+     
+(defn rl [](use 'cadejo.instruments.alias.data :reload))
+
+(defn p [](rl)(prog))
+
+
+           
+       
 
 ;; -------------------------------------- TEST ALIAS
 
 (defonce alias-1 (cadejo.instruments.alias.engine/alias-mono s 0))
 
-       
+(def v (nth (.voices alias-1) 0))
+(def tb2 (.synth alias-1 :filter2))
+(def efx (.synth alias-1 :efx))
+(def ctrl (.synth alias-1 :control))
+
+(defn ? [p]
+  @(get-in efx [:taps p]))
+
+
+
 
 (comment ------
 ;; ------------------------------------- DEMO 1  Basic setup
