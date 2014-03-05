@@ -307,9 +307,6 @@
         :filter2-pan-source (bus-number (rest pan))
         :filter2-pan-depth (float (third pan))
         :filter2-postgain (float gain)))
-
-
-
         
 (defn env1 [a d1 d2 r  & {:keys [pk bp sus invert]
                           :or {pk 1
@@ -513,6 +510,16 @@
                       g2 [1 0]
                       h1 [1 0]
                       h2 [1 0]}}]
+  ;;; START DEBUG
+  ;; (println (format "MATRIX a %s   %s" a1 a2))
+  ;; (println (format "MATRIX b %s   %s" b1 b2))
+  ;; (println (format "MATRIX c %s   %s" c1 c2))
+  ;; (println (format "MATRIX d %s   %s" d1 d2))
+  ;; (println (format "MATRIX e %s   %s" e1 e2))
+  ;; (println (format "MATRIX f %s   %s" f1 f2))
+  ;; (println (format "MATRIX g %s   %s" g1 g2))
+  ;; (println (format "MATRIX h %s   %s" h1 h2))
+  ;;; END DEBUG
   (list :a-source1 (control-bus-number a1)
         :a-depth1 (float (second a1))
         :a-source2 (control-bus-number a2)
@@ -548,7 +555,7 @@
         
 ;; ratio [bias src depth]
 (defn pshifter [mix & {:keys [ratio rand spread]
-                        :or {ratio [2 0 0]
+                        :or {ratio [2 0 0]  ;; [bias src dpth]
                              rand 0
                              spread 0}}]
   (list :pitchshift-ratio (float (first ratio))

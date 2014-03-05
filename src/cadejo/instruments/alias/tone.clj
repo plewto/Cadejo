@@ -33,7 +33,7 @@
                       g-bus 0
                       h-bus 0
                       env3-bus 0        ; amplitude envelope
-                      in-bus 0          ; 1-channel input bus
+                      in-bus 0          ; 2-channel input, ignore channel 1
                       out-bus 0]        ; 2-channel output bus
   (let [a (in:kr a-bus)
         b (in:kr b-bus)
@@ -45,7 +45,7 @@
         h (in:kr h-bus)
         env3 (in:kr env3-bus)
         sources [1 a b c d e f g h 0]
-        dry-sig (in:ar in-bus)
+        dry-sig (nth (in:ar in-bus 2) 0)
         dist-n (qu/clamp (+ distortion1-param 
                             (* distortion1-param-depth
                                (select:kr distortion1-param-source sources)))
@@ -60,9 +60,9 @@
                                (* filter1-res-depth
                                   (select:kr filter1-res-source sources)))
                             0 1)))
-        ffreq (+ filter1-freq 
-                 (* filter1-freq1-depth (select:kr filter1-freq1-source sources))
-                 (* filter1-freq2-depth (select:kr filter1-freq2-source sources)))
+        ffreq (abs (+ filter1-freq 
+                      (* filter1-freq1-depth (select:kr filter1-freq1-source sources))
+                      (* filter1-freq2-depth (select:kr filter1-freq2-source sources))))
         fpos (+ filter1-pan
                 (* filter1-pan-depth (select:kr filter1-pan-source sources)))
         lp (rlpf filter-in ffreq rq)
@@ -108,7 +108,7 @@
                       g-bus 0
                       h-bus 0
                       env3-bus 0        ; amplitude envelope
-                      in-bus 0          ; 1-channel input bus
+                      in-bus 0          ; 2-channel input, ignore channel 0
                       out-bus 0]        ; 2-channel output bus
   (let [a (in:kr a-bus)
         b (in:kr b-bus)
@@ -120,7 +120,7 @@
         h (in:kr h-bus)
         env3 (in:kr env3-bus)
         sources [1 a b c d e f g h 0]
-        dry-sig (in:ar in-bus)
+        dry-sig (nth (in:ar in-bus 2) 1)
         fold-in (* distortion2-pregain dry-sig)
         fold-b (+ 1 
                   (* -0.99 
@@ -137,9 +137,9 @@
                               (* filter2-res-depth
                                  (select:kr filter2-res-source sources))))
                       0 4)
-        ffreq (+ filter2-freq 
-                 (* filter2-freq1-depth (select:kr filter2-freq1-source sources))
-                 (* filter2-freq2-depth (select:kr filter2-freq2-source sources)))
+        ffreq (abs (+ filter2-freq 
+                      (* filter2-freq1-depth (select:kr filter2-freq1-source sources))
+                      (* filter2-freq2-depth (select:kr filter2-freq2-source sources))))
         fpos (+ filter2-pan
                 (* filter2-pan-depth (select:kr filter2-pan-source sources)))
         lp (moog-ff filter-in ffreq res -1)

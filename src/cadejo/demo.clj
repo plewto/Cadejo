@@ -26,9 +26,9 @@
   ([pnum](prog pnum 0))
   ([](prog 0)))
      
-(defn rl [](use 'cadejo.instruments.alias.data :reload))
+;(defn rl [](use 'cadejo.instruments.alias.data :reload))
 
-(defn p [](rl)(prog))
+;;(defn p [](rl)(prog))
 
 
            
@@ -36,7 +36,11 @@
 
 ;; -------------------------------------- TEST ALIAS
 
-(defonce alias-1 (cadejo.instruments.alias.engine/alias-mono s 0))
+(defonce alias-1 (cadejo.instruments.alias.engine/alias-mono s 0 0 
+                                                             :cca 1
+                                                             :ccb 16
+                                                             :ccc 17
+                                                             :ccd 4))
 
 (def v (nth (.voices alias-1) 0))
 (def tb2 (.synth alias-1 :filter2))

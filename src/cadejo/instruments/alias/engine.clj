@@ -36,7 +36,7 @@
         lfo1-bus (control-bus)
         lfo2-bus (control-bus)
         lfo3-bus (control-bus)
-        filter-in-bus (audio-bus 1)
+        filter-in-bus (audio-bus 2)
         filter-out-bus (audio-bus 2)
         efx-in-bus (audio-bus 2)
         bank cadejo.instruments.alias.program/bank]
