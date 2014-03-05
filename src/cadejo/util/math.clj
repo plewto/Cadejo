@@ -5,6 +5,9 @@
   "(expt x e) --> x^e  Returns x raised to the power e"
   clojure.math.numeric-tower/expt)
 
+(def abs
+  clojure.math.numeric-tower/abs)
+
 (def step 
   "Ratio for 12-tone half-step"
   (expt 2.0 1/12))
