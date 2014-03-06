@@ -10,6 +10,7 @@
   
 (defn save-program 
   ([pnum name remarks data]
+     (println (format ";; alias save-program %s \"%s\"" pnum name))
      (.set-program! bank pnum name remarks data))
   ([pnum name data]
      (save-program pnum name "" data)))
@@ -76,13 +77,24 @@
         val))))
 
                      
-(defn dry [mix & {:keys [amp  port-time cc7->volume]
+;; (defn dry [mix & {:keys [amp  port-time cc7->volume]
+;;                  :or {amp 0.20
+;;                       port-time 0.0
+;;                       cc7->volume 0.0}}]
+;;   (list :amp (float amp)
+;;         :port-time (float port-time)
+;;         :dry-mix (float mix)
+;;         :cc7->volume (float cc7->volume)))
+
+(defn dry [mix]
+  (list :dry-mix (int mix)))
+
+(defn common [& {:keys [amp port-time cc7->volume]
                  :or {amp 0.20
                       port-time 0.0
                       cc7->volume 0.0}}]
   (list :amp (float amp)
         :port-time (float port-time)
-        :dry-mix (float mix)
         :cc7->volume (float cc7->volume)))
 
 

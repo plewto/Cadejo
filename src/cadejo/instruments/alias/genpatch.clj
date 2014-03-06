@@ -15,6 +15,13 @@
   ([n]
      (flip n 0.5)))
 
+(defn pick-common [p-port]
+  (let [p (or p-port 0.1)
+        ptime (coin p (rand) 0.0)]
+    (common :port-time ptime)))
+  
+
+
 (def envelope-styles '[:asr :adsr :addsr :aadsr :perc :blip])
 
 ;; [min-time max-time]
@@ -585,7 +592,10 @@
                    :fb fb2 :damp damp2 :pan pan2
                    :gate [gate2-src gate2-depth]))))
         
-(defn rand-alias [& {:keys [env-style env-range only-harmonics
+(defn rand-alias [& {:keys [env-style 
+                            env-range
+                            only-harmonics
+                            p-port
                             p-waveshaper
                             p-pitchshifter
                             p-flanger
@@ -594,6 +604,7 @@
                      :or {env-style nil
                           env-range nil
                           only-harmonics nil
+                          p-port nil
                           p-waveshaper 0.25
                           p-pitchshifter 0.20
                           p-flanger 0.20
@@ -613,11 +624,9 @@
                   (coin 0.80 -99 (rand-nth '(-3 -6 -9 -12 -15))))
           r-amp (if (= main :ringmod) 
                   0 
-                  (coin 0.80 -99 (rand-nth '(-3 -6 -9 -12 -15))))
-          ]
-      (println (format ";; mixer osc1 %s   osc2 %s   osc3 %s   noise %s   ringmod %s"
-                       o1-amp o2-amp o3-amp n-amp r-amp))
+                  (coin 0.80 -99 (rand-nth '(-3 -6 -9 -12 -15))))]
       (alias-program 
+       (pick-common p-port)
        (pick-envelope 1 env-style env-range)
        (pick-envelope 2 env-style env-range)
        (pick-envelope 3 env-style env-range)
@@ -644,8 +653,7 @@
        (pick-folder p-waveshaper)
        (pick-filter1)
        (pick-filter2)
-       (dry  (coin 0.9 0 (rand-nth '(-3 -6 -9 -12 -15 -99)))
-             :port-time (coin 0.80 0 (rand)))
+       (dry  (coin 0.9 0 (rand-nth '(-3 -6 -9 -12 -15 -99))))
        (pick-pitchshifter p-pitchshifter)
        (pick-flanger p-flanger)
        (pick-echo p-echo p-echo-sync)))))

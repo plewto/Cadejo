@@ -78,6 +78,8 @@
                                 ccc 17
                                 ccd 4
                                 cc-volume 7}}]
+     (println (format "alias-mono chan %d   cca %s   ccb %s   ccc %s   ccd %s   cc-volume %s"
+                      chan cca ccb ccc ccd cc-volume))
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.mono-mode/mono-keymode :Alias)
            performance (create-performance chanobj keymode main-out

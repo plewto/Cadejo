@@ -22,6 +22,13 @@
 (defn iget [dmap param]
   (int (fget dmap param)))
 
+(defn- pp-common [dmap]
+  (let [amp (fget dmap :amp)
+        ptime (fget dmap :port-time)
+        cc7 (fget dmap :cc7->volume)]
+    (printf "%s(common  :amp %5.3f  :port-time %5.3f :cc7->volume %5.3f)\n"
+            pad2 amp ptime cc7)))
+
 (defn- pp-env [n dmap] 
   (let [val (fn [param]
                 (let [key (keyword (format "env%d-%s" n param))]
@@ -255,13 +262,18 @@
     (printf "%14s:res  [%4.2f %-7s %4.2f] :pan [%+5.2f %-7s %+5.2f])\n"
             "" res res-src res-depth pan ps pd)))
 
+;; (defn- pp-dry [dmap]
+;;   (let [dry (int (fget dmap :dry-mix))
+;;         amp (fget dmap :amp)
+;;         ptime (fget dmap :port-time)
+;;         cc7 (fget dmap :cc7->volume)]
+;;     (printf "%s(dry      %+3d :amp %5.3f :port-time %5.3f  :cc7->volume %5.3f)\n"
+;;             pad2 dry amp ptime cc7)))
+
 (defn- pp-dry [dmap]
-  (let [dry (int (fget dmap :dry-mix))
-        amp (fget dmap :amp)
-        ptime (fget dmap :port-time)
-        cc7 (fget dmap :cc7->volume)]
-    (printf "%s(dry      %+3d :amp %5.3f :port-time %5.3f  :cc7->volume %5.3f)\n"
-            pad2 dry amp ptime cc7)))
+  (let [dry (int (fget dmap :dry-mix))]
+    (printf "%s(dry      %+3d)\n"
+            pad2 dry)))
             
 (defn- pp-pshifter [dmap]
   (let [ratio (fget dmap :pitchshift-ratio)
@@ -307,6 +319,7 @@
     (println ";;")
     (println "(save-program   x   \"name\"")
     (printf "%s(alias-program\n" pad1)
+    (pp-common dmap)
     (printf "%s;; ENVS A     D1    D2    R\n" pad2)
     (pp-env 1 dmap)
     (pp-env 2 dmap)
