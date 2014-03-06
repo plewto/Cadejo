@@ -85,7 +85,7 @@
            bend-bus (.control-bus performance :bend)
            pressure-bus (.control-bus performance :pressure)
            cca-bus (.control-bus performance cca)
-           ccb-bus (.control-bus performance ccd)
+           ccb-bus (.control-bus performance ccb)
            ccc-bus (.control-bus performance ccc)
            ccd-bus (.control-bus performance ccd)
            volume-bus (.control-bus performance cc-volume)
