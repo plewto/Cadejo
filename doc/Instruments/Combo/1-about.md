@@ -4,7 +4,7 @@ Combo Organ
 Combo is a simple organ simulation implemented in Overtone. It is intended
 to provide a useful instrument and also to serve as an illustration for
 using Overtone instruments with Cadejo. For illustration purposes heavily
-annotated versions of all combo source files are included in the
+annotated versions of all combo source files are included in this
 documentation. My apologies if these are occasionally pedantic. The files
 which define Combo are:  
 

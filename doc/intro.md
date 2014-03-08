@@ -36,9 +36,11 @@ additional boilerplate code is required to *register* an instruments with
 Cadejo. Details on how to do this can be found in the documentation for the
 Combo instrument.
 
-Three full-feature instruments are included in the Cadejo package.  
+Four full-feature instruments are included in the Cadejo package.  
 
 __ALGO__ is an 8-operator FM synthesizer with some unique features.  
+
+__ALIAS__ is a mean little 3 oscillator subtractive instrument with extensive modulation possibilities. 
 
 __MASA__ is an organ simulation loosely based on the Hammond B3.  
 
