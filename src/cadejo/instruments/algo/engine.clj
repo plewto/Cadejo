@@ -45,7 +45,6 @@
       (qu/amp-modulator-depth lfo1 lfo1-depth)
       (qu/amp-modulator-depth lfo2 lfo2-depth)
       (dbamp (qu/keytrack note right-key right-scale left-key left-scale)))))
-      
 
 (defcgen carrier-env [a d1 d2 r bp sus gate]
   (:kr
@@ -543,6 +542,7 @@
                 :out-bus main-out)]
        (.add-synth! performance :efx efx)
        (.add-voice! performance voice)
+       (.reset chanobj)
        (Thread/sleep 100)               ; BUG 0001 Hack
        performance))
   ([scene chan]
@@ -584,6 +584,7 @@
        (.add-synth! performance :efx efx)
        (doseq [v voices]
          (.add-voice! performance v))
+       (.reset chanobj)
        performance))
   ([scene chan]
      (algo-poly scene chan 8 0)))

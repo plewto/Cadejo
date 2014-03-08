@@ -213,6 +213,7 @@
        (.add-synth! performance :efx efx-block)
        (.add-voice! performance voice)
        (Thread/sleep 100)               ; BUG 0001 Hack
+       (.reset chanobj)
        performance))
   ([scene chan]
      (masa-mono scene chan 0)))
@@ -252,6 +253,7 @@
        (.add-synth! performance :vibrato vibrato-block)
        (.add-synth! performance :efx efx-block)
        (doseq [v voices](.add-voice! performance v))
+       (.reset chanobj)
        performance))
   ([scene chan]
      (masa-poly scene chan 8 0)))
