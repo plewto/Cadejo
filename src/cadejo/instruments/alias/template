@@ -13,8 +13,7 @@
   (lfo2     :fm1   [:con    0.500] :fm2   [:off    0.000]
             :wave1 [:con    0.500] :wave2 [:off    0.000])
   (lfo3     :fm1   [:con    0.500] :fm2   [:off    0.000]
-            :wave1 [:con    0.433] :wave2 [:off    0.000])
-
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
   (stepper1 :trig  :lfo1           :reset :off
             :min -10 :max +10 :step  +1 :ivalue -10 :bias 0.0 :scale 0.10)
   (stepper2 :trig  :lfo2           :reset :off
@@ -35,7 +34,7 @@
             :g1 [:press  1.000] :g2 [:con    1.000] 
             :h1 [:div    1.000] :h2 [:con    1.000])
   ;; OSCILLATORS
-  (osc1-freq 0.500 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.0004 0.00])
+  (osc1-freq 0.500 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.000  0.00])
   (osc1-wave 1.000             :w1  [:b      1.000     ] :w2  [:off    0.000      ])
   (osc1-amp   0 :pan -0.50     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00 ])
 
@@ -64,4 +63,5 @@
   (flanger  -99 :lfo [3.149 0.520]    :mod [:off    0.000] :fb -0.50 :xmix 0.25)
   (echo1    -99 :delay [1.500 :off    0.000] :fb +0.50 :damp 0.00 :gate [:off    0.00] :pan -0.50)
   (echo2    -99 :delay [2.000 :off    0.000] :fb +0.50 :damp 0.00 :gate [:off    0.00] :pan +0.50)))
+
 
