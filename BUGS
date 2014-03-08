@@ -14,7 +14,7 @@ is created second.
 
 Solution: This had nothing to do with MASA per se. Not too sure what the
 real cause was but it appears that perhaps Overtone was requesting the SC
-server to compile synths faster then it could keep up. The complation
+server to compile synths faster then it could keep up. The compilation
 proceeded without any errors or warnings yet the synths were in some manner
 "broken" and non-functional. The solution is to insert a short delay via
 Thread/sleep after a number of synth objects are created. By trial a value
@@ -35,5 +35,10 @@ transposed frequencies.
 Made modification to cadejo.midi.mono-keymode
 
 # ---------------------------------------------------------- BUG 0003 
-BUG 0003 2014.02.20 SATUS OPEN
-Pressure has no effect on ALGo lfo2
+BUG 0003 2014.02.20 STATUS OPEN
+Pressure has no effect on ALGO lfo2
+
+# ---------------------------------------------------------- BUG 0004
+BUG 0004 2014.03.08 STATUS OPEN
+Periodically alias.genpatch/rand-alias creates an Alias program which
+crashes the sc server. This always? preceded by a "TOO LOUD!!" warning
