@@ -861,6 +861,472 @@
   (echo1    -99 :delay [1.900 :off    0.000] :fb +0.48 :damp 0.55 :gate [:off    0.00] :pan -0.50)
   (echo2    -99 :delay [1.100 :off    0.000] :fb +0.62 :damp 0.11 :gate [:off    0.00] :pan +0.50)))
 
+;; --------------------------------------------------------------------------- 13 More Gold
+;;
+(save-program  13 "More Gold"
+ (alias-program
+  (common  :amp 0.200  :port-time 0.000 :cc7->volume 0.000)
+  ;; ENVS A     D1    D2    R
+  (env1   2.771 2.580 1.275 3.336  :pk 0.265 :bp 1.000 :sus 0.836 :invert 0)
+  (env2   2.020 1.731 0.758 0.332  :pk 0.607 :bp 1.000 :sus 0.708 :invert 0)
+  (env3   2.644 0.609 3.999 3.093  :pk 1.000 :bp 0.916 :sus 0.733)
+  (lfo1     :fm1   [:con    4.657] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo2     :fm1   [:con    0.543] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:lfnse  0.500])
+  (lfo3     :fm1   [:con    5.903] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:gate   0.984])
+  (stepper1 :trig  :lfo1           :reset :off
+            :min  +2 :max -14 :step  -2 :ivalue  +2 :bias 0.0 :scale 0.06)
+  (stepper2 :trig  :off            :reset :sh
+            :min  +2 :max -15 :step  -2 :ivalue  +2 :bias 0.0 :scale 0.06)
+  (divider1 :p1 -8.000 :p3 -2.000 :p5 +3.000 :p7 -6.000 :pw 0.98
+            :am [:env1   1.000]   :bias +0.000)
+  (divider2 :p2 +3.000 :p4 +9.000 :p6 +5.000 :p8 +3.000 :pw 0.50
+            :am [:env1   1.000]   :bias +0.000)
+  (lfnoise  :fm [:lfo3   0.449])
+  (sh       :rate 7.767 :src :lfnse  :bias 0.000 :scale 1.000)
+  (matrix
+            :a1 [:lfo1   0.031] :a2 [:cca    1.000] 
+            :b1 [:env2   1.000] :b2 [:con    1.000] 
+            :c1 [:env3   1.000] :c2 [:con    1.000] 
+            :d1 [:lfo2   1.000] :d2 [:con    1.000] 
+            :e1 [:ccc    0.674] :e2 [:con    1.000] 
+            :f1 [:lfo3   0.125] :f2 [:con    1.000] 
+            :g1 [:div2   0.325] :g2 [:con    1.000] 
+            :h1 [:ccb    0.173] :h2 [:con    1.000] )
+  ;; OSCILLATORS
+  (osc1-freq 3.128 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.592 0.00])
+  (osc1-wave 1.000             :w1  [:b      0.000     ] :w2  [:off    0.288     ])
+  (osc1-amp  -3 :pan -0.19     :am1 [:f      0.000 0.00] :am2 [:off    0.000 0.00])
+
+  (osc2-freq 2.596 :bias 246.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.051 0.00])
+  (osc2-wave 0.723             :w1  [:d      0.231     ] :w2  [:off    -0.499     ])
+  (osc2-amp  +0 :pan -0.63     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+
+  (osc3-freq 2.073 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.038 0.06])
+  (osc3-wave 0.303             :w1  [:b      0.000     ] :w2  [:f      0.554     ])
+  (osc3-amp -12 :pan -0.56     :am1 [:off    0.000 0.00] :am2 [:d      0.174 0.97])
+
+  (noise     -9 :pan -0.61 :crackle 0.34     :lp 10000   :hp    50
+                               :am1 [:off    0.000 0.00] :am2 [:d      0.490 0.97])
+  (ringmod  -15 :pan +0.11 :carrier -0.2     :modulator -1.0
+                               :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+  ;; FILTERS
+  (clip    :gain 1.000 :mix +0.757 :clip [0.59 :off    0.00])
+  (filter1 :gain 1.000 :freq   253 :fm1  [:g            508] :fm2 [:off    -2214]
+           :mode 0.00              :res  [0.81 :off    0.00] :pan [+0.26 :off    +0.30])
+  (fold    :gain 1.000 :mix +0.658 :clip [0.98 :b      0.15])
+  (filter2 :gain 1.000 :freq  6267 :fm1  [:c          -6055] :fm2 [:off    -2245]
+                                   :res  [0.37 :off    0.00] :pan [+0.92 :off    -0.46])
+  ;; EFX
+  (dry       +0)
+  (pshifter  +0 :ratio [1.614 :off    0.004] :rand 0.18 :spread 0.62)
+  (flanger  -12 :lfo [0.099 0.046] :mod [:g      0.685] :fb -0.37 :xmix 0.25)
+  (echo1    -99 :delay [1.100 :off    0.000] :fb -0.64 :damp 0.50 :gate [:c      0.30] :pan -0.50)
+  (echo2    -99 :delay [1.100 :g      0.000] :fb +0.92 :damp 0.15 :gate [:off    0.15] :pan +0.50)))
+
+
+;; --------------------------------------------------------------------------- 14 Alian
+;;
+(save-program   14 "Alian"
+ (alias-program
+  (common  :amp 0.200  :port-time 0.000 :cc7->volume 0.000)
+  ;; ENVS A     D1    D2    R
+  (env1   8.516 7.511 11.497 3.108  :pk 1.000 :bp 1.000 :sus 1.000 :invert 0)
+  (env2   0.033 5.444 0.015 6.971  :pk 1.000 :bp 0.290 :sus 0.998 :invert 0)
+  (env3   0.517 5.311 8.373 0.025  :pk 1.000 :bp 0.936 :sus 0.276)
+  (lfo1     :fm1   [:con    4.556] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo2     :fm1   [:con    0.944] :fm2   [:lfnse  3.513]
+            :wave1 [:con    0.500] :wave2 [:env3   0.500])
+  (lfo3     :fm1   [:con    1.369] :fm2   [:env2   2.277]
+            :wave1 [:con    0.500] :wave2 [:ccc    0.500])
+  (stepper1 :trig  :lfo1           :reset :off
+            :min  -2 :max +15 :step  +8 :ivalue  -2 :bias 0.0 :scale 0.06)
+  (stepper2 :trig  :lfo2           :reset :off
+            :min  +2 :max -12 :step  -7 :ivalue  +2 :bias 0.0 :scale 0.07)
+  (divider1 :p1 +0.000 :p3 -3.000 :p5 +4.000 :p7 +6.000 :pw 0.92
+            :am [:env1   1.000]   :bias +0.000)
+  (divider2 :p2 +9.000 :p4 +4.000 :p6 +7.000 :p8 +4.000 :pw 0.50
+            :am [:env1   1.000]   :bias +0.000)
+  (lfnoise  :fm [:con    2.024])
+  (sh       :rate 7.782 :src :lfnse  :bias 0.000 :scale 1.000)
+  (matrix
+            :a1 [:lfo1   0.081] :a2 [:cca    1.000] 
+            :b1 [:env2   1.000] :b2 [:con    1.000] 
+            :c1 [:env3   1.000] :c2 [:con    1.000] 
+            :d1 [:lfo2   1.000] :d2 [:con    1.000] 
+            :e1 [:div    0.436] :e2 [:con    1.000] 
+            :f1 [:press  0.891] :f2 [:con    1.000] 
+            :g1 [:ccb    0.804] :g2 [:con    1.000] 
+            :h1 [:lfo3   0.936] :h2 [:con    1.000] )
+  ;; OSCILLATORS
+  (osc1-freq 2.000 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.164 0.02])
+  (osc1-wave 1.000             :w1  [:c      15.810     ] :w2  [:off    7.917     ])
+  (osc1-amp  -6 :pan -0.72     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+
+  (osc2-freq 1.000 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.088 0.09])
+  (osc2-wave 0.518             :w1  [:d      0.450     ] :w2  [:off    -0.386     ])
+  (osc2-amp  -6 :pan -0.71     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+
+  (osc3-freq 1.000 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.018 0.00])
+  (osc3-wave 0.496             :w1  [:f      0.000     ] :w2  [:off    0.000     ])
+  (osc3-amp  +0 :pan +0.76     :am1 [:a      0.562 0.82] :am2 [:g      0.897 0.37])
+
+  (noise    -99 :pan -0.25 :crackle 0.14     :lp 10000   :hp    50
+                               :am1 [:c      0.440 0.46] :am2 [:off    0.000 0.00])
+  (ringmod  -99 :pan +0.47 :carrier +0.7     :modulator -1.0
+                               :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+  ;; FILTERS
+  (clip    :gain 1.000 :mix -1.000 :clip [0.00 :off    0.00])
+  (filter1 :gain 1.000 :freq  4139 :fm1  [:c           3012] :fm2 [:off    -2454]
+           :mode 0.25              :res  [0.94 :f      0.69] :pan [+0.92 :c      +0.62])
+  (fold    :gain 1.000 :mix -1.000 :clip [0.00 :off    0.00])
+  (filter2 :gain 1.000 :freq   319 :fm1  [:c           9402] :fm2 [:off     7307]
+                                   :res  [0.76 :off    0.00] :pan [+0.14 :h      +0.64])
+  ;; EFX
+  (dry       +0)
+  (pshifter -99 :ratio [1.000 :off    0.000] :rand 0.06 :spread 0.07)
+  (flanger   -9 :lfo [0.097 0.350] :mod [:off    0.495] :fb -0.46 :xmix 0.25)
+  (echo1    -99 :delay [1.100 :off    0.000] :fb +0.17 :damp 0.36 :gate [:off    0.00] :pan -0.50)
+  (echo2     +0 :delay [1.200 :off    0.000] :fb -0.66 :damp 0.51 :gate [:off    0.00] :pan +0.50)))
+
+
+;; --------------------------------------------------------------------------- 15 Piasa Bird
+;;
+(save-program   15 "Piasa Bird"
+ (alias-program
+  (common  :amp 0.200  :port-time 0.000 :cc7->volume 0.000)
+  ;; ENVS A     D1    D2    R
+  (env1   0.024 7.047 7.944 0.741  :pk 1.000 :bp 0.918 :sus 0.828 :invert 0)
+  (env2   9.623 4.716 5.873 0.059  :pk 1.000 :bp 0.846 :sus 0.846 :invert 0)
+  (env3   7.916 9.688 10.154 5.724  :pk 1.000 :bp 0.040 :sus 0.264)
+  (lfo1     :fm1   [:con    5.915] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo2     :fm1   [:con    7.109] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:lfnse  0.143])
+  (lfo3     :fm1   [:con    1.210] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.500])
+  (stepper1 :trig  :lfo1           :reset :off
+            :min  -2 :max +10 :step  +6 :ivalue  -2 :bias 0.0 :scale 0.08)
+  (stepper2 :trig  :lfo2           :reset :off
+            :min  +2 :max -12 :step  -2 :ivalue  +2 :bias 0.0 :scale 0.07)
+  (divider1 :p1 -3.000 :p3 +8.000 :p5 +5.000 :p7 -5.000 :pw 0.50
+            :am [:env1   1.000]   :bias +0.000)
+  (divider2 :p2 -4.000 :p4 +5.000 :p6 -2.000 :p8 +3.000 :pw 0.50
+            :am [:env1   1.000]   :bias +0.000)
+  (lfnoise  :fm [:con    8.306])
+  (sh       :rate 9.880 :src :step2  :bias 0.000 :scale 1.000)
+  (matrix
+            :a1 [:lfo1   0.062] :a2 [:cca    1.000] 
+            :b1 [:env2   1.000] :b2 [:con    1.000] 
+            :c1 [:env3   1.000] :c2 [:con    1.000] 
+            :d1 [:lfo2   1.000] :d2 [:con    1.000] 
+            :e1 [:lfo3   0.936] :e2 [:step1  0.673] 
+            :f1 [:sh     0.887] :f2 [:con    1.000] 
+            :g1 [:sh     0.310] :g2 [:con    1.000] 
+            :h1 [:period 0.181] :h2 [:con    1.000] )
+  ;; OSCILLATORS
+  (osc1-freq 1.000 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.012 0.09])
+  (osc1-wave 1.000             :w1  [:b      6.388     ] :w2  [:off    6.191     ])
+  (osc1-amp  -6 :pan -0.00     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+
+  (osc2-freq 1.000 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.084 0.10])
+  (osc2-wave 0.699             :w1  [:d      0.026     ] :w2  [:off    -0.222     ])
+  (osc2-amp  -6 :pan +0.01     :am1 [:c      0.885 0.70] :am2 [:g      0.425 0.53])
+
+  (osc3-freq 2.000 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.026 0.07])
+  (osc3-wave 0.689             :w1  [:c      0.784     ] :w2  [:off    0.000     ])
+  (osc3-amp -12 :pan -0.44     :am1 [:e      0.657 0.59] :am2 [:c      0.253 0.94])
+
+  (noise     +0 :pan -0.45 :crackle 0.09     :lp 10000   :hp  1230
+                               :am1 [:off    0.000 0.00] :am2 [:f      0.636 0.37])
+  (ringmod  -99 :pan +0.84 :carrier -0.3     :modulator -1.0
+                               :am1 [:d      0.137 0.00] :am2 [:off    0.000 0.00])
+  ;; FILTERS
+  (clip    :gain 1.000 :mix -1.000 :clip [0.00 :off    0.00])
+  (filter1 :gain 1.000 :freq  1456 :fm1  [:c           4103] :fm2 [:a        383]
+           :mode 0.00              :res  [0.86 :off    0.00] :pan [+0.38 :f      -0.33])
+  (fold    :gain 1.000 :mix -1.000 :clip [0.00 :off    0.00])
+  (filter2 :gain 1.000 :freq   717 :fm1  [:c           5590] :fm2 [:off     4986]
+                                   :res  [0.95 :off    0.00] :pan [+0.79 :off    -0.41])
+  ;; EFX
+  (dry       +0)
+  (pshifter -99 :ratio [1.000 :off    0.000] :rand 0.13 :spread 0.10)
+  (flanger  -99 :lfo [0.048 0.543] :mod [:g      0.484] :fb +0.92 :xmix 0.25)
+  (echo1    -99 :delay [0.600 :off    0.000] :fb +0.46 :damp 0.53 :gate [:off    0.00] :pan -0.50)
+  (echo2    -12 :delay [0.600 :off    0.000] :fb +0.47 :damp 0.59 :gate [:off    0.00] :pan +0.50)))
+
+
+;; --------------------------------------------------------------------------- 16 Osage
+;;
+(save-program   16 "Osage"
+ (alias-program
+  (common  :amp 0.200  :port-time 0.000 :cc7->volume 0.000)
+  ;; ENVS A     D1    D2    R
+  (env1   2.371 0.001 1.046 1.040  :pk 1.000 :bp 0.972 :sus 0.051 :invert 0)
+  (env2   2.021 2.887 3.921 1.953  :pk 1.000 :bp 0.371 :sus 0.584 :invert 0)
+  (env3   1.372 2.692 2.220 3.383  :pk 1.000 :bp 1.000 :sus 1.000)
+  (lfo1     :fm1   [:con    5.038] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo2     :fm1   [:con    2.970] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.155])
+  (lfo3     :fm1   [:con    5.570] :fm2   [:ccc    1.530]
+            :wave1 [:con    0.478] :wave2 [:off    0.500])
+  (stepper1 :trig  :lfo3           :reset :off
+            :min  -2 :max  +2 :step  +2 :ivalue  -2 :bias 0.0 :scale 0.25)
+  (stepper2 :trig  :lfo2           :reset :off
+            :min  +2 :max  -8 :step  -2 :ivalue  +2 :bias 0.0 :scale 0.10)
+  (divider1 :p1 +1.000 :p3 -7.000 :p5 -2.000 :p7 +3.000 :pw 0.50
+            :am [:env1   1.000]   :bias +0.000)
+  (divider2 :p2 +0.000 :p4 +8.000 :p6 +9.000 :p8 +0.000 :pw 0.50
+            :am [:env1   1.000]   :bias +0.000)
+  (lfnoise  :fm [:con    2.886])
+  (sh       :rate 1.083 :src :lfnse  :bias 0.000 :scale 1.000)
+  (matrix
+            :a1 [:lfo1   0.010] :a2 [:cca    1.000] 
+            :b1 [:env2   1.000] :b2 [:con    1.000] 
+            :c1 [:env3   1.000] :c2 [:con    1.000] 
+            :d1 [:lfo2   1.000] :d2 [:con    1.000] 
+            :e1 [:lfnse  0.118] :e2 [:con    1.000] 
+            :f1 [:ccc    0.070] :f2 [:step2  0.233] 
+            :g1 [:div1   0.169] :g2 [:con    1.000] 
+            :h1 [:ccc    0.717] :h2 [:con    1.000] )
+  ;; OSCILLATORS
+  (osc1-freq 0.500 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:a      0.063 0.09])
+  (osc1-wave 1.000             :w1  [:b      0.000     ] :w2  [:off    0.488     ])
+  (osc1-amp -15 :pan -0.46     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+
+  (osc2-freq 0.500 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.016 0.00])
+  (osc2-wave 0.714             :w1  [:d      0.167     ] :w2  [:off    0.130     ])
+  (osc2-amp  -9 :pan +0.68     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+
+  (osc3-freq 0.500 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.054 0.00])
+  (osc3-wave 0.657             :w1  [:b      0.000     ] :w2  [:off    0.000     ])
+  (osc3-amp  +0 :pan -0.52     :am1 [:h      0.562 0.00] :am2 [:e      0.689 0.00])
+
+  (noise    -99 :pan +0.55 :crackle 0.84     :lp 10000   :hp    50
+                               :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+  (ringmod  -15 :pan +0.25 :carrier -0.8     :modulator -1.0
+                               :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+  ;; FILTERS
+  (clip    :gain 1.000 :mix -1.000 :clip [0.00 :off    0.00])
+  (filter1 :gain 1.000 :freq  3871 :fm1  [:c          -5734] :fm2 [:off     3776]
+           :mode 0.00              :res  [0.69 :off    0.00] :pan [+0.42 :off    +0.01])
+  (fold    :gain 1.000 :mix -1.000 :clip [0.00 :off    0.00])
+  (filter2 :gain 1.000 :freq  2579 :fm1  [:c           2302] :fm2 [:off    -3919]
+                                   :res  [0.25 :off    0.00] :pan [+0.90 :off    +0.36])
+  ;; EFX
+  (dry       +0)
+  (pshifter -99 :ratio [1.000 :off    0.000] :rand 0.24 :spread 0.23)
+  (flanger  -99 :lfo [0.080 0.231] :mod [:off    0.343] :fb +0.35 :xmix 0.25)
+  (echo1    -99 :delay [0.300 :off    0.000] :fb +0.92 :damp 0.33 :gate [:off    0.00] :pan -0.50)
+  (echo2    -99 :delay [0.200 :off    0.000] :fb -0.56 :damp 0.60 :gate [:off    0.00] :pan +0.50)))
+
+;; --------------------------------------------------------------------------- 17 Cahokia
+;;
+(save-program   17 "Cahokia"
+ (alias-program
+  (common  :amp 0.200  :port-time 0.000 :cc7->volume 0.000)
+  ;; ENVS A     D1    D2    R
+  (env1   1.949 1.315 3.692 0.143  :pk 1.000 :bp 0.805 :sus 0.230 :invert 0)
+  (env2   3.658 2.595 2.073 2.326  :pk 0.631 :bp 1.000 :sus 0.953 :invert 0)
+  (env3   2.605 3.568 1.110 3.943  :pk 1.000 :bp 0.989 :sus 0.757)
+  (lfo1     :fm1   [:con    4.870] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo2     :fm1   [:con    2.171] :fm2   [:lfnse  3.623]
+            :wave1 [:con    0.500] :wave2 [:env3   0.500])
+  (lfo3     :fm1   [:con    0.273] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:lfnse  0.246])
+  (stepper1 :trig  :lfo1           :reset :off
+            :min  -2 :max +15 :step  +1 :ivalue  -2 :bias 0.0 :scale 0.06)
+  (stepper2 :trig  :off            :reset :off
+            :min  -2 :max +13 :step  +7 :ivalue  -2 :bias 0.0 :scale 0.07)
+  (divider1 :p1 -1.000 :p3 -1.000 :p5 -4.000 :p7 -1.000 :pw 0.50
+            :am [:env1   1.000]   :bias +0.000)
+  (divider2 :p2 +6.000 :p4 -9.000 :p6 +2.000 :p8 +4.000 :pw 0.50
+            :am [:env1   1.000]   :bias +0.000)
+  (lfnoise  :fm [:press  1.528])
+  (sh       :rate 1.570 :src :lfnse  :bias 0.000 :scale 1.000)
+  (matrix
+            :a1 [:lfo1   0.029] :a2 [:cca    1.000] 
+            :b1 [:env2   1.000] :b2 [:con    1.000] 
+            :c1 [:env3   1.000] :c2 [:con    1.000] 
+            :d1 [:lfo2   1.000] :d2 [:con    1.000] 
+            :e1 [:press  0.892] :e2 [:con    1.000] 
+            :f1 [:lfo3   0.705] :f2 [:env2   0.823] 
+            :g1 [:press  0.637] :g2 [:con    1.000] 
+            :h1 [:lfo2   0.278] :h2 [:div    0.426] )
+  ;; OSCILLATORS
+  (osc1-freq 2.865 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.480 0.09])
+  (osc1-wave 1.000             :w1  [:b      0.000     ] :w2  [:off    0.027     ])
+  (osc1-amp -12 :pan -0.07     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+
+  (osc2-freq 3.183 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.039 0.00])
+  (osc2-wave 0.609             :w1  [:d      0.199     ] :w2  [:off    0.159     ])
+  (osc2-amp  +0 :pan +0.66     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+
+  (osc3-freq 1.439 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.074 0.09])
+  (osc3-wave 0.656             :w1  [:b      0.000     ] :w2  [:off    0.000     ])
+  (osc3-amp -12 :pan +0.85     :am1 [:off    0.000 0.00] :am2 [:b      0.562 0.00])
+
+  (noise    -99 :pan -0.26 :crackle 0.36     :lp 10000   :hp    50
+                               :am1 [:off    0.000 0.00] :am2 [:g      0.286 0.31])
+  (ringmod  -99 :pan -0.19 :carrier +0.3     :modulator -1.0
+                               :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+  ;; FILTERS
+  (clip    :gain 1.000 :mix -1.000 :clip [0.00 :off    0.00])
+  (filter1 :gain 1.000 :freq   157 :fm1  [:b          -4170] :fm2 [:off    -3483]
+           :mode 0.50              :res  [0.88 :off    0.00] :pan [+0.70 :off    +0.64])
+  (fold    :gain 1.000 :mix -1.000 :clip [0.00 :off    0.00])
+  (filter2 :gain 1.000 :freq 13804 :fm1  [:c          -4117] :fm2 [:a      -9154]
+                                   :res  [0.26 :off    0.00] :pan [+0.92 :off    +0.73])
+  ;; EFX
+  (dry       +0)
+  (pshifter -99 :ratio [1.000 :off    0.000] :rand 0.21 :spread 0.05)
+  (flanger  -12 :lfo [0.061 0.000] :mod [:g      0.208] :fb -0.24 :xmix 0.25)
+  (echo1    -99 :delay [1.300 :off    0.000] :fb -0.69 :damp 0.17 :gate [:off    0.00] :pan -0.50)
+  (echo2    -99 :delay [0.300 :c      0.000] :fb -0.58 :damp 0.95 :gate [:h      0.00] :pan +0.50)))
+
+;; --------------------------------------------------------------------------- 18 Illini
+;;
+(save-program   18 "Illini"
+  (alias-program
+  (common  :amp 0.200  :port-time 0.000 :cc7->volume 0.000)
+  ;; ENVS A     D1    D2    R
+  (env1   1.250 2.000 2.000 1.000  :pk 1.000 :bp 0.250 :sus 1.000 :invert 0)
+  (env2   2.000 1.000 2.000 1.000  :pk 1.000 :bp 0.100 :sus 1.000 :invert 0)
+  (env3   0.020 0.000 0.000 0.200  :pk 1.000 :bp 1.000 :sus 1.000 )
+
+  (lfo1     :fm1   [:con    7.000] :fm2   [:cca   -2.000]
+            :wave1 [:con    0.500] :wave2 [:cca   -0.300])
+  (lfo2     :fm1   [:con    0.500] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo3     :fm1   [:con    5.000] :fm2   [:off    0.000]
+            :wave1 [:con    0.433] :wave2 [:off    0.000])
+
+  (stepper1 :trig  :lfo1           :reset :off
+            :min -10 :max +10 :step  +1 :ivalue -10 :bias 0.0 :scale 0.10)
+  (stepper2 :trig  :lfo2           :reset :off
+            :min +10 :max -10 :step  -1 :ivalue +10 :bias 0.0 :scale 0.10)
+  (divider1 :p1 +1.000 :p3 +0.333 :p5 +0.200 :p7 +0.142 :pw 0.50
+            :am [:con    1.000]   :bias +0.000)
+  (divider2 :p2 +0.500 :p4 +0.250 :p6 +0.167 :p8 +0.125 :pw 0.50
+            :am [:con    1.000]   :bias +0.000)
+  (lfnoise  :fm [:con    15.00])
+  (sh       :rate 5.000 :src :lfnse  :bias 0.000 :scale 1.000)
+  (matrix
+            :a1 [:lfo1   0.050] :a2 [:cca    1.000] 
+            :b1 [:env1   1.000] :b2 [:con    1.000] 
+            :c1 [:env2   1.000] :c2 [:con    1.000] 
+            :d1 [:lfo2   1.000] :d2 [:con    1.000] 
+            :e1 [:ccb    1.000] :e2 [:con    1.000] 
+            :f1 [:env3   1.000] :f2 [:con    1.000] 
+            :g1 [:period 1.000] :g2 [:con    1.000] 
+            :h1 [:lfo3   1.000] :h2 [:con    1.000])
+  ;; OSCILLATORS
+  (osc1-freq 0.250 :bias -0.50 :fm1 [:a      1.000 0.00] :fm2 [:off    0.0004 0.00])
+  (osc1-wave 1.000             :w1  [:b      8.000     ] :w2  [:off    0.000      ])
+  (osc1-amp -12 :pan +1.00     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00 ])
+
+  (osc2-freq 0.500 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:off    0.000 0.00 ])
+  (osc2-wave 0.100             :w1  [:b      0.800     ] :w2  [:d      0.100      ])
+  (osc2-amp   0 :pan +0.50     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00 ])
+
+  (osc3-freq 1.500 :bias +0.50 :fm1 [:a      1.000 0.00] :fm2 [:off    0.000 0.00 ])
+  (osc3-wave 0.000             :w1  [:b      1.500     ] :w2  [:off    0.000      ])
+  (osc3-amp  -9 :pan +0.00     :am1 [:b      0.750 0.20] :am2 [:d      0.250 0.10 ])
+
+  (noise    -99 :pan -0.50 :crackle 0.50     :lp 10000   :hp    50
+                               :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+  (ringmod  -99 :pan +0.50 :carrier +0.0     :modulator -1.0
+                               :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+  ;; FILTERS
+  (clip    :gain 1.000 :mix -1.000 :clip [1.00 :off    0.00])
+  (filter1 :gain 1.000 :freq   100 :fm1  [:c           5000] :fm2 [:off        0]
+           :mode :lp               :res  [0.80 :off    0.00] :pan [+0.50 :off    +0.00])
+  (fold    :gain 1.000 :mix  0.000 :clip [0.00 :c      0.20])
+  (filter2 :gain 1.000 :freq 10000 :fm1  [:c          -8000] :fm2 [:off        0]
+                                   :res  [0.80 :off    0.00] :pan [+0.50 :off    +0.00])
+  ;; EFX
+  (dry       +0 )
+  (pshifter  -9 :ratio [2.000 :h      0.500] :rand 0.01 :spread 0.20)
+  (flanger  -99 :lfo [3.149 0.520]    :mod [:off    0.000] :fb -0.50 :xmix 0.25)
+  (echo1     -9 :delay [0.100 :g      1.000] :fb +0.90 :damp 0.00 :gate [:off    0.00] :pan -0.75)
+  (echo2    -99 :delay [0.101 :g      1.000] :fb -0.90 :damp 0.00 :gate [:f      1.00] :pan +0.75)))
+
+
+;; --------------------------------------------------------------------------- 19
+;;
+(save-program 19 "test"
+  (alias-program
+  (common  :amp 0.200  :port-time 0.000 :cc7->volume 0.000)
+  ;; ENVS A     D1    D2    R
+  (env1   0.000 0.000 0.000 0.000  :pk 1.000 :bp 1.000 :sus 1.000 :invert 0)
+  (env2   0.000 0.000 0.000 0.000  :pk 1.000 :bp 1.000 :sus 1.000 :invert 0)
+  (env3   0.000 0.000 0.000 0.000  :pk 1.000 :bp 1.000 :sus 1.000 )
+
+  (lfo1     :fm1   [:con    0.100] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo2     :fm1   [:con    1.500] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo3     :fm1   [:con    4.000] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+
+  (stepper1 :trig  :lfo1           :reset :off
+            :min -10 :max +10 :step  +1 :ivalue -10 :bias 0.0 :scale 0.10)
+  (stepper2 :trig  :lfo2           :reset :lfo1
+            :min   0 :max +10 :step  -1 :ivalue +15 :bias 0.0 :scale 0.10)
+
+  (divider1 :p1 -0.100 :p3 +0.200 :p5 +1.500 :p7 -0.500 :pw 0.50
+            :am [:con    1.000]   :bias +0.000)
+
+  (divider2 :p2 +0.500 :p4 +0.250 :p6 +0.167 :p8 -0.525 :pw 0.40
+            :am [:con    1.000]   :bias +0.000)
+
+  (lfnoise  :fm [:con    15.00])
+  (sh       :rate 5.000 :src :lfnse  :bias 0.000 :scale 1.000)
+  (matrix
+            :a1 [:lfo1   1.000] :a2 [:con    1.000] 
+            :b1 [:env2   1.000] :b2 [:con    1.000] 
+            :c1 [:env3   1.000] :c2 [:con    1.000] 
+            :d1 [:lfo2   1.000] :d2 [:con    1.000] 
+            :e1 [:step1  1.000] :e2 [:con    1.000] 
+            :f1 [:step2  1.000] :f2 [:con    1.000] 
+            :g1 [:div1   1.000] :g2 [:con    1.000] 
+            :h1 [:div2   1.000] :h2 [:con    1.000])
+  ;; OSCILLATORS
+  (osc1-freq 0.500 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:g      1.000 0.00 ])
+  (osc1-wave 1.000             :w1  [:b      1.000     ] :w2  [:off    0.000      ])
+  (osc1-amp   0 :pan -1.00     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00 ])
+
+  (osc2-freq 0.500 :bias 0.000 :fm1 [:a      1.000 0.00] :fm2 [:h      1.000 0.00 ])
+  (osc2-wave 0.500             :w1  [:d      0.200     ] :w2  [:off    0.000      ])
+  (osc2-amp   0 :pan +1.00     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00 ])
+
+  (osc3-freq 1.000 :bias 0.000 :fm1 [:a      1.000 1.00] :fm2 [:f      1.000 0.30 ])
+  (osc3-wave 0.000             :w1  [:a      2.000     ] :w2  [:off    0.000      ])
+  (osc3-amp   0 :pan +0.00     :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00 ])
+
+  (noise    -99 :pan -0.50 :crackle 0.50     :lp 10000   :hp    50
+                               :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+  (ringmod  -99 :pan +0.50 :carrier +0.0     :modulator -1.0
+                               :am1 [:off    0.000 0.00] :am2 [:off    0.000 0.00])
+  ;; FILTERS
+  (clip    :gain 1.000 :mix -1.000 :clip [1.00 :off    0.00])
+  (filter1 :gain 1.000 :freq  1000 :fm1  [:f              0] :fm2 [:off        0]
+           :mode :lp               :res  [0.80 :off    0.00] :pan [+0.50 :off    +0.00])
+  (fold    :gain 1.000 :mix -1.000 :clip [0.00 :off    0.00])
+  (filter2 :gain 1.000 :freq  1000 :fm1  [:f           4000] :fm2 [:off        0]
+                                   :res  [0.80 :off    0.00] :pan [+0.50 :off    +0.00])
+  ;; EFX
+  (dry       +0 )
+  (pshifter -99 :ratio [1.000 :off    0.000] :rand 0.00 :spread 0.00)
+  (flanger  -99 :lfo [3.149 0.520]    :mod [:off    0.000] :fb -0.50 :xmix 0.25)
+  (echo1    -99 :delay [1.500 :off    0.000] :fb +0.50 :damp 0.00 :gate [:off    0.00] :pan -0.50)
+  (echo2    -99 :delay [2.000 :off    0.000] :fb +0.50 :damp 0.00 :gate [:off    0.00] :pan +0.50)))
+
 
 
 (.dump bank)
