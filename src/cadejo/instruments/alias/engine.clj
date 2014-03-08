@@ -135,6 +135,7 @@
             :h-bus h-bus)
        (sleep)
        (ctl head-block 
+            :bend-bus bend-bus
             :a-bus a-bus
             :b-bus b-bus
             :c-bus c-bus
