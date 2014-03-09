@@ -47,6 +47,9 @@ Lines 008 and 009 stores such a function to program slot 0.
       008 : (save-program 0 "Random" "Generate random Combo program"  
       009 :               (list cadejo.instruments.combo.genpatch/gen-combo))  
 
+*(note random program was moved to from bank lot 0 to 127)*  
+  
+
 Lines 011 - 020 define a program named “Bright” using the
 cadejo.instruments.combo.program/combo function. The arguments to combo
 are:

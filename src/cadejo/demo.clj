@@ -39,6 +39,7 @@
     (doseq [c '[0 1 2 3]]
       (prog 0 c))
     (.dump scene [0 1 2 3])
+    (println "Ready ....")
     (list algo alias masa combo)))
 
 ;; ------------------------------------- DEMO-2  Key layers and splits
@@ -58,6 +59,7 @@
     (doseq [c '[0 1]]
       (prog 0 c))
     (.dump scene [0 1])
+    (println "Ready ....")
     (list algo-0 alias-0 algo-1 masa-1)))
 
 ;; ------------------------------------- DEMO-3  Alternate tuning
@@ -77,6 +79,7 @@
     (doseq [c '[0 1]]
       (prog 0 c))
     (.dump scene [0 1])
+    (println "Ready ....")
     (list algo-0 algo-1 masa-1)))
 
 ;; ------------------------------------- DEMO-4 Mapping Functions, pitch bend
@@ -100,6 +103,7 @@
     (.set-bend-range! chanobj-0 1200)
     (prog 0 0)
     (.dump s [0])
+    (println "Ready ....")
     (list algo-0 algo-1)))
     
     
