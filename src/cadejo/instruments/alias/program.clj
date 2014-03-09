@@ -10,7 +10,7 @@
   
 (defn save-program 
   ([pnum name remarks data]
-     (println (format ";; alias save-program %s \"%s\"" pnum name))
+     ;(println (format ";; alias save-program %s \"%s\"" pnum name))
      (.set-program! bank pnum name remarks data))
   ([pnum name data]
      (save-program pnum name "" data)))

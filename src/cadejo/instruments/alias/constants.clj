@@ -72,7 +72,7 @@
    :env1 1, :env2 2, :env3 3, :lfo1 4, :lfo2 5, :lfo3 6,
    :step1 7, :step2 8, :div1 9, :div2 10, :div 11,
    :lfnse 12, :sh 13, 
-   :ferq 14, :period 15, :keynum 16 :press 17, :vel 18,
+   :freq 14, :period 15, :keynum 16 :press 17, :vel 18,
    :cca 19, :ccb 20, :ccc 21, :ccd 22,
    :a 23 :b 24 :c 25 :d 26 :e 27 :f 28 :g 28 :h 30
    :gate 31 :off 32})

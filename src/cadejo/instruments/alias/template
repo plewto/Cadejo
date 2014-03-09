@@ -63,5 +63,3 @@
   (flanger  -99 :lfo [3.149 0.520]    :mod [:off    0.000] :fb -0.50 :xmix 0.25)
   (echo1    -99 :delay [1.500 :off    0.000] :fb +0.50 :damp 0.00 :gate [:off    0.00] :pan -0.50)
   (echo2    -99 :delay [2.000 :off    0.000] :fb +0.50 :damp 0.00 :gate [:off    0.00] :pan +0.50)))
-
-

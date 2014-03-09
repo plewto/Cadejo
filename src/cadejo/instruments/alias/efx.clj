@@ -8,6 +8,10 @@
 (def flanger-max-delay 0.01)
 (def echo-max-delay 2.0)
 
+(def amp-boost 0.40) ;; boost overall amplitude by +6db,
+                     ;; alias patchas are typically quiter then other 
+                     ;; instruments
+
 ;; 0 --> 10k
 ;; 1 --> 2k
 (defcgen echo-damp-factor [damp]
@@ -129,7 +133,7 @@
         ec2-out (* ec2-amp (pan2 ec2-wetsig echo2-pan))
         ;; Gain 
         cc7 (qu/amp-modulator-depth (in:kr cc-volume-bus) cc7->volume)
-        out-gain (* amp (dbamp dbscale) cc7)
+        out-gain (* amp (dbamp (+ amp-boost dbscale)) cc7)
         out-sig (* out-gain 
                    (+ ps-out
                       fl-out
