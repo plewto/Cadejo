@@ -33,7 +33,7 @@
         :registration [    5     7     4     3     3     1     0     2     0]
         :pedals       [ 0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00]
         :percussion   [    0     0     0     0     1     0     0     1     0]
-        :amp          0.20
+        :amp          0.28
         :pedal-sens   0.00
         :decay        0.20
         :sustain      0.90
@@ -98,7 +98,7 @@
       :scanner-mix 0.200 
       :room-size 0.500               :reverb-damp 0.500
       :reverb-mix 0.200
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.141                     :pedal-sens 0.00))
 
 (save-program 5 "Hallow Out" "Same as Tiba except with pedal" 
    (masa
@@ -130,7 +130,7 @@
       :scanner-mix 0.200 
       :room-size 0.500               :reverb-damp 0.500
       :reverb-mix 0.300
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.141                     :pedal-sens 0.00))
 
 (save-program 7 "Annointed"
    (masa
@@ -146,7 +146,7 @@
       :scanner-mix 0.150 
       :room-size 0.600               :reverb-damp 0.500
       :reverb-mix 0.400
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.398                     :pedal-sens 0.00))
 
 (save-program 8 "Gamba/Gadekt 8"
    (masa
@@ -179,7 +179,7 @@
       :scanner-mix 0.100 
       :room-size 0.600               :reverb-damp 0.500
       :reverb-mix 0.200
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.100                     :pedal-sens 0.00))
 
 (save-program 10 "Bass Horn"
    (masa
@@ -195,7 +195,7 @@
       :scanner-mix 0.100 
       :room-size 0.600               :reverb-damp 0.500
       :reverb-mix 0.200
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.141                     :pedal-sens 0.00))
 
 (save-program 11 "Bassoon 8/16"
    (masa

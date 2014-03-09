@@ -12,7 +12,7 @@
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 0 "FmRhodes"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :lp 10000
                    :port-time 0.00
                    :cc-volume-depth 0.00
@@ -96,7 +96,7 @@
 ;;
 (let [enable '[1 1 1   1 1 0   1 1]]
   (save-program 1 "Celesta"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.283
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -264,7 +264,7 @@
 ;;
 (let [enable '[1 1 1   1 1 0   1 1]]
   (save-program 3   "Fretless"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :port-time 0.05
                    :lp  2000
                    :cc-volume-depth 0.00
@@ -348,7 +348,7 @@
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 4 "BassKeys"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :port-time 0.00
                    :lp  2000
                    :cc-volume-depth 0.00
@@ -518,7 +518,7 @@
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 6 "Alcestis" "cca-->op4 ccb-->op7"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.560
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -602,7 +602,7 @@
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 7 "Admetus"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.283
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -855,7 +855,7 @@
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 10 "Poly Something"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.141
                    :port-time 0.00
                    :lp  5000
                    :cc-volume-depth 0.00
@@ -1025,7 +1025,7 @@
       openv-1 [0.001 1.520 0.750 2.000  0.000 0.500]
       openv-2 [0.011 1.220 2.750 2.000  0.900 0.500]]
   (save-program 12 "HiBells" "cca --> op6"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.283
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -1451,7 +1451,7 @@
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 17 "FmReed"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -1619,7 +1619,7 @@
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 19 "Gost Strings" "cca & ccb --> op w feedback"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -1787,7 +1787,7 @@
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 21 "NotGamelan"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -1965,7 +1965,7 @@
 (let [enable '[1 1 1   1 1 1   1 1]
       brightness 2.00]
   (save-program 23 "Juan"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.283
                    :port-time 0.00
                    :lp  1000
                    :cc-volume-depth 0.00
@@ -2056,7 +2056,7 @@
       envop-8 [0.003 0.04 0.0 1.0 0.00 0.00]
       brightness 2.0]
   (save-program 24 "TubeBell"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -2141,7 +2141,7 @@
 (let [enable '[1 1 1   1 1 1   1 1]
       brightness 7.0]
   (save-program 25 "StackFive" "cca --> op1 ccb --> op7 pressure --> vibrato"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -2226,7 +2226,7 @@
 (let [enable '[1 1 1   1 1 1   1 1]
       brightness 1.00]
   (save-program 26 "FmReed2" "pressure --> vibrato"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -2311,7 +2311,7 @@
 (let [enable '[1 1 1   1 1 1   1 1]
       brightness 1.00]
   (save-program 27 "FmBrass"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.283
                    :port-time 0.01
                    :lp  10000
                    :cc-volume-depth 0.00
@@ -2396,7 +2396,7 @@
 (let [enable '[1 1 1   1 1 1   1 1]
       brightness 1.00]
   (save-program 28 "Ibta"
-    (algo (common  :amp 0.200
+    (algo (common  :amp 0.399
                    :port-time 0.00
                    :lp  10000
                    :cc-volume-depth 0.00

@@ -5,9 +5,16 @@
          :only [bank combo save-program bypass low high band notch]])
   (:require [cadejo.instruments.combo.genpatch]))
 
-
-(save-program 0 "Random" "Generate random Combo program"
-              (list cadejo.instruments.combo.genpatch/gen-combo))
+(save-program 0  "Ngaire"
+    (combo :a1      0.174  :w1  0.209
+           :a2      1.000  :w2 0.624
+           :a3      0.339  :w3 0.990
+           :a4      0.053  :w4 0.499
+           :chorus  0.508
+           :vibrato [:freq 6.419 :sens 0.010]
+           :filter  [:freq  8    :type    low]
+           :flanger [:rate 3.639 :depth 0.193 :fb +0.00 :mix 0.000]
+           :reverb  0.000  :amp 0.400))
 
 (save-program 1 "Bright"
    (combo :a1      1.000  :w1 0.000
@@ -130,18 +137,7 @@
            :flanger [:rate 0.074 :depth 0.937 :fb +0.62 :mix 0.100]
            :reverb  1.000  :amp 0.400))
 
-(save-program 12  "Ngaire"
-    (combo :a1      0.174  :w1  0.209
-           :a2      1.000  :w2 0.624
-           :a3      0.339  :w3 0.990
-           :a4      0.053  :w4 0.499
-           :chorus  0.508
-           :vibrato [:freq 6.419 :sens 0.010]
-           :filter  [:freq  8    :type    low]
-           :flanger [:rate 3.639 :depth 0.193 :fb +0.00 :mix 0.000]
-           :reverb  0.000  :amp 0.400))
-
-(save-program 13 "Sayen"
+(save-program 14 "Sayen"
     (combo :a1      1.000  :w1  0.911
            :a2      0.513  :w2 0.697
            :a3      0.434  :w3 0.189
@@ -152,7 +148,7 @@
            :flanger [:rate 0.403 :depth 0.226 :fb +0.27 :mix 0.915]
            :reverb  0.000  :amp 0.200))
 
-(save-program 14 "Moema"
+(save-program 15 "Moema"
     (combo :a1      0.551  :w1  0.322
            :a2      0.494  :w2 0.184
            :a3      1.000  :w3 0.180
@@ -163,7 +159,7 @@
            :flanger [:rate 0.483 :depth 0.500 :fb -0.78 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program 15 "Itzel"
+(save-program 16 "Itzel"
     (combo :a1      1.000  :w1 0.000
            :a2      0.000  :w2 0.740
            :a3      0.000  :w3 0.900
@@ -174,6 +170,9 @@
            :flanger [:rate 4.973 :depth 0.418 :fb +0.77 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
+
+(save-program 127 "Random" "Generate random Combo program"
+              (list cadejo.instruments.combo.genpatch/gen-combo))
 
 (.dump bank)
 (defn rl [](use 'cadejo.instruments.combo.data :reload))
