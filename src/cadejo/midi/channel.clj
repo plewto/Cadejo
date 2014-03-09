@@ -172,6 +172,16 @@
   (channel-number [this]
     (.get-property this :channel))
   
+  (set-velocity-map! [this mapfn]
+    (.put-property! this :velocity-map mapfn))
+  
+  (set-velocity-map! [this y0 y1]
+    (.set-velocity-map! this (cadejo.util.math/linear-function 0.0 y0 1.0 y1)))
+
+  (set-velocity-map! [this]
+    (.set-velocity-map! this identity))
+
+
   (set-bend-range! [this range]
     (.set-bend-range! bend-properties range))
 
