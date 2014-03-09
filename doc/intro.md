@@ -11,7 +11,7 @@ of polyphonic after-touch. Some of its key features are:
 
 * Tuning tables - MIDI key-numbers may be arbitrarily associated to
   frequency. The default table defines the standard 12-tone equal
-  temperament. A just intonation table is also provided.  
+  temperament.
 
 * Pitch-bend calibrated in cents.  
 

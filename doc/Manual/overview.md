@@ -47,7 +47,7 @@ program bank.
 Each performance has an associated keymode which is an object that
 implemented the Keymode protocol defined in cadejo.midi.keymode. Currently
 there are two separate keymodes; *mono-mode* and *poly-mode*. mono-mode
-keeps track of all keys held that so that whenever a key is released the
+keeps track of all keys held so that whenever a key is released the
 pitch automatically jumps to the value of any other key which happens to be
 still be down. poly-mode uses a voice stealing technique which first
 attempts to use a free voice if one is available. If no free voices are

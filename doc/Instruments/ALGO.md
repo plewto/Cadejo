@@ -105,7 +105,7 @@ may be inverted.
 </pre>  
 
 __Line 00__ While working with FM it is convenient to be able to
-selectively mute various operators to see what effect they are having on
+selectively mute various operators to hear what effect they are having on
 the overall sound. The enable array on line 0 contains a flag for each of
 the 8 operators. A value of 0 mutes the corresponding operator, a value of 1
 enables it.  
