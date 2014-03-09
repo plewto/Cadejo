@@ -8,6 +8,9 @@
 (def abs
   clojure.math.numeric-tower/abs)
 
+(def sqrt
+  clojure.math.numeric-tower/sqrt)
+
 (def step 
   "Ratio for 12-tone half-step"
   (expt 2.0 1/12))
