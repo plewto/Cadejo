@@ -1,7 +1,7 @@
 Cadejo  
 ======  
 
-Cadejo is a MIDI management tool for use with Overtone
+Cadejo is a MIDI management tool for use with Overtone, 
 Some of its features are:  
 
 * Multitimberal
@@ -14,7 +14,7 @@ Some of its features are:
 #Instruments  
 
 The Cadejo repo contains 4 full feature instruments:  
-* ALGO - an 8 voice FM synthesizer.  
+* ALGO - an 8 operator FM synthesizer.  
 * Alias - a subtractive synthesizer with extensive modulation routing.  
 * MASA - an organ roughly equivalent to the Hammond B3.  
 * Combo - a simpler organ chiefly used for demonstration purposes. 

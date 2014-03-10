@@ -31,20 +31,20 @@ of polyphonic after-touch. Some of its key features are:
 #Instruments  
 
 Instruments for use with Cadejo are no different from any other Overtone
-instrument as long as they follow a few basic conventions. However
-additional boilerplate code is required to *register* an instruments with
+instrument as long as they follow a few basic conventions. Additional
+boilerplate code is required however to *register* an instruments with
 Cadejo. Details on how to do this can be found in the documentation for the
 Combo instrument.
 
 Four full-feature instruments are included in the Cadejo package.  
 
-__ALGO__ is an 8-operator FM synthesizer with some unique features.  
+__ALGO__,  an 8-operator FM synthesizer with some unique features.  
 
-__ALIAS__ is a mean little 3 oscillator subtractive instrument with extensive modulation possibilities. 
+__ALIAS__, a 3 oscillator subtractive instrument with extensive modulation possibilities. 
 
-__MASA__ is an organ simulation loosely based on the Hammond B3.  
+__MASA__, an organ simulation loosely based on the Hammond B3.  
 
-__Combo__ is another organ simulation somewhat simpler then MASA. The
+__Combo__, another organ simulation somewhat simpler then MASA. The
 documentation for Combo includes heavily annotated copies of the source
 files to illustrate the steps necessary for using an instrument with
 Cadejo.
@@ -58,7 +58,7 @@ internal Overtone server.
 #Configuration  
 
 Currently configuration is hard-coded into the Cadejo source. This too
-shale pass. Eventually it is hoped to add user-configuration files. For the
+shall pass. Eventually it is hoped to add user-configuration files. For the
 moment the file cadejo/demo.clj serves as configuration. It is necessary to
 set the value of midi-input-port to match a port available on your machine.
 demo also contains examples of using Cadejo in different ways.  
