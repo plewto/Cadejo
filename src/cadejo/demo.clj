@@ -11,16 +11,31 @@
   (:require [cadejo.util.math :as math]))
 
             
-;; **** IMPORTANT!! **** 
 ;; midi-input-port must be changed to match a device on your machine.
 ;;
 (def midi-input-port "UM1SX") 
+
 
 
 ;; Create a "scene" object connected to midi-input-port. 
 ;; A scene is the top-level Cadejo object.
 ;;
 (defonce s (cadejo.midi.scene/scene midi-input-port))
+
+
+;; Generate MIDI program-change event
+;;
+(defn prog 
+  ([pnum c]
+     (let [event {:command :program-change
+                  :channel c
+                  :data1 pnum
+                  :data2 0}
+           chanobj (.channel s c)]
+       (.handle-event chanobj event)
+       event))
+  ([pnum]
+     (prog pnum 0)))
 
 
 ;; ------------------------------------- DEMO-1  Basic setup
@@ -36,6 +51,7 @@
         alias (cadejo.instruments.alias.engine/alias-mono scene 1)
         masa (cadejo.instruments.masa.engine/masa-poly scene 2)
         combo (cadejo.instruments.combo.engine/combo-poly scene 3)]
+    (.reset scene)
     (doseq [c '[0 1 2 3]]
       (prog 0 c))
     (.dump scene [0 1 2 3])
@@ -56,6 +72,7 @@
     (.set-key-range! masa-1 60 127)
     (.set-transpose! masa-1 -12)
     (.set-db-scale! masa-1 -6)
+    (.reset scene)
     (doseq [c '[0 1]]
       (prog 0 c))
     (.dump scene [0 1])
@@ -76,6 +93,7 @@
     (.put-property! algo-0 :tuning-table (just/just-scale :just-c1))
     (.put-property! chanobj-1 :tuning-table (intonation/eqtemp-scale 24))
     (.set-db-scale! masa-1 -6)
+    (.reset scene)
     (doseq [c '[0 1]]
       (prog 0 c))
     (.dump scene [0 1])
@@ -101,6 +119,7 @@
         chanobj-0 (.channel scene 0)]
     (.set-velocity-map! chanobj-0 vmap)
     (.set-bend-range! chanobj-0 1200)
+    (.reset scene)
     (prog 0 0)
     (.dump s [0])
     (println "Ready ....")
