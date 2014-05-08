@@ -102,3 +102,11 @@
      (just-scale scale-id 440.0))
   ([]
      (just-scale :just-c1)))
+
+
+(defn ?just-scales []
+  "Display list of just available just scale templates"
+  (println "Ava-liable just scales:")
+  (doseq [s (keys scales)]
+    (printf "\t%s\n" s))
+  (println))
