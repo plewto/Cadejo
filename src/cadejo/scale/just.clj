@@ -66,6 +66,25 @@
                          :name "al-farabi"
                          :source "http://www.chrysalis-foundation.org/Al-Farabi-s_Uds.htm"
                          :remarks "The source scale is diatonic on C. The 'black keys' were derived from the original scale with a root on the e-flat key"} 
+             :canton {:template '[1/1 14/13 9/8 13/11 14/11 4/3 39/28 3/2 11/7 22/13 16/9 13/7]
+                      :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
+             :carlos-harm {:template '[1/1 17/16 9/8 19/16 5/4 21/16 11/8 3/2 13/8 27/16 7/4 15/8]
+                           :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"
+                           :remarks "Carlos Harmonic & Ben Johnston's scale of 'Blues' from Suite f.micr.piano (1977) & David Beardsley's scale of 'Science Friction'"}
+             :centaur {:template '[1/1 21/20 9/8 7/6 5/4 4/3 7/5 3/2 14/9 5/3 7/4 15/8]
+                           :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"
+                           :remarks "A 7-limit scale"}
+             :collapsar {:template '[1/1 15/14 49/44 7/6 5/4 15/11 7/5 3/2 35/22 5/3 7/4 21/11]
+                           :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"
+                           :remarks "An 11-limit scale"}
+             :major-clus {:template '[1/1 135/128 10/9 9/8 5/4 4/3 45/32 3/2 5/3 27/16 16/9 15/8]
+                          :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
+             :minor-clus {:template '[1/1 16/15 9/8 6/5 4/3 27/20 46/45 3/2 8/5 27/16 16/9 9/5]
+                          :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
+             :thirteendene {:template '[1/1 13/12 9/8 6/5 9/7 27/20 13/9 3/2 8/5 27/16 9/5 27/14]
+                            :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
+             :unimajor {:template '[1/1 22/21 9/8 32/27 14/11 4/3 63/44 3/2 11/7 27/16 16/9 21/11]
+                        :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
              })
 
 (defn just-scale 
