@@ -45,17 +45,27 @@
     (.dump this true)))
 
 (def scales {:just-c1 {:template '[1/1 16/15 9/8 6/5 5/4 4/3 36/25 3/2 8/5 5/3 9/5 15/8]
-                       :name "just-c1"}
+                       :name "just-c1"
+                       :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
              :44-39-12 {:template '[1/1 14/13 44/39 13/11 14/11 4/3 56/39 3/2 11/7 22/13 39/22 21/11]
-                        :name "44-39-12"}
+                        :name "44-39-12"
+                        :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
              :blue-ji {:template '[1 15/14 9/8 6/5 5/4 4/3 7/5 3/2 8/5 5/3 9/5 15/8]
-                       :name "blue-ji"}
+                       :name "blue-ji"
+                       :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
              :pre-archytas {:template'[1 16/15 9/8 6/5 5/4 4/3 64/45 3/2 8/5 5/3 16/9 15/8]
-                            :name "pre-archytas"}
+                            :name "pre-archytas"
+                            :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
              :bicycle {:template '[1 13/12 9/8 7/6 5/4 4/3 11/8 3/2 13/8 5/3 7/4 11/6]
-                       :name "bicycle"}
+                       :name "bicycle"
+                       :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
              :breedball3 {:template '[1 49/48 21/20 15/14 48/40 5/4 7/5 10/7 3/2 49/32 12/7 7/4]
-                          :name "breedball3"}
+                          :name "breedball3"
+                          :source "http://xenharmonic.wikispaces.com/Gallery+of+12-tone+Just+Intonation+Scales"}
+             :al-farabi {:template '[1/1 256/243 9/8 32/27 81/64 4/3 1024/729 3/2 128/81 27/16 7/4 16/9]
+                         :name "al-farabi"
+                         :source "http://www.chrysalis-foundation.org/Al-Farabi-s_Uds.htm"
+                         :remarks "The source scale is diatonic on C. The 'black keys' were derived from the original scale with a root on the e-flat key"} 
              })
 
 (defn just-scale 
