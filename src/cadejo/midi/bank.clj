@@ -61,6 +61,24 @@ explicit synth parameter list or functions which return parameter list"
     "Sets program data for MIDI program number pnum.
      Any existing data is overwritten.")
 
+  (use-function!
+    [this pnum id fn-id args remarks]
+    [this pnum id fn-id args]
+    [this pnum id fn-id]
+    "Similar to set-program! but associates function with MIDI program 
+     number pnum
+     pnum - MIDI program number
+     id - The program name
+     fn-id - function-registry id. See register-function!
+     args - optional arguments passed to the function
+     remarks - optional remarks text
+
+     If fn-id matches an entry in the function-registry the bank slot is 
+     updated and true is returned
+
+     If no such function exist in the registry no change is made to the 
+     bank contents, a warning message is displayed and false is returned")
+
   (remove-program!
     [this pnum]
     "Removes program at MIDI program number pnum.")
@@ -186,6 +204,18 @@ explicit synth parameter list or functions which return parameter list"
 
   (set-program! [this pnum id data]
     (.set-program! this pnum id "" data))
+
+  (use-function! [this pnum id fn-id args remarks]
+    (let [f (.get-function this fn-id)]
+      (if f 
+        (.set-program! this pnum id remarks (cons f args))
+        false)))
+
+  (use-function! [this pnum id fn-id args]
+    (.use-function! this pnum id fn-id args ""))
+
+  (use-function! [this pnum id fn-id]
+    (.use-function! this pnum id fn-id '() ""))
 
   (remove-program! [this pnum]
     (if (assert-midi-program-number pnum)
