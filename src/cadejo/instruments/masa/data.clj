@@ -348,5 +348,8 @@
       :amp 0.20                      :pedal-sens 0.00))
 
 (.use-function! bank 127 "Random" :random)
+(.map-program-number! bank 63 127)
+
+
 
 (.dump bank)

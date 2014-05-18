@@ -2638,7 +2638,7 @@
 ;; ------------------------------------------------------------ 127 random program 
 ;;
 (.use-function! bank 127 "Random" :random)
-
+(.map-program-number! bank 63 127)
 
 (.dump bank)
 

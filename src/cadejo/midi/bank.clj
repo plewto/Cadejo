@@ -5,6 +5,9 @@
 ;; serialization only the function key is saved. On de-serialization the key
 ;; is used to extract the proper function from the registry.
 ;; 
+;; 2014.05.18
+;; Added program-number mapping
+;;
 
 (ns cadejo.midi.bank
   "Defines MIDI program bank"
@@ -143,6 +146,17 @@ explicit synth parameter list or functions which return parameter list"
     [this]
     "Diagnostics displays list of registered functions.")
 
+  (clear-program-number-map!
+    [this]
+    "Sets program number mapping to identity a --> a")
+
+  (map-program-number!
+    [this a b]
+    "Set MIDI program number a to map to b.
+     a and b must be valid MIDI program number  
+     0 <= a,b <= 127
+     Return true if a and b valid, false otherwise")
+
   (handle-event 
     [this event synths])
 
@@ -158,7 +172,9 @@ explicit synth parameter list or functions which return parameter list"
 
 
 (deftype Bank [dformat id* remarks* filename* 
-               function-registry* programs*
+               function-registry* 
+               program-number-map*
+               programs*
                notification-hook* pp-hook*]
   
   BankProtocol
@@ -276,9 +292,20 @@ explicit synth parameter list or functions which return parameter list"
       (let [p (get @function-registry* k)]
         (printf ";;\t%-12s %s\n" k (:remarks p))))
     (println))
-
+  
+  (clear-program-number-map! [this]
+    (swap! program-number-map* (fn [n](into '[] (range 128)))))
+    
+  (map-program-number! [this a b]
+    (if (and (assert-midi-program-number a)
+             (assert-midi-program-number b))
+      (do 
+        (swap! program-number-map* (fn [n](assoc n a b)))
+        true)
+      false))
+ 
   (handle-event [this event synths]
-    (let [pnum (:data1 event)
+    (let [pnum (nth @program-number-map* (:data1 event))
           pobj (get @programs* pnum)]
       (if pobj
         (let [pid (.id pobj)
@@ -290,7 +317,8 @@ explicit synth parameter list or functions which return parameter list"
   (dump [this verbose depth]
     (let [depth2 (inc depth)
           pad (cadejo.util.string/tab depth)
-          pad2 (cadejo.util.string/tab depth2)]
+          pad2 (cadejo.util.string/tab depth2)
+          pad3 (cadejo.util.string/tab (inc depth2))]
       (printf "%s%s Program Bank %s\n" pad dformat (.id this))
       (if verbose
         (do 
@@ -299,7 +327,12 @@ explicit synth parameter list or functions which return parameter list"
           (printf "%sfilename : \"%s\"\n" pad2 @filename*)
           (doseq [pnum (sort (keys @programs*))]
             (let [pobj (get @programs* pnum)]
-              (printf "%s[%03d] %s\n" pad2 pnum (.id pobj))))))))
+              (printf "%s[%03d] %s\n" pad2 pnum (.id pobj))))
+         (doseq [a (range 128)]
+           (let [b (nth @program-number-map* a)]
+             (if (not (= a b))
+               (printf "%smap program [%03d] --> [%03d]\n" pad2 a b))))
+          ))))
 
   (dump [this verbose]
     (.dump this verbose 0))
@@ -316,6 +349,7 @@ explicit synth parameter list or functions which return parameter list"
                       (atom (str remarks))
                       (atom "")     ; filename
                       (atom {})     ; function-registry
+                      (atom [])     ; program-number map
                       (atom {})     ; programs
                       (atom (fn [event pid]
                                (if pid
@@ -324,7 +358,7 @@ explicit synth parameter list or functions which return parameter list"
                                          (:channel event)
                                          pid))))
                       (atom (fn [event pid data])))]
-                              
+       (.clear-program-number-map! bnk)
        bnk))
   ([data-format id]
      (bank data-format id ""))
