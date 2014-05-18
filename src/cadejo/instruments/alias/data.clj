@@ -5,6 +5,11 @@
   (:require [cadejo.instruments.alias.genpatch]))
 
 
+(.register-function! bank
+                     :random
+                     cadejo.instruments.alias.genpatch/random-alias-program
+                     "Generate random Alias program data")
+
 ;; --------------------------------------------------------------------------- 0 A Sour God
 ;;
 (save-program 0 "A Sour God"
@@ -1715,9 +1720,8 @@
   (echo1     -9 :delay [1.900 :off    0.000] :fb +0.22 :damp 0.66 :gate [:off    0.00] :pan -0.50)
   (echo2    -99 :delay [1.900 :off    0.000] :fb -0.18 :damp 0.64 :gate [:off    0.00] :pan +0.50)))
 
-
-
-
-(save-program 127 "Random" (list cadejo.instruments.alias.genpatch/random-alias-program))
+;; --------------------------------------------------------------------------- 127 random program 
+;;
+(.use-function! bank 127 "Random" :random)
 
 (.dump bank)

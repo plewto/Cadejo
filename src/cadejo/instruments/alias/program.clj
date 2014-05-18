@@ -10,7 +10,6 @@
   
 (defn save-program 
   ([pnum name remarks data]
-     ;(println (format ";; alias save-program %s \"%s\"" pnum name))
      (.set-program! bank pnum name remarks data))
   ([pnum name data]
      (save-program pnum name "" data)))
@@ -75,16 +74,6 @@
           (umsg/warning (format "INvalid filter mode " n))
           0.0)
         val))))
-
-                     
-;; (defn dry [mix & {:keys [amp  port-time cc7->volume]
-;;                  :or {amp 0.20
-;;                       port-time 0.0
-;;                       cc7->volume 0.0}}]
-;;   (list :amp (float amp)
-;;         :port-time (float port-time)
-;;         :dry-mix (float mix)
-;;         :cc7->volume (float cc7->volume)))
 
 (defn dry [mix]
   (list :dry-mix (int mix)))
@@ -408,8 +397,6 @@
         :lfo3-wave2-source (control-bus-number wave2)
         :lfo3-wave2-depth (float (second wave2))))
 
-
-
 ;; trigger and reset are bus numbers
 ;; min max step and ivalue are int
 ;; bias and scale are float
@@ -627,7 +614,6 @@
         :echo2-amp-depth (float (second gate))
         :echo2-pan (float pan)
         :echo2-mix mix))
-
 
 (defn alias-program [& args]
   (let [data (flatten args)]

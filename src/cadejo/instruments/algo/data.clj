@@ -8,6 +8,11 @@
                 save-program bank]])
   (:require [cadejo.instruments.algo.genpatch]))
 
+(.register-function! bank 
+                     :random 
+                     cadejo.instruments.algo.genpatch/random-algo-program
+                     "Generate random ALGO program data")
+
 ;; ------------------------------------------------------------0 FmRhodes
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
@@ -2630,9 +2635,10 @@
                 :delay-2 1.00       :damp 0.0   :mix 0.00)
           (reverb :size 0.5 :mix 0.00))))
 
-;; ------------------------------------------------------------ 127 Intial program 
+;; ------------------------------------------------------------ 127 random program 
 ;;
-(save-program 127 "Random" (list cadejo.instruments.algo.genpatch/random-algo-program))
+(.use-function! bank 127 "Random" :random)
+
 
 (.dump bank)
 

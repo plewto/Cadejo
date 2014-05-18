@@ -5,6 +5,11 @@
          :only [bank combo save-program bypass low high band notch]])
   (:require [cadejo.instruments.combo.genpatch]))
 
+(.register-function! bank
+                     :random
+                     cadejo.instruments.combo.genpatch/random-combo-program
+                     "Generate random Combo program data")
+
 (save-program 0  "Ngaire"
     (combo :a1      0.174  :w1  0.209
            :a2      1.000  :w2 0.624
@@ -171,8 +176,7 @@
            :reverb  0.000  :amp 0.200))
 
 
-(save-program 127 "Random" "Generate random Combo program"
-              (list cadejo.instruments.combo.genpatch/random-combo-program))
+(.use-function! bank 127 "Random" :random)
 
 (.dump bank)
 (defn rl [](use 'cadejo.instruments.combo.data :reload))
