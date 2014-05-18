@@ -1,7 +1,7 @@
 (println "\t--> MASA program")
 
 (ns cadejo.instruments.masa.program
-  (:require [cadejo.midi.program]))
+  (:require [cadejo.midi.bank]))
 
 ;; Some common harmonic gamuts
 
@@ -130,7 +130,7 @@
         :reverb-damp 0.5
         :reverb-mix  0.5))
 
-(def bank (cadejo.midi.program/bank :MASA
+(def bank (cadejo.midi.bank/bank :MASA
            "Default MASA Program Bank"))
 
 (defn save-program 

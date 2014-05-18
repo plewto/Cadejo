@@ -13,7 +13,7 @@
   (:require [cadejo.demo])
 
   ;; TESTING
- ; (:require [cadejo.instruments.alias.pp])
+  ;; (:require [cadejo.midi.bank])
 )
             
   

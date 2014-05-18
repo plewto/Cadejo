@@ -1,11 +1,11 @@
 (println "\t--> ALGO program")
 
 (ns cadejo.instruments.algo.program
-  (:require [cadejo.midi.program])
+  (:require [cadejo.midi.bank])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg]))
 
-(defonce bank (cadejo.midi.program/bank :ALGO "Default Bank"))
+(defonce bank (cadejo.midi.bank/bank :ALGO "Default Bank"))
 
 (defn save-program 
   ([pnum name remarks data]

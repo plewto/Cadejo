@@ -1,12 +1,12 @@
 (println "\t--> program")
 
 (ns cadejo.instruments.combo.program
-  (:require [cadejo.midi.program])
+  (:require [cadejo.midi.bank])
   (:require [cadejo.util.col :as col])
   (:require [cadejo.util.user-message :as umsg])
 )
 
-(defonce bank (cadejo.midi.program/bank 
+(defonce bank (cadejo.midi.bank/bank 
                :Combo "Default Combo Bank"))
 
 (defn save-program 
