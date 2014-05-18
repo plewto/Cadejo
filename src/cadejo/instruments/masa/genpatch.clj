@@ -4,7 +4,7 @@
   (:require [cadejo.util.math :as math])
   (:use [cadejo.instruments.masa.program]))
         
-(defn masagen []
+(defn random-masa-program []
   (let [harmonic-type (rand-nth '[b3 b3 b3 b3
                                   odd odd odd
                                   harmonic

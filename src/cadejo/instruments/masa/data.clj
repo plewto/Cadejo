@@ -341,6 +341,7 @@
       :reverb-mix 0.400
       :amp 0.20                      :pedal-sens 0.00))
 
-(save-program 127 "MasaGen" "Generate random program" (list masagen))
+(save-program 127 "Random" "Generate random program" 
+              (list random-masa-program))
 
 (.dump bank)

@@ -592,24 +592,24 @@
                    :fb fb2 :damp damp2 :pan pan2
                    :gate [gate2-src gate2-depth]))))
         
-(defn rand-alias [& {:keys [env-style 
-                            env-range
-                            only-harmonics
-                            p-port
-                            p-waveshaper
-                            p-pitchshifter
-                            p-flanger
-                            p-echo
-                            p-echo-sync]
-                     :or {env-style nil
-                          env-range nil
-                          only-harmonics nil
-                          p-port nil
-                          p-waveshaper 0.25
-                          p-pitchshifter 0.20
-                          p-flanger 0.20
-                          p-echo 0.20
-                          p-echo-sync 0.5}}]
+(defn random-alias-program [& {:keys [env-style 
+                                      env-range
+                                      only-harmonics
+                                      p-port
+                                      p-waveshaper
+                                      p-pitchshifter
+                                      p-flanger
+                                      p-echo
+                                      p-echo-sync]
+                               :or {env-style nil
+                                    env-range nil
+                                    only-harmonics nil
+                                    p-port nil
+                                    p-waveshaper 0.25
+                                    p-pitchshifter 0.20
+                                    p-flanger 0.20
+                                    p-echo 0.20
+                                    p-echo-sync 0.5}}]
   (let [env-range (or env-range (rand-nth (keys envelope-ranges)))]
     (println)
     (let [main (rand-nth (concat (repeat 3 :osc1)

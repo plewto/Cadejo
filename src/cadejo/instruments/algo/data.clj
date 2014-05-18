@@ -2632,7 +2632,7 @@
 
 ;; ------------------------------------------------------------ 127 Intial program 
 ;;
-(save-program 127 "Random" (list cadejo.instruments.algo.genpatch/algogen))
+(save-program 127 "Random" (list cadejo.instruments.algo.genpatch/random-algo-program))
 
 (.dump bank)
 

@@ -255,7 +255,7 @@
 
 
     
-(defn algogen [& args]
+(defn random-algo-program [& args]
   (let [op-frequencies (pick-op-frequencies)
         op-biases (pick-op-bias op-frequencies)
         op-amps (pick-op-amplitudes)

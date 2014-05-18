@@ -14,7 +14,7 @@
                    low low low low
                    high band notch notch])
 
-(defn gen-combo [& args]
+(defn random-combo-program [& args]
   (let [main-tone (rand-nth '[1 2 3 4])
         a1 (or (and (= main-tone 1) 1.0)(rand))
         a2 (or (and (= main-tone 2) 1.0)(rand))

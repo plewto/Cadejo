@@ -172,7 +172,7 @@
 
 
 (save-program 127 "Random" "Generate random Combo program"
-              (list cadejo.instruments.combo.genpatch/gen-combo))
+              (list cadejo.instruments.combo.genpatch/random-combo-program))
 
 (.dump bank)
 (defn rl [](use 'cadejo.instruments.combo.data :reload))

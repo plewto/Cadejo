@@ -1718,6 +1718,6 @@
 
 
 
-(save-program 127 "Random" (list cadejo.instruments.alias.genpatch/rand-alias))
+(save-program 127 "Random" (list cadejo.instruments.alias.genpatch/random-alias-program))
 
 (.dump bank)
