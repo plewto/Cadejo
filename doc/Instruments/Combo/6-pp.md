@@ -1,6 +1,22 @@
 cadejo.instruments.combo.pp  
 ===========================  
 
+<ISSUE: revision 2014.05.20 
+   pp-hook function no longer considerd "optional"
+   The pp-hook function is now requiered for bank serilization.
+   The lambda list for pp-hook has also changed.
+   The new fuctnion template is
+
+   (pp-hookfn [event pname data remarks]
+              [event pname data])
+
+    Where:
+    event - The MIDI event (used to extract the progam number)
+    pname - Than program name
+    data - The program data as a flat assoc list of param/value pairs
+    remarks - optional remarkls text>
+
+
 pp-hook is an optional feature of cadejo.midi.program/Bank and is intended to display
 current patch data in response to a MIDI program-change. The format of the
 pp output should closely match that used by the program data file and should

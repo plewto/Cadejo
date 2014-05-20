@@ -9,12 +9,12 @@
 (def pad1 "  ")
 (def pad2 (str pad1 "      "))
 
-(defn extract [param dmap default]
+(defn- extract [param dmap default]
   (float (or (get dmap param)
              (umsg/warning (format "MASA parameter %s missing" param))
              default)))
 
-(defn str-harmonics [dmap]
+(defn- str-harmonics [dmap]
   (let [sb (StringBuilder.)]
     (.append sb ":harmonics    [")
     (doseq [k '(:r1 :r2 :r3 :r4 :r5 :r6 :r7 :r8 :r9)]
@@ -25,7 +25,7 @@
           (.append sb " "))))
     (.toString sb)))
 
-(defn str-registration [dmap]
+(defn- str-registration [dmap]
   (let [sb (StringBuilder.)]
     (.append sb (format "%s:registration [" pad2))
     (doseq [k '(:a1 :a2 :a3 :a4 :a5 :a6 :a7 :a8 :a9)]
@@ -36,7 +36,7 @@
           (.append sb " "))))
     (.toString sb)))
 
-(defn str-pedals [dmap]
+(defn- str-pedals [dmap]
   (let [sb (StringBuilder.)]
     (.append sb (format "%s:pedals       [" pad2))
     (doseq [k '(:p1 :p2 :p3 :p4 :p5 :p6 :p7 :p8 :p9)]
@@ -47,7 +47,7 @@
           (.append sb " "))))
     (.toString sb)))
 
-(defn str-percussion [dmap]
+(defn- str-percussion [dmap]
   (let [sb (StringBuilder.)]
     (.append sb (format "%s:percussion   [" pad2))
     (doseq [k '(:perc1 :perc2 :perc3 :perc4 :perc5 
@@ -59,14 +59,14 @@
           (.append sb " "))))
     (.toString sb)))
 
-(defn str-common [dmap]
+(defn- str-common [dmap]
   (let [sb (StringBuilder.)]
     (doseq [k '(:amp :pedal-sens :decay :sustain :vrate :vsens :vdepth :vdelay)]
       (.append sb (format "%s%-13s %4.2f\n"
                           pad2 k (extract k dmap 1.0))))
     (.toString sb)))
 
-(defn str-scanner [dmap]
+(defn- str-scanner [dmap]
   (let [sb (StringBuilder.)]
     (doseq [k '(:scanner-delay :scanner-delay-mod :scanner-mod-rate 
                                :scanner-mod-spread :scanner-scan-rate
@@ -75,7 +75,7 @@
                           pad2 k (extract k dmap 1.0))))
     (.toString sb)))
 
-(defn str-reverb [dmap]
+(defn- str-reverb [dmap]
   (let [sb (StringBuilder.)]
     (doseq [k '(:reverb-size :reverb-damp :reverb-mix)]
       (.append sb (format "%s%-20s %4.2f"
@@ -84,15 +84,23 @@
         (.append sb "\n")))
     (.toString sb)))
 
-(defn pp-masa [event pid data]
-  (let [dmap (cadejo.util.col/alist->map data)]
-    (println "(save-program XXX \"name\"")
-    (printf "%s(masa " pad1)
-    (print (str-harmonics dmap))
-    (print (str-registration dmap))
-    (print (str-pedals dmap))
-    (print (str-percussion dmap))
-    (print (str-common dmap))
-    (print (str-scanner dmap))
-    (print (str-reverb dmap))
-    (println "))")))
+(defn pp-masa 
+  ([event pname data remarks]
+     (let [dmap (cadejo.util.col/alist->map data)
+           pnum (:data1 event)]
+       (printf ";; MASA ---------------------------------- %s %s\n"
+               pnum pname)
+       ;(println "(save-program XXX \"name\"")
+       (printf "(save-program %3s \"%s\" \"%s\"\n"
+               pnum pname remarks)
+       (printf "%s(masa " pad1)
+       (print (str-harmonics dmap))
+       (print (str-registration dmap))
+       (print (str-pedals dmap))
+       (print (str-percussion dmap))
+       (print (str-common dmap))
+       (print (str-scanner dmap))
+       (print (str-reverb dmap))
+       (println "))")))
+  ([event pname data]
+     (pp-masa event pname data "")))

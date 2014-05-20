@@ -16,7 +16,7 @@
 ;; ------------------------------------------------------------0 FmRhodes
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
-  (save-program 0 "FmRhodes"
+  (save-program 0 "FmRhodes" "These are remarks"
     (algo (common  :amp 0.399
                    :lp 10000
                    :port-time 0.00

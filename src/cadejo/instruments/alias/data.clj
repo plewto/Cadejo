@@ -12,7 +12,7 @@
 
 ;; --------------------------------------------------------------------------- 0 A Sour God
 ;;
-(save-program 0 "A Sour God"
+(save-program 0 "A Sour God" 
  (alias-program
   (common  :amp 0.400  :port-time 0.000 :cc7->volume 0.000)
   ;; ENVS A     D1    D2    R

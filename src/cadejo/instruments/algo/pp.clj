@@ -7,9 +7,9 @@
 (def pad1 "    ")
 (def pad2 (str pad1 "      "))
 
-(defn summery [event pname dmap]
+(defn- summery [event pname dmap]
   (let [prognum (:data1 event)]
-    (printf ";; ------------------------------------------------------------ %03d 'pname'"
+    (printf ";; ---------------------------------------------------- %03d %s"
             prognum pname))
     (println "\n;;")
   (printf ";; [op1 %5.4f%+3.0f  %4.2f]"
@@ -50,25 +50,23 @@
   (println))
 
 
-(defn dump-program [data]
+(defn- dump-program [data]
   (let [dmap (cadejo.util.col/alist->map data)]
     (println)
     (doseq [k (sort (keys dmap))]
       (printf "[%-12s] --> %s\n" k (get dmap k)))
     (println)))
-       
 
-
-(defn fget [dmap param]
+(defn- fget [dmap param]
   (let [v (get dmap param)]
     (if (not v)
       (println (format "WARNING unassigned ALGO parameter %s" param)))
     (float v)))
 
-(defn iget [dmap param]
+(defn- iget [dmap param]
   (int (fget dmap param)))
 
-(defn str-common [dmap]
+(defn- str-common [dmap]
   (let [sb (StringBuilder.)
         pad3 (str pad2 "         ")
         app (fn [& args]
@@ -82,7 +80,7 @@
     (app "%s:lfo2->pitch %+7.4f)" pad3 (fget dmap :lfo2->pitch))
     (.toString sb)))
          
-(defn str-env [enum dmap]
+(defn- str-env [enum dmap]
   (let [sb (StringBuilder.)
         pad3 (str pad2 "          ")
         app (fn [& args]
@@ -104,7 +102,7 @@
          (fget dmap (key "scale")))
     (.toString sb)))
          
-(defn str-vibrato [dmap]
+(defn- str-vibrato [dmap]
   (let [sb (StringBuilder.)
         app (fn [& args]
               (.append sb (apply #'format args)))]
@@ -115,48 +113,8 @@
          (fget dmap :vdelay)
          (fget dmap :vsens))
     (.toString sb)))
- 
-;; (defn str-lfo1 [dmap]
-;;   (let [sb (StringBuilder.)
-;;         pad3 (str pad2 "         ")
-;;         app (fn [& args]
-;;               (.append sb (apply #'format args)))]
-;;     (app "%s(lfo1    :freq %5.3f  :env1 %5.3f :pressure %5.3f\n"
-;;          pad2
-;;          (fget dmap :lfo1-freq)
-;;          (fget dmap :env1->lfo1-amp)
-;;          (fget dmap :pressure->lfo1-amp))
-;;     (app "%s:ccb %4.2f   :cca->freq %+5.2f)\n"
-;;          pad3
-;;          (fget dmap :ccb->lfo1-amp)
-;;          (fget dmap :cca->lfo1-freq))
-;;     (app "%s:skew %4.2f   :env1->skew %+5.2f)"
-;;          pad3
-;;          (fget dmap :lfo1-skew)
-;;          (fget dmap :env1->lfo1-skew))
-;;     (.toString sb)))
 
-;; (defn str-lfo2 [dmap]
-;;   (let [sb (StringBuilder.)
-;;         pad3 (str pad2 "         ")
-;;         app (fn [& args]
-;;               (.append sb (apply #'format args)))]
-;;     (app "%s(lfo2    :freq %5.3f  :lfo1 %5.3f :pressure %5.3f\n"
-;;          pad2
-;;          (fget dmap :lfo2-freq)
-;;          (fget dmap :lfo1->lfo2-amp)
-;;          (fget dmap :pressure->lfo2-amp))
-;;     (app "%s:cca %4.2f   :ccb->freq %+5.2f)\n"
-;;          pad3
-;;          (fget dmap :cca->lfo2-amp)
-;;          (fget dmap :ccb->lfo2-freq))
-;;     (app "%s:skew %4.2f   :lfo1->skew %+5.2f)"
-;;          pad3
-;;          (fget dmap :lfo2-skew)
-;;          (fget dmap :lfo1->lfo2-skew))
-;;     (.toString sb)))
-
-(defn str-lfo1 [dmap]
+(defn- str-lfo1 [dmap]
     (let [sb (StringBuilder.)
         pad3 (str pad2 "         ")
         app (fn [& args]
@@ -178,7 +136,7 @@
            (fget dmap :env1->lfo1-skew))
       (.toString sb)))
 
-(defn str-lfo2 [dmap]
+(defn- str-lfo2 [dmap]
     (let [sb (StringBuilder.)
         pad3 (str pad2 "         ")
         app (fn [& args]
@@ -200,10 +158,7 @@
            (fget dmap :lfo1->lfo2-skew))
       (.toString sb)))
 
-
-
-
-(defn str-carrier [op dmap]
+(defn- str-carrier [op dmap]
   (let [sb (StringBuilder.)
         pad3 (str pad2 "     ")
         app (fn [& args]
@@ -243,16 +198,16 @@
          (fget dmap (key "lfo2")))
     (.toString sb)))
          
-(defn has-hp? [op]
+(defn- has-hp? [op]
   (or (= op 2)
       (= op 6)
       (= op 8)))
 
-(defn has-feedback? [op]
+(defn- has-feedback? [op]
   (or (= op 6)
       (= op 8)))
 
-(defn str-modulator [op dmap]
+(defn- str-modulator [op dmap]
   (let [sb (StringBuilder.)
         pad3 (str pad2 "     ")
         app (fn [& args]
@@ -313,7 +268,7 @@
       (app ")"))
     (.toString sb)))
 
-(defn str-efx [dmap]
+(defn- str-efx [dmap]
   (let [sb (StringBuilder.)
         pad3 (str pad2 "         ")
         app (fn [& args]
@@ -333,26 +288,31 @@
          (fget dmap :reverb-mix))
     (.toString sb)))
 
-(defn pp-algo [event pname data]
-  (let [dmap (cadejo.util.col/alist->map data)]
-    (summery event pname dmap)
-    (println "(let [enable '[1 1 1   1 1 1   1 1]]")
-    (println "  (save-program xxx \"<name>\"")
-    (print (format "%s(algo " pad1))
-    (println (str-common dmap))
-    (println (str-env 1 dmap))
-    (println (str-vibrato dmap))
-    (println (str-lfo1 dmap))
-    (println (str-lfo2 dmap))
-    (println (str-carrier 1 dmap))
-    (println (str-modulator 2 dmap))
-    (println (str-modulator 3 dmap))
-    (println)
-    (println (str-carrier 4 dmap))
-    (println (str-modulator 5 dmap))
-    (println (str-modulator 6 dmap))
-    (println)
-    (println (str-carrier 7 dmap))
-    (println (str-modulator 8 dmap))
-    (print (str-efx dmap))
-    (println ")))")))
+(defn pp-algo 
+  ([event pname data remarks]
+     (let [dmap (cadejo.util.col/alist->map data)
+           pnum (:data1 event)]
+       (summery event pname dmap)
+       (println "(let [enable '[1 1 1   1 1 1   1 1]]")
+       (printf "  (save-program %3s   \"%s\" \"%s\"\n"
+               pnum pname remarks)
+       (print (format "%s(algo " pad1))
+       (println (str-common dmap))
+       (println (str-env 1 dmap))
+       (println (str-vibrato dmap))
+       (println (str-lfo1 dmap))
+       (println (str-lfo2 dmap))
+       (println (str-carrier 1 dmap))
+       (println (str-modulator 2 dmap))
+       (println (str-modulator 3 dmap))
+       (println)
+       (println (str-carrier 4 dmap))
+       (println (str-modulator 5 dmap))
+       (println (str-modulator 6 dmap))
+       (println)
+       (println (str-carrier 7 dmap))
+       (println (str-modulator 8 dmap))
+       (print (str-efx dmap))
+       (println ")))")))
+  ([event pname data]
+     (pp-algo event pname data "")))

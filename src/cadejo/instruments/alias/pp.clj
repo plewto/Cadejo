@@ -9,17 +9,16 @@
 (def pad2 (str pad1 " "))
 (def pad3 (str pad2 "          "))
 
-(defn fget [dmap param]
+(defn- fget [dmap param]
   (let [v (get dmap param)]
     (if (not v)
       (do 
         (umsg/warning (format "Alis pp missing parameter %s" param))
         0.0)
       (do
-        ;;(println (format "DEBUG param %-16s --> %s" param v)) ;; DEBUG
         (float v)))))
 
-(defn iget [dmap param]
+(defn- iget [dmap param]
   (int (fget dmap param)))
 
 (defn- pp-common [dmap]
@@ -81,7 +80,7 @@
     (printf "%s:min %+3d :max %+3d :step %+3d :ivalue %+3d :bias %3.1f :scale %4.2f)\n"
             pad3 min max step ival bias scale)))
 
-(defn pp-divider1 [dmap]
+(defn- pp-divider1 [dmap]
   (let [key (fn [param](keyword (format "divider1-%s" param)))
         val (fn [param](fget dmap (key param)))
         p1 (val 'p1)
@@ -113,7 +112,7 @@
     (printf "%s:am [%-7s %5.3f]   :bias %+6.3f)\n"
             pad3 src depth bias)))
 
-(defn pp-lfnoise [dmap]
+(defn- pp-lfnoise [dmap]
   (let [src (constants/get-control-bus-name (iget dmap :lfnoise-freq-source))
         dpth (fget dmap :lfnoise-freq-depth)]
     (printf "%s(lfnoise  :fm [%-7s %5.3f])\n"
@@ -181,7 +180,7 @@
             a1-src a1-depth a1-lag
             a2-src a2-depth a2-lag)))
 
-(defn pp-noise [dmap]
+(defn- pp-noise [dmap]
   (let [key (fn [param](keyword (format "noise-%s" param)))
         val (fn [param](fget dmap (key param)))
         src (fn [param](constants/get-general-bus-name (int (val param))))
@@ -203,7 +202,7 @@
     (printf "%s:am1 [%-7s %5.3f %4.2f] :am2 [%-7s %5.3f %4.2f])\n"
             pad s1 d1 l1 s2 d2 l2)))
 
-(defn pp-ringmod [dmap]
+(defn- pp-ringmod [dmap]
   (let [key (fn [param](keyword (format "ringmod-%s" param)))
         val (fn [param](fget dmap (key param)))
         src (fn [param](constants/get-general-bus-name (int (val param))))
@@ -262,14 +261,6 @@
     (printf "%14s:res  [%4.2f %-7s %4.2f] :pan [%+5.2f %-7s %+5.2f])\n"
             "" res res-src res-depth pan ps pd)))
 
-;; (defn- pp-dry [dmap]
-;;   (let [dry (int (fget dmap :dry-mix))
-;;         amp (fget dmap :amp)
-;;         ptime (fget dmap :port-time)
-;;         cc7 (fget dmap :cc7->volume)]
-;;     (printf "%s(dry      %+3d :amp %5.3f :port-time %5.3f  :cc7->volume %5.3f)\n"
-;;             pad2 dry amp ptime cc7)))
-
 (defn- pp-dry [dmap]
   (let [dry (int (fget dmap :dry-mix))]
     (printf "%s(dry      %+3d)\n"
@@ -312,44 +303,47 @@
     (printf "%s(echo%d    %+3d :delay [%5.3f %-7s %5.3f] :fb %+5.2f :damp %4.2f :gate [%-7s %4.2f] :pan %+5.2f)"
             pad2 n mix delay dsrc ddth fb damp gsrc gdpth pan)))
 
-(defn pp-alias [event pid data]
-  (let [dmap (ucol/alist->map data)]
-    (println)
-    (println ";; --------------------------------------------------------------------------- ")
-    (println ";;")
-    (println "(save-program   x   \"name\"")
-    (printf "%s(alias-program\n" pad1)
-    (pp-common dmap)
-    (printf "%s;; ENVS A     D1    D2    R\n" pad2)
-    (pp-env 1 dmap)
-    (pp-env 2 dmap)
-    (pp-env 3 dmap)
-    (pp-lfo 1 dmap)
-    (pp-lfo 2 dmap)
-    (pp-lfo 3 dmap)
-    (pp-stepper 1 dmap)
-    (pp-stepper 2 dmap)
-    (pp-divider1 dmap)
-    (pp-divider2 dmap)
-    (pp-lfnoise dmap)
-    (pp-sh dmap)
-    (pp-matrix dmap)
-    (printf "%s;; OSCILLATORS\n" pad2)
-    (pp-osc 1 dmap)(print "\n")
-    (pp-osc 2 dmap)(print "\n")
-    (pp-osc 3 dmap)(print "\n")
-    (pp-noise dmap)
-    (pp-ringmod dmap)
-    (printf "%s;; FILTERS\n" pad2)
-    (pp-clipper 'clip dmap)
-    (pp-filter 1 dmap)
-    (pp-clipper 'fold dmap)
-    (pp-filter 2 dmap)
-    (printf "%s;; EFX\n" pad2)
-    (pp-dry dmap)
-    (pp-pshifter dmap)
-    (pp-flanger dmap)
-    (pp-echo 1 dmap)(print "\n")
-    (pp-echo 2 dmap)(println "))")
-    (println)))
+(defn pp-alias 
+  ([event pname data remarks]
+     (let [dmap (ucol/alist->map data)
+           pnum (:data1 event)]
+       (println)
+       (printf ";; Alias ------------------------------- %3s %s\n" pnum pname)
+       (printf "(save-program %3s \"%s\" \"%s\"\n" pnum pname remarks)
+       (printf "%s(alias-program\n" pad1)
+       (pp-common dmap)
+       (printf "%s;; ENVS A     D1    D2    R\n" pad2)
+       (pp-env 1 dmap)
+       (pp-env 2 dmap)
+       (pp-env 3 dmap)
+       (pp-lfo 1 dmap)
+       (pp-lfo 2 dmap)
+       (pp-lfo 3 dmap)
+       (pp-stepper 1 dmap)
+       (pp-stepper 2 dmap)
+       (pp-divider1 dmap)
+       (pp-divider2 dmap)
+       (pp-lfnoise dmap)
+       (pp-sh dmap)
+       (pp-matrix dmap)
+       (printf "%s;; OSCILLATORS\n" pad2)
+       (pp-osc 1 dmap)(print "\n")
+       (pp-osc 2 dmap)(print "\n")
+       (pp-osc 3 dmap)(print "\n")
+       (pp-noise dmap)
+       (pp-ringmod dmap)
+       (printf "%s;; FILTERS\n" pad2)
+       (pp-clipper 'clip dmap)
+       (pp-filter 1 dmap)
+       (pp-clipper 'fold dmap)
+       (pp-filter 2 dmap)
+       (printf "%s;; EFX\n" pad2)
+       (pp-dry dmap)
+       (pp-pshifter dmap)
+       (pp-flanger dmap)
+       (pp-echo 1 dmap)(print "\n")
+       (pp-echo 2 dmap)(println "))")
+       (println)))
+  ([event pname data]
+     (pp-alias event pname data "")))
  

@@ -17,8 +17,7 @@
            app (fn [frmt & args]
                  (.append sb (apply #'format (cons frmt args))))
            pnum (:data1 event)]
-       ;(app ";; program %s name '%s'\n" (:data1 event) pid)
-       (app ";; Combo ---------------------------------- %3s \"%s\"\n" pnum pid)
+       (app ";; Combo ------------------------------- %3s \"%s\"\n" pnum pid)
        (app "(save-prgoram %3s \"%s\" \"%s\"\n" pnum pid remarks)
        (app "%s(combo :a1      %5.3f  :w1  %5.3f\n"
             pad1 (fget :amp1)(fget :wave1))
