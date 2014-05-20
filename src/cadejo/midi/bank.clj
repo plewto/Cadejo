@@ -312,7 +312,7 @@ explicit synth parameter list or functions which return parameter list"
               data (.data pobj)]
           (apply ot/ctl (cons synths data))
           (@notification-hook* event pid)
-          (@pp-hook* event pid data)))))
+          (@pp-hook* event pid data (.remarks pobj))))))
           
   (dump [this verbose depth]
     (let [depth2 (inc depth)
@@ -351,12 +351,7 @@ explicit synth parameter list or functions which return parameter list"
                       (atom {})     ; function-registry
                       (atom [])     ; program-number map
                       (atom {})     ; programs
-                      (atom (fn [event pid]
-                               (if pid
-                                 (printf ";; %s Program chan [%02d] \"%s\"\n"
-                                         data-format 
-                                         (:channel event)
-                                         pid))))
+                      (atom (fn [event pid] nil)) ;; notification-hook
                       (atom (fn [event pid data])))]
        (.clear-program-number-map! bnk)
        bnk))
