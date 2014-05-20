@@ -3,8 +3,7 @@
 (ns cadejo.instruments.combo.program
   (:require [cadejo.midi.bank])
   (:require [cadejo.util.col :as col])
-  (:require [cadejo.util.user-message :as umsg])
-)
+  (:require [cadejo.util.user-message :as umsg]))
 
 (defonce bank (cadejo.midi.bank/bank 
                :Combo "Default Combo Bank"))

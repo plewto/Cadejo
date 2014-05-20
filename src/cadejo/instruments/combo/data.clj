@@ -10,7 +10,7 @@
                      cadejo.instruments.combo.genpatch/random-combo-program
                      "Generate random Combo program data")
 
-(save-program 0  "Ngaire"
+(save-program 0  "Ngaire" "Remarks for program 0"
     (combo :a1      0.174  :w1  0.209
            :a2      1.000  :w2 0.624
            :a3      0.339  :w3 0.990
