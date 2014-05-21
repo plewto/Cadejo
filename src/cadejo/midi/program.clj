@@ -1,4 +1,5 @@
-
+;; DEPRECIATED 2014.05.21
+;;
 (ns cadejo.midi.program
   "Defines encapsulation of MIDI program change data"
   (:require [cadejo.util.string]))
@@ -113,3 +114,15 @@
                (atom data)))
   ([form id data]
      (program form id "" data)))
+
+
+
+
+
+
+
+
+
+     
+
+

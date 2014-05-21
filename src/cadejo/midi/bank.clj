@@ -1,14 +1,5 @@
-;; 2014.05.17  
-;; Added function registry to be used as part bank serialization.
-;; There is no obvious and easy way to serialize Clojure functions 
-;; The registry is to contain functions accessible by unique key. During
-;; serialization only the function key is saved. On de-serialization the key
-;; is used to extract the proper function from the registry.
-;; 
-;; 2014.05.18
-;; Added program-number mapping
+;; DEPRECIATED 2014.05.21
 ;;
-
 (ns cadejo.midi.bank
   "Defines MIDI program bank"
   (:require [cadejo.midi.program])
