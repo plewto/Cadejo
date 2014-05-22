@@ -1,11 +1,9 @@
-;; Replacement for midi.program and midi.bank
-;; ISSUE: changed contract for pp-hook
+;; Replacement for midi.program and midi.bank 2014.05.22
 
 (ns cadejo.midi.program-bank
   (:require [cadejo.util.string])
   (:require [cadejo.util.user-message :as umsg])
   (:require [overtone.core :as ot]))
-
 
 (defn assert-midi-program-number [pnum]
   (or (and (integer? pnum)(>= pnum 0)(< pnum 128) pnum)
@@ -71,7 +69,7 @@
     "Set program number a to map to program number b.
      a must be a valid MIDI program number.
      b must either be a valid MIDI program number or nil.
-     Setting b t nil effectivly disables program number a.")
+     Setting b t nil effectively disables program number a.")
 
   (map-program-number 
     [this a]
@@ -98,6 +96,17 @@
      A new record is created via the program function, stored in slot
      pnum and returned.")
 
+  (set-current-program!
+    [this pnum name remarks]
+    [this pnum name]
+    "Set data slot pnum to data in current-program.
+     pnum - MIDI program number. If pnum is mapped to another value
+     the mapped value is used.
+     name - name applied to data
+     remarks - optional remarks applied to data.
+     If pnum is valid return record of the new program
+     If pnum is invalid display warning and return nil")
+
   (get-program 
     [this pnum]
     "Return the program record for selected slot.
@@ -107,10 +116,9 @@
 
   (get-data 
     [this pobj]
-    "Extract and return data frm program record 
+    "Extract and return data from program record 
      pobj - Record as returned by (program)
      If pobj nil, return nil")
-
 
   (current-program-data
     [this]
@@ -156,14 +164,42 @@
     "As with program-change except the event argument is a SuperCollider 
      event for a MIDI program change.")
 
+  (exchange-programs! 
+    [this a b]
+    "Exchange positions of program a and b
+     Both a and b must be valid MIDI program numbers and program-number
+     mapping is ignored. Returns true if exchange successful, 
+     false otherwise.")
+
+  (move-program!
+    [this a b]
+    "Move program from slot a to slot b
+     Both a and b must be valid MIDI program numbers and program-number
+     mapping is ignored. A null program is placed in slot a.
+     Returns true if exchange successful, false otherwise.")
+     
+  (write-bank
+    [this filename]
+    "Write bank data to file.
+     If successful return true.
+     Display warning and return false if on error")
+
+  (read-bank 
+    [this filename]
+    "Read bank data from file
+     The file must be a cadejo bank data file with proper format.
+     bank-name, bank-remarks, program slots and program number mapping
+     are updated. data-format, function-registry and current-data are
+     not altered.
+     Return this if successful
+     Print warning message and return false on error.")
+
   (dump 
     [this verbose depth]
     [this verbose]
     [this])
      
 )
-
-
 
 (deftype ProgramBank [dformat 
                       name* 
@@ -239,6 +275,17 @@
   (set-program! [this pnum name args]
     (.set-program! this pnum nil name args ""))
 
+  (set-current-program! [this pnum name remarks]
+    (let [pnum2 (.map-program-number this pnum)]
+      (if pnum2
+        (let [pobj (program nil name (.current-program-data this) remarks)]
+          (swap! programs* (fn [n](assoc n pnum2 pobj))))
+        nil)))
+
+  (set-current-program! [this pnum name]
+    (.set-current-program this pnum name ""))
+
+
   (get-program [this pnum]
     (and pnum (get @programs* pnum)))
 
@@ -247,7 +294,6 @@
       (let [f (.get-function this (:function pobj))]
         (apply f (:args pobj)))
       nil))
- 
 
   (current-program-data [this] @current-program-data*)
 
@@ -258,7 +304,6 @@
 
   (set-pp-hook! [this hfn]
     (swap! pp-hook* (fn [n] hfn)))
-
  
   (program-change [this pnum synths]
     (let [pnum2 (.map-program-number this pnum)]
@@ -277,18 +322,86 @@
               data)
             nil))
         nil)))
-          
 
   (handle-event [this event synths]
     (let [pnum (:data1 event)]
       (.program-change this pnum synths)))
 
+  (exchange-programs! [this a b]
+    (if (and (assert-midi-program-number a)
+             (assert-midi-program-number b))
+      (let [ap (.get-program this a)
+            bp (.get-program this b)]
+        (swap! programs* (fn [n](assoc n a bp)))
+        (swap! programs* (fn [n](assoc n b ap)))
+        true)
+      false))
+             
+  (move-program! [this a b]
+    (if (and (assert-midi-program-number a)
+             (assert-midi-program-number b))
+      (let [ap (.get-program this a)]
+        (swap! programs* (fn [n](assoc n b ap)))
+        (swap! programs* (fn [n](assoc n a nil)))
+        true)
+      false))
+        
+  (write-bank [this filename]
+    (try
+      (let [rec {:file-type :cadejo-bank
+                 :data-format (.data-format this)
+                 :name (.bank-name this)
+                 :remarks (.bank-remarks this)
+                 :programs @programs*
+                 :program-map @program-number-map*}]
+        (spit filename (pr-str rec))
+        filename)
+      (catch java.io.FileNotFoundException e
+        (umsg/warning "File Not Found Exception"
+                      (format "write-bank  bank format  %s" (.data-format this))
+                      (format "filename \"%s\"" filename))
+        nil)))
+
+  (read-bank [this filename]
+    (try
+      (let [rec (read-string (slurp filename))
+            ftype (:file-type rec)
+            dformat (:data-format rec)]
+        (if (not (and (= ftype :cadejo-bank)
+                      (= dformat (.data-format this))))
+          (do 
+            (umsg/warning "Wrong File Type"
+                          (format "%s is not cadejo-bank with %s format"
+                                  filename (.data-format this)))
+            nil)
+          (do 
+            (.clear-program-number-map! this)
+            (.clear-all-programs! this)
+            (swap! current-program-number* (fn [n] nil))
+            (.bank-name! this (:name rec))
+            (.bank-remarks! this (:remarks rec))
+            (doseq [pnum (keys (:programs rec))]
+              (let [pobj (get (:programs rec) pnum)]
+                (.set-program! this (int pnum)
+                               (:function-id pobj)
+                               (:name pobj)
+                               (:args pobj)
+                               (:remarks pobj))))
+            (let [pnmap (:program-map rec)]
+              (doseq [a (range (count pnmap))]
+                (.map-program-number! this a (nth pnmap a))))
+            this)))
+      (catch java.io.FileNotFoundException e
+        (umsg/warning "File Not Found Exception"
+                      (format "read-bank  bank format  %s" (.data-format this))
+                      (format "filename \"%s\"" filename))
+        nil)))
+
   (dump [this verbose depth]
     (let [depth2 (inc depth)
           pad (cadejo.util.string/tab depth)
           pad2 (cadejo.util.string/tab depth2)
-          pad3 (cadejo.util.string/tab (inc depth2))
-          ]
+          pad3 (cadejo.util.string/tab (inc depth2))]
       (printf "%sProgramBank :format %s :name %s\n" 
               pad (.data-format this)(.bank-name this))
       (if verbose (printf "%sRemarks: %s\n" pad2 (.bank-remarks this)))
@@ -312,21 +425,20 @@
           (printf "%spp hook: %s\n" pad2 @pp-hook*)))
       (println)))
 
-
   (dump [this verbose]
     (.dump this verbose 0))
 
   (dump [this]
     (.dump this false))
 )
-          
 
 (defn program-bank 
+  "Create and return new ProgramBank object"
   ([format name remarks]
      (let [bnk (ProgramBank. (keyword format)
                              (atom (str name))
                              (atom (str remarks))
-                             (atom {})            ; function-rregistry
+                             (atom {})            ; function-registry
                              (atom nil)           ; program-number-map
                              (atom {})            ; programs
                              (atom nil)           ; current-program data
@@ -340,50 +452,3 @@
   ([format]
      (program-bank format 
                    (format "New %s bank" format) "")))
-
-;;; ****************************************************************
-;;; **************************************************************** TEST ONLY 
-;;; **************************************************************** BELOW THIS 
-;;; **************************************************************** LINE
-
-;; (println)
-;; (println)
-;; (def bnk (program-bank :test "Default" "Bank level remarks"))
-
-;; (defn foo [& args]
-;;   (cons :fooo args))
-
-;; (defn bar [& args]
-;;   (cons :barr args))
-
-;; (.register-function! bnk :foo foo)
-;; (.register-function! bnk :bar bar)
-
-;; ;; Some test programs 
-
-;; (.map-program-number! bnk 1 nil)
-;; (.map-program-number! bnk 16 1)
-;; (.map-program-number! bnk 17 2)
-;; (.map-program-number! bnk 32 5)
-
-
-;; (.set-program! bnk 0 nil "Alpha" '[1 2 3 4] "These are alpha remarks")
-;; (.set-program! bnk 1 nil "Odd" '[1 3 5 7] "Thees are odd remarks")
-;; (.set-program! bnk 2 :foo "Foo Call" '[] "A call to foo with no arguments")
-;; (.set-program! bnk 3 :foo "Foo 2" '[2 3 5 7] "A call to foo with prime args")
-;; (.set-program! bnk 4 :bar "Bar Call" '[1 4 9 16] "A call to bar with squares")
-;; (.set-program! bnk 32 :fail "A Faild Call" '[100 200])
-
-;; (.set-notification-hook! bnk 
-;;                         (fn [pnum bobj]
-;;                           (printf "Notification hook [%3d] %s\n" pnum (.bank-name bobj))))
-
-;; (.set-pp-hook! bnk (fn [pnum pname data remarks]
-;;                      (printf "pp hook [%3d] name: %s data: %s remarks: %s\n"
-;;                              pnum pname data remarks)))
-
-
-
-
-;; (.dump bnk true)
-;; (println)
