@@ -15,8 +15,6 @@
 ;;
 (def midi-input-port "UM1SX") 
 
-
-
 ;; Create a "scene" object connected to midi-input-port. 
 ;; A scene is the top-level Cadejo object.
 ;;
@@ -124,6 +122,5 @@
     (.dump s [0])
     (println "Ready ....")
     (list algo-0 algo-1)))
-    
-    
+
 (demo-1 s)

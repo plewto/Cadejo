@@ -1,19 +1,19 @@
 (println "\t--> program")
 
 (ns cadejo.instruments.combo.program
-  (:require [cadejo.midi.bank])
+  (:require [cadejo.midi.program-bank])
   (:require [cadejo.util.col :as col])
   (:require [cadejo.util.user-message :as umsg]))
 
-(defonce bank (cadejo.midi.bank/bank 
-               :Combo "Default Combo Bank"))
+(defonce bank (cadejo.midi.program-bank/program-bank :Combo))
 
 (defn save-program 
-  ([pnum name remarks data]
-     (.set-program! bank pnum name remarks data))
-  ([pnum name data]
-     (save-program pnum name "" data)))
-
+  ([pnum function-id pname remarks data]
+     (.set-program! bank pnum function-id pname data remarks))
+  ([pnum pname remarks data]
+     (save-program pnum nil pname remarks data))
+  ([pnum pname data]
+     (save-program pnum pname "" data)))
 
 (def combo-parameters 
   '[:vibrato-freq :vibrato-sens :amp1 :wave1 :amp2 :wave2 :amp3 :wave3

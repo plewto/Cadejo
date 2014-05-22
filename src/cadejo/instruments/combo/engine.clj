@@ -1,3 +1,4 @@
+
 (println "--> combo engine")
 
 (ns cadejo.instruments.combo.engine
@@ -8,8 +9,7 @@
   (:require [cadejo.instruments.combo.data])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
-  (:require [cadejo.midi.performance])
-  )
+  (:require [cadejo.midi.performance]))
 
 (defsynth LFO [vibrato-freq 5.00
                vibrato-sens 0.01

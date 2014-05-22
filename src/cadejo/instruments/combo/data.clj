@@ -7,8 +7,7 @@
 
 (.register-function! bank
                      :random
-                     cadejo.instruments.combo.genpatch/random-combo-program
-                     "Generate random Combo program data")
+                     cadejo.instruments.combo.genpatch/random-combo-program)
 
 (save-program 0  "Ngaire" "Remarks for program 0"
     (combo :a1      0.174  :w1  0.209
@@ -176,7 +175,10 @@
            :reverb  0.000  :amp 0.200))
 
 
-(.use-function! bank 127 "Random" :random)
+;(.use-function! bank 127 "Random" :random)
+(save-program 127 :random "Random" "generate random Combo program" nil)
+
+
 (.map-program-number! bank 63 127)
 
 (.dump bank)
