@@ -341,12 +341,17 @@
       (.get-property this :dbscale))
 
 
-    (reset [this]  
+    ;; (reset [this]  
+    ;;   (.reset keymode)
+    ;;   (let [data (.data @bank* 127)
+    ;;         s (concat (.synths this)(.voices this))
+    ;;         args (cons s data)]
+    ;;     (if data (apply ot/ctl args))))
+
+    (reset [this]
       (.reset keymode)
-      (let [data (.data @bank* 127)
-            s (concat (.synths this)(.voices this))
-            args (cons s data)]
-        (if data (apply ot/ctl args))))
+      (.program-change @bank* 0 (concat (.synths this)(.voices this))))
+
 
     (handle-event [this event]
       (let [cmd (:command event)]
