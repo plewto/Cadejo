@@ -23,7 +23,6 @@
 ;; E) Basic serialization for bank read and write now implemented. 
 ;;
 
-
 (ns cadejo.midi.program-bank
   (:require [cadejo.util.string])
   (:require [cadejo.util.user-message :as umsg])
@@ -97,13 +96,13 @@
     "Set program number a to map to program number b.
      a must be a valid MIDI program number.
      b must either be a valid MIDI program number or nil.
-     Setting b t nil effectively disables program number a.")
+     Setting b to nil effectively disables program number a.")
 
   (map-program-number 
     [this a]
     "Return program number mapped to a.
      a must be valid MIDI program number
-     Result is guaranteed to be valid MIDI program number") 
+     Result is guaranteed to be valid MIDI program number or nil")
 
   (clear-program!
     [this pnum]
