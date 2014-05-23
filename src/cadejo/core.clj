@@ -4,7 +4,7 @@
   (:require [cadejo.midi.scene])
   (:require [cadejo.midi.channel])
   (:require [cadejo.midi.performance])
-  (:require [cadejo.midi.program])
+  (:require [cadejo.midi.program-bank])
   (:require [cadejo.midi.pitch-bend])
   (:require [cadejo.midi.pressure])
   (:require [cadejo.midi.cc])

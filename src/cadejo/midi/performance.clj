@@ -4,8 +4,7 @@
   "A Performance is a node with a single Channel parent and a set of
    sc synths, properties and keymodes. "
   (:require [cadejo.midi.cc :as cc])
-  ;(:require [cadejo.midi.program :as program])
-  (:require [cadejo.midi.bank])
+  (:require [cadejo.midi.program-bank])
   (:require [cadejo.midi.node])
   (:require [cadejo.util.col])
   (:require [cadejo.util.user-message :as umsg])
@@ -22,7 +21,7 @@
   (set-bank! 
     [this bnk]
     "Sets program bank for this.
-     See cadejo.midi.bank/Bank")
+     See cadejo.midi.program-bank/Bank")
 
   (bank 
     [this]
@@ -340,14 +339,6 @@
     (db-scale [this]
       (.get-property this :dbscale))
 
-
-    ;; (reset [this]  
-    ;;   (.reset keymode)
-    ;;   (let [data (.data @bank* 127)
-    ;;         s (concat (.synths this)(.voices this))
-    ;;         args (cons s data)]
-    ;;     (if data (apply ot/ctl args))))
-
     (reset [this]
       (.reset keymode)
       (.program-change @bank* 0 (concat (.synths this)(.voices this))))
@@ -440,7 +431,7 @@
    keymode - An object implementing cadejo.midi.keymode."
   (let [pobj (Performance. parent-channel 
                            (atom {})    ; local properties
-                           (atom (cadejo.midi.bank/bank id "Default" ""))
+                           (atom (cadejo.midi.program-bank/program-bank id "Default" ""))
                            (atom {})    ; control buses
                            (atom {})    ; audio buses
                            (atom {})    ; synths
