@@ -20,7 +20,7 @@
     :amp4 :wave4 :chorus :filter :filter-type :amp :flanger-depth
     :flanger-rate :flanger-fb :flanger-mix :reverb-mix])
 
-(defn ^:private continuity-test [data]
+(defn- continuity-test [data]
   (let [keys (col/alist->keys data)
         rs* (atom true)]
     (doseq [p combo-parameters]
@@ -30,7 +30,7 @@
           (swap! rs* (fn [n] false)))))
     @rs*))
 
-(defn ^:private spurious-parameter-test [data]
+(defn- spurious-parameter-test [data]
   (let [rs* (atom true)]
     (doseq [k (col/alist->keys data)]
       (if (col/not-member? k combo-parameters)
@@ -45,19 +45,19 @@
 (def band 3)
 (def notch 4)
 
-(defn ^:private combo-vibrato [& {:keys [freq sens]
+(defn- combo-vibrato [& {:keys [freq sens]
                                   :or {freq 5.00
                                        sens 0.01}}]
   (list :vibrato-freq (float freq)
         :vibrato-sens (float sens)))
 
-(defn ^:private combo-filter [& {:keys [freq type]
+(defn- combo-filter [& {:keys [freq type]
                                  :or {freq 8
                                       type bypass}}]
   (list :filter (int freq)
         :filter-type (int type)))
 
-(defn ^:private combo-flanger [& {:keys [rate depth fb mix]
+(defn- combo-flanger [& {:keys [rate depth fb mix]
                                   :or {rate 0.25
                                        depth 0.25
                                        fb 0.50
@@ -100,6 +100,3 @@
     (continuity-test data)
     (spurious-parameter-test data)
     data))
-                   
-                     
-              

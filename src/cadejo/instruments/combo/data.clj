@@ -174,12 +174,8 @@
            :flanger [:rate 4.973 :depth 0.418 :fb +0.77 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-
-;(.use-function! bank 127 "Random" :random)
-(save-program 127 :random "Random" "generate random Combo program" nil)
-
+(save-program 127 :random "Random" "Generate random Combo program" nil)
 
 (.map-program-number! bank 63 127)
-
 (.dump bank)
 
