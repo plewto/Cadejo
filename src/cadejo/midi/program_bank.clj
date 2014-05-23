@@ -1,9 +1,12 @@
-;; Replacement for midi.program and midi.bank 2014.05.22
 
 (ns cadejo.midi.program-bank
   (:require [cadejo.util.string])
   (:require [cadejo.util.user-message :as umsg])
   (:require [overtone.core :as ot]))
+
+(def enable-trace false)
+
+(defn- program-identity [& args] args)
 
 (defn assert-midi-program-number [pnum]
   (or (and (integer? pnum)(>= pnum 0)(< pnum 128) pnum)
@@ -235,8 +238,8 @@
                 (umsg/warning 
                  (format "%s bank does not recognize function %s"
                          (.data-format this) id))
-                identity)
-              identity))))
+                program-identity)
+              program-identity))))
 
   (clear-program-number-map! [this]
     (swap! program-number-map* (fn [n](into '[] (range 128)))))
@@ -307,11 +310,13 @@
  
   (program-change [this pnum synths]
     (let [pnum2 (.map-program-number this pnum)]
+      (if enable-trace
+        (printf "%s program-bank.program-change [%3d] --> [%3d]" (.data-format this) pnum pnum2))
       (if pnum2 
         (let [pobj (.get-program this pnum2)
               f (.get-function this (:function-id pobj))
               args (:args pobj)
-              data (f args)]
+              data (apply f args)]
           (if data
             (do
               (apply ot/ctl (cons synths data))
