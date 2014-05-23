@@ -1,3 +1,28 @@
+;; The cleverly named cadejo.midi.program-bank replaces the depreciated
+;; cadejo.midi.program and cadejo.midi.bank name-spaces.
+;;
+;; program-bank is responsible for holding program or "patch" data for
+;; specific Cadejo instruments. Features include:
+;;
+;; A) 128 slots corresponding to MIDI program numbers. 
+;;
+;; B) A program number map which maps one MIDI program number to an
+;;    an alternate slot. A program number may also map to nil which
+;;    effectively disables the specific slot.
+;;
+;; C) Function-registry. Each program slot contains an identification
+;;    indicating which function is to be executed in response to a specific
+;;    MIDI program change. The function -MUST- be "registered" with the
+;;    bank. This is in contrast to the previous behavior where any arbitrary
+;;    function could be executed on program-change. 
+;; 
+;; D) The program slot also contains a list of parameter key/value pairs
+;;    which serves as arguments to the selected function. The default
+;;    function is an identity which simply returns it's arguments.
+;;
+;; E) Basic serialization for bank read and write now implemented. 
+;;
+
 
 (ns cadejo.midi.program-bank
   (:require [cadejo.util.string])
@@ -201,7 +226,6 @@
     [this verbose depth]
     [this verbose]
     [this])
-     
 )
 
 (deftype ProgramBank [dformat 
