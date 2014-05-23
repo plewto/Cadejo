@@ -10,8 +10,7 @@
 
 (.register-function! bank 
                      :random 
-                     cadejo.instruments.algo.genpatch/random-algo-program
-                     "Generate random ALGO program data")
+                     cadejo.instruments.algo.genpatch/random-algo-program)
 
 ;; ------------------------------------------------------------0 FmRhodes
 ;;
@@ -518,7 +517,6 @@
                    :delay-2 0.255    :damp 0.70   :mix 0.05)
           (reverb  :size 0.24        :mix  0.85))))
 
-
 ;; ------------------------------------------------------------ 6 Alcestis
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
@@ -854,7 +852,6 @@
           (echo    :delay-1 0.855    :fb 0.33
                    :delay-2 1.000    :damp 0.79   :mix 0.11)
           (reverb  :size 0.86        :mix  0.50))))
-
 
 ;; ------------------------------------------------------------ 10 Poly Something
 ;;
@@ -1707,7 +1704,9 @@
 ;; ------------------------------------------------------------ 20 Insane Index
 ;;
 (let [enable '[1 1 1   1 1 1   1 1]]
-  (save-program 20 "Insane Index" "Very long & evolving sound - intersting aliasing on high notes with pitchbend"
+  (save-program 20 
+                "Insane Index" 
+                "Very long & evolving sound - intersting aliasing on high notes with pitchbend"
     (algo (common  :amp 0.200
                    :port-time 0.00
                    :lp  10000
@@ -2637,9 +2636,9 @@
 
 ;; ------------------------------------------------------------ 127 random program 
 ;;
-(.use-function! bank 127 "Random" :random)
-(.map-program-number! bank 63 127)
+(save-program 127 :random "Random" "Generate random ALGO program" nil)
 
+(.map-program-number! bank 63 127)
 (.dump bank)
 
 

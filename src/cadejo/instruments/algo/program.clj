@@ -1,17 +1,19 @@
 (println "\t--> ALGO program")
 
 (ns cadejo.instruments.algo.program
-  (:require [cadejo.midi.bank])
+  (:require [cadejo.midi.program-bank])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg]))
 
-(defonce bank (cadejo.midi.bank/bank :ALGO "Default Bank"))
+(defonce bank (cadejo.midi.program-bank/program-bank :ALGO))
 
 (defn save-program 
-  ([pnum name remarks data]
-     (.set-program! bank pnum name remarks data))
-  ([pnum name data]
-     (save-program pnum name "" data)))
+  ([pnum function-id pname remarks data]
+     (.set-program! bank pnum function-id pname data remarks))
+  ([pnum pname remarks data]
+     (save-program pnum nil pname remarks data))
+  ([pnum pname data]
+     (save-program pnum pname "" data)))
 
 (defn third [col]
   (nth col 2))
@@ -94,7 +96,6 @@
       (umsg/warning (format "Invalid ALGO parameter %s" kw)))
     kw)) 
 
-
 ;; env1
 ;;
 (defn- env [n attack decay1 decay2 release breakpoint sustain bias scale]
@@ -161,7 +162,6 @@
         :cca->lfo2-amp (float cca)
         :ccb->lfo2-amp (float ccb)
         :pressure->lfo2-amp (float pressure)))
-
           
 (defn echo [& {:keys [delay-1 delay-2 fb damp mix]
                :or {lp 10000
@@ -231,7 +231,6 @@
      (format-op op "ccb")(float ccb)
      (format-op op "lfo1")(float lfo1)
      (format-op op "lfo2")(float lfo2))))
-
   
 (defn op1 [enable & {:keys [detune bias amp 
                             left-key left-scale
@@ -302,8 +301,6 @@
            left-key left-scale
            right-key right-scale
            velocity pressure addsr cca ccb lfo1 lfo2))
-
-
 
 (defn- simple-modulator [op enable detune bias amp
                         left-key left-scale
@@ -418,9 +415,6 @@
                     addsr env-bias env-scale
                     velocity pressure cca ccb lfo1 lfo2 nil))
 
-
-
-
 (defn- complex-modulator [op enable detune bias amp
                          left-key left-scale
                          right-key right-scale
@@ -486,7 +480,6 @@
                      :cca-fb cca->fb
                      :ccb-fb ccb->fb))
 
-
 (defn op8 [enable & {:keys [detune bias amp
                             left-key left-scale
                             right-key right-scale
@@ -528,7 +521,6 @@
                      :cca-fb cca->fb
                      :ccb-fb ccb->fb))
 
-                     
 (defn algo [& args]
   (let [data (flatten args)
         params (keys (ucol/alist->map data))]
@@ -539,7 +531,6 @@
       (if (ucol/not-member? p params)
         (umsg/warning (format "Missing ALGO parameter %s" p))))
     data))
-                            
 
 (def default-program 
   (algo 

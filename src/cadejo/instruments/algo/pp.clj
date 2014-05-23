@@ -7,11 +7,10 @@
 (def pad1 "    ")
 (def pad2 (str pad1 "      "))
 
-(defn- summery [event pname dmap]
-  (let [prognum (:data1 event)]
-    (printf ";; ---------------------------------------------------- %03d %s"
-            prognum pname))
-    (println "\n;;")
+(defn- summery [pnum pname dmap]
+  (printf ";; ---------------------------------------------------- %03d %s"
+          pnum pname)
+  (println "\n;;")
   (printf ";; [op1 %5.4f%+3.0f  %4.2f]"
           (get dmap :op1-detune) 
           (get dmap :op1-bias)
@@ -48,7 +47,6 @@
           (get dmap :op8-amp)
           (get dmap :op8-feedback))
   (println))
-
 
 (defn- dump-program [data]
   (let [dmap (cadejo.util.col/alist->map data)]
@@ -289,10 +287,9 @@
     (.toString sb)))
 
 (defn pp-algo 
-  ([event pname data remarks]
-     (let [dmap (cadejo.util.col/alist->map data)
-           pnum (:data1 event)]
-       (summery event pname dmap)
+  ([pnum pname data remarks]
+     (let [dmap (cadejo.util.col/alist->map data)]
+       (summery pnum pname dmap)
        (println "(let [enable '[1 1 1   1 1 1   1 1]]")
        (printf "  (save-program %3s   \"%s\" \"%s\"\n"
                pnum pname remarks)
@@ -313,6 +310,4 @@
        (println (str-carrier 7 dmap))
        (println (str-modulator 8 dmap))
        (print (str-efx dmap))
-       (println ")))")))
-  ([event pname data]
-     (pp-algo event pname data "")))
+       (println ")))"))))
