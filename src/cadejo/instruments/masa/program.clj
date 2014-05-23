@@ -1,10 +1,10 @@
 (println "\t--> MASA program")
 
 (ns cadejo.instruments.masa.program
-  (:require [cadejo.midi.bank]))
+  (:require [cadejo.midi.program-bank]))
 
-;; Some common harmonic gamuts
-
+;; Common harmonic gamuts
+;;
 (def b3 (map float [1/2 3/2 1 2 3 4 5 6 8]))
 (def harmonic (map float [1 2 3 4 5 6 7 8 9]))
 (def odd (map float [1/2 3/2 5/2 7/2 9/2 11/2 13/2 15/2 17/2]))
@@ -105,7 +105,6 @@
    :reverb-damp (float reverb-damp)
    :reverb-mix (float reverb-mix))) 
 
-
 (def default-program
   (masa :harmonics    [0.500 1.500 1.000 2.000 3.000 4.000 5.000 6.000 8.000]
         :registration [    0     0     8     6     0     4     0     0     2]
@@ -130,11 +129,12 @@
         :reverb-damp 0.5
         :reverb-mix  0.5))
 
-(def bank (cadejo.midi.bank/bank :MASA
-           "Default MASA Program Bank"))
+(def bank (cadejo.midi.program-bank/program-bank :MASA))
 
 (defn save-program 
-  ([pnum name remarks data]
-     (.set-program! bank pnum name remarks data))
-  ([pnum name data]
-     (save-program pnum name "" data)))
+  ([pnum function-id pname remarks data]
+     (.set-program! bank pnum function-id pname data remarks))
+  ([pnum pname remarks data]
+     (save-program pnum nil pname remarks data))
+  ([pnum pname data]
+     (save-program pnum pname "" data)))

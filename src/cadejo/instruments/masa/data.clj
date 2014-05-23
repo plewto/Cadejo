@@ -6,9 +6,7 @@
 
 (.register-function! bank
                      :random
-                     cadejo.instruments.masa.genpatch/random-masa-program
-                     "generate random MASA program data")
-
+                     cadejo.instruments.masa.genpatch/random-masa-program)
 
 (save-program 0 "Barrows"
   (masa :harmonics    [0.500 1.500 1.000 2.000 3.000 4.000 5.000 6.000 8.000]
@@ -347,9 +345,7 @@
       :reverb-mix 0.400
       :amp 0.20                      :pedal-sens 0.00))
 
-(.use-function! bank 127 "Random" :random)
+(save-program 127 :random "Random" "Generate random MASA program" nil)
+
 (.map-program-number! bank 63 127)
-
-
-
 (.dump bank)

@@ -85,12 +85,10 @@
     (.toString sb)))
 
 (defn pp-masa 
-  ([event pname data remarks]
-     (let [dmap (cadejo.util.col/alist->map data)
-           pnum (:data1 event)]
+  ([pnum pname data remarks]
+     (let [dmap (cadejo.util.col/alist->map data)]
        (printf ";; MASA ---------------------------------- %s %s\n"
                pnum pname)
-       ;(println "(save-program XXX \"name\"")
        (printf "(save-program %3s \"%s\" \"%s\"\n"
                pnum pname remarks)
        (printf "%s(masa " pad1)
@@ -101,6 +99,4 @@
        (print (str-common dmap))
        (print (str-scanner dmap))
        (print (str-reverb dmap))
-       (println "))")))
-  ([event pname data]
-     (pp-masa event pname data "")))
+       (println "))"))))
