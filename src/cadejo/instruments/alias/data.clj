@@ -4,11 +4,9 @@
   (:use [cadejo.instruments.alias.program])
   (:require [cadejo.instruments.alias.genpatch]))
 
-
 (.register-function! bank
                      :random
-                     cadejo.instruments.alias.genpatch/random-alias-program
-                     "Generate random Alias program data")
+                     cadejo.instruments.alias.genpatch/random-alias-program)
 
 ;; --------------------------------------------------------------------------- 0 A Sour God
 ;;
@@ -74,8 +72,6 @@
   (flanger  -99 :lfo [0.032 0.373] :mod [:off    0.466] :fb +0.29 :xmix 0.25)
   (echo1    -99 :delay [1.000 :off    0.000] :fb -0.18 :damp 0.03 :gate [:off    0.00] :pan -0.50)
   (echo2    -99 :delay [1.600 :off    0.000] :fb +0.78 :damp 0.50 :gate [:off    0.00] :pan +0.50)))
-
-
 
 ;; --------------------------------------------------------------------------- 1 Milwaukee's Best
 ;;
@@ -1722,7 +1718,7 @@
 
 ;; --------------------------------------------------------------------------- 127 random program 
 ;;
-(.use-function! bank 127 "Random" :random)
-(.map-program-number! bank 63 127)
+(save-program 127 :random "Random" "Generate random Alias program" '[])
 
+(.map-program-number! bank 63 127)
 (.dump bank)

@@ -1,18 +1,20 @@
 (println "\t--> program")
 
 (ns cadejo.instruments.alias.program
-  (:require [cadejo.midi.bank])
+  (:require [cadejo.midi.program-bank])
   (:require [cadejo.instruments.alias.constants :as constants :reload true])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg]))
 
-(defonce bank (cadejo.midi.bank/bank :Alias "Default bank"))
+(defonce bank (cadejo.midi.program-bank/program-bank :Alias))
   
 (defn save-program 
-  ([pnum name remarks data]
-     (.set-program! bank pnum name remarks data))
-  ([pnum name data]
-     (save-program pnum name "" data)))
+  ([pnum function-id pname remarks data]
+     (.set-program! bank pnum function-id pname data remarks))
+  ([pnum pname remarks data]
+     (save-program pnum nil pname remarks data))
+  ([pnum pname data]
+     (save-program pnum pname "" data)))
 
 (defn- third [col]
   (nth col 2))
@@ -85,7 +87,6 @@
   (list :amp (float amp)
         :port-time (float port-time)
         :cc7->volume (float cc7->volume)))
-
 
 ;; fm  [src depth lag]
 (defn osc1-freq [detune & {:keys [bias fm1 fm2]
@@ -509,16 +510,6 @@
                       g2 [1 0]
                       h1 [1 0]
                       h2 [1 0]}}]
-  ;;; START DEBUG
-  ;; (println (format "MATRIX a %s   %s" a1 a2))
-  ;; (println (format "MATRIX b %s   %s" b1 b2))
-  ;; (println (format "MATRIX c %s   %s" c1 c2))
-  ;; (println (format "MATRIX d %s   %s" d1 d2))
-  ;; (println (format "MATRIX e %s   %s" e1 e2))
-  ;; (println (format "MATRIX f %s   %s" f1 f2))
-  ;; (println (format "MATRIX g %s   %s" g1 g2))
-  ;; (println (format "MATRIX h %s   %s" h1 h2))
-  ;;; END DEBUG
   (list :a-source1 (control-bus-number a1)
         :a-depth1 (float (second a1))
         :a-source2 (control-bus-number a2)

@@ -304,9 +304,8 @@
             pad2 n mix delay dsrc ddth fb damp gsrc gdpth pan)))
 
 (defn pp-alias 
-  ([event pname data remarks]
-     (let [dmap (ucol/alist->map data)
-           pnum (:data1 event)]
+  ([pnum pname data remarks]
+     (let [dmap (ucol/alist->map data)]
        (println)
        (printf ";; Alias ------------------------------- %3s %s\n" pnum pname)
        (printf "(save-program %3s \"%s\" \"%s\"\n" pnum pname remarks)
@@ -343,7 +342,4 @@
        (pp-flanger dmap)
        (pp-echo 1 dmap)(print "\n")
        (pp-echo 2 dmap)(println "))")
-       (println)))
-  ([event pname data]
-     (pp-alias event pname data "")))
- 
+       (println))))
