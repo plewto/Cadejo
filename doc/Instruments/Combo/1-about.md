@@ -1,6 +1,10 @@
 Combo Organ  
 ===========  
 
+
+**NOTE Combo documentation is out of date, particularly in reference to
+  program banks and patch pretty-printer hook functions**
+
 Combo is a simple organ simulation implemented in Overtone. It is intended
 to provide a useful instrument and also to serve as an illustration for
 using Overtone instruments with Cadejo. For illustration purposes heavily

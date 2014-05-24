@@ -86,17 +86,18 @@
 
 (defn pp-masa 
   ([pnum pname data remarks]
-     (let [dmap (cadejo.util.col/alist->map data)]
-       (printf ";; MASA ---------------------------------- %s %s\n"
-               pnum pname)
-       (printf "(save-program %3s \"%s\" \"%s\"\n"
-               pnum pname remarks)
-       (printf "%s(masa " pad1)
-       (print (str-harmonics dmap))
-       (print (str-registration dmap))
-       (print (str-pedals dmap))
-       (print (str-percussion dmap))
-       (print (str-common dmap))
-       (print (str-scanner dmap))
-       (print (str-reverb dmap))
-       (println "))"))))
+     (with-out-str
+       (let [dmap (cadejo.util.col/alist->map data)]
+         (printf ";; MASA ---------------------------------- %s %s\n"
+                 pnum pname)
+         (printf "(save-program %3s \"%s\" \"%s\"\n"
+                 pnum pname remarks)
+         (printf "%s(masa " pad1)
+         (print (str-harmonics dmap))
+         (print (str-registration dmap))
+         (print (str-pedals dmap))
+         (print (str-percussion dmap))
+         (print (str-common dmap))
+         (print (str-scanner dmap))
+         (print (str-reverb dmap))
+         (println "))")))))

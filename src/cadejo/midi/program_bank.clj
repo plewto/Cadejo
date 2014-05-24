@@ -164,6 +164,10 @@
     (hfn pnum bank)
     Where pnum is the mapped program number and bank is this
     The function should return both its arguments as a list")
+  
+  (notification-hook 
+    [this]
+    "Return notification hook function")
 
   (set-pp-hook!
     [this pp]
@@ -174,8 +178,14 @@
     pname is the selected programs name,
     data is the selected programs data
     remarks are the optional remarks text of the selected program.
-    The return value of pp-hook is not used and should be nil")
-      
+
+    The return value of the hook function should be a string which 
+    is both machine and human readable.")    
+  
+  (pp-hook
+    [this]
+    "Return pp-hook function")
+
   (program-change
     [this pnum synths]
     "Extract the selected program data and by side-effect update all
@@ -328,9 +338,13 @@
   (set-notification-hook! [this hfn]
     (swap! notification-hook* (fn [n] hfn)))
 
+  (notification-hook [this] @notification-hook*)
+
   (set-pp-hook! [this hfn]
     (swap! pp-hook* (fn [n] hfn)))
  
+  (pp-hook [this] @pp-hook*)
+
   (program-change [this pnum synths]
     (let [pnum2 (.map-program-number this pnum)]
       (if enable-trace
@@ -346,7 +360,7 @@
               (swap! current-program-data* (fn [n] data))
               (swap! current-program-number* (fn [n] pnum2))
               (apply @notification-hook* (list pnum this))
-              (apply @pp-hook* (list pnum (:name pobj) data (:remarks pobj)))
+              (println (apply @pp-hook* (list pnum (:name pobj) data (:remarks pobj))))
               data)
             nil))
         nil)))
