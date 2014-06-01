@@ -234,8 +234,7 @@
   (dump 
     [this verbose depth]
     [this verbose]
-    [this])
-)
+    [this]))
 
 (deftype ProgramBank [dformat 
                       name* 
@@ -321,7 +320,6 @@
   (set-current-program! [this pnum name]
     (.set-current-program this pnum name ""))
 
-
   (get-program [this pnum]
     (and pnum (get @programs* pnum)))
 
@@ -348,7 +346,8 @@
   (program-change [this pnum synths]
     (let [pnum2 (.map-program-number this pnum)]
       (if enable-trace
-        (printf "%s program-bank.program-change [%3d] --> [%3d]" (.data-format this) pnum pnum2))
+        (printf "%s program-bank.program-change [%3d] --> [%3d]" 
+                (.data-format this) pnum pnum2))
       (if pnum2 
         (let [pobj (.get-program this pnum2)
               f (.get-function this (:function-id pobj))
@@ -360,7 +359,8 @@
               (swap! current-program-data* (fn [n] data))
               (swap! current-program-number* (fn [n] pnum2))
               (apply @notification-hook* (list pnum this))
-              (println (apply @pp-hook* (list pnum (:name pobj) data (:remarks pobj))))
+              (println (apply @pp-hook* (list pnum (:name pobj) 
+                                              data (:remarks pobj))))
               data)
             nil))
         nil)))
@@ -471,8 +471,7 @@
     (.dump this verbose 0))
 
   (dump [this]
-    (.dump this false))
-)
+    (.dump this false)))
 
 (defn program-bank 
   "Create and return new ProgramBank object"
