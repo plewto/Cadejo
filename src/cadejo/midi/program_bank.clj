@@ -59,7 +59,6 @@
   (get-parent-performance
     [this])
 
-
   (bank-name!
     [this name]
     "Set bank name")
@@ -92,6 +91,10 @@
      if id is non-nil and no such function is registered display warning and 
      return identity.  Otherwise return the registered function.")
   
+  (function-keys 
+    [this]
+    "Return list of registerd function keys")
+
   ;; Program number mapping
   ;;
   (clear-program-number-map! 
@@ -286,6 +289,9 @@
                          (.data-format this) id))
                 program-identity)
               program-identity))))
+
+  (function-keys [this]
+    (keys @function-registry*))
 
   (clear-program-number-map! [this]
     (swap! program-number-map* (fn [n](into '[] (range 128)))))
