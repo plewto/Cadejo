@@ -254,6 +254,7 @@
     PerformanceProtocol
 
     (set-bank! [this bnk]
+      (.set-parent-performance! bnk this)
       (swap! bank* (fn [n] bnk)))
 
     (bank [this] @bank*)

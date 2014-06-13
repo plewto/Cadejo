@@ -53,6 +53,13 @@
     [this]
     "Return keyword indicating data format of bank")
 
+  (set-parent-performance! 
+    [this obj])
+
+  (get-parent-performance
+    [this])
+
+
   (bank-name!
     [this name]
     "Set bank name")
@@ -237,6 +244,7 @@
     [this]))
 
 (deftype ProgramBank [dformat 
+                      parent*
                       name* 
                       remarks*
                       function-registry*
@@ -249,6 +257,12 @@
   ProgramBankProtocol
 
   (data-format [this] dformat)
+
+  (set-parent-performance! [this obj]
+    (swap! parent* (fn [n] obj)))
+
+  (get-parent-performance [this]
+    @parent*)
 
   (bank-name! [this text]
     (swap! name* (fn [n](str text))))
@@ -477,6 +491,7 @@
   "Create and return new ProgramBank object"
   ([format name remarks]
      (let [bnk (ProgramBank. (keyword format)
+                             (atom nil)           ; parent performance
                              (atom (str name))
                              (atom (str remarks))
                              (atom {})            ; function-registry
