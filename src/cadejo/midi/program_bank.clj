@@ -1,4 +1,4 @@
-;; The cleverly named cadejo.midi.program-bank replaces the depreciated
+;; The cleverly named cadejo.midi.am-bank replaces the depreciated
 ;; cadejo.midi.program and cadejo.midi.bank name-spaces.
 ;;
 ;; program-bank is responsible for holding program or "patch" data for
@@ -198,13 +198,16 @@
 
   (program-change
     [this pnum synths]
-    "Extract the selected program data and by side-effect update all
-     active synths, the current-program-data, current-program-number, 
-     call the notification and pp hooks and return the program data.
+    "Extract selected program data and by side effect update all
+     active synths, current-program-data, current-program-number
+     and call notification and pp hooks. Returns the progeam data
 
      pnum - The MIDI program number. if pnum is mapped to another program
-     use the mapped value.
-     synths - A list of active synths to be updated")
+            use the mapped value
+
+     synths - A list of active synths to be updated.
+              synths may be nil for testing wich allows a simulated
+              program change without an active SC server.")
 
   (handle-event 
     [this event synths]
@@ -375,7 +378,7 @@
               data (apply f args)]
           (if data
             (do
-              (apply ot/ctl (cons synths data))
+              (if synths (apply ot/ctl (cons synths data)))
               (swap! current-program-data* (fn [n] data))
               (swap! current-program-number* (fn [n] pnum2))
               (apply @notification-hook* (list pnum this))
