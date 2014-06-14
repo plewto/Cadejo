@@ -56,7 +56,7 @@
         (if ele
           (.append sb (format "%s%s" file-separator ele)))))
     (let [rs (.toString sb)]
-      (if (.startsWith rs (format "%s%s" file-separator file-separator))
+      (if (.startsWith rs (format "%s" file-separator file-separator))
         (subs rs 1)
         rs))))
 
@@ -95,7 +95,7 @@
    exists.
  
    (append-extension foo.bar bar) --> foo.bar
-   (append-extension foo.bar baz) --> foo.bar.baz")
+   (append-extension foo.bar baz) --> foo.bar.baz"
   (if (not (has-extension? filename ext))
     (str filename "." ext)
     filename))
