@@ -7,29 +7,30 @@
 (defprotocol UndoStackProtocol
 
   (max-depth 
-    "Returns the maximum number of undos"
-    [this])
+    [this]
+    "Returns the maximum number of undos")
   
   (is-empty?
-    "Boolean true if stack is empty"
-    [this])
+    [this]
+    "Boolean true if stack is empty")
 
   (push-state
-    "Push object to stack, enable button"
-    [this obj])
+    [this obj]
+    "Push object to stack, enable button")
   
   (pop-state
+    [this]
     "Pop and return top stack item.
      If stack initially empty print warning and return nil
-     If stack becomes empty as result of popping disable button"
-    [this])
+     If stack becomes empty as result of popping disable button")
 
   (get-button 
+    [this]
     "Returns instance of JButton.
      The button is enabled/disabled state changes automatically with 
      stack contents. It is up to the client to add listeners to the button
-     for extracting stack elements."
-    [this]))
+     for extracting stack elements."))
+
 
  
     
@@ -64,8 +65,6 @@
 
   (get-button [this]
     button))
-
- 
 
 
 (defn undo-stack [label & {:keys [as-icon max-depth]
