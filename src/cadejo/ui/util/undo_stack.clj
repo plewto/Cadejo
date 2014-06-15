@@ -31,10 +31,6 @@
      stack contents. It is up to the client to add listeners to the button
      for extracting stack elements."))
 
-
- 
-    
-
 (def default-maximum-undo-depth 10)
 
 (defrecord UndoStack [maximum-depth stack* button]
