@@ -30,10 +30,14 @@
 
 (def enable-trace false)
 
+(def program-count 128)
+
+(declare program-bank)
+
 (defn- program-identity [& args] args)
 
 (defn assert-midi-program-number [pnum]
-  (or (and (integer? pnum)(>= pnum 0)(< pnum 128) pnum)
+  (or (and (integer? pnum)(>= pnum 0)(< pnum program-count) pnum)
       (umsg/warning (format "%s is not a valid MIDI program number" pnum))))
 
 (defn program 
@@ -93,7 +97,7 @@
   
   (function-keys 
     [this]
-    "Return list of registerd function keys")
+    "Return list of registered function keys")
 
   ;; Program number mapping
   ;;
@@ -127,8 +131,7 @@
     [this pnum function-id name args]
     [this pnum name args]
     "Set bank slot data
-     pnum - MIDI program number. If pnum is mapped to another value
-     the mapped value is used.
+     pnum - MIDI program number (un-mapped)
      All other arguments as per the program function
      A new record is created via the program function, stored in slot
      pnum and returned.")
@@ -200,13 +203,13 @@
     [this pnum synths]
     "Extract selected program data and by side effect update all
      active synths, current-program-data, current-program-number
-     and call notification and pp hooks. Returns the progeam data
+     and call notification and pp hooks. Returns the program data
 
      pnum - The MIDI program number. if pnum is mapped to another program
             use the mapped value
 
      synths - A list of active synths to be updated.
-              synths may be nil for testing wich allows a simulated
+              synths may be nil for testing which allows a simulated
               program change without an active SC server.")
 
   (handle-event 
@@ -243,6 +246,12 @@
      not altered.
      Return this if successful
      Print warning message and return false on error.")
+  
+  (clone
+    [this])
+
+  (copy-state! 
+    [this other])
 
   (dump 
     [this verbose depth]
@@ -297,7 +306,7 @@
     (keys @function-registry*))
 
   (clear-program-number-map! [this]
-    (swap! program-number-map* (fn [n](into '[] (range 128)))))
+    (swap! program-number-map* (fn [n](into '[] (range program-count)))))
  
   (map-program-number! [this a b]
     (if (assert-midi-program-number a)
@@ -321,9 +330,8 @@
 
   (set-program! [this pnum function-id name args remarks]
     (if (assert-midi-program-number pnum)
-      (let [pnum2 (nth @program-number-map* pnum)
-            prog (program function-id name args remarks)]
-        (swap! programs* (fn [n](assoc n pnum2 prog)))
+      (let [prog (program function-id name args remarks)]
+        (swap! programs* (fn [n](assoc n pnum prog)))
         prog)
       nil))
 
@@ -461,6 +469,48 @@
                       (format "read-bank  bank format  %s" (.data-format this))
                       (format "filename \"%s\"" filename))
         nil)))
+
+  (clone [this]
+    (let [other (program-bank (.data-format this)
+                              (.bank-name this)
+                              (.bank-remarks this))]
+      (doseq [fid (.function-keys this)]
+        (let [f (.get-function this fid)]
+          (.register-function! other fid f)))
+      (dotimes [pnum program-count]
+        (let [b (.map-program-number this pnum)
+              prog (.get-program this pnum)]
+          (.map-program-number! other pnum b)
+          (if prog
+            (.set-program! other pnum
+                           (:function-id prog)
+                           (:name prog)
+                           (:args prog)
+                           (:remarks prog)))))
+      (.set-notification-hook! other (.notification-hook this))
+      (.set-pp-hook! other (.pp-hook this))
+      other))
+
+  (copy-state! [this other]
+    (if (= (.data-format this)(.data-format other))
+      (do (.clear-program-number-map! this)
+          (.clear-all-programs! this)
+          (.bank-name! this (.bank-name other))
+          (.bank-remarks! this (.bank-remarks other))
+          (dotimes [pnum program-count]
+            (let [b (.map-program-number other pnum)
+                  prog (.get-program other pnum)]
+              (.map-program-number! this pnum b)
+              (if prog (.set-program! this pnum
+                                      (:function-id prog)
+                                      (:name prog)
+                                      (:args prog)
+                                      (:remarks prog)))))
+          this)
+      (umsg/warning (format "Can not copy %s bank data to %s bank"
+                            (.data-format other)
+                            (.data-format this)))))
+
 
   (dump [this verbose depth]
     (let [depth2 (inc depth)
