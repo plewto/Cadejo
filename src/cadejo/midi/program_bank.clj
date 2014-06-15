@@ -237,7 +237,7 @@
      If successful return true.
      Display warning and return false if on error")
 
-  (read-bank 
+  (read-bank! 
     [this filename]
     "Read bank data from file
      The file must be a cadejo bank data file with proper format.
@@ -248,10 +248,13 @@
      Print warning message and return false on error.")
   
   (clone
-    [this])
+    [this]
+    "Create new bank with identical state to this")
 
   (copy-state! 
-    [this other])
+    [this other]
+    "Copy state of other bank into this.
+     data format of both banks must be identical")
 
   (dump 
     [this verbose depth]
@@ -303,7 +306,7 @@
               program-identity))))
 
   (function-keys [this]
-    (keys @function-registry*))
+    (cons nil (keys @function-registry*)))
 
   (clear-program-number-map! [this]
     (swap! program-number-map* (fn [n](into '[] (range program-count)))))
@@ -435,7 +438,7 @@
                       (format "filename \"%s\"" filename))
         nil)))
 
-  (read-bank [this filename]
+  (read-bank! [this filename]
     (try
       (let [rec (read-string (slurp filename))
             ftype (:file-type rec)
@@ -466,7 +469,7 @@
             this)))
       (catch java.io.FileNotFoundException e
         (umsg/warning "File Not Found Exception"
-                      (format "read-bank  bank format  %s" (.data-format this))
+                      (format "read-bank!  bank format  %s" (.data-format this))
                       (format "filename \"%s\"" filename))
         nil)))
 
