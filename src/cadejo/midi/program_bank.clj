@@ -127,14 +127,18 @@
     [this])
 
   (set-program! 
+    [this pnum prog]
     [this pnum function-id name args remarks]
     [this pnum function-id name args]
     [this pnum name args]
     "Set bank slot data
-     pnum - MIDI program number (un-mapped)
-     All other arguments as per the program function
-     A new record is created via the program function, stored in slot
-     pnum and returned.")
+     For (set-program! this pnum prog)
+     Set bank slot pnum to program prog where
+     pnum is a MIDI program number and prog is a map as returned by the 
+     program function.
+          
+     For all other argument combinations a prog map is created
+     Returns the added program map on success, returns nil on failure.")
 
   (set-current-program!
     [this pnum name remarks]
@@ -331,12 +335,17 @@
   (clear-all-programs! [this]
     (swap! programs* (fn [n] {})))
 
-  (set-program! [this pnum function-id name args remarks]
+  (set-program! [this pnum prog]
     (if (assert-midi-program-number pnum)
-      (let [prog (program function-id name args remarks)]
+      (do 
         (swap! programs* (fn [n](assoc n pnum prog)))
         prog)
       nil))
+
+  (set-program! [this pnum function-id name args remarks]
+    (let [prog (program function-id name args remarks)]
+      (.set-program! pnum prog)))
+
 
   (set-program! [this pnum function-id name args]
     (.set-program! this pnum function-id name args ""))
