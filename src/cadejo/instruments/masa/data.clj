@@ -346,6 +346,3 @@
       :amp 0.20                      :pedal-sens 0.00))
 
 (save-program 127 :random "Random" "Generate random MASA program" nil)
-
-(.map-program-number! bank 63 127)
-(.dump bank)

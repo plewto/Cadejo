@@ -2637,9 +2637,3 @@
 ;; ------------------------------------------------------------ 127 random program 
 ;;
 (save-program 127 :random "Random" "Generate random ALGO program" nil)
-
-(.map-program-number! bank 63 127)
-(.dump bank)
-
-
-

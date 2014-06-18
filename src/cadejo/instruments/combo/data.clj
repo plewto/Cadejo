@@ -175,7 +175,3 @@
            :reverb  0.000  :amp 0.200))
 
 (save-program 127 :random "Random" "Generate random Combo program" nil)
-
-(.map-program-number! bank 63 127)
-(.dump bank)
-

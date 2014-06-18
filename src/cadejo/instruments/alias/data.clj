@@ -1851,6 +1851,3 @@
 ;; --------------------------------------------------------------------------- 127 random program 
 ;;
 (save-program 127 :random "Random" "Generate random Alias program" '[])
-
-(.map-program-number! bank 63 127)
-(.dump bank)
