@@ -2,7 +2,8 @@
   "Provides undo/redo stack with associated JButton"
   (:require [seesaw.core :as ss])
   (:require [cadejo.ui.util.icon])
-  (:require [cadejo.util.user-message]))
+  (:require [cadejo.util.user-message])
+  (:require [cadejo.config]))
 
 (defprotocol UndoStackProtocol
 
@@ -31,7 +32,7 @@
      stack contents. It is up to the client to add listeners to the button
      for extracting stack elements."))
 
-(def default-maximum-undo-depth 10)
+;(def default-maximum-undo-depth 10)
 
 (defrecord UndoStack [maximum-depth stack* button]
   UndoStackProtocol
@@ -65,7 +66,7 @@
 
 (defn undo-stack [label & {:keys [as-icon max-depth]
                            :or {as-icon false
-                                max-depth default-maximum-undo-depth}}]
+                                max-depth (cadejo.config/maximum-undo-count)}}]
   "Creates instance of UndoStack.
    label     - button text or icon name
    as-icon   - Boolean, if as-icon is false button text is set to label
