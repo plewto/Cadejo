@@ -39,6 +39,8 @@
   10)
 
 
+(defn warn-on-file-overwrite []
+  false)
 
 ;; (defn test-mode []
 ;;   true)

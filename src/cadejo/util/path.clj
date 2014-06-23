@@ -1,5 +1,6 @@
 (ns cadejo.util.path
-  "Provides utilities for filename manipulation")
+  "Provides utilities for filename manipulation"
+  (:import java.io.File))
 
 (def home-token "~")              ; token representing user's home
 (def current-directory-token ".")
@@ -107,3 +108,8 @@
    (replace-extension foo.bar bar) --> foo.bar
    (replace-extension foo.bar baz) --> foo.baz"
   (append-extension (first (split-extension filename)) ext))
+
+(defn exists [filename]
+  "Predicate returns true if filename exists"
+  (let [f (File. filename)]
+    (.exists f)))

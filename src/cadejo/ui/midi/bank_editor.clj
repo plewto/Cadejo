@@ -1,20 +1,19 @@
 (println "--> Loading cadejo.ui.midi.bank-editor")
 ;; NOTES:
-;; 1) Editing bank and remarks are not saved to undo stack
+;; 1) Editing bank name and remarks are not saved to undo stack
 
 (ns cadejo.ui.midi.bank-editor
   (:require [cadejo.ui.util.undo-stack])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.config])
   (:require [cadejo.util.path :as path])
-
+  (:require [cadejo.ui.util.overwrite-warning])
   (:use [seesaw.core])
   (:require [seesaw.border :as ssb])
   (:require [seesaw.chooser])
   (:import javax.swing.BorderFactory
            javax.swing.event.ListSelectionListener
-           javax.swing.event.CaretListener
-           ))
+           javax.swing.event.CaretListener))
 
 (declare open-dialog)
 (declare save-dialog)
@@ -290,15 +289,41 @@
              :success-fn success
              :cancel-fn cancel)]))
 
+;; (defn- save-dialog [ed bank]
+;;   (let [ext (.file-extension ed)
+;;         success (fn [jfc f]
+;;                   (let [abs (path/append-extension (.getAbsolutePath f) ext)]
+;;                     (if (.write-bank bank abs)
+;;                       (do
+;;                         (.filename ed abs)
+;;                         (.status ed "Saved bank file"))
+;;                       (.warning ed (format "Could not save bank to '%s'" abs)))))
+;;         cancel (fn [jfc]
+;;                  (.status ed "Bank save canceled"))
+;;         ffilter (create-file-filter ed)
+;;         default-file (.filename ed)
+;;         dia (seesaw.chooser/choose-file
+;;              :type :save
+;;              :dir default-file
+;;              :multi? false
+;;              :selection-mode :files-only
+;;              :filters [ffilter]
+;;              :remember-directory? true
+;;              :success-fn success
+;;              :cancel-fn cancel)]))
+
 (defn- save-dialog [ed bank]
   (let [ext (.file-extension ed)
         success (fn [jfc f]
                   (let [abs (path/append-extension (.getAbsolutePath f) ext)]
-                    (if (.write-bank bank abs)
-                      (do
-                        (.filename ed abs)
-                        (.status ed "Saved bank file"))
-                      (.warning ed (format "Could not save bank to '%s'" abs)))))
+                    (if (cadejo.ui.util.overwrite-warning/overwrite-warning
+                         (.widget ed :pan-main) "Bank" abs)
+                      (if (.write-bank bank abs)
+                        (do
+                          (.filename ed abs)
+                          (.status ed "Saved bank file"))
+                        (.warning ed (format "Could not save bank to '%s'" abs)))
+                      (.status ed "Save canceled"))))
         cancel (fn [jfc]
                  (.status ed "Bank save canceled"))
         ffilter (create-file-filter ed)
@@ -312,6 +337,8 @@
              :remember-directory? true
              :success-fn success
              :cancel-fn cancel)]))
+
+
 
 (defn- function-edit-dialog [ed bank pnum]
   (let [prog (.get-program bank pnum)
@@ -467,7 +494,7 @@
 ;                          Bank Editor Constructor
 
 (defn bank-editor [bank]
-  (let [max-undo (config/maximum-undo-count)
+  (let [max-undo (cadejo.config/maximum-undo-count)
         undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo" :max-depth max-undo)
         redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo" :max-depth max-undo)
         jb-init (button :text "Init" :id :jb-bank-init)
@@ -632,19 +659,19 @@
 ;;; -------------------------- TEST 
 ;;; -------------------------- TEST 
 
-;; (require '[cadejo.midi.dummy-bank :as dummy])
+(require '[cadejo.midi.dummy-bank :as dummy])
 
-;; (def bnk1 dummy/bnk1)
-;; (.program-change bnk1 0)
-;; (def ed (bank-editor bnk1))
-;; (def pan-main (.widget ed :pan-main))
+(def bnk1 dummy/bnk1)
+(.program-change bnk1 0)
+(def ed (bank-editor bnk1))
+(def pan-main (.widget ed :pan-main))
 
-;; (def f (frame :title "TEST BANK EDITOR"
-;;               :content pan-main
-;;               :on-close :dispose
-;;               ))
+(def f (frame :title "TEST BANK EDITOR"
+              :content pan-main
+              :on-close :dispose
+              ))
 
 
-;; (.write-bank bnk1 "/home/sj/.cadejo/apple.dummy")
-;; (pack! f)
-;; (show! f)
+(.write-bank bnk1 "/home/sj/.cadejo/apple.dummy")
+(pack! f)
+(show! f)
