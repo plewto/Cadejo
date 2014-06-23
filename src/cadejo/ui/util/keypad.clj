@@ -1,222 +1,166 @@
 (ns cadejo.ui.util.keypad
   "Provides numeric keypad component with integrated display"
-  (:use [seesaw.core])
-  (:require [seesaw.font]))
+  (:require [seesaw.core :as ss])
+  (:require [cadejo.ui.indicator.complex-display])
+  )
 
-(def display-font (seesaw.font/font :name :monospaced
-                                    :style #{:italic}
-                                    :size 24))
-(def max-digits 16)
 
-(defn default-validator [tx]
-  (if (zero? (count tx))
-    true
-    (try
-      (Double/parseDouble (str tx))
-      (< (count tx) max-digits)
-      (catch NumberFormatException ex nil))))
 
 (defprotocol KeypadProtocol
 
-  (set-validator! 
-    [this vfn]
-    "Sets validator function.
-     The function should take a single string argument and return 
-     true if it is valid. The default validator checks that it's
-     argument may be parsed as a Java double and that it does not
-     exceed max-digits in length. Sign and decimal point characters
-     are included in the length test. An empty string is a valid
-     representation for 0.")
+  ;; (validator! 
+  ;;  [this vfn]
+  ;;  "Set validation function
+  ;;  vfn should take a single string argument and return boolean.")
 
-  (get-validator 
-    [this]
-    "Returns the validator function.")
+  (validator 
+   [this]
+   "Return validation function")
 
-  (set-value!
-    [this tx]
-    "Set display value to tx.
-     The display is updated only if the validator function 
-     returns true for tx.")
+  (value! 
+   [this v]
+   "Set display value to v if validator agrees.
+    Return true if v is valid")
 
-  (get-value
-    [this]
-    "Returns the current value of the display as a Java double")
-
-  (append
-    [this c]
-    "Add character c to end of display. The display is updated only
-     if the validator returns true for the appended text.")
-
-  (backspace
-    [this]
-    "Delete the right-most display character.
-     If as a result the display text becomes invalid then 
-     the nothing is deleted.")
-
-  (clear 
-    [this]
-    "Clear all display text.
-     The display is cleared only if the validator allows 
-     an empty string.")
+  (value
+   [this]
+   "Return current display value")
 
   (widgets
-    [this]
-    "Returns a map of GUI widgets.")
+   [this]
+   "Return map of components")
 
-  (widget
-    [this key]
-    "Returns a specific GUI widget allowing direct access to keypad 
-     components. Of particular note is :pan-main which returns the 
-     the primary JPanel. 
-     
-     :jb-back    - backspace button
-     :jb-clear   - clear display button
-     :jb-point   - decimal point button
-     :jb-user-1  - unused button on lower left corner
-     :jp-user-2  - unused button on lower left corner
-     :jb-x       - (where x is a digit 0-9) the number buttons
-     :pan-center - panel holding keypad
-     :pan-north  - panel holding display
-     :pan-main   - main outer panel
-     :tx-display - JTextField used for display"))
+  (widget 
+   [this key]
+   "Return specific component")
 
-(deftype Keypad [validator* widgets*]
-  KeypadProtocol
-  
-  (set-validator! [this vfn]
-    (swap! validator* (fn [n] vfn)))
+  (digits
+   [this]
+   "Returns number of display digits")
+)
 
-  (get-validator [this]
-    @validator*)
 
-  (set-value! [this tx]
-    (let [vfn (.get-validator this)
-          stx (str tx)]
-      (if (vfn stx)
-        (config! (.widget this :tx-display) :text stx)
-        nil)))
+(deftype Keypad [validator* value* widgetmap display]
+    KeypadProtocol
+    
+    ;; (validator! [this vfn]
+    ;;   (swap! validator* (fn [n] vfn)))
 
-  (get-value [this]
-    (let [tx (config (.widget this :tx-display) :text)]
-      (cond (zero? (count tx)) 0
-            :default (Double/parseDouble tx))))
+    (validator [this]
+      @validator*)
 
-  (append [this c]
-    (let [vfn (.get-validator this)
-          tx1 (config (.widget this :tx-display) :text)
-          tx2 (str tx1 c)]
-      (if (vfn tx2)
-        (config! (.widget this :tx-display) :text tx2)
-        nil)))
+    (value! [this v]
+      (let [vfn (.validator this)]
+        (if vfn
+          (do 
+            (swap! value* (fn [n] v))
+            (.set-display! display (str v))
+            true)
+        false)))
 
-  (backspace [this]
-    (let [vfn (.get-validator this)
-          tx1 (config (.widget this :tx-display) :text)
-          k (count tx1)
-          tx2 (if (pos? k)
-                (subs tx1 0 (dec k)))]
-      (if (vfn tx2)
-        (config! (.widget this :tx-display) :text tx2)
-        nil)))
-  
-  (clear [this]
-    (let [vfn (.get-validator this)
-          tx ""]
-      (if (vfn tx)
-        (config! (.widget this :tx-display) :text tx)
-        nil)))
-  
-  (widgets [this]
-    @widgets*)
+    (value [this]
+      (Double/parseDouble @value*))
 
-  (widget [this key]
-    (get @widgets* key)))
-      
-(defn keypad 
-  "(keypad [validator])
-   (keypad)
-   Create Keypad object with validator function.
-   If validator not specified use default-validator"
-  ([validator]
-     (let [widgets* (atom {})
-           validator* (atom validator)
-           kp (Keypad. validator* widgets*)
-           tx-display (text :text ""
-                            :multi-line? false
-                            :editable? false
-                            :halign :right
-                            :font display-font)
-           number-buttons (let [acc* (atom [])]
-                            (dotimes [i 10]
-                              (let [jb (button :text (str i))]
-                                (.putClientProperty jb :value i)
-                                (swap! acc* (fn [n](conj n jb)))
-                                (listen jb :action (fn [ev]
-                                                     (let [src (.getSource ev)
-                                                           val (.getClientProperty src :value)]
-                                                       (.append kp val))))
-                                (swap! widgets* (fn [n](assoc n (keyword (format "jp-%d" i)) jb)))))
-                            @acc*)
-           jb-sign (button :text "-/+")
-           jb-point (button :text ".")
-           jb-back (button :text "<--")
-           jb-clear (button :text "CLR")
-           jb-user-1 (button :text "")
-           jb-user-2 (button :text "")
-           buttons [(nth number-buttons 7)
-                    (nth number-buttons 8)
-                    (nth number-buttons 9)
-                    jb-back
-                    (nth number-buttons 4)
-                    (nth number-buttons 5)
-                    (nth number-buttons 6)
-                    jb-clear
-                    (nth number-buttons 1)
-                    (nth number-buttons 2)
-                    (nth number-buttons 3)
-                    jb-user-1
-                    jb-sign
-                    (first number-buttons)
-                    jb-point
-                    jb-user-2]
-           pan-center (grid-panel :rows 4 :columns 4 :items buttons)
-           pan-north (horizontal-panel :items [tx-display])
-           pan-main (border-panel :north pan-north
+    (widgets [this]
+      widgetmap)
+
+    (widget [this key]
+      (get widgetmap key))
+
+    (digits [this]
+      (.char-count display)))
+
+(defn keypad [& {:keys [digits validator]
+                 :or {digits 8
+                      validator (fn [n] true)
+                      }}]
+  (let [widgets* (atom {})
+        value* (atom "")
+        numeric-buttons 
+        (let [acc* (atom [])]
+          (dotimes [n 10]
+            (let [id (keyword (format "jb-keypad-%d" n))
+                  jb (ss/button :text (str n)
+                                :id id)]
+              (.putClientProperty jb :value n)
+              (swap! acc* (fn [a](conj a jb)))
+              (swap! widgets* (fn [a](assoc a id jb)))
+              ))
+          @acc*)
+        jb-sign (ss/button :text "-/+"
+                           :id (keyword "jb-keypad-sign"))
+        jb-point (ss/button :text "."
+                            :id (keyword "jb-keypad-point"))
+        jb-clear (ss/button :text "C"
+                            :id (keyword "jb-keypad-clear"))
+        jb-user-1 (ss/button :text ""
+                             :id :jb-keypad-user-1)
+        jb-user-2 (ss/button :text ""
+                             :id :jb-keypad-user-2)
+        jb-user-3 (ss/button :text ""
+                             :id :jb-keypad-user-3)
+        center-items [(nth numeric-buttons 7)(nth numeric-buttons 8)
+                      (nth numeric-buttons 9) jb-sign 
+                      (nth numeric-buttons 4)(nth numeric-buttons 5)
+                      (nth numeric-buttons 6) jb-user-1
+                      (nth numeric-buttons 1)(nth numeric-buttons 2)
+                      (nth numeric-buttons 3) jb-user-2
+                      (nth numeric-buttons 0) jb-point jb-clear jb-user-3]
+        pan-center (ss/grid-panel :rows 4 :columns 4 :items center-items)
+        display (cadejo.ui.indicator.complex-display/matrix-display-bar :count digits)
+        pan-north (ss/horizontal-panel :items [(.lamp-canvas display)])
+        pan-main (ss/border-panel :north pan-north
                                   :center pan-center)]
-       (swap! widgets* (fn [n](assoc n 
-                                     :tx-display tx-display
-                                     :jb-sign jb-sign
-                                     :jb-point jb-point
-                                     :jb-back jb-back
-                                     :jb-clear jb-clear
-                                     :jb-user-1 jb-user-1
-                                     :jb-user-2 jb-user-2
+    (swap! widgets* (fn [n](merge n {:jb-keypad-sign jb-sign
+                                     :jb-keypad-point jb-point
+                                     :jb-keypad-clear jb-clear
+                                     :jb-keypad-user-1 jb-user-1
+                                     :jb-keypad-user-2 jb-user-2
+                                     :jb-keypad-user-3 jb-user-3
                                      :pan-north pan-north
                                      :pan-center pan-center
-                                     :pan-main pan-main)))
-       (listen jb-sign :action (fn [ev]
-                                 (let [val (* -1 (.get-value kp))
-                                       vfn (.get-validator kp)]
-                                   (if (vfn (str val))
-                                     (config! (.widget kp :tx-display) :text val)))))
-       (listen jb-point :action (fn [ev](.append kp ".")))
-       (listen jb-back :action (fn [ev](.backspace kp)))
-       (listen jb-clear :action (fn [ev](.clear kp))) 
-       kp))
-  ([](keypad default-validator)))
-                                     
-           
-
-;; Example usage
-;; (def kp (keypad))
-;; (def f (frame :title "Test Keypad"
-;;               :content (.widget kp :pan-main)
-;;               :on-close :dispose
-;;               :size [300 :by 300]))
-;; (show! f)
-           
-          
-          
-        
+                                     :pan-main pan-main
+                                     :display display})))
+    (doseq [jb numeric-buttons]
+      (ss/listen jb :action (fn [ev]
+                              (let [src (.getSource ev)
+                                    digit (.getClientProperty src :value)
+                                    old-value @value*
+                                    new-value (str old-value digit)]
+                                (if (validator new-value)
+                                  (do 
+                                    (.set-display! display (str new-value))
+                                    (swap! value* (fn [n] new-value))))))))
+    (ss/listen jb-sign :action (fn [n]
+                                 (let [old-value 
+                                       (try 
+                                         (Double/parseDouble @value*)
+                                         (catch NumberFormatException ex 0))
+                                       new-value (str (* -1 old-value))]
+                                   (if (validator new-value)
+                                     (do 
+                                       (.set-display! display new-value)
+                                       (swap! value* (fn [n] new-value)))))))
+    (ss/listen jb-point :action (fn [n]
+                                  (let [old-value
+                                        (try
+                                          (str (Double/parseDouble @value*))
+                                          (catch NumberFormatException ex "0.0"))
+                                        dp-pos (.indexOf old-value ".")
+                                        int-part (subs old-value 0 dp-pos)
+                                        new-value (str int-part ".")]
+                                    (if (validator new-value)
+                                      (do
+                                        (.set-display! display new-value)
+                                        (swap! value* (fn [n] new-value)))))))
+    (ss/listen jb-clear :action (fn [n]
+                                  (swap! value* (fn [n] ""))
+                                  (.clear-display! display)))
+                                        
     
+    (.on! display)
+    (Keypad. (atom validator)
+             value*
+             @widgets*
+             display))) 
 
