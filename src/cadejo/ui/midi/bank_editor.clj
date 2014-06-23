@@ -80,9 +80,6 @@
   (show-help 
     [this])
 
-  ;; (select-program 
-  ;;   [this pnum])
-
   (enable-store-program-mode 
     [this flag])
 
@@ -122,8 +119,6 @@
   (filename 
     [this]
     [this update])
-
-
 )
 
 (deftype BankEditor [bank 
@@ -190,10 +185,6 @@
     (.warning this "ISSUE show-help not implemented")
     )
 
-  ;; (select-program [this pnum]
-  ;;   (.warning this "ISSUE select-program not implemented")
-  ;;   )
-     
   (enable-store-program-mode [this flag]
     (swap! store-mode-flag* (fn [n] flag))
     (config! (.widget this :jb-store) :selected? flag))
@@ -256,25 +247,24 @@
     update)
 
   (filename [this]
-    @filename*)
-
-)
+    @filename*))
 
 ; ---------------------------------------------------------------------- 
 ;                                  Dialogs
 
 (defn- open-dialog [ed bank]
   (let [ext (.file-extension ed)
-        success (fn [jfc f]
-                  (let [abs (path/replace-extension (.getAbsolutePath f) ext)]
-                    (.push-undo-state ed)
-                    (if (.read-bank! bank abs)
-                      (do 
-                        (.filename ed abs)
-                        (.program-change bank 0)
-                        (.sync-ui ed)
-                        (.status ed "Bank read"))
-                      (.warning ed (format "Could not read bank file '%s'" abs)))))
+        success 
+        (fn [jfc f]
+          (let [abs (path/replace-extension (.getAbsolutePath f) ext)]
+            (.push-undo-state ed)
+            (if (.read-bank! bank abs)
+              (do 
+                (.filename ed abs)
+                (.program-change bank 0)
+                (.sync-ui ed)
+                (.status ed "Bank read"))
+              (.warning ed (format "Can not read bank file '%s'" abs)))))
         cancel (fn [jfc]
                  (.status ed "Bank read canceled"))
         ffilter (create-file-filter ed)
@@ -289,29 +279,6 @@
              :success-fn success
              :cancel-fn cancel)]))
 
-;; (defn- save-dialog [ed bank]
-;;   (let [ext (.file-extension ed)
-;;         success (fn [jfc f]
-;;                   (let [abs (path/append-extension (.getAbsolutePath f) ext)]
-;;                     (if (.write-bank bank abs)
-;;                       (do
-;;                         (.filename ed abs)
-;;                         (.status ed "Saved bank file"))
-;;                       (.warning ed (format "Could not save bank to '%s'" abs)))))
-;;         cancel (fn [jfc]
-;;                  (.status ed "Bank save canceled"))
-;;         ffilter (create-file-filter ed)
-;;         default-file (.filename ed)
-;;         dia (seesaw.chooser/choose-file
-;;              :type :save
-;;              :dir default-file
-;;              :multi? false
-;;              :selection-mode :files-only
-;;              :filters [ffilter]
-;;              :remember-directory? true
-;;              :success-fn success
-;;              :cancel-fn cancel)]))
-
 (defn- save-dialog [ed bank]
   (let [ext (.file-extension ed)
         success (fn [jfc f]
@@ -322,7 +289,7 @@
                         (do
                           (.filename ed abs)
                           (.status ed "Saved bank file"))
-                        (.warning ed (format "Could not save bank to '%s'" abs)))
+                        (.warning ed (format "Can not save bank to '%s'" abs)))
                       (.status ed "Save canceled"))))
         cancel (fn [jfc]
                  (.status ed "Bank save canceled"))
@@ -338,8 +305,6 @@
              :success-fn success
              :cancel-fn cancel)]))
 
-
-
 (defn- function-edit-dialog [ed bank pnum]
   (let [prog (.get-program bank pnum)
         fid (:function-id prog)
@@ -348,21 +313,23 @@
         args (:args prog)
         remarks (:remarks prog)
         grp (button-group)
-        function-buttons (let [acc* (atom [])]
-                           (doseq [f (.function-keys bank)]
-                             (let [rb (radio :text (str f)
-                                             :group grp
-                                             :selected? (= f fid)
-                                             :id f)]
-                               (swap! acc* (fn [n](conj n rb)))
-                               (listen rb :action (fn [ev]
-                                                    (let [src (.getSource ev)
-                                                          id (config src :id)]
-                                                    (swap! dst-fid* (fn [n] id)))))))
-                           
-                               @acc*)
-        pan-functions (vertical-panel :items function-buttons
-                                      :border (make-border "Available Functions"))
+        function-buttons 
+        (let [acc* (atom [])]
+          (doseq [f (.function-keys bank)]
+            (let [rb (radio :text (str f)
+                            :group grp
+                            :selected? (= f fid)
+                            :id f)]
+              (swap! acc* (fn [n](conj n rb)))
+              (listen rb :action (fn [ev]
+                                   (let [src (.getSource ev)
+                                         id (config src :id)]
+                                     (swap! dst-fid* (fn [n] id)))))))
+          
+          @acc*)
+        pan-functions (vertical-panel 
+                       :items function-buttons
+                       :border (make-border "Available Functions"))
 
         tx-name (text :text (str name) 
                       :multi-line? false)
@@ -422,7 +389,8 @@
                     dst-remarks (config tx-remarks :text)
                     dst-args (config tx-args :text)]
                 (.push-undo-state ed)
-                (.set-program! bank dst-pnum @dst-fid* dst-name dst-args dst-remarks)
+                (.set-program! bank dst-pnum @dst-fid* 
+                               dst-name dst-args dst-remarks)
                 (.dispose dia)
                 (.sync-ui ed)
                 (.status ed (format "%s program edit stored to %s"
@@ -482,11 +450,13 @@
                                    dst-remarks (config tx-remarks :text)
                                    dst-data (.current-program-data bank)]
                                (.push-undo-state ed)
-                               (.set-program! bank dst-pnum nil dst-name dst-data dst-remarks)
+                               (.set-program! bank dst-pnum nil dst-name 
+                                              dst-data dst-remarks)
                                (.enable-store-program-mode ed false)
                                (.dispose dia)
                                (.sync-ui ed)
-                               (.status ed (format "%s stored to %s" dst-name dst-pnum)))))
+                               (.status ed (format "%s stored to %s" 
+                                                   dst-name dst-pnum)))))
     (pack! dia)
     (show! dia)))
 
@@ -495,8 +465,10 @@
 
 (defn bank-editor [bank]
   (let [max-undo (cadejo.config/maximum-undo-count)
-        undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo" :max-depth max-undo)
-        redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo" :max-depth max-undo)
+        undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo" 
+                                                         :max-depth max-undo)
+        redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo" 
+                                                         :max-depth max-undo)
         jb-init (button :text "Init" :id :jb-bank-init)
         jb-open (button :text "Open" :id :jb-bank-open)
         jb-save (button :text "Save" :id :jb-bank-save)
@@ -652,26 +624,3 @@
 
     (.filename ed (cadejo.config/config-path))
     ed))
-                                      
-
-
-;;; -------------------------- TEST 
-;;; -------------------------- TEST 
-;;; -------------------------- TEST 
-
-(require '[cadejo.midi.dummy-bank :as dummy])
-
-(def bnk1 dummy/bnk1)
-(.program-change bnk1 0)
-(def ed (bank-editor bnk1))
-(def pan-main (.widget ed :pan-main))
-
-(def f (frame :title "TEST BANK EDITOR"
-              :content pan-main
-              :on-close :dispose
-              ))
-
-
-(.write-bank bnk1 "/home/sj/.cadejo/apple.dummy")
-(pack! f)
-(show! f)
