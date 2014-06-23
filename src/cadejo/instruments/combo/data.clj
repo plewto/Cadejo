@@ -174,4 +174,28 @@
            :flanger [:rate 4.973 :depth 0.418 :fb +0.77 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
+
+(save-program 61 "Moema"
+    (combo :a1      0.551  :w1  0.322
+           :a2      0.494  :w2 0.184
+           :a3      1.000  :w3 0.180
+           :a4      0.994  :w4 0.168
+           :chorus  0.701
+           :vibrato [:freq 5.256 :sens 0.010]
+           :filter  [:freq  8    :type  notch]
+           :flanger [:rate 0.483 :depth 0.500 :fb -0.78 :mix 0.000]
+           :reverb  0.000  :amp 0.200))
+
+(save-program 62 "Itzel"
+    (combo :a1      1.000  :w1 0.000
+           :a2      0.000  :w2 0.740
+           :a3      0.000  :w3 0.900
+           :a4      1.000  :w4 0.100
+           :chorus  0.100
+           :vibrato [:freq 5.000 :sens 0.010]
+           :filter  [:freq  3    :type notch]
+           :flanger [:rate 4.973 :depth 0.418 :fb +0.77 :mix 0.000]
+           :reverb  0.000  :amp 0.200))
+
+(save-program 63 :random "Random" "Generate random Combo program" nil)
 (save-program 127 :random "Random" "Generate random Combo program" nil)

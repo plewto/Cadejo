@@ -7,6 +7,9 @@
 
 (defonce bank (cadejo.midi.program-bank/program-bank :Combo))
 
+
+(.bank-remarks! bank "These are bank level remarks")
+
 (defn save-program 
   ([pnum function-id pname remarks data]
      (.set-program! bank pnum function-id pname data remarks))

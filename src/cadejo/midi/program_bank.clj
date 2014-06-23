@@ -208,7 +208,7 @@
      event for a MIDI program change.
 
      program-change does bulk of the work for handle-event. 
-     The priomary difference is that handle-events updates the GUI editor
+     The primary difference is that handle-events updates the GUI editor
      while program-change does not.")
      
   (write-bank
@@ -376,7 +376,7 @@
           ed (.get-editor this)]
       (.program-change this pnum synths)
       (if ed 
-        (.update-program-number ed pnum))))
+        (.sync-ui ed))))
 
   (write-bank [this filename]
     (try
@@ -516,3 +516,4 @@
   ([format]
      (program-bank format 
                    (format "New %s bank" format) "")))
+
