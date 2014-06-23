@@ -1,4 +1,4 @@
-(defproject cadejo "0.1.0-SNAPSHOT"
+(defproject cadejo "0.1.1-SNAPSHOT"
   :description "MIDI management tool for Overtone"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
