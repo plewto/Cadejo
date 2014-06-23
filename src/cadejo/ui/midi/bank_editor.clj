@@ -467,8 +467,9 @@
 ;                          Bank Editor Constructor
 
 (defn bank-editor [bank]
-  (let [undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo")
-        redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo")
+  (let [max-undo (config/maximum-undo-count)
+        undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo" :max-depth max-undo)
+        redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo" :max-depth max-undo)
         jb-init (button :text "Init" :id :jb-bank-init)
         jb-open (button :text "Open" :id :jb-bank-open)
         jb-save (button :text "Save" :id :jb-bank-save)
