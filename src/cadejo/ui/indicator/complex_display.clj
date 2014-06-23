@@ -4,6 +4,7 @@
    The dot-matrix display can display all alpha-numeric characters and several 
    punctuation and graphics elements, though currently (2014.06.21) only
    numeric characters are defined."
+  (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.indicator.lamp])
   (:require [seesaw.core :as ss])
   (:require [seesaw.color :as ssc])
@@ -36,9 +37,6 @@
      returned by (.character-set this) set all elements to off.
 
      If the display is currently 'on' immediately update display")
-
-  ;; (char-on!
-  ;;   [this c])
 )
 
 (deftype ComplexDisplay [colors*
@@ -258,6 +256,141 @@
 (def matrix-charmap {nil []
                      " " []
                      ""  []
+                     "A" [1 2 3
+                          5 9
+                          10 14
+                          15 19
+                          20 21 22 23 24
+                          25 29
+                          30 34]
+                     "B" [0 1 2 3
+                          5 9
+                          10 14
+                          15 16 17 18
+                          20 24
+                          25 29
+                          30 31 32 33]
+                     "C" [1 2 3
+                          5 9
+                          10
+                          15
+                          20
+                          25 29
+                          31 32 33]
+                     "D" [0 1 2
+                          5 8
+                          10 14
+                          15 19
+                          20 24
+                          25 28
+                          30 31 32]
+                     "E" [0 1 2 3 4
+                          5
+                          10
+                          15 16 17 18
+                          20
+                          25
+                          30 31 32 33 34]
+                     "F" [0 1 2 3 4
+                          5
+                          10
+                          15 16 17 18
+                          20
+                          25
+                          30]
+                     "G" [1 2 3
+                          5 9
+                          10
+                          15 17 18 19
+                          20 24
+                          25 29
+                          31 32 33 34]
+                     "H" [0 4
+                          5 9
+                          10 14
+                          15 16 17 18 19
+                          20 24
+                          25 29
+                          30 34]
+                     "I" [1 2 3
+                          7 12 17 22 27 
+                          31 32 33]
+                     "J" [2 3 4
+                          8
+                          13
+                          18
+                          20 23
+                          25 28
+                          31 32]
+                     "K" [0 4
+                          5 8
+                          10 12
+                          15 16
+                          20 22
+                          25 28
+                          30 34]
+                     "L" [0 5 10 15 20 25 30 31 32 33 34]
+                     "M" [0 4
+                          5 6 8 9
+                          10 12 14
+                          15 17 19
+                          20 24
+                          25 29
+                          30 34]
+                     "N" [0 4 5 9
+                          10 11 14
+                          15 17 19
+                          20 23 24
+                          25 29
+                          30 34]
+                     "O" [1 2 3
+                          5 9 10 14 15 19 20 24 25 29 31 32 33]
+                     "P" [0 1 2 3
+                          5 9
+                          10 14
+                          15 16 17 18
+                          20 25 30]
+                     "Q" [1 2 3
+                          5 9 10 14 15 19 
+                          20 22 24
+                          26 27 28
+                          34]
+                     "R" [0 1 2 3
+                          5 9 10 14
+                          15 16 17 18
+                          20 22
+                          25 28
+                          30 33]
+                     "S" [1 2 3
+                          5 9 10
+                          16 17 18
+                          24 25 29
+                          31 32 33]
+                     "T" [0 1 2 3 4
+                          7 12 17 22 27 32]
+                     "U" [0 4 5 9 10 14 15 19 20 24 25 29 31 32 33]
+                     "V" [0 4 5 9 10 14 15 19 20 24 26 28 32]
+                     "W" [0 2 4
+                          5 7 9
+                          10 12 14
+                          15 17 19
+                          20 22 24
+                          25 27 29
+                          31 33]
+                     "X" [0 4 5 9
+                          11 13
+                          17
+                          21 23
+                          25 29
+                          30 34]
+                     "Y" [0 4
+                          5 9
+                          10 14
+                          16 18
+                          22 27 32]
+                     "Z" [0 1 2 3 4 
+                          9 13 17 21 25
+                          30 31 32 33 34]
                      "0" [1 2 3
                           5 9
                           10 13 14
@@ -328,7 +461,7 @@
                           24
                           28
                           31 32]
-                     "." [20 21 25 26]
+                     "." [26 27 31 32]
                      "," [22 27 31]
                      "-" [16 17 18]
                      "+" [12 16 17 18 22]
@@ -368,3 +501,163 @@
                 :size (Dimension. pan-width pan-height))
     (.lamp-canvas! matrix pan)
     matrix))
+
+
+;; ---------------------------------------------------------------------- 
+;;                            Matrix Display Bar
+;;
+
+(defprotocol DisplayBarProtocol
+
+  (char-count 
+    [this])
+
+  (clear-display!
+    [this])
+
+  (push-char!
+    [this c])
+
+  (pop-char! 
+    [this])
+
+  (set-display!
+    [this s])
+
+  (update-display! 
+    [this])
+)
+
+(deftype MatrixDisplayBar [stack*
+                           characters
+                           canvas]
+
+  cadejo.ui.indicator.lamp/LampProtocol
+
+  (colors! [this colors]
+    (doseq [c characters]
+      (.colors! c colors)))
+
+  (colors [this]
+    (.colors (first characters)))
+  
+  (on! [this]
+    (doseq [c characters]
+      (.on! c)))
+
+  (off! [this]
+      (doseq [c characters]
+        (.off! c)))
+
+  (is-on? [this]
+    (.is-on? (first characters)))
+
+  (flip! [this]
+     (doseq [c characters]
+        (.flip! c)))
+
+  (blink! [this dwell]
+    (.flip! this)
+    (Thread/sleep dwell)
+    (.flip! this))
+
+  (blink! [this]
+    (.blink! this 1000))
+  
+  (lamp-elements [this]
+    (let [acc* (atom [])]
+      (doseq [c characters]
+        (swap! acc* (fn [n](conj n (.lamp-elements c)))))
+      @acc*))
+
+  (lamp-canvas! [this can]
+    (umsg/warning "lamp-canvas! not defined for complex-display/MatrixDisplayBar")
+    nil)
+
+  (lamp-canvas [this]
+    canvas)
+    
+  ComplexDisplayProtocol
+
+  (segments [this]
+    (.lamp-elements this))
+
+  (pattern [this]
+    @stack*)
+
+  (character-set [this]
+    (character-set (first characters)))
+
+  (set-char! [this c]
+    (.push-char! this c))
+
+  DisplayBarProtocol
+
+  (char-count [this]
+    (count characters))
+
+  (clear-display! [this]
+    (swap! stack* (fn [n] []))
+    (.update-display! this))
+
+  (push-char! [this c]
+    (swap! stack* (fn [n](conj n c)))
+    (.update-display! this))
+
+  (set-display! [this s]
+    (swap! stack* (fn [n][]))
+    (doseq [c s]
+      (swap! stack* (fn [n](conj n c))))
+    (.update-display! this))
+
+  (update-display! [this]
+    (doseq [c characters]
+      (.set-char! c nil))
+    (try
+      (let [diff (- (.char-count this)(count @stack*))]
+        (dotimes [i (count @stack*)]
+          (.set-char! (nth characters (+ diff i))
+                      (str (nth @stack* i))))
+        @stack*)
+      (catch IndexOutOfBoundsException ex
+        (umsg/warning (format "MatrixDisplayBar character length exceeded '%s'" @stack*))
+        nil)))
+  )
+    
+    
+(defn matrix-display-bar [& {:keys [count off on pad]
+                             :or {count 8
+                                  off default-off-color
+                                  on default-on-color
+                                  pad matrix-padding}}]
+  "Returns lamp component with count matrix characters."
+  (let [clist (let [acc* (atom [])]
+                (dotimes [i count]
+                  (swap! acc* (fn [n](conj n (matrix-display :off off
+                                                             :on on
+                                                             :pad pad)))))
+                @acc*)
+        sub-panels (let [acc* (atom [])]
+                      (doseq [s clist]
+                        (swap! acc* (fn [n](conj n (.lamp-canvas s)))))
+                      @acc*)
+        panel (ss/horizontal-panel :items sub-panels)
+        mdb (MatrixDisplayBar. (atom [])
+                               clist
+                               panel)]
+    mdb))
+
+ 
+;;; ------ TEST  
+;;; ------ TEST  
+;;; ------ TEST  
+
+;; (def q (matrix-display-bar))
+;; (def f (ss/frame :title "Text Case"
+;;                  :content (ss/border-panel :north (.canvas q)
+;;                                            :center (ss/button :text "Why Me?"))
+;;                  :on-close :dispose
+;;                  :size [300 :by 30]))
+;; (ss/show! f)
+;; (.on! q)
+;; (.set-display! q "123")
