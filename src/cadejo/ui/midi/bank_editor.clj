@@ -100,7 +100,7 @@
 
   (save-bank 
     [this]
-    "Display bank save dialog"
+    "Display bank save dialog")
 
   (undo 
     [this])
