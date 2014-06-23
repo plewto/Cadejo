@@ -42,9 +42,8 @@
 (defn warn-on-file-overwrite []
   false)
 
-;; (defn test-mode []
-;;   true)
-
+(defn enable-tooltips []
+  true)
 
 (defn config-path []
   "/home/sj/.cadejo")

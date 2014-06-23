@@ -104,9 +104,9 @@
     f))
 
 
-(defn show-lnf-frame []
+(defn show-laf-frame []
   (show! laf-selector-frame))
 
-(defn hide-lnf-frame []
+(defn hide-laf-frame []
   (hide! laf-selector-frame))
 

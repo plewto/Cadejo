@@ -21,6 +21,38 @@
 
 (def program-count 128)
 
+(def tooltips {:jb-init "Initialize Program Bank"
+               :jb-open "Read bank file"
+               :jb-save "Save bank file"
+               :jb-undo "Undo last bank modification"
+               :jb-redo "Redo previous bank modification"
+               :jb-edit-fn "Edit program function info - USE WITH CARE!"
+               :jb-edit-data "Open program editor"
+               :jb-store "Enter program store mode"
+               :jb-transmit "Transmit current program"
+               :jb-new-program "Create new (empty) program"
+               :jb-delete-program "Delete program"
+               :lab-format "Bank data format"
+               :lab-status "Shows status messages"
+               :lab-filename "Shows most recent filename"
+               :tx-name "Sets bank name"
+               :tx-remarks "Sets bank remarks text"
+               :lst-programs "Bank contents"
+               :pan-functions "Select program function"
+               :tx-program-name "Sets program's name"
+               :jb-clear-name "Clears name text"
+               :tx-program-remarks "Sets program's remarks"
+               :jb-clear-remarks "Clears remarks text"
+               :tx-args "Edits arguments to program function"
+               :jb-clear-args "Clears arguments to program function"
+               :spn-pnum "Selected destination program number"})
+
+(defn- set-tooltips [map]
+  (if (cadejo.config/enable-tooltips)
+    (doseq [k (keys map)]
+      (let [ttt (str (get tooltips k ""))]
+        (.setToolTipText (get map k) ttt)))))
+
 (defn- make-border [title]
   (ssb/compound-border
    (ssb/to-border title)
@@ -51,19 +83,24 @@
 (defprotocol BankEditorProtocol
 
   (widget-map 
-    [this])
+    [this]
+    "Returns map of swing components")
   
   (widget
-    [this key])
+    [this key]
+    "Extract specific JComponent")
 
   (new-bank 
-    [this])
+    [this]
+    "Initialize bank")
 
   (open-bank
-    [this])
+    [this]
+    "Display bank load dialog")
 
   (save-bank 
-    [this])
+    [this]
+    "Display bank save dialog"
 
   (undo 
     [this])
@@ -72,54 +109,95 @@
     [this])
  
   (edit-program-function
-    [this])
+   [this]
+   "Display dialog to edit program function data.
+    Each occupied bank slot contains a 'program' map with the following fields
+    :function-id  :args :name  and :remarks.
+    :name and :remarks are self explanatory. :function-id is a keyword 
+    indicating which function is to be executed in response to a MIDI 
+    program-change and :args are arguments to that function. 
+
+    For the vast majority of programs :function-id is nil which indicates a 
+    a default identity function and args is the raw synth parameters.
+
+    The intended use of edit-program-function is for the cases where
+    :function-id is non nil. For a concrete example the random patch 
+    generator used with the MASA organ takes arguments indicating which 
+    frequency gamut to use. One program slot could generate random 
+    frequencies while another is restricted to only odd harmonics.")
 
   (edit-program-data
-    [this])
+   [this]
+   "Display a GUI editor for program data.
+    ISSUE: Currently (2014.06.23) no editors are defined.")
 
   (show-help 
-    [this])
+    [this]
+    "Display help
+    ISSUE: Currently (2014.06.23) help system is not implemented.")
 
   (enable-store-program-mode 
-    [this flag])
+    [this flag]
+    "Enable store mode.
+     The bank editor operators in one of two modes: play and store.
+     In the default play mode selecting a program list simulates
+     a MIDI program changes and makes the selected program 'current'
+
+     In store mode selecting a program slot opens a dialog for storing
+     the current program to another location with the selected slot
+     being the default location. It is possible to change the program's
+     name, remarks text and destination slot from the dialog.")
 
   (store-program-mode? 
-    [this])
+    [this]
+    "Predicate, returns true if editor is in store mode")
 
   (new-program 
-    [this])
+    [this]
+    "Initialize the program at the currently selected program slot.")
   
   (delete-program
-    [this])
+    [this]
+    "Delete the program at the currently selected program slot.")
 
   (push-undo-state
-    [this])
+    [this]
+    "Push the current stat of the bank to the undo stack.")
 
   (push-redo-state
-    [this])
+    [this]
+    "Push the current stat of the bank to the redo stack.")
 
   (enable-list-selection
-    [this flag])
+    [this flag]
+    "Used internally to prevent list selection events from being created
+     while the GUI components are updating.")
 
   (list-selection-enabled? 
     [this])
 
   (sync-ui
-    [this])
+    [this]
+    "Redraw all components to match the current stat of the bank.")
     
   (status 
-    [this msg])
+    [this msg]
+    "Display message on status line")
 
   (warning
-    [this msg])
+    [this msg]
+    "Display alarming message on status line")
 
   (file-extension 
-    [this])
+    [this]
+    "Return the file extension which is simply the string version
+     of the banks data-format.")
 
   (filename 
     [this]
-    [this update])
-)
+    [this update]
+    "Set and optionally update the default filename used by the open
+     and save dialogs."))
 
 (deftype BankEditor [bank 
                      widgets
@@ -374,7 +452,16 @@
                     :title "Edit Program Function (Use With Care!)"
                     :modal? true
                     :on-close :nothing
-                    :parent (.widget ed :pan-main))]
+                    :parent (.widget ed :pan-main))
+        widgets {:pan-functions pan-functions
+                 :tx-program-name tx-name
+                 :jb-clear-name jb-clear-name
+                 :tx-program-remarks tx-remarks
+                 :jb-clear-remarks jb-clear-remarks
+                 :tx-args tx-args
+                 :jb-clear-args jb-clear-args
+                 :spn-pnum spn-pnum}]
+    (set-tooltips widgets)
     (listen jb-clear-name :action (fn [ev](config! tx-name :text "")))
     (listen jb-clear-args :action (fn [ev](config! tx-args :text "")))
     (listen jb-clear-remarks :action (fn [ev](config! tx-remarks :text "")))
@@ -437,7 +524,13 @@
                     :title "Store Program"
                     :modal? true
                     :on-close :nothing
-                    :parent parent)]
+                    :parent parent)
+        widgets {:tx-program-name tx-name
+                 :jb-clear-name jb-clear-name
+                 :tx-program-remarks tx-remarks
+                 :jb-clear-remarks jb-clear-remarks
+                 :spn-pnum spn-pnum}]
+    (set-tooltips widgets)
     (listen jb-clear-name :action (fn [ev](config! tx-name :text "")))
     (listen jb-clear-remarks :action (fn [ev](config! tx-remarks :text "")))
     (listen jb-cancel :action (fn [ev]
@@ -489,7 +582,7 @@
         ;; Status panel (south)
         lab-format (label :text (format "Format %s" (.data-format bank))
                           :border (BorderFactory/createLoweredBevelBorder))
-        lab-status (label :text "<status>"
+        lab-status (label :text " "
                           :border (BorderFactory/createLoweredBevelBorder))
         lab-filename (label :text "<filename>"
                           :border (BorderFactory/createLoweredBevelBorder))
@@ -561,8 +654,7 @@
                          (atom false)   ; store mode flag
                          undo-stack
                          redo-stack
-                         (atom "")
-                         )]
+                         (atom ""))]
     (listen jb-init :action (fn [ev](.new-bank ed)))
     (listen jb-open :action (fn [ev](.open-bank ed)))
     (listen jb-save :action (fn [ev](.save-bank ed)))
@@ -621,6 +713,6 @@
     (listen tx-remarks :caret-update (fn [ev]
                                        (let [txt (config tx-remarks :text)]
                                          (.bank-remarks! bank txt))))
-
     (.filename ed (cadejo.config/config-path))
+    (set-tooltips widgets)
     ed))
