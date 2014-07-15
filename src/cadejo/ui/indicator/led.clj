@@ -1,141 +1,146 @@
+(println "--> cadejo/ui.indicator.led")
 (ns cadejo.ui.indicator.led
-  "Defines two simple 'LED' lamps with circle and rectangular shapes."
   (:require [cadejo.ui.indicator.lamp])
   (:require [seesaw.core :as ss])
   (:require [seesaw.graphics :as ssg])
   (:require [seesaw.color :as ssc])
   (:import 
-   java.awt.Dimension
-   javax.swing.JPanel))
+   java.awt.Dimension))
 
-(defn- led-canvas [lamp]
-  (proxy [JPanel][]
-    (paint [g]
-      (.setPaint g (if (.is-on? lamp)
-                     (second (.colors lamp))
-                     (first (.colors lamp))))
-      (.fill g (.shape lamp)))))
-
-;; Default round LED parameters
-;;
-(def led-default-off-color (ssc/color :black))
-(def led-default-on-color (ssc/color :red))
-(def led-radius 4)
-(def led-pad 4)
-
-;; Default rect LED parameters
-;;
-(def rled-default-width 16)
-(def rled-default-height 8)
-(def rled-pad 1)
-
+(def led-default-colors
+  [(ssc/color :black)
+   (ssc/color  64   0   0)
+   (ssc/color 128   8  16)
+   (ssc/color 192  16  32)
+   (ssc/color 255  32  64)])
 
 (deftype LED [colors*
+              current-color*
               state*
-              shape
+              elements
               canvas*]
-  cadejo.ui.indicator.lamp/LampProtocol
+  cadejo.ui.indicator.lamp/Lamp
 
-  (colors! [this c]
-    (swap! colors* (fn [n] c)))
+  (colors! [this clist]
+    (reset! colors* clist))
 
   (colors [this]
     @colors*)
 
+  (use-color! [this i]
+    (let [k (min (max i 1)
+                 (dec (count @colors*)))]
+      (reset! current-color* (nth @colors* k))
+      (.repaint @canvas*)))
+
+  (current-color [this]
+    @current-color*)
+
   (on! [this]
-    (swap! state* (fn [n] true))
-    (.repaint (.lamp-canvas this)))
+    (reset! state* true)
+    (.repaint @canvas*))
 
-  (off! [this]
-    (swap! state* (fn [n] false))
-    (.repaint (.lamp-canvas this)))
-
-  (is-on? [this]
+  (on? [this]
     @state*)
 
+  (off! [this]
+    (reset! state* false)
+    (.repaint @canvas*))
+
   (flip! [this]
-    (if (.is-on? this)
+    (if (.on? this)
       (.off! this)
       (.on! this)))
 
-  (blink! [this dwell]
+  (blink! [this ms]
     (.flip! this)
-    (Thread/sleep dwell)
+    (Thread/sleep ms)
     (.flip! this))
 
   (blink! [this]
     (.blink! this 1000))
   
   (lamp-elements [this]
-    shape)
+    elements)
 
-  (lamp-canvas! [this c]
-    (swap! canvas* (fn [n] c)))
+  (lamp-canvas! [this jc]
+    (reset! canvas* jc))
 
   (lamp-canvas [this]
-    @canvas*))
-  
-(defn led [& {:keys [off on radius pad width height]
-              :or {off led-default-off-color
-                   on led-default-on-color
-                   radius led-radius
-                   pad led-pad
-                   width nil
-                   height nil}}]
-  "Returns a round 'LED' indicator
-   off    - The 'off' color 
-   on     - The 'on' color
-   radius - Radius of LED in pixels
-   pad    - Amount of padding (in pixels) around LED.
-            pad value is ignored if width or height are specified.
-   width  - Width of led panel (defaults to radius + 2*pad)
-   height - Height of led panel (defaults to radius + 2*pad)"
-  (let [pan-width (or width (+ radius (* 2 pad)))
-        pan-height (or height pan-width)
-        dot (ssg/circle (* 1/2 pan-width)
-                        (* 1/2 pan-height)
-                        radius)
-        l (LED. (atom [(ssc/to-color off)(ssc/to-color on)])
-                (atom false)
-                dot
-                (atom nil))
-        pan (led-canvas l)]
-    (ss/config! pan 
-                :size (Dimension. pan-width pan-height))
-    (.lamp-canvas! l pan)
-    l))
-              
-(defn rled [& {:keys [off on bar-width bar-height pad width height]
-               :or {off led-default-off-color
-                    on led-default-on-color
-                    bar-width rled-default-width
-                    bar-height rled-default-height
-                    pad rled-pad
-                    width nil
-                    height nil}}]
-  "Returns rectangular LED
-  off        - The off color
-  on         - The on color
-  bar-width  - Width of LED
-  bar-height - Height of LED
-  pad        - Pad amount of padding around led element.
-               if width or height are specified pad is ignored.
-  width      - Width of LED panel (default bar-width + 2*pad)
-  height     - Height of LED panel (default bar-height + 2*pad)"
-  (let [pan-width (or width (+ bar-width (* 2 pad)))
-        pan-height (or height (+ bar-height (* 2 pad)))
-        d-width (- pan-width bar-width)
-        d-height (- pan-height bar-height)
+    @canvas*)
+)
+        
+;;; Round LED
+
+(def led-radius 4)
+(def led-pad 4)
+(def led-width (+ led-radius (* led-pad)))
+(def led-height led-width)
+
+(defn led [& {:keys [colors]
+              :or {colors led-default-colors}}]
+  (let [dot (ssg/circle (* 1/2 led-width)
+                        (* 1/2 led-height)
+                        led-radius)
+        lamp  (LED. (atom colors)
+                    (atom (last colors))
+                    (atom false)
+                    [dot]
+                    (atom nil))
+        jc (cadejo.ui.indicator.lamp/lamp-canvas lamp)]
+    (.lamp-canvas! lamp jc)
+    (ss/config! jc :size (Dimension. led-width led-height))
+    lamp))
+        
+
+(def rled-width 16)
+(def rled-height (* 1/2 rled-width))
+(def rled-pad 1)
+
+(defn rled [& {:keys [colors]
+                  :or {colors led-default-colors}}]
+  (let [pan-width (+ rled-width (* 2 rled-pad))
+        pan-height (+ rled-height (* 2 rled-pad))
+        d-width (- pan-width rled-width)
+        d-height (- pan-height rled-height)
         bar (ssg/rect (* 1/2 d-width)
                       (* 1/2 d-height)
-                      bar-width
-                      bar-height)
-        l (LED. (atom [(ssc/to-color off)(ssc/to-color on)])
-                (atom false)
-                bar
-                (atom nil))
-        pan (led-canvas l)]
-    (ss/config! pan
-                :size (Dimension. pan-width pan-height))
-    (.lamp-canvas! l pan)
-    l))
+                      rled-width
+                      rled-height)
+        lamp (LED. (atom colors)
+                   (atom (last colors))
+                   (atom false)
+                   [bar]
+                   (atom nil))
+        jc (cadejo.ui.indicator.lamp/lamp-canvas lamp)]
+    (.lamp-canvas! lamp jc)
+    (ss/config! jc :size (Dimension. rled-width rled-height))
+    lamp))
+        
+        
+
+;; ;;; --------------- TEST
+;; ;;; --------------- TEST
+;; ;;; --------------- TEST
+
+;; (def a1 (rled))
+;; (def a2 (rled))
+;; (def a3 (rled))
+;; (def a4 (rled))
+
+;; (def pan (ss/grid-panel :rows 1
+;;                         :items [
+;;                                 (.lamp-canvas a1)
+;;                                 (.lamp-canvas a2)
+;;                                 (.lamp-canvas a3)
+;;                                 (.lamp-canvas a4)
+;;                                 ]))
+
+;; (def f (ss/frame 
+;;         :content pan
+;;         :on-close :dispose
+;;         :size [300 :by 300]))
+
+;; (ss/show! f)
+
+;; (println "<<-- cadejo/ui.indicator.led")

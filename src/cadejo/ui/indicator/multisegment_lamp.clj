@@ -1,11 +1,11 @@
-(ns cadejo.ui.indicator.lamp
-   (:import javax.swing.JPanel))
+(ns cadejo.ui.indicator.multisegment-lamp
+  (:import javax.swing.JPanel))
 
-(defprotocol Lamp
+(defprotocol MultiSegmentLamp
 
-  (colors!
+  (colors! 
     [this colors]
-    "Sets possible lamp colors
+     "Sets possible lamp colors
      colors should be a vector containing at least two colors [off on].
      Additional colors may be specified to indicate variable lamp brightness
      or gradients")
@@ -15,7 +15,7 @@
     "Returns vector of colors representing off and on states
      At a minimum there are 2 colors [off on]
      Intermediate colors are used for variable 'brightness'")
-  
+
   (use-color!
     [this i]
     "Sets the current 'on' color")
@@ -44,24 +44,38 @@
     [this]
     "Swap current lamp color with off color for ms milliseconds
      default dwell 1000 ms = 1 sec")
-  
-  (lamp-elements
+
+ (char-list
     [this]
-    "Returns a list of elements use to render the lamp geometry")
-  
-  (lamp-canvas! 
+    "Returns list of all possible chars")
+
+  (set-char!
+    [this pkey]
+    "Set the current display patterns
+     where pkey is a char
+     See pattern-keys")
+
+  (elements 
+    [this]
+    "Returns list of all shapes which define the display geometry")
+
+  (on-elements
+    [this]
+    "Returns list of Java shapes which define the current pattern.")
+
+  (lamp-canvas!
     [this jc])
 
-  (lamp-canvas
-    [this]
-    "Returns swing component lamp is rendered on."))
+  (lamp-canvas 
+    [this])
+)
 
-
-(defn lamp-canvas [lamp]
+(defn multisegment-canvas [mslamp]
   (proxy [JPanel][]
     (paint [g]
-      (.setPaint g (if (.on? lamp)
-                     (.current-color lamp)
-                     (first (.colors lamp))))
-      (doseq [e (.elements lamp)]
-        (.fill g e)))))
+      (.setPaint g (first (.colors mslamp)))
+      (doseq [e (.elements mslamp)](.fill g e))
+      (if (.on? mslamp)
+        (do 
+          (.setPaint g (.current-color mslamp))
+          (doseq [e (.on-elements mslamp)](.fill g e)))))))
