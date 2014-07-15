@@ -7,10 +7,14 @@
 ;; configuration files from the user's cadejo folder and/or via 
 ;; command line arguments. 
 
-(println "--> Loading cadejo.config")
+(println "--> cadejo.config")
 
-(ns cadejo.config )
+(ns cadejo.config
+  (:require [cadejo.util.user-message :as umsg]))
 
+
+(defn cadejo-version []
+  "0.1.1-SNAPSHOT")
 
 (defn midi-input-ports []
   "Returns list of names for available MIDI input ports"
@@ -35,9 +39,11 @@
    should gracefully handle nil."
   true)
 
-(defn maximum-undo-count []
-  10)
 
+;; ISSUE: Update ui.util.undo-stack to self limit based on config value
+;; instead of limiting size in client space.
+(defn maximum-undo-count []  
+  10)
 
 (defn warn-on-file-overwrite []
   false)
@@ -47,3 +53,10 @@
 
 (defn config-path []
   "/home/sj/.cadejo")
+
+
+;; Returns the maximum number of child performance which may be attached
+;; to any single channel node.
+;;
+(defn max-channel-children []
+  8)
