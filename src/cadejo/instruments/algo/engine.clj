@@ -1,13 +1,11 @@
 (println "--> ALGO")
 
-
 ;; [3]-->[2]-->(hp)-->[1]   feedback on 6 and 8 
 ;;                          feedback from 7 to 8 if possible
 ;; [5]---------+--->[4]
 ;; [6]-->(hp)--+
 ;;
 ;; [8]-->(hp)-->[7]
-
 
 (ns cadejo.instruments.algo.engine
   (:require [cadejo.instruments.algo.efx])
@@ -20,7 +18,6 @@
   (:require [cadejo.modules.env :as cenv])
   (:require [cadejo.modules.qugen :as qu])
   (:use [overtone.core]))
-
 
 (defcgen op-freq [f0 detune bias]
   (:kr 
@@ -484,14 +481,15 @@
 (defn create-performance [chanobj id keymode main-out
                           cc-vibrato cca ccb  
                           cc-volume cc-echo-mix cc-reverb-mix]
+  (println "DEBUG algo create-performance executing")
   (let [bank (.clone cadejo.instruments.algo.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode bank)]
-    (.add-controller! chanobj cc-vibrato 0.0 1.0 0.0)
-    (.add-controller! chanobj cca 0.0 1.0 0.0)
-    (.add-controller! chanobj ccb 0.0 1.0 0.0)
-    (.add-controller! chanobj cc-volume 0.0 1.0 1.0)
-    (.add-controller! chanobj cc-echo-mix 0.0 1.0 0.0)
-    (.add-controller! chanobj cc-reverb-mix 0.0 1.0 0.0)
+    (.add-controller! performance cc-vibrato :linear 0.0)
+    (.add-controller! performance cca :linear 0.0)
+    (.add-controller! performance ccb :linear 0.0)
+    (.add-controller! performance cc-volume :linear 1.0)
+    (.add-controller! performance cc-echo-mix :linear 1.0)
+    (.add-controller! performance cc-reverb-mix :linear 1.0)
     (let [bend-bus (.control-bus performance :bend)
           pressure-bus (.control-bus performance :pressure)
           vibrato-depth-bus (.control-bus performance cc-vibrato)
@@ -511,6 +509,7 @@
       (.add-control-bus! performance :cc-reverb-mix cc-reverb-mix-bus)
       (.add-audio-bus! performance :tone tone-bus)
       (.add-audio-bus! performance :main-out main-out)
+      (println "DEBUG algo create-performance returns")
       performance)))
 
 (defn algo-mono 
@@ -558,6 +557,7 @@
             cc-volume 7
             cc-echo 91
             cc-reverb 92}}]
+     (println "DEBUG algo-poly executing")
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :ALGO voice-count)
            performance (create-performance chanobj id keymode main-out
@@ -585,7 +585,9 @@
        (doseq [v voices]
          (.add-voice! performance v))
        (.reset chanobj)
+       (println "DEBUG algo-poly returns")
        performance))
   ([scene chan id]
      (algo-poly scene chan id 8 0)))
 
+(println "<<- ALGO")

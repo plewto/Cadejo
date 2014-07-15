@@ -1,9 +1,11 @@
-
+(println "--> cadejo.midi.performance")
 (ns cadejo.midi.performance
-
   "A Performance is a node with a single Channel parent and a set of
    sc synths, properties and keymodes. "
-  (:require [cadejo.midi.cc :as cc])
+  ;(:require [cadejo.midi.cc :as cc])
+  (:require [cadejo.midi.bend-handler])
+  (:require [cadejo.midi.pressure-handler])
+  (:require [cadejo.midi.cc.controller-suite])
   (:require [cadejo.midi.program-bank])
   (:require [cadejo.midi.node])
   (:require [cadejo.util.col])
@@ -14,9 +16,6 @@
 (defprotocol PerformanceProtocol
 
   ;; standard properties:
-  ;; key-range
-  ;; tuning-table 
-  ;; velocity-map 
 
   (set-bank! 
     [this bnk]
@@ -27,6 +26,20 @@
     [this]
     "Returns the program bank.")
  
+  (bend-handler
+    [this])
+    
+  (pressure-handler
+    [this])
+
+  (controllers
+    [this]
+    "Return instance of ControllerSuite")
+
+  (add-controller!
+    [this ctrl curve ivalue]
+    "Convenience method add new controller to controller-suite")
+
   (add-control-bus! 
     [this id bus]
     "Adds a control-bus to this performance.
@@ -35,7 +48,7 @@
      See control-bus method.")
  
   (control-bus
-    [this id]
+    [this bus-id]
     "Returns the sc control-bus assigned to id. If no such bus exist
      return nil. Control buses established by the parent channel are
      automatically included. At a minimum :bend and :pressure will 
@@ -202,7 +215,10 @@
 
 (deftype Performance [parent-channel properties* bank* 
                       control-buses* audio-buses* 
-                      synths* voices* keymode]
+                      synths* voices* keymode
+                      bend-handler*
+                      pressure-handler*
+                      controller-suite]
 
     cadejo.midi.node/Node
 
@@ -260,20 +276,51 @@
 
     (bank [this] @bank*)
 
+    (bend-handler [this]
+      @bend-handler*)
+
+    (pressure-handler [this]
+      @pressure-handler*)
+
+    (controllers [this]
+      controller-suite)
+
+    (add-controller! [this ctrl curve ivalue]
+      (.add-controller! controller-suite ctrl curve ivalue))
+
     (add-control-bus! [this id bus]
       (swap! control-buses* (fn [n](assoc n id bus))))
 
-    (control-bus [this id]
-      (let [id2 (or (cc/local-controller-number id) id)
-            bs (get @control-buses* id2
-                    (.bus parent-channel id2))]
-        (if (not bs) 
-          (umsg/warning (format "No such control-bus %s" id))
-          bs)))
+    ;; (control-bus [this id]
+    ;;   (let [id2 (or (cc/local-controller-number id) id)
+    ;;         bs (get @control-buses* id2
+    ;;                 (.bus parent-channel id2))]
+    ;;     (if (not bs) 
+    ;;       (umsg/warning (format "No such control-bus %s" id))
+    ;;       bs)))
 
-    (control-bus-ids [this]
-      (concat (.bus-ids parent-channel)
-              (keys @control-buses*)))
+    ;; (control-bus-ids [this]
+    ;;   (concat (.bus-ids parent-channel)
+    ;;           (keys @control-buses*)))
+    
+    (control-bus [this bus-id]
+      (cond (= bus-id :bend)
+            (.bus @bend-handler*)
+
+            (= bus-id :pressure)
+            (.bus @pressure-handler*)
+
+            :default
+            (or (get @control-buses* bus-id
+                     (.bus controller-suite bus-id))
+                (umsg/warning (format "Control bus %s does not exists in performance %s"
+                                      bus-id (.get-property this :id))))))
+
+     (control-bus-ids [this]
+       (concat
+        (.assigned-controllers controller-suite)
+        '(:bend :pressure)
+        (keys @control-buses*)))
 
     (add-audio-bus! [this id bus]
       (swap! audio-buses* (fn [n](assoc n id bus))))
@@ -348,16 +395,32 @@
 
     (handle-event [this event]
       (let [cmd (:command event)]
-        ;; :note-off
         ;; :note-on
+        ;; :note-off
+        ;; :pitch-bend
+        ;; :channel-pressure
+        ;; :control-change
         ;; :program-change
+
         (cond (= cmd :note-on)
               (.key-down keymode event)
+
               (= cmd :note-off)
               (.key-up keymode event)
+
+              (= cmd :pitch-bend)
+              (.handle-event @bend-handler* event)
+
+              (= cmd :channel-pressure)
+              (.handle-event @pressure-handler* event)
+                 
+              (= cmd :control-change)
+              (.handle-event controller-suite event)
+
               (= cmd :program-change)
               (let [s (concat (.synths this)(.voices this))]
                 (.handle-event @bank* event s))
+
               :default
               ;; Should never see this!
               (umsg/error "Performance.handle-event cond default"
@@ -431,17 +494,26 @@
    parent-channel - An instance of cadejo.midi.cahnnel
    id - Unique keyword id.
    keymode - An object implementing cadejo.midi.keymode."
-  (let [pobj (Performance. parent-channel 
+  (let [bend-handler* (atom nil)
+        pressure-handler* (atom nil)
+        pobj (Performance. parent-channel 
                            (atom {})    ; local properties
                            (atom bank)
                            (atom {})    ; control buses
                            (atom {})    ; audio buses
                            (atom {})    ; synths
                            (atom [])    ; voices
-                           keymode)]
+                           keymode
+                           bend-handler*
+                           pressure-handler*
+                           (cadejo.midi.cc.controller-suite/controller-suite))]
     (.add-performance! parent-channel id pobj)
     (.put-property! pobj :id id)
     (.set-key-range! pobj 0 127)
     (.put-property! pobj :db-scale 0)
     (.set-parent! keymode pobj)
+    (reset! bend-handler* (cadejo.midi.bend-handler/bend-handler pobj))
+    (reset! pressure-handler* (cadejo.midi.pressure-handler/pressure-handler pobj))
     pobj))
+
+(println "<<- cadejo.midi.performance")

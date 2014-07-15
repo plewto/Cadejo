@@ -1,3 +1,4 @@
+(println "--> cadejo.midi.scene")
 (ns cadejo.midi.scene
   "A scene is the top-level cadejo structure. Each scene connects
    to a single MIDI in port and contains 16 MIDI channels."
@@ -6,7 +7,6 @@
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])  
-  (:require [cadejo.midi.cc])
   (:require [cadejo.scale.intonation])
   (:require [overtone.midi :as midi]))
 
@@ -164,3 +164,4 @@
     sobj))
 
 
+(println "<<- cadejo.midi.scene")
