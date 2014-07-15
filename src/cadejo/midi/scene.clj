@@ -144,10 +144,18 @@
         channels* (atom [])
         properties* 
         (atom {:id (str midi-input-device-name)
-               :input-device input-device
-               :tuning-table cadejo.scale.intonation/default-tuning-table
+               ;;:input-device input-device  depreciated
+               :tuning-table cadejo.scale.intonation/default-tuning-table  ;; depreciated
                :velocity-map (math/linear-function 0 0.0 127 1.0)
-               })
+               :scale-id :eq-12
+               :dbscale 0
+               :transpose 0
+               :key-range [0 127]
+               :bend-curve :linear
+               :bend-range 200
+               :pressure-curve :linear
+               :pressure-scale 1.0
+               :pressure-bias 0})
         sobj (Scene. channels* properties*)]
     (dotimes [ci chan-count]
       (let [cobj (cadejo.midi.channel/channel sobj ci)]
