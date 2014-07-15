@@ -61,11 +61,23 @@
      is true only include assignments made directly in this node, otherwise
      include all assignments for all parents of this node.")
 
-  (update-properties
-    [this key]
-    "Method called whenever a property value is added are removed.
-     A call to update-properties propagates down the tree to all children 
-     nodes. Currently update-property is not being used.")
-     )
+  ;; (update-properties
+  ;;   [this key]
+  ;;   "Method called whenever a property value is added are removed.
+  ;;    A call to update-properties propagates down the tree to all children 
+  ;;    nodes. Currently update-property is not being used.")
+
+  (get-editor
+    [this]
+    "Returns gut editor, if any, for this node.
+     Returns nil if no editor is present")
+
+  (get-editor-frame
+    [this]
+    "Returns editor JFrame, if any, for this node.
+     Returns nil if no editor is present")
+     
+     
+  )
 
 

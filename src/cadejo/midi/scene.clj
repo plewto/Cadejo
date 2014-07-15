@@ -53,13 +53,11 @@
     (put-property! [this key value]
       (let [k (keyword key)]
         (swap! properties* (fn [n](assoc n k value)))
-        (.update-properties this k)
         k))
 
     (remove-property! [this key]
       (let [k (keyword key)]
         (swap! properties* (fn [n](dissoc n (keyword k))))
-        (.update-properties this k)
         k))
 
     (get-property [this key default]
@@ -81,9 +79,12 @@
     (properties [this]
       (.properties this true))
 
-    (update-properties [this key]
-      (doseq [c (.children this)]
-        (.update-properties c key)))
+    (get-editor [this]
+      (umsg/warning "Scene.get-editor not implemented"))
+
+    (get-editor-frame [this]
+      (umsg/warning "Scene.get-editor-frame not implemented"))
+
 
     SceneProtocol 
 

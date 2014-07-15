@@ -217,13 +217,11 @@
     (put-property! [this key value]
       (let [k (keyword key)]
         (swap! properties* (fn [n](assoc n k value)))
-        (.update-properties this k)
         k))
 
     (remove-property! [this key]
       (let [k (keyword key)]
         (swap! properties* (fn [n](dissoc n k)))
-        (.update-properties this k)
         k))
 
     (get-property [this key default]
@@ -248,8 +246,11 @@
     (properties [this]
       (.properties this false))
     
-    (update-properties [this key]
-      nil)
+    (get-editor [this]
+      (umsg/warning "Performance.get-editor not implemented"))
+
+    (get-editor-frame [this]
+      (umsg/warning "Performance.get-editor-frame not implemented"))
 
     PerformanceProtocol
 
