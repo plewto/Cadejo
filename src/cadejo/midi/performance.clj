@@ -426,14 +426,14 @@
     (dump [this]
       (.dump this true 0)))
 
-(defn performance [parent-channel id keymode]
+(defn performance [parent-channel id keymode bank]
   "Creates new Performance instance. 
    parent-channel - An instance of cadejo.midi.cahnnel
    id - Unique keyword id.
    keymode - An object implementing cadejo.midi.keymode."
   (let [pobj (Performance. parent-channel 
                            (atom {})    ; local properties
-                           (atom (cadejo.midi.program-bank/program-bank id "Default" ""))
+                           (atom bank)
                            (atom {})    ; control buses
                            (atom {})    ; audio buses
                            (atom {})    ; synths
