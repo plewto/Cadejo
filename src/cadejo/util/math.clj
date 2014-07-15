@@ -1,6 +1,11 @@
 (ns cadejo.util.math
-  (:require [clojure.math.numeric-tower]))
- 
+  (:require [clojure.math.numeric-tower])
+  (:import java.lang.Math))
+            
+
+(def pi Math/PI)
+(def e (Math/E))
+
 (def expt 
   "(expt x e) --> x^e  Returns x raised to the power e"
   clojure.math.numeric-tower/expt)
@@ -11,6 +16,14 @@
 (def sqrt
   clojure.math.numeric-tower/sqrt)
 
+(defn logn [n base]
+  "Return logarithm of n in the given base"
+  (/ (Math/log n)(Math/log base)))
+
+(defn log2 [n]
+  "Return base 2 log of n"
+  (logn n 2))
+
 (def step 
   "Ratio for 12-tone half-step"
   (expt 2.0 1/12))
@@ -18,6 +31,52 @@
 (def cent 
   "Ratio of single cent."
   (expt 2.0 1/1200))
+
+(defn clamp [n mn mx]
+  (max (min n mx) mn))
+
+
+(defn- wrap-up-octaves [f lower-limit]
+  (let [ll (float lower-limit)
+        r (/ f ll)
+        octaves (inc (* -1 (int (log2 r))))
+        f2 (* f (expt 2.0 octaves))]
+    (if (= f2 (* 2 ll))
+      (/ f2 2)
+      f2)))
+
+(defn- wrap-down-octaves [f upper-limit]
+  (let [ul (float upper-limit)
+        r (/ f ul)
+        octaves (dec (* -1 (int (log2 r))))
+        f2 (* f (expt 2.0 octaves))]
+    (if (= f2 (/ ul 2))
+      (* 2 f2)
+      f2)))
+
+;; If either lower or upper limts are nil
+;; it is ignored
+(defn wrap-octaves [f lower-limit upper-limit]
+  "Return an octave equivalent of f such that 
+   lower-limit <= f' <= upper-limit"
+  (cond (and lower-limit (< f lower-limit))
+        (wrap-up-octaves f lower-limit)
+        (and upper-limit (> f upper-limit))
+        (wrap-down-octaves f upper-limit)
+        :default
+        f))
+
+(defn divides? [a b]
+  "Predicate returns true if b is a multiple of a, or conversely a evenly 
+   divides b.
+
+   Use this function advisably! Due to rouinding erros and lack of 
+   precission it may return invalid results.
+
+   (divides? 11 121)        --> true
+   (divides? 11 121.00001)  --> false
+   (divides? 11 121.00000000000001) --> true"
+  (zero? (rem b a)))
 
 (defn linco 
   "Calculates coefficients for linear function through points
@@ -42,7 +101,7 @@
        (fn [x](+ (* a x) b)))))
 
 (defn expt-function
-  "Returns exponential function over interval (x0,x1)"
+  "Returns exponential function over interval (x0,x1)   y = base^x"
   ([base x0 x1]
      (let [lin (linear-function x0 -1.0 x1 +1.0)]
        (fn [x](expt base (lin x)))))
@@ -50,15 +109,10 @@
      (expt-function base -1 +1))
   ([]
      (expt-function 2)))
-           
-     
-
-
 
 (defn bool [obj]
   "Returns canonical boolean true or false"
   (if obj true false))
-
 
 (defn posnum? [obj]
   "Predicate true if obj is a positive number, obj may be of any type"
