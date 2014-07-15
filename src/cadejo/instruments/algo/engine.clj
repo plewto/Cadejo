@@ -481,47 +481,47 @@
     (local-out:ar op4-fb-send)
     (out:ar out-bus mixed-sig)))
 
-(defn create-performance [chanobj keymode main-out
+(defn create-performance [chanobj id keymode main-out
                           cc-vibrato cca ccb  
                           cc-volume cc-echo-mix cc-reverb-mix]
-  (.add-controller! chanobj cc-vibrato 0.0 1.0 0.0)
-  (.add-controller! chanobj cca 0.0 1.0 0.0)
-  (.add-controller! chanobj ccb 0.0 1.0 0.0)
-  (.add-controller! chanobj cc-volume 0.0 1.0 1.0)
-  (.add-controller! chanobj cc-echo-mix 0.0 1.0 0.0)
-  (.add-controller! chanobj cc-reverb-mix 0.0 1.0 0.0)
-  (let [performance (cadejo.midi.performance/performance chanobj :ALGO keymode)
-        bend-bus (.control-bus performance :bend)
-        pressure-bus (.control-bus performance :pressure)
-        vibrato-depth-bus (.control-bus performance cc-vibrato)
-        cca-bus (.control-bus performance cca)
-        ccb-bus (.control-bus performance ccb)
-        cc-volume-bus (.control-bus performance cc-volume)
-        cc-echo-mix-bus (.control-bus performance cc-echo-mix)
-        cc-reverb-mix-bus (.control-bus performance cc-reverb-mix)
-        tone-bus (audio-bus 1)
-        bank cadejo.instruments.algo.program/bank]
-    (.set-pp-hook! bank cadejo.instruments.algo.pp/pp-algo)
-    (.set-bank! performance bank)
-    (.add-control-bus! performance :vibrato-depth vibrato-depth-bus)
-    (.add-control-bus! performance :cca cca-bus)
-    (.add-control-bus! performance :ccb ccb-bus)
-    (.add-control-bus! performance :cc-volume cc-volume-bus)
-    (.add-control-bus! performance :cc-echo-mix cc-echo-mix-bus)
-    (.add-control-bus! performance :cc-reverb-mix cc-reverb-mix-bus)
-    (.add-audio-bus! performance :tone tone-bus)
-    (.add-audio-bus! performance :main-out main-out)
-    performance))
+  (let [bank (.clone cadejo.instruments.algo.program/bank)
+        performance (cadejo.midi.performance/performance chanobj id keymode bank)]
+    (.add-controller! chanobj cc-vibrato 0.0 1.0 0.0)
+    (.add-controller! chanobj cca 0.0 1.0 0.0)
+    (.add-controller! chanobj ccb 0.0 1.0 0.0)
+    (.add-controller! chanobj cc-volume 0.0 1.0 1.0)
+    (.add-controller! chanobj cc-echo-mix 0.0 1.0 0.0)
+    (.add-controller! chanobj cc-reverb-mix 0.0 1.0 0.0)
+    (let [bend-bus (.control-bus performance :bend)
+          pressure-bus (.control-bus performance :pressure)
+          vibrato-depth-bus (.control-bus performance cc-vibrato)
+          cca-bus (.control-bus performance cca)
+          ccb-bus (.control-bus performance ccb)
+          cc-volume-bus (.control-bus performance cc-volume)
+          cc-echo-mix-bus (.control-bus performance cc-echo-mix)
+          cc-reverb-mix-bus (.control-bus performance cc-reverb-mix)
+          tone-bus (audio-bus 1)]
+      (.set-pp-hook! bank cadejo.instruments.algo.pp/pp-algo)
+      (.set-bank! performance bank)
+      (.add-control-bus! performance :vibrato-depth vibrato-depth-bus)
+      (.add-control-bus! performance :cca cca-bus)
+      (.add-control-bus! performance :ccb ccb-bus)
+      (.add-control-bus! performance :cc-volume cc-volume-bus)
+      (.add-control-bus! performance :cc-echo-mix cc-echo-mix-bus)
+      (.add-control-bus! performance :cc-reverb-mix cc-reverb-mix-bus)
+      (.add-audio-bus! performance :tone tone-bus)
+      (.add-audio-bus! performance :main-out main-out)
+      performance)))
 
 (defn algo-mono 
-  ([scene chan main-out & {:keys [cc-vibrato cca ccb 
-                                  cc-volume cc-echo cc-reverb]
-                           :or {cc-vibrato 1
-                                cc-volume 7
-                                cca 16
-                                ccb 17
-                                cc-echo 91
-                                cc-reverb 92}}]
+  ([scene chan id main-out & {:keys [cc-vibrato cca ccb 
+                                     cc-volume cc-echo cc-reverb]
+                              :or {cc-vibrato 1
+                                   cc-volume 7
+                                   cca 16
+                                   ccb 17
+                                   cc-echo 91
+                                   cc-reverb 92}}]
      (let [chanobj (.channel scene chan) 
            keymode (cadejo.midi.mono-mode/mono-keymode :ALGO)
            performance (create-performance chanobj keymode main-out
@@ -545,11 +545,11 @@
        (.reset chanobj)
        (Thread/sleep 100)               ; BUG 0001 Hack
        performance))
-  ([scene chan]
-     (algo-mono scene chan 0)))
+  ([scene chan id]
+     (algo-mono scene chan id 0)))
   
 (defn algo-poly
-  ([scene chan voice-count main-out
+  ([scene chan id voice-count main-out
     & {:keys [cc-vibrato cca ccb cc-volume 
               cc-echo cc-reverb]
        :or {cc-vibrato 1
@@ -560,7 +560,7 @@
             cc-reverb 92}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :ALGO voice-count)
-           performance (create-performance chanobj keymode main-out
+           performance (create-performance chanobj id keymode main-out
                                            cc-vibrato cca ccb 
                                            cc-volume cc-echo cc-reverb)
            voices (let [acc* (atom [])] 
@@ -586,6 +586,6 @@
          (.add-voice! performance v))
        (.reset chanobj)
        performance))
-  ([scene chan]
-     (algo-poly scene chan 8 0)))
+  ([scene chan id]
+     (algo-poly scene chan id 8 0)))
 

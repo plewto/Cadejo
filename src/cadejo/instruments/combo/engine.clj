@@ -123,24 +123,23 @@
     (local-out:ar [flanger1 flanger2])
     (out:ar out-bus (* gain reverb))))
 
-(defn ^:private create-performance [chanobj keymode cc1]
-  (.add-controller! chanobj cc1 0.0 1.0 0.0)
-  (let [performance (cadejo.midi.performance/performance chanobj :Combo keymode)
-        vibrato-bus (control-bus)
-        tone-bus (audio-bus)
-        bank cadejo.instruments.combo.program/bank]
-    (.set-pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
-    (.set-bank! performance bank)
-    (.add-control-bus! performance :vibrato vibrato-bus)
-    (.add-audio-bus! performance :tone tone-bus)
-    performance))
+(defn ^:private create-performance [chanobj id keymode cc1]
+  (let [bank (.clone cadejo.instruments.combo.program/bank)
+        performance (cadejo.midi.performance/performance chanobj id keymode bank)]
+    (.add-controller! chanobj cc1 0.0 1.0 0.0)
+    (let [vibrato-bus (control-bus)
+          tone-bus (audio-bus)]
+      (.set-pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
+      (.add-control-bus! performance :vibrato vibrato-bus)
+      (.add-audio-bus! performance :tone tone-bus)
+      performance)))
 
 (defn combo-mono 
-  ([scene chan main-out & {:keys [cc1]
+  ([scene chan id main-out & {:keys [cc1]
                            :or {cc1 1}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.mono-mode/mono-keymode :Combo)
-           performance (create-performance chanobj keymode cc1)
+           performance (create-performance chanobj id keymode cc1)
            vibrato-bus (.control-bus performance :vibrato)
            vibrato-depth-bus (.control-bus performance cc1)
            bend-bus (.control-bus performance :bend)
@@ -158,16 +157,16 @@
        (.reset chanobj)
        (Thread/sleep 100)
        performance))
-  ([scene chan]
-     (combo-mono scene chan 0)))
+  ([scene chan id]
+     (combo-mono scene chan id 0)))
 
 
 (defn combo-poly
-  ([scene chan voice-count main-out & {:keys [cc1]
+  ([scene chan id voice-count main-out & {:keys [cc1]
                                        :or {cc1 1}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :Combo voice-count)
-           performance (create-performance chanobj keymode cc1)
+           performance (create-performance chanobj id keymode cc1)
            vibrato-bus (.control-bus performance :vibrato)
            vibrato-depth-bus (.control-bus performance cc1)
            bend-bus (.control-bus performance :bend)
@@ -186,5 +185,5 @@
          (.add-synth! performance :efx efx)
          (.reset chanobj)
          performance)))
-  ([scene chan]
-     (combo-poly scene chan 8 0)))
+  ([scene chan id]
+     (combo-poly scene chan id 8 0)))
