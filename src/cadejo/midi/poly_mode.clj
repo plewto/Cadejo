@@ -53,13 +53,14 @@
           (let [vptr (or (q/dequeue free*)
                          (q/dequeue in-use*))
                 xkeynum (min (max (+ keynum (.transpose @parent*)) 0) 127)
+                dbscale (.db-scale @parent*)
                 freq (.keynum-frequency @parent* xkeynum)
                 vel (.map-velocity @parent* (:data2 event))]
             (swap! keymap* (fn [n](assoc n keynum vptr)))
             (q/enqueue in-use* vptr)
             (ot/ctl (cons (nth (.voices @parent*) vptr)
                           (.synths @parent*))
-                    :note keynum :freq freq :velocity vel :gate 1)
+                    :note keynum :freq freq :velocity vel :gate 1 :dbscale dbscale)
             (if @trace*
               (println (format "Key Down chan %02d key %03d vel %5.3f" 
                                (:channel event) keynum vel))))))))

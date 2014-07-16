@@ -25,10 +25,11 @@
     (let [keynum (:data1 event)]
       (if (.key-in-range? @parent* keynum)
         (let [xkeynum (min (max (+ keynum (.transpose @parent*)) 0) 127)
+              dbscale (.db-scale @parent*)
               freq (.keynum-frequency @parent* xkeynum)
               vel (.map-velocity @parent* (:data2 event))
               args (cons (concat (.synths @parent*)(.voices @parent*))
-                         (list :note keynum :freq freq :velocity vel :gate 1))]
+                         (list :note keynum :freq freq :velocity vel :gate 1 :dbscale dbscale))]
           (apply ot/ctl args)
           (stack/stack-push keystack* keynum)
           (if @trace*
