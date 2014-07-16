@@ -1,4 +1,4 @@
-(ns cadejo.ui.util.laf
+(ns cadejo.ui.util.lnf
   (:use [seesaw.core])
   (:require [seesaw.swingx :as swingx])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel
@@ -10,7 +10,7 @@
 
 ;; Code shamelessly lifted from seesaw examples
 ;;
-(defn create-laf-selector []
+(defn create-lnf-selector []
   (swingx/titled-panel :title "Substance Skins"
                        :content (combobox 
                                  :model    (vals (SubstanceLookAndFeel/getAllSkins))
@@ -91,11 +91,11 @@
                    (.setBorder pan-radio (BorderFactory/createTitledBorder "Radio Button"))
                    (grid-panel :rows 4 :vgap 4 :items [pan-simple pan-checkbox pan-toggle pan-radio])))
   
-(def laf-selector-frame
+(def lnf-selector-frame
   (let [pan-tabs (tabbed-panel :tabs [{:title :borders :content pan-border}
                                       {:title :buttons :content pan-buttons}
                                       ])
-        pan-main (border-panel :north (create-laf-selector)
+        pan-main (border-panel :north (create-lnf-selector)
                                :center pan-tabs)
         f (frame :title "Substance Skins"
                  :content pan-main
@@ -104,9 +104,10 @@
     f))
 
 
-(defn show-laf-frame []
-  (show! laf-selector-frame))
+(defn show-lnf-frame []
+  (show! lnf-selector-frame))
 
-(defn hide-laf-frame []
-  (hide! laf-selector-frame))
+(defn hide-lnf-frame []
+  (hide! lnf-selector-frame))
 
+(show-lnf-frame)
