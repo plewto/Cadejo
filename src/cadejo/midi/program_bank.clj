@@ -19,7 +19,7 @@
 ;; D) Basic serialization for bank read and write now implemented. 
 ;;
 
-(println "--> Loading cadejo.midi.program-bank")
+(println "--> cadejo.midi.program-bank")
 
 (ns cadejo.midi.program-bank
   (:require [cadejo.config])
@@ -27,8 +27,8 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [overtone.core :as ot]))
 
-(if (cadejo.config/load-gui)
-  (require 'cadejo.ui.midi.bank-editor))
+;; (if (cadejo.config/load-gui)
+;;   (require 'cadejo.ui.midi.bank-editor))
 
 (def enable-trace true)
 
@@ -510,10 +510,11 @@
                              editor*)]
        (.set-notification-hook! bnk (fn [& args] nil))
        (.set-pp-hook! bnk (fn [& args] nil))
-       (if (cadejo.config/load-gui)
-         (swap! editor* (fn [n](cadejo.ui.midi.bank-editor/bank-editor bnk))))
+       ;(if (cadejo.config/load-gui)
+       ;  (swap! editor* (fn [n](cadejo.ui.midi.bank-editor/bank-editor bnk))))
        bnk))
   ([format]
      (program-bank format 
                    (format "New %s bank" format) "")))
 
+(println "<<- cadejo.midi.program-bank")

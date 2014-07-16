@@ -7,7 +7,8 @@
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])  
-  (:require [cadejo.scale.intonation])
+  ;(:require [cadejo.scale.intonation])
+  (:require [cadejo.scale.registry])
   (:require [overtone.midi :as midi]))
 
 (defprotocol SceneProtocol 
@@ -21,6 +22,9 @@
     [this]
     "returns a function used to dispatch MIDI events to the appropriate 
      Channel objects.")
+  
+  (get-scale-registry
+    [this])
 
   (reset
     [this]
@@ -39,7 +43,7 @@
               be a list holding the channels to display.
      verbose - flag indicating if additional information is to be included."))
  
-(deftype Scene [channels* properties*]
+(deftype Scene [channels* properties* scale-registry]
     cadejo.midi.node/Node
 
     (node-type [this] :scene)
@@ -101,6 +105,9 @@
               ;; FUTURE handle non-channel events here
               )))))
 
+    (get-scale-registry [this]
+      scale-registry)
+
     (reset [this]
       (doseq [c (.children this)]
         (.reset c)))
@@ -142,26 +149,21 @@
   (let [chan-count 16
         input-device (midi/midi-in midi-input-device-name)
         channels* (atom [])
-        properties* 
-        (atom {:id (str midi-input-device-name)
-               ;;:input-device input-device  depreciated
-               :tuning-table cadejo.scale.intonation/default-tuning-table  ;; depreciated
-               :velocity-map (math/linear-function 0 0.0 127 1.0)
-               :scale-id :eq-12
-               :dbscale 0
-               :transpose 0
-               :key-range [0 127]
-               :bend-curve :linear
-               :bend-range 200
-               :pressure-curve :linear
-               :pressure-scale 1.0
-               :pressure-bias 0})
-        sobj (Scene. channels* properties*)]
+        properties* (atom {:id (str midi-input-device-name)
+                           :velocity-map :linear
+                           :scale-id :eq-12
+                           :dbscale 0
+                           :transpose 0
+                           :key-range [0 127]
+                           :bend-curve :linear
+                           :bend-range 200
+                           :pressure-curve :linear
+                           :pressure-scale 1.0
+                           :pressure-bias 0})
+        sregistry (cadejo.scale.registry/create-scale-registry)
+        sobj (Scene. channels* properties* sregistry)]
     (dotimes [ci chan-count]
       (let [cobj (cadejo.midi.channel/channel sobj ci)]
         (swap! channels* (fn [n](conj n cobj)))))
     (midi/midi-handle-events input-device (.channel-dispatch sobj)) 
     sobj))
-
-
-(println "<<- cadejo.midi.scene")

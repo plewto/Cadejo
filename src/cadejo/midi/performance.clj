@@ -2,7 +2,6 @@
 (ns cadejo.midi.performance
   "A Performance is a node with a single Channel parent and a set of
    sc synths, properties and keymodes. "
-  ;(:require [cadejo.midi.cc :as cc])
   (:require [cadejo.midi.bend-handler])
   (:require [cadejo.midi.pressure-handler])
   (:require [cadejo.midi.cc.controller-suite])
@@ -15,7 +14,9 @@
 
 (defprotocol PerformanceProtocol
 
-  ;; standard properties:
+  (get-scene 
+    [this]
+    "Return grand-parent node of this")
 
   (set-bank! 
     [this bnk]
@@ -205,7 +206,6 @@
     [this pnum]
     "List program pnum parameters")
 
-
   (dump 
     [this verbose depth]
     [this verbose]
@@ -270,6 +270,9 @@
 
     PerformanceProtocol
 
+    (get-scene [this]
+      (.parent (.parent this)))
+
     (set-bank! [this bnk]
       (.set-parent-performance! bnk this)
       (swap! bank* (fn [n] bnk)))
@@ -290,19 +293,7 @@
 
     (add-control-bus! [this id bus]
       (swap! control-buses* (fn [n](assoc n id bus))))
-
-    ;; (control-bus [this id]
-    ;;   (let [id2 (or (cc/local-controller-number id) id)
-    ;;         bs (get @control-buses* id2
-    ;;                 (.bus parent-channel id2))]
-    ;;     (if (not bs) 
-    ;;       (umsg/warning (format "No such control-bus %s" id))
-    ;;       bs)))
-
-    ;; (control-bus-ids [this]
-    ;;   (concat (.bus-ids parent-channel)
-    ;;           (keys @control-buses*)))
-    
+   
     (control-bus [this bus-id]
       (cond (= bus-id :bend)
             (.bus @bend-handler*)
@@ -355,12 +346,17 @@
       nil)
 
     (keynum-frequency [this keynum]
-      (let [tt (.get-property this :tuning-table)]
-        (.get-frequency tt keynum)))
+      (let [sregistry (.get-scale-registry (.get-scene this))
+            scale-id (.get-property this :scale-id)
+            tt (.get-table sregistry scale-id)]
+        (.get-key-frequency tt keynum)))
 
     (map-velocity [this v128]
-      (let [mapfn (.get-property this :velocity-map)]
-        (mapfn v128)))
+      (let [vmap-id (.get-property this :velocity-map)
+            mapfn (cadejo.midi.curves/get-curve vmap-id)
+            x (float (* 1/128 v128))
+            vel (mapfn x)]
+        vel))
 
     (set-tuning-table! [this ttab]
       (.put-property! this :tuning-table ttab))
@@ -401,7 +397,6 @@
         ;; :channel-pressure
         ;; :control-change
         ;; :program-change
-
         (cond (= cmd :note-on)
               (.key-down keymode event)
 
@@ -481,8 +476,6 @@
             (printf "%s[%-12s] --> %s\n"
                     pad2 k (.get-property this k))))))
 
-
-
     (dump [this verbose]
       (.dump this verbose 0))
 
@@ -509,11 +502,7 @@
                            (cadejo.midi.cc.controller-suite/controller-suite))]
     (.add-performance! parent-channel id pobj)
     (.put-property! pobj :id id)
-    (.set-key-range! pobj 0 127)
-    (.put-property! pobj :db-scale 0)
     (.set-parent! keymode pobj)
     (reset! bend-handler* (cadejo.midi.bend-handler/bend-handler pobj))
     (reset! pressure-handler* (cadejo.midi.pressure-handler/pressure-handler pobj))
     pobj))
-
-(println "<<- cadejo.midi.performance")
