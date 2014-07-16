@@ -9,9 +9,7 @@
   (:require [cadejo.instruments.masa.program])
   (:require [cadejo.instruments.masa.pp])
   (:require [cadejo.instruments.masa.data])
-  (:require [cadejo.instruments.masa.efx :as efx])
-  ;(:require [cadejo.midi.cc :as cc])
-)
+  (:require [cadejo.instruments.masa.efx :as efx]))
 
 (defsynth VibratoBlock [vibrato-depth-bus 0
                         vibrato-bus 0
@@ -160,11 +158,11 @@
                           cc-scanner cc-reverb]
   (let [bank (.clone cadejo.instruments.masa.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode bank)]
-    (.add-controller! chanobj cc-vibrato 0.0 1.0 0.0)
-    (.add-controller! chanobj cc-pedal 0.0 1.0 1.0)
-    (.add-controller! chanobj cc-volume 0.0 1.0 1.0)
-    (.add-controller! chanobj cc-scanner 0.0 1.0 0.0)
-    (.add-controller! chanobj cc-reverb 0.0 1.0 0.0)
+    (.add-controller! performance cc-vibrato :linear 0.0)
+    (.add-controller! performance cc-pedal :linear 0.0)
+    (.add-controller! performance cc-scanner :linear 0.0)
+    (.add-controller! performance cc-reverb :linear 0.0)
+    (.add-controller! performance cc-volume :linear 1.0)
     (let [bend-bus (.control-bus performance :bend)
           cc-vibrato-bus (.control-bus performance cc-vibrato)
           cc-pedal-bus (.control-bus performance cc-pedal)
@@ -257,5 +255,3 @@
        performance))
   ([scene chan id]
      (masa-poly scene chan id 8 0)))
-     
-  
