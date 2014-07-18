@@ -8,6 +8,7 @@
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])  
+  ;(:require [cadejo.scale.registry]) ;; DEPRECIATED
   (:require [cadejo.scale.registry])
   (:require [cadejo.ui.midi.scene-editor])
   (:require [overtone.midi :as midi]))
@@ -27,7 +28,7 @@
     "returns a function used to dispatch MIDI events to the appropriate 
      Channel objects.")
   
-  (get-scale-registry
+  (scale-registry
     [this])
 
   (reset
@@ -47,7 +48,7 @@
               be a list holding the channels to display.
      verbose - flag indicating if additional information is to be included."))
  
-(deftype Scene [channels* properties* scale-registry editor*]
+(deftype Scene [channels* properties* sregistry editor*]
     cadejo.midi.node/Node
 
     (node-type [this] :scene)
@@ -105,8 +106,8 @@
               ;; FUTURE handle non-channel events here
               )))))
 
-    (get-scale-registry [this]
-      scale-registry)
+    (scale-registry [this]
+      sregistry)
 
     (reset [this]
       (doseq [c (.children this)]
@@ -168,7 +169,7 @@
                            :pressure-curve :linear
                            :pressure-scale 1.0
                            :pressure-bias 0})
-        sregistry (cadejo.scale.registry/create-scale-registry)
+        sregistry (cadejo.scale.registry/scale-registry)
         sobj (Scene. channels* properties* sregistry editor*)]
     (reset! editor* (load-editor sobj))
     (dotimes [ci channel-count]
