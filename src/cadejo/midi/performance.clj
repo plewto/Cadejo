@@ -2,6 +2,7 @@
 (ns cadejo.midi.performance
   "A Performance is a node with a single Channel parent and a set of
    sc synths, properties and keymodes. "
+  (:require [cadejo.config])
   (:require [cadejo.midi.bend-handler])
   (:require [cadejo.midi.pressure-handler])
   (:require [cadejo.midi.cc.controller-suite])
@@ -10,6 +11,7 @@
   (:require [cadejo.util.col])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.string])
+  (:require [cadejo.ui.midi.performance-editor])
   (:require [overtone.core :as ot]))
 
 (defprotocol PerformanceProtocol
@@ -218,7 +220,8 @@
                       synths* voices* keymode
                       bend-handler*
                       pressure-handler*
-                      controller-suite]
+                      controller-suite
+                      editor*]
 
     cadejo.midi.node/Node
 
@@ -263,10 +266,7 @@
       (.properties this false))
     
     (get-editor [this]
-      (umsg/warning "Performance.get-editor not implemented"))
-
-    (get-editor-frame [this]
-      (umsg/warning "Performance.get-editor-frame not implemented"))
+      @editor*)
 
     PerformanceProtocol
 
@@ -482,6 +482,10 @@
     (dump [this]
       (.dump this true 0)))
 
+(defn- load-editor [pobj]
+  (if (cadejo.config/load-gui)
+    (cadejo.ui.midi.performance-editor/performance-editor pobj)))
+
 (defn performance [parent-channel id keymode bank]
   "Creates new Performance instance. 
    parent-channel - An instance of cadejo.midi.cahnnel
@@ -489,6 +493,7 @@
    keymode - An object implementing cadejo.midi.keymode."
   (let [bend-handler* (atom nil)
         pressure-handler* (atom nil)
+        editor* (atom nil)
         pobj (Performance. parent-channel 
                            (atom {})    ; local properties
                            (atom bank)
@@ -499,10 +504,12 @@
                            keymode
                            bend-handler*
                            pressure-handler*
-                           (cadejo.midi.cc.controller-suite/controller-suite))]
+                           (cadejo.midi.cc.controller-suite/controller-suite)
+                           editor*)]
     (.add-performance! parent-channel id pobj)
     (.put-property! pobj :id id)
     (.set-parent! keymode pobj)
+    (reset! editor* (load-editor pobj))
     (reset! bend-handler* (cadejo.midi.bend-handler/bend-handler pobj))
     (reset! pressure-handler* (cadejo.midi.pressure-handler/pressure-handler pobj))
     pobj))

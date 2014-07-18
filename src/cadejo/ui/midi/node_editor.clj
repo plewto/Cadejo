@@ -1,4 +1,9 @@
-(ns cadejo.ui.midi.node-editor)
+(ns cadejo.ui.midi.node-editor
+  "Defines interface for all 'editor' components"
+  (:require [cadejo.util.user-message :as umsg])
+  (:require [cadejo.ui.util.factory :as factory])
+  (:require [seesaw.core :as ss])
+  (:require [seesaw.font :as ssfont]))
 
 (defprotocol NodeEditor
 
@@ -11,33 +16,151 @@
     "Returns specific widget.
      If no such widget exists display warning and return nil")
 
-  (get-node 
+  (add-widget!
+    [this key obj])
+
+  (node 
     [this]
     "Return the node object this editor is operating with")
 
   (set-node!
     [this n]
-    "Set the nod object this editor is to operate with.")
+    "Set the node object this editor is to operate with.")
 
-  (sync-ui
-    [this]
-    "Update all gui components to match current state of 
-     the node")
+  ;; (sync-ui!
+  ;;   [this]
+  ;;   "Update all gui components to match current state of 
+  ;;    the node")
 
-  (status 
+  (info-text!
+    [this msg]
+    "Set text of info label")
+
+  (status! 
     [this msg]
     "Display status message")
 
-  (warning 
+  (warning! 
     [this msg]
     "Display warning message")
+ 
+  ;; (show-parent
+  ;;   [this]
+  ;;   "Move focus to editor for parent node of this.
+  ;;    If this is a root node do nothing")
 
-  (show-parent
-    [this]
-    "Move focus to editor for parent node of this.
-     If this is a root node do nothing")
+  ;; (show-child 
+  ;;   [this id]
+  ;;   "Display editor for indicated child node")
 
-  (show-child 
-    [this id]
-    "Display editor for indicated child node")
-  )
+  ;; (frame
+  ;;   [this]
+  ;;   "Return JFrame holding this editor")
+  ) 
+
+
+
+(def id-font-size 24)
+
+ 
+(defn basic-node-editor [type-id client-node]
+  "Provides basic frame work for 'editor' panels.
+   The basic-editor-panel implements several methods of NodeEditor
+   and provides the following components:
+   :jb-parent  - JButton used to display/give focus to editor 
+                 for the parent node. For root nodes (I.E. Scene)
+                 jb-parent should be either removed or disabled.
+   :jb-help    - JButton for displaying help
+   :lab-id     - JLabel used to identify this editor
+   :lab-status - JLabel for status and warning messages
+   :lab-info   - JLabel for info text
+   :pan-north  - JPanel holding lab-id, jb-parent and jb-help
+   :pan-center - JPanel with BorderLayout. pan-center is left empty
+                 for use by extending classes.
+   :pan-main   - JPanel - the main outer panel holding all other components"
+   
+  (let [node* (atom client-node)
+        lab-id (ss/label 
+                :text (format " %s %s "
+                              (name type-id) (.get-property @node* :id))
+                :font (ssfont/font :size id-font-size))
+        jb-parent (ss/button :text "Show Parent" 
+                             :id (keyword "jb-show-parent"))
+        jb-help (ss/button :text "Help"
+                           :id (keyword (format "jb-help-%s" type-id)))
+        pan-tools (ss/grid-panel :rows 1 
+                              :items [jb-parent jb-help]
+                              :border (factory/padding))
+        pan-north (ss/border-panel 
+                   :west (ss/vertical-panel :items [lab-id]
+                                            :border (factory/bevel 4))
+                   :center pan-tools
+                   :border (factory/padding))
+        pan-center (ss/border-panel
+                    :border (factory/padding))
+        lab-status (ss/label :text " ")
+        pan-status (ss/vertical-panel :items [lab-status]
+                                   :border (factory/bevel))
+        lab-info (ss/label :text " ")
+        pan-info (ss/vertical-panel :items [lab-info]
+                                 :border (factory/bevel))
+        pan-south (ss/grid-panel :rows 1 :items [pan-status pan-info]
+                              :border (factory/bevel 4))
+        pan-main (ss/border-panel :north pan-north
+                               :center pan-center
+                               :south pan-south)
+        editor-frame (ss/frame :title (format "Cadejo %s Editor" (name type-id))
+                               :content pan-main
+                               :size [700 :by 300])
+        widgets* (atom {:jb-parent jb-parent
+                        :jb-help jb-help
+                        :lab-id lab-id
+                        :lab-status lab-status
+                        :lab-info lab-info
+                        :pan-north pan-north
+                        :pan-center pan-center
+                        :pan-main pan-main
+                        :frame editor-frame})
+        ed (reify NodeEditor
+             
+             (widgets [this] 
+               @widgets*)
+
+             (widget [this key]
+               (or (get @widgets* key)
+                   (umsg/warning 
+                    (format "%s NodeEditor does not have %s widget"
+                            type-id key))))
+             
+             (add-widget! [this key obj]
+               (swap! widgets* (fn [n](assoc n key obj))))
+
+             (node [this] @node*)
+
+             (set-node! [this n]
+               (reset! node* n))
+
+             ;; ;; Not implemented
+             ;; (sync-ui! [this] nil)
+               
+             (info-text! [this msg]
+               (ss/config! lab-info :text msg))
+
+             (status! [this msg]
+               (ss/config! lab-status :text msg)
+               msg)
+
+             (warning! [this msg]
+               (.status! this (format "WARNING! %s" msg)))
+
+             ;; ;; Not implemented
+             ;; (show-parent [this] nil)
+             
+             ;; ;; Not implemented
+             ;; (show-child [this id] nil)
+
+             ;; (frame [this]
+             ;;   editor-frame))
+             )]
+    ed))
+

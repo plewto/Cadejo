@@ -2,14 +2,18 @@
 (ns cadejo.midi.scene
   "A scene is the top-level cadejo structure. Each scene connects
    to a single MIDI in port and contains 16 MIDI channels."
+  (:require [cadejo.config])
   (:require [cadejo.midi.node])
   (:require [cadejo.midi.channel])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])  
-  ;(:require [cadejo.scale.intonation])
   (:require [cadejo.scale.registry])
+  (:require [cadejo.ui.midi.scene-editor])
   (:require [overtone.midi :as midi]))
+
+
+(def channel-count (cadejo.config/channel-count))
 
 (defprotocol SceneProtocol 
   
@@ -43,7 +47,7 @@
               be a list holding the channels to display.
      verbose - flag indicating if additional information is to be included."))
  
-(deftype Scene [channels* properties* scale-registry]
+(deftype Scene [channels* properties* scale-registry editor*]
     cadejo.midi.node/Node
 
     (node-type [this] :scene)
@@ -84,11 +88,7 @@
       (.properties this true))
 
     (get-editor [this]
-      (umsg/warning "Scene.get-editor not implemented"))
-
-    (get-editor-frame [this]
-      (umsg/warning "Scene.get-editor-frame not implemented"))
-
+      @editor*)
 
     SceneProtocol 
 
@@ -138,6 +138,14 @@
     (dump [this]
       (.dump this nil true)))
 
+
+(defn- load-editor [scene]
+  (if (cadejo.config/load-gui)
+    (cadejo.ui.midi.scene-editor/scene-editor scene)
+    nil))
+
+
+
 ;; ISSUE: 
 ;; IllegalArgumentException if midi-input-device-name does not exists
 ;; MidiUnavailableException if device in use
@@ -146,9 +154,9 @@
   "Creates new Scene object connected to specified MIDI input port. 
    Either an IllegalArgumentException or a MidiUnavaliableException may be
    thrown if for some reason the specified port can not be connected."
-  (let [chan-count 16
-        input-device (midi/midi-in midi-input-device-name)
+  (let [input-device (midi/midi-in midi-input-device-name)
         channels* (atom [])
+        editor* (atom nil)
         properties* (atom {:id (str midi-input-device-name)
                            :velocity-map :linear
                            :scale-id :eq-12
@@ -161,8 +169,9 @@
                            :pressure-scale 1.0
                            :pressure-bias 0})
         sregistry (cadejo.scale.registry/create-scale-registry)
-        sobj (Scene. channels* properties* sregistry)]
-    (dotimes [ci chan-count]
+        sobj (Scene. channels* properties* sregistry editor*)]
+    (reset! editor* (load-editor sobj))
+    (dotimes [ci channel-count]
       (let [cobj (cadejo.midi.channel/channel sobj ci)]
         (swap! channels* (fn [n](conj n cobj)))))
     (midi/midi-handle-events input-device (.channel-dispatch sobj)) 

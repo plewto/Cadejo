@@ -2,11 +2,13 @@
 (ns cadejo.midi.channel
   "Provides management of a single MIDI channel
    scene-->channel"
+  (:require [cadejo.config])
   (:require [cadejo.midi.node])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.math])
   (:require [cadejo.util.string])
+  (:require [cadejo.ui.midi.channel-editor])
   (:require [overtone.core :as ot]))
 
 (defprotocol ChannelProtocol
@@ -27,8 +29,13 @@
   
   (performance-ids 
     [this]
-    "return list of all performance ids for this channel.")
+    "Return list of all performance ids for this channel.")
  
+  (performance 
+    [this id]
+    "Return child performance with matching id
+     If no such performance exist display warning and return nil")
+
   (handle-event 
     [this event]
     "Handle MIDI channel event.
@@ -43,7 +50,7 @@
     [this verbose]
     [this]))
 
-(deftype Channel [parent-scene children* properties*]
+(deftype Channel [parent-scene children* properties* editor*]
 
   cadejo.midi.node/Node
 
@@ -90,10 +97,7 @@
     (.properties this false))
 
   (get-editor [this]
-    (umsg/warning "Channel.get-editor not implemented"))
-
-  (get-editor-frame [this]
-    (umsg/warning "Channel.get-editor-frame not implemented"))
+    @editor*)
 
   ChannelProtocol
 
@@ -108,6 +112,11 @@
   
   (performance-ids [this]
     (sort (keys @children*)))
+
+  (performance [this id]
+    (or (get @children* id)
+        (umsg/warning (format "Channel %s does not have performance %s"
+                              (.get-property this :channel) id))))
 
   (handle-event [this event]
     (doseq [p (.children this)]
@@ -136,6 +145,10 @@
   (dump [this]
     (.dump this true 0))) 
 
+(defn- load-editor [chanobj]
+  (if (cadejo.config/load-gui)
+    (cadejo.ui.midi.channel-editor/channel-editor chanobj)))
+
 
 (defn channel [parent ci]
   "Create new Channel. instance 
@@ -144,8 +157,12 @@
    Channels are not typically created directly. Instead the parent Scene
    calls the function to create it's channels."
   (let [children (atom {})
-        properties (atom {:channel (int ci)})
+        properties (atom {:id (int ci)
+                          :channel (int ci)})
+        editor* (atom nil)
         cobj (Channel. parent
                        children
-                       properties)]
+                       properties
+                       editor*)]
+    (reset! editor* (load-editor cobj))
     cobj))
