@@ -23,8 +23,16 @@
 
 ;; Returns bevel border
 ;;
-(defn bevel []
-  (BorderFactory/createLoweredBevelBorder))
+(defn bevel 
+  ([]
+     (BorderFactory/createLoweredBevelBorder))
+  ([pad]
+     (ssb/compound-border
+      (bevel)
+      (padding pad))))
+     
+
+
 
 (defn line 
   ([padding]
