@@ -31,11 +31,8 @@
   (show-channel
    [this])
     
-  (sync-ui
+  (sync-ui!
     [this]))
-
-
-
 
 (defn performance-editor [performance]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :performance performance)
@@ -67,8 +64,8 @@
                      (ss/show! cframe)
                      (.toFront cframe)))
                  
-                 (sync-ui [this]
-                   (println "Performance.sync-ui not implemented")
+                 (sync-ui! [this]
+                   (println "Performance.sync-ui! not implemented")
                    )
                  )]
       (ss/listen (.widget ped :jb-parent)

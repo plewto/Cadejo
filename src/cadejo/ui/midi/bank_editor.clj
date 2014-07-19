@@ -176,7 +176,7 @@
   (list-selection-enabled? 
     [this])
 
-  (sync-ui
+  (sync-ui!
     [this]
     "Redraw all components to match the current stat of the bank.")
     
@@ -222,7 +222,7 @@
     (.bank-name! bank "New Bank")
     (.bank-remarks! bank "")
     (.clear-all-programs! bank)
-    (.sync-ui this)
+    (.sync-ui! this)
     (.status this "New bank"))
 
   (open-bank [this]
@@ -237,7 +237,7 @@
         (do 
           (.push-redo-state this)
           (.copy-state! bank src)
-          (.sync-ui this)
+          (.sync-ui! this)
           (.status this "Undo"))
         (.warning this "Nothing to undo"))))
 
@@ -247,7 +247,7 @@
         (do 
           (.push-undo-state this)
           (.copy-state! bank src)
-          (.sync-ui this)
+          (.sync-ui! this)
           (.status this "Redo"))
         (.warning this "Nothing to redo"))))
 
@@ -275,14 +275,14 @@
     (let [pnum (.current-program-number bank)]
       (.push-undo-state this)
       (.set-program! bank pnum "New" [])
-      (.sync-ui this)
+      (.sync-ui! this)
       (.status this (format "New program saved to %s" pnum))))
 
   (delete-program [this]
     (let [pnum (.current-program-number bank)]
       (.push-undo-state this)
       (.clear-program! bank pnum)
-      (.sync-ui this)
+      (.sync-ui! this)
       (.status this (format "program %s deleted" pnum))))
           
   (enable-list-selection [this flag]
@@ -291,7 +291,7 @@
   (list-selection-enabled? [this]
     @selection-enable-flag*)
 
-  (sync-ui [this]
+  (sync-ui! [this]
     (let [plst (.widget this :lst-programs)
           pnum (or (.current-program-number bank) 0)]
       (swap! selection-enable-flag* (fn [n] false))
@@ -340,7 +340,7 @@
               (do 
                 (.filename ed abs)
                 (.program-change bank 0)
-                (.sync-ui ed)
+                (.sync-ui! ed)
                 (.status ed "Bank read"))
               (.warning ed (format "Can not read bank file '%s'" abs)))))
         cancel (fn [jfc]
@@ -479,7 +479,7 @@
                 (.set-program! bank dst-pnum @dst-fid* 
                                dst-name dst-args dst-remarks)
                 (.dispose dia)
-                (.sync-ui ed)
+                (.sync-ui! ed)
                 (.status ed (format "%s program edit stored to %s"
                                     dst-name dst-pnum)))))
     (pack! dia)
@@ -547,7 +547,7 @@
                                               dst-data dst-remarks)
                                (.enable-store-program-mode ed false)
                                (.dispose dia)
-                               (.sync-ui ed)
+                               (.sync-ui! ed)
                                (.status ed (format "%s stored to %s" 
                                                    dst-name dst-pnum)))))
     (pack! dia)

@@ -34,7 +34,7 @@
   (show-hide-performance
     [this id])
     
-  (sync-ui
+  (sync-ui!
     [this]))
 
 
@@ -74,7 +74,7 @@
                   (println "ISSUE show-hide-performance not implemented")
                   )
 
-                (sync-ui [this]
+                (sync-ui! [this]
                   
                   ;; update performances
                   (.removeAll pan-performance)
@@ -97,10 +97,10 @@
                                        (do
                                          (.setVisible pframe true)
                                          (.toFront pframe))))))
-                      (.sync-ui (.get-editor p))))
+                      (.sync-ui! (.get-editor p))))
                   ;; end update performances
                   (.revalidate (.widget basic-ed :frame))
-                  ) ; end sync-ui
+                  ) ; end sync-ui!
                 )]
       (ss/listen (.widget ced :jb-parent)
                  :action (fn [_]

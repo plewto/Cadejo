@@ -27,10 +27,6 @@
     [this n]
     "Set the node object this editor is to operate with.")
 
-  ;; (sync-ui!
-  ;;   [this]
-  ;;   "Update all gui components to match current state of 
-  ;;    the node")
 
   (info-text!
     [this msg]
@@ -44,18 +40,6 @@
     [this msg]
     "Display warning message")
  
-  ;; (show-parent
-  ;;   [this]
-  ;;   "Move focus to editor for parent node of this.
-  ;;    If this is a root node do nothing")
-
-  ;; (show-child 
-  ;;   [this id]
-  ;;   "Display editor for indicated child node")
-
-  ;; (frame
-  ;;   [this]
-  ;;   "Return JFrame holding this editor")
   ) 
 
 
@@ -140,9 +124,6 @@
              (set-node! [this n]
                (reset! node* n))
 
-             ;; ;; Not implemented
-             ;; (sync-ui! [this] nil)
-               
              (info-text! [this msg]
                (ss/config! lab-info :text msg))
 
@@ -151,16 +132,12 @@
                msg)
 
              (warning! [this msg]
-               (.status! this (format "WARNING! %s" msg)))
+               (.status! this (format "WARNING! %s" msg))) )]
 
-             ;; ;; Not implemented
-             ;; (show-parent [this] nil)
-             
-             ;; ;; Not implemented
-             ;; (show-child [this id] nil)
+    ;; START DEBUG
+    (ss/listen jb-help :action (fn [_]
+                              (println (ss/config editor-frame :size))))
+    ;; END DEBUG
 
-             ;; (frame [this]
-             ;;   editor-frame))
-             )]
     ed))
 
