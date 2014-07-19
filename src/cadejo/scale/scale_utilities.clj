@@ -1,4 +1,5 @@
 (ns cadejo.scale.scale-utilities
+  (:use [cadejo.util.trace])
   (:require [cadejo.util.math :as math])
   (:import java.util.Collections
            java.util.ArrayList))

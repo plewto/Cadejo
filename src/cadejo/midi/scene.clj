@@ -8,7 +8,6 @@
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])  
-  ;(:require [cadejo.scale.registry]) ;; DEPRECIATED
   (:require [cadejo.scale.registry])
   (:require [cadejo.ui.midi.scene-editor])
   (:require [overtone.midi :as midi]))

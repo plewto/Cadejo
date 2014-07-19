@@ -48,12 +48,14 @@
 
 (defn- create-scale-registry [tables*]
   (let [reg (reify ScaleRegistry
+              
               (registered-tables [this]
                 (sort (keys @tables*)))
               
               (table [this id]
                 (or (get @tables* id)
-                    (umsg/warning (format "%s is not a registered tuning table, using default" id))
+                    (umsg/warning 
+                     (format "%s is not a registered tuning table, using default" id))
                     eqtemp/default-table))
               
               (add-table! [this id tt]
@@ -131,7 +133,7 @@
     reg))
 
 (defn scale-registry []
-  (create-scale-registry {:eq-12 eqtemp/default-table}))
+  (create-scale-registry (atom {:eq-12 eqtemp/default-table})))
               
                                   
 
