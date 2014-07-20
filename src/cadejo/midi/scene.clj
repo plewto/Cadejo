@@ -80,6 +80,9 @@
     (get-property [this key]
       (.get-property this key :fail))
 
+    (local-property [this key]
+      (get @properties* key))
+
     ;; ignore local-only flag
     (properties [this local-only]
       (keys @properties*))

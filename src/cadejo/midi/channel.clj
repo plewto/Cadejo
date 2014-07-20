@@ -87,6 +87,9 @@
   (get-property [this key]
     (.get-property this key :fail))
 
+  (local-property [this key]
+    (get @properties* key))
+
   (properties [this local-only]
     (set (concat (keys @properties*)
                  (if (and parent-scene (not local-only))

@@ -54,6 +54,12 @@
      node is reached return default. If default is returned and it's value
      id :fail display a warning message and return nil.")
 
+  (local-property 
+    [this key]
+    "Return local value of property key
+     Return nil if key has no local value")
+
+
   (properties 
     [this local-only]
     [this]
