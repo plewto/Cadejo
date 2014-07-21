@@ -1,5 +1,4 @@
 (ns cadejo.ui.midi.scene-editor
-  (:use [cadejo.util.trace])
   (:require [cadejo.ui.scale.registry-editor])
   (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
@@ -42,7 +41,6 @@
     [this]))
 
 (defn scene-editor [scene]
-  (trace-enter "scene-editor")
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :scene scene)
         pan-center (.widget basic-ed :pan-center)
         jb-channels (let [acc* (atom [])]
@@ -61,7 +59,6 @@
                  :border (factory/padding))
         
         ]
-    
     (ss/config! (.widget basic-ed :frame) :on-close :nothing)
     (ss/config! (.widget basic-ed :frame) :size frame-size)
     (.add pan-center pan-channels BorderLayout/SOUTH)
@@ -101,7 +98,6 @@
                         (.toFront cframe)))))
 
                 (sync-ui! [this]
-                  (trace-enter "SceneEditor.sync-ui!")
                   ;; update channel buttons
                   (dotimes [ci channel-count]
                     (let [jb (nth jb-channels ci)
@@ -113,7 +109,6 @@
                       (.sync-ui! (.get-editor cobj))))
                   (.sync-ui! reged)
                   (.revalidate (.widget basic-ed :frame))
-                  (trace-exit "SceneEditor.sync-ui!")
                   ) ;; end sync-ui!
                 )]
       (doseq [jb jb-channels]
@@ -121,5 +116,4 @@
                                 (let [src (.getSource ev)
                                       cid (.getClientProperty src :channel)]
                                   (.show-hide-channel sed cid)))))
-      (trace-exit "scene-editor")
       sed)))

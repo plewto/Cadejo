@@ -1,4 +1,4 @@
-(println "--> Loading cadejo.ui.midi.bank-editor")
+
 ;; NOTES:
 ;; 1) Editing bank name and remarks are not saved to undo stack
 

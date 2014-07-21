@@ -27,7 +27,6 @@
     [this n]
     "Set the node object this editor is to operate with.")
 
-
   (info-text!
     [this msg]
     "Set text of info label")
@@ -39,7 +38,6 @@
   (warning! 
     [this msg]
     "Display warning message")
- 
   ) 
 
 
@@ -126,6 +124,7 @@
 
              (info-text! [this msg]
                (ss/config! lab-info :text msg))
+
 
              (status! [this msg]
                (ss/config! lab-status :text msg)

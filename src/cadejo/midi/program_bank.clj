@@ -19,8 +19,6 @@
 ;; D) Basic serialization for bank read and write now implemented. 
 ;;
 
-(println "--> cadejo.midi.program-bank")
-
 (ns cadejo.midi.program-bank
   (:require [cadejo.config])
   (:require [cadejo.util.string])
@@ -30,7 +28,7 @@
 ;; (if (cadejo.config/load-gui)
 ;;   (require 'cadejo.ui.midi.bank-editor))
 
-(def enable-trace true)
+(def enable-trace false)
 
 (def program-count 128)
 
@@ -516,5 +514,3 @@
   ([format]
      (program-bank format 
                    (format "New %s bank" format) "")))
-
-(println "<<- cadejo.midi.program-bank")
