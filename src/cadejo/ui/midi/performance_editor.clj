@@ -67,7 +67,6 @@
                      (.setBackground lab-id bg)
                      (.setForeground lab-id fg)
                      (.revalidate lab-id)
-                     (println "DEBUG bg " bg  "   fg " fg)
                      (reset! color-id* n)))
 
                  (color-id [this] @color-id*)

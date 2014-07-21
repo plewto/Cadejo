@@ -135,7 +135,7 @@
 
     ;; START DEBUG
     (ss/listen jb-help :action (fn [_]
-                              (println (ss/config editor-frame :size))))
+                                 (println (ss/config editor-frame :size))))
     ;; END DEBUG
 
     ed))

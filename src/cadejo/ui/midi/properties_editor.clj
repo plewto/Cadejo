@@ -288,12 +288,11 @@
 (defn- misc-properties-panel []
   (let [parent* (atom nil)
         enable-change-listeners* (atom true)
-        spin-dbscale (ss/spinner :model (ss/spinner-model 0 :from -99 :to 6 :by 3))
+        spin-dbscale (ss/spinner :model (ss/spinner-model 0 :from -99 :to 12 :by 3))
         cb-dbscale (ss/checkbox :text "Enable")
         pan-dbscale (ss/border-panel :north spin-dbscale
                                      :center cb-dbscale
                                      :border (factory/title "DB Scale"))
-
         spin-transpose (ss/spinner :model (ss/spinner-model 0 :from -36 :to 36 :by 1))
         cb-transpose (ss/checkbox :text "Enable")
         pan-transpose (ss/border-panel :north spin-transpose
@@ -311,7 +310,6 @@
                                                          :items [pan-range-low pan-range-high])
                                    :center cb-range
                                    :border (factory/title "Key Range"))
-
         pan-main (ss/vertical-panel :items [pan-dbscale pan-transpose pan-range])
         widget-map {:spin-dbscale spin-dbscale
                     :cb-dbscale cb-dbscale
@@ -323,6 +321,7 @@
                     :spin-range-high spin-range-high
                     :pan-range-low pan-range-low
                     :pan-range-high pan-range-high
+                    :cb-range cb-range
                     :pan-main pan-main}
         med (reify PropertyEditor
               
@@ -338,9 +337,109 @@
                 (.node @parent*))
 
               (sync-ui! [this]
-                (println "midi_cure_editor/misc_panel.sync-ui! not active")
-                )
-              )]
+                (reset! enable-change-listeners* false)
+                (let [node (.node this)
+                      db (.local-property node :dbscale)
+                      transpose (.local-property node :transpose)
+                      krange (.local-property node :key-range)]
+                  (if db
+                    (do 
+                      (.setSelected cb-dbscale true)
+                      (.setEnabled spin-dbscale true)
+                      (.setValue spin-dbscale db))
+                    (do 
+                      (.setSelected cb-dbscale false)
+                      (.setEnabled spin-dbscale false)))
+                  (if transpose
+                    (do
+                      (.setSelected cb-transpose true)
+                      (.setEnabled spin-transpose true)
+                      (.setValue spin-transpose transpose))
+                    (do 
+                      (.setSelected cb-transpose false)
+                      (.setEnabled spin-transpose false)))
+                  (if krange
+                    (let [low (apply min krange)
+                          high (apply max krange)]
+                      (.setSelected cb-range true)
+                      (.setEnabled spin-range-low true)
+                      (.setEnabled spin-range-high true)
+                      (.setEnabled pan-range-low true)
+                      (.setEnabled pan-range-high true)
+                      (.setValue spin-range-low low)
+                      (.setValue spin-range-high high))
+                    (do
+                      (.setSelected cb-range false)
+                      (.setEnabled spin-range-low false)
+                      (.setEnabled spin-range-high false)
+                      (.setEnabled pan-range-low false)
+                      (.setEnabled pan-range-high false))))
+                (reset! enable-change-listeners* true)))]
+    (ss/listen cb-dbscale :action 
+               (fn [_]
+                 (if (.isSelected cb-dbscale)
+                   (do
+                     (.setEnabled spin-dbscale true)
+                     (.put-property! (.node @parent*) 
+                                     :dbscale 
+                                     (int (or (.getValue spin-dbscale) 0))))
+                   (do
+                     (.setEnabled spin-dbscale false)
+                     (.remove-property! (.node @parent*) :dbscale)))))
+
+    (.addChangeListener spin-dbscale
+                        (proxy [ChangeListener][]
+                          (stateChanged [_]
+                            (if @enable-change-listeners*
+                              (.put-property! (.node @parent*)
+                                              :dbscale
+                                              (.getValue spin-dbscale))))))
+    (ss/listen cb-transpose :action
+               (fn [_]
+                 (if (.isSelected cb-transpose)
+                   (do 
+                     (.setEnabled spin-transpose true)
+                     (.put-property! (.node @parent*)
+                                     :transpose
+                                     (int (or (.getValue spin-transpose) 0))))
+                   (do 
+                     (.setEnabled spin-transpose false)
+                     (.remove-property! (.node @parent*) :transpose)))))
+    (.addChangeListener spin-transpose
+                        (proxy [ChangeListener][]
+                          (stateChanged [_]
+                            (if @enable-change-listeners*
+                              (.put-property! (.node @parent*)
+                                              :transpose
+                                              (.getValue spin-transpose))))))
+    (ss/listen cb-range :action
+               (fn [_]
+                 (if (.isSelected cb-range)
+                   (let [a (.getValue spin-range-low)
+                         b (.getValue spin-range-high)]
+                     (.setEnabled spin-range-low true)
+                     (.setEnabled spin-range-high true)
+                     (.setEnabled pan-range-low true)
+                     (.setEnabled pan-range-high true)
+                     (.put-property! (.node @parent*)
+                                     :key-range
+                                     [(min a b)(max a b)]))
+                   (do
+                     (.setEnabled spin-range-low false)
+                     (.setEnabled spin-range-high false)
+                     (.setEnabled pan-range-low false)
+                     (.setEnabled pan-range-high false)
+                     (.remove-property! (.node @parent*) :key-range)))))
+    (let [krange-listener (proxy [ChangeListener][]
+                           (stateChanged [_]
+                             (if @enable-change-listeners*
+                               (let [a (.getValue spin-range-low)
+                                     b (.getValue spin-range-high)]
+                                 (.put-property! (.node @parent*)
+                                                 :key-range
+                                                 [(min a b)(max a b)])))))]
+      (.addChangeListener spin-range-low krange-listener)
+      (.addChangeListener spin-range-high krange-listener))
     med))
                     
 

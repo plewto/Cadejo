@@ -122,4 +122,5 @@
       (.add pan-center pan-tabs BorderLayout/CENTER)
       (.add pan-center pan-performance BorderLayout/SOUTH)
       (ss/config! (.frame ced) :size [1082 :by 540])
+      (ss/listen (.widget ced :jb-help) :action (fn [_](.sync-ui! ced)))  ;;;; DEBUG
       ced)))
