@@ -5,6 +5,7 @@
   (:require [seesaw.core :as ss])
   (:require [seesaw.font :as ssfont]))
 
+
 (defprotocol NodeEditor
 
   (widgets 
@@ -132,7 +133,7 @@
 
              (warning! [this msg]
                (.status! this (format "WARNING! %s" msg))) )]
-
+   
     ;; START DEBUG
     (ss/listen jb-help :action (fn [_]
                                  (println (ss/config editor-frame :size))))

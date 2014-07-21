@@ -8,7 +8,10 @@
   (:require [cadejo.ui.util.color-utilities])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
-  (:import java.awt.BorderLayout))
+  (:import java.awt.BorderLayout
+           java.awt.event.WindowListener))
+           
+  
 
 (defprotocol ChannelEditor
 
@@ -121,6 +124,16 @@
       (.set-parent-editor! properties-editor ced)
       (.add pan-center pan-tabs BorderLayout/CENTER)
       (.add pan-center pan-performance BorderLayout/SOUTH)
-      (ss/config! (.frame ced) :size [1082 :by 540])
-      (ss/listen (.widget ced :jb-help) :action (fn [_](.sync-ui! ced)))  ;;;; DEBUG
+      (ss/config! (.frame ced) :size [1092 :by 568])
+      (.addWindowListener (.widget ced :frame)
+                          (proxy [WindowListener][]
+                            (windowClosed [_] nil)
+                            (windowClosing [_] nil)
+                            (windowDeactivated [_] nil)
+                            (windowIconified [_] nil)
+                            (windowDeiconified [_] (.sync-ui! ced))
+                            (windowActivated [_] 
+                              (.sync-ui! ced))
+                            (windowOpened [_] nil)))
+
       ced)))

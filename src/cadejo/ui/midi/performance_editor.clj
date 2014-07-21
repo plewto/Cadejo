@@ -3,12 +3,14 @@
 (ns cadejo.ui.midi.performance-editor
   (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
+  (:require [cadejo.ui.midi.bank-editor])
   (:require [cadejo.ui.midi.node-editor])
-  (:require [cadejo.ui.util.color-utilities])
+  (:require [cadejo.ui.midi.properties-editor])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout
-          ))
+           java.awt.event.WindowListener))
+          
 
 (defprotocol PerformanceEditor
 
@@ -47,7 +49,15 @@
 (defn performance-editor [performance]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :performance performance)
         color-id* (atom nil)
+        bank-ed (cadejo.ui.midi.bank-editor/bank-editor (.bank performance))
+        properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
+
+        pan-tabs (ss/tabbed-panel :tabs [{:title "Bank" :content (.widget bank-ed :pan-main)}
+                                         {:title "MIDI" :content (.widget properties-editor :pan-main)}
+                                         ])
         pan-center (.widget basic-ed :pan-center)
+        
+
         ]
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
     (let [ped (reify PerformanceEditor
@@ -88,9 +98,13 @@
                      (.toFront cframe)))
                  
                  (sync-ui! [this]
-                   (println "Performance.sync-ui! not implemented")
+                   (.sync-ui! bank-ed)
+                   (.sync-ui! properties-editor)
                    )
                  )]
+      (.set-parent-editor! properties-editor ped)
+      (.add pan-center pan-tabs BorderLayout/CENTER)
+      (ss/config! (.frame ped) :size [1082 :by 540])
       (ss/listen (.widget ped :jb-parent)
                  :action (fn [_]
                            (let [chanobj (.parent performance)
@@ -98,4 +112,15 @@
                                  cframe (.frame ced)]
                              (ss/show! cframe)
                              (.toFront cframe))))
+
+      (.addWindowListener (.widget ped :frame)
+                          (proxy [WindowListener][]
+                            (windowClosed [_] nil)
+                            (windowClosing [_] nil)
+                            (windowDeactivated [_] nil)
+                            (windowIconified [_] nil)
+                            (windowDeiconified [_] (.sync-ui! ped))
+                            (windowActivated [_] 
+                              (.sync-ui! ped))
+                            (windowOpened [_] nil)))
       ped)))

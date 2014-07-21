@@ -1,5 +1,6 @@
 (ns cadejo.ui.midi.properties-editor
-  "Provides GUI for node properties"
+  "Provides GUI for common node properties: bend, pressure, velocity, 
+   dbscale, transpose, key-range and scale-id"
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.midi.curve-panel])
@@ -288,17 +289,19 @@
 (defn- misc-properties-panel []
   (let [parent* (atom nil)
         enable-change-listeners* (atom true)
+        ;; dbscale property
         spin-dbscale (ss/spinner :model (ss/spinner-model 0 :from -99 :to 12 :by 3))
         cb-dbscale (ss/checkbox :text "Enable")
         pan-dbscale (ss/border-panel :north spin-dbscale
                                      :center cb-dbscale
                                      :border (factory/title "DB Scale"))
+        ;; transpose property
         spin-transpose (ss/spinner :model (ss/spinner-model 0 :from -36 :to 36 :by 1))
         cb-transpose (ss/checkbox :text "Enable")
         pan-transpose (ss/border-panel :north spin-transpose
                                        :center cb-transpose
                                        :border (factory/title "Transpose"))
-
+        ;; key-range property
         spin-range-low (ss/spinner :model (ss/spinner-model 0 :from 0 :to 127 :by 1))
         spin-range-high (ss/spinner :model (ss/spinner-model 127 :from 0 :to 127 :by 1))
         cb-range (ss/checkbox :text "Enable")
@@ -310,7 +313,14 @@
                                                          :items [pan-range-low pan-range-high])
                                    :center cb-range
                                    :border (factory/title "Key Range"))
-        pan-main (ss/vertical-panel :items [pan-dbscale pan-transpose pan-range])
+        ;; scale-id property
+        combo-scale (ss/combobox :model [:eq-12]);(.registered-tables (.get-scene (.node @parent*))))
+        cb-scale (ss/checkbox :text "Enable")
+        pan-scale (ss/border-panel :north combo-scale
+                                   :center cb-scale
+                                   :border (factory/title "Scale"))
+
+        pan-main (ss/vertical-panel :items [pan-dbscale pan-transpose pan-range pan-scale])
         widget-map {:spin-dbscale spin-dbscale
                     :cb-dbscale cb-dbscale
                     :pan-dbscale pan-dbscale
@@ -322,6 +332,8 @@
                     :pan-range-low pan-range-low
                     :pan-range-high pan-range-high
                     :cb-range cb-range
+                    :combo-scale combo-scale
+                    :cb-scale cb-scale
                     :pan-main pan-main}
         med (reify PropertyEditor
               
@@ -341,7 +353,8 @@
                 (let [node (.node this)
                       db (.local-property node :dbscale)
                       transpose (.local-property node :transpose)
-                      krange (.local-property node :key-range)]
+                      krange (.local-property node :key-range)
+                      scale-id (.local-property node :scale-id)]
                   (if db
                     (do 
                       (.setSelected cb-dbscale true)
@@ -373,8 +386,21 @@
                       (.setEnabled spin-range-low false)
                       (.setEnabled spin-range-high false)
                       (.setEnabled pan-range-low false)
-                      (.setEnabled pan-range-high false))))
-                (reset! enable-change-listeners* true)))]
+                      (.setEnabled pan-range-high false)))
+                  (let [previous-scale-id (.getSelectedItem combo-scale)]
+                    (ss/config! combo-scale :model (.registered-tables (.get-scene (.node @parent*))))
+                    (.setSelectedItem combo-scale previous-scale-id)
+                    (if scale-id
+                      (do 
+                        (.setSelected cb-scale true)
+                        (.setEnabled combo-scale true)
+                        (.setSelectedItem combo-scale scale-id))
+                      (do
+                        (.setSelected cb-scale false)
+                        (.setEnabled combo-scale false))))) 
+
+                  (reset! enable-change-listeners* true)))]
+    
     (ss/listen cb-dbscale :action 
                (fn [_]
                  (if (.isSelected cb-dbscale)
@@ -405,6 +431,7 @@
                    (do 
                      (.setEnabled spin-transpose false)
                      (.remove-property! (.node @parent*) :transpose)))))
+    
     (.addChangeListener spin-transpose
                         (proxy [ChangeListener][]
                           (stateChanged [_]
@@ -430,6 +457,7 @@
                      (.setEnabled pan-range-low false)
                      (.setEnabled pan-range-high false)
                      (.remove-property! (.node @parent*) :key-range)))))
+    
     (let [krange-listener (proxy [ChangeListener][]
                            (stateChanged [_]
                              (if @enable-change-listeners*
@@ -440,6 +468,23 @@
                                                  [(min a b)(max a b)])))))]
       (.addChangeListener spin-range-low krange-listener)
       (.addChangeListener spin-range-high krange-listener))
+
+    (ss/listen cb-scale :action
+               (fn [_]
+                 (if (.isSelected cb-scale)
+                   (let [sid (or (.getSelectedItem combo-scale) :eq-12)]
+                     (.setEnabled combo-scale true)
+                     (.put-property! (.node @parent*) :scale-id sid))
+                   (do 
+                     (.setEnabled combo-scale false)
+                     (.remove-property! (.node @parent*) :scale-id)))))
+
+    (ss/listen combo-scale :action 
+               (fn [_]
+                 (if @enable-change-listeners*
+                   (.put-property! (.node @parent*)
+                                  :scale-id
+                                  (or (.getSelectedItem combo-scale) :eq-12)))))
     med))
                     
 

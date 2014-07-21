@@ -30,6 +30,10 @@
   (scale-registry
     [this])
 
+  (registered-tables
+    [this]
+    "Convenience method - returns sorted list of registered tuning tables")
+
   (reset
     [this]
     "Resets all channels which in turn resets all performances to initial 
@@ -111,6 +115,9 @@
     (scale-registry [this]
       sregistry)
 
+    (registered-tables [this]
+      (.registered-tables (.scale-registry this)))
+
     (reset [this]
       (doseq [c (.children this)]
         (.reset c)))
@@ -179,3 +186,4 @@
         (swap! channels* (fn [n](conj n cobj)))))
     (midi/midi-handle-events input-device (.channel-dispatch sobj)) 
     sobj))
+

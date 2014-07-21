@@ -25,6 +25,10 @@
   (node 
     [this])
 
+  (registered-tables
+    [this]
+    "Convenience method returns sorted list of registered scales")
+
   (status!
     [this msg])
 
@@ -77,6 +81,9 @@
 
                 (node [this]
                   (.node basic-ed))
+
+                (registered-tables [this]
+                  (.registered-tables (.node this)))
 
                 (status! [this msg]
                   (.status! basic-ed msg))
