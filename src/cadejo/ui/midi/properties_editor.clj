@@ -1,11 +1,12 @@
-(ns cadejo.ui.midi.midi-curve-editor
+(ns cadejo.ui.midi.properties-editor
+  "Provides GUI for node properties"
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.midi.curve-panel])
   (:require [seesaw.core :as ss])
   (:import javax.swing.event.ChangeListener))
 
-(defprotocol MidiCurveEditor 
+(defprotocol PropertyEditor 
 
   (widgets
     [this])
@@ -32,7 +33,7 @@
         widget-map {:curve-panel curve-panel
                     :cb-enable cb-enable
                     :pan-main pan-main}
-        vpan (reify MidiCurveEditor
+        vpan (reify PropertyEditor
                
                (widgets [this] widget-map)
                
@@ -99,7 +100,7 @@
                     :spin-scale spin-scale
                     :spin-bias spin-bias
                     :pan-main pan-main}
-        ppan (reify MidiCurveEditor
+        ppan (reify PropertyEditor
                    
                (widgets [this]
                  widget-map)
@@ -206,7 +207,7 @@
                     :jb-dec jb-dec
                     :spin-range spin-range
                     :pan-main pan-main}
-        vpan (reify MidiCurveEditor
+        bpan (reify PropertyEditor
                
                (widgets [this] widget-map)
                
@@ -246,7 +247,7 @@
       (ss/listen jb :action (fn [ev]
                               (let [src (.getSource ev)
                                     crv (.getClientProperty src :curve)]
-                                (.put-property! (.node vpan)
+                                (.put-property! (.node bpan)
                                                 :bend-curve crv)))))
     (ss/listen cb-enable :action (fn [_]
                                    (if (.isSelected cb-enable)
@@ -257,16 +258,16 @@
                                        (.setEnabled spin-range true)
                                        (.setEnabled pan-spin true)
                                        (.enable! curve-panel true)
-                                       (.put-property! (.node vpan) :bend-curve crv)
-                                       (.put-property! (.node vpan) :bend-range (.getValue spin-range)))
+                                       (.put-property! (.node bpan) :bend-curve crv)
+                                       (.put-property! (.node bpan) :bend-range (.getValue spin-range)))
                                      (do
                                        (.setEnabled jb-dec false)
                                        (.setEnabled jb-inc false)
                                        (.setEnabled spin-range false)
                                        (.setEnabled pan-spin false)
                                        (.enable! curve-panel false)
-                                       (.remove-property! (.node vpan) :bend-curve)
-                                       (.remove-property! (.node vpan) :bend-range)))))
+                                       (.remove-property! (.node bpan) :bend-curve)
+                                       (.remove-property! (.node bpan) :bend-range)))))
     (ss/listen jb-dec :action (fn [_]
                                 (let [r (max 0 (- (.getValue spin-range) 100))]
                                   (.setValue spin-range r))))
@@ -280,23 +281,88 @@
                           (stateChanged [_]
                           (if @enable-change-listeners*
                             (let [r (.getValue spin-range)]
-                              (.put-property! (.node vpan) :bend-range r))))))
-    vpan))
+                              (.put-property! (.node bpan) :bend-range r))))))
+    bpan))
 
 
-(defn midi-curve-editor []
+(defn- misc-properties-panel []
+  (let [parent* (atom nil)
+        enable-change-listeners* (atom true)
+        spin-dbscale (ss/spinner :model (ss/spinner-model 0 :from -99 :to 6 :by 3))
+        cb-dbscale (ss/checkbox :text "Enable")
+        pan-dbscale (ss/border-panel :north spin-dbscale
+                                     :center cb-dbscale
+                                     :border (factory/title "DB Scale"))
+
+        spin-transpose (ss/spinner :model (ss/spinner-model 0 :from -36 :to 36 :by 1))
+        cb-transpose (ss/checkbox :text "Enable")
+        pan-transpose (ss/border-panel :north spin-transpose
+                                       :center cb-transpose
+                                       :border (factory/title "Transpose"))
+
+        spin-range-low (ss/spinner :model (ss/spinner-model 0 :from 0 :to 127 :by 1))
+        spin-range-high (ss/spinner :model (ss/spinner-model 127 :from 0 :to 127 :by 1))
+        cb-range (ss/checkbox :text "Enable")
+        pan-range-low (ss/vertical-panel :items [spin-range-low]
+                                         :border (factory/title "Low"))
+        pan-range-high (ss/vertical-panel :items [spin-range-high]
+                                          :border (factory/title "High"))
+        pan-range (ss/border-panel :north (ss/grid-panel :columns 1
+                                                         :items [pan-range-low pan-range-high])
+                                   :center cb-range
+                                   :border (factory/title "Key Range"))
+
+        pan-main (ss/vertical-panel :items [pan-dbscale pan-transpose pan-range])
+        widget-map {:spin-dbscale spin-dbscale
+                    :cb-dbscale cb-dbscale
+                    :pan-dbscale pan-dbscale
+                    :spin-transpose spin-transpose
+                    :cb-transpose cb-transpose
+                    :pan-transpose pan-transpose
+                    :spin-range-low spin-range-low
+                    :spin-range-high spin-range-high
+                    :pan-range-low pan-range-low
+                    :pan-range-high pan-range-high
+                    :pan-main pan-main}
+        med (reify PropertyEditor
+              
+              (widgets [this] widget-map)
+              
+              (widget [this key]
+                (get widget-map key))
+
+              (set-parent-editor! [this ed]
+                (reset! parent* ed))
+
+              (node [this]
+                (.node @parent*))
+
+              (sync-ui! [this]
+                (println "midi_cure_editor/misc_panel.sync-ui! not active")
+                )
+              )]
+    med))
+                    
+
+
+(defn properties-editor []
+  "Returns general node PropertyEditor 
+   includes: bend, pressure, velocity, dbscale, transpose & key-range"
   (let [vep (velocity-panel)
         pep (pressure-panel)
         bep (bend-panel)
+        msp (misc-properties-panel)
         pan-main (ss/grid-panel :rows 1
                                 :items [(.widget bep :pan-main)
                                         (.widget pep :pan-main)
-                                        (.widget vep :pan-main)])
+                                        (.widget vep :pan-main)
+                                        (.widget msp :pan-main)])
         wid {:velocity-panel vep
              :pressure-panel pep
              :bend-panel bep
+             :misc-properties-panel msp
              :pan-main pan-main}
-        ed (reify MidiCurveEditor
+        ed (reify PropertyEditor
 
              (widgets [this] wid)
 
@@ -306,6 +372,7 @@
              (set-parent-editor! [this p]
                (.set-parent-editor! vep p)
                (.set-parent-editor! pep p)
+               (.set-parent-editor! msp p)
                (.set-parent-editor! bep p))
 
              (node [this]
@@ -314,5 +381,6 @@
              (sync-ui! [this]
                (.sync-ui! vep)
                (.sync-ui! pep)
-               (.sync-ui! bep)))]
+               (.sync-ui! bep)
+               (.sync-ui! msp)))]
     ed))

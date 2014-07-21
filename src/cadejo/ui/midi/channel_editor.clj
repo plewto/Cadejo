@@ -4,10 +4,7 @@
   (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.node-editor])
-  ;; (:require [cadejo.ui.midi.bend-panel])
-  ;; (:require [cadejo.ui.midi.pressure-panel])
-  ;; (:require [cadejo.ui.midi.velocity-panel])
-  (:require [cadejo.ui.midi.midi-curve-editor])
+  (:require [cadejo.ui.midi.properties-editor])
   (:require [cadejo.ui.util.color-utilities])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
@@ -47,17 +44,9 @@
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
         pan-center (.widget basic-ed :pan-center)
         pan-performance (ss/grid-panel :rows 2 :columns 3)
-        ;; bend-panel (cadejo.ui.midi.bend-panel/bend-panel)
-        ;; pressure-panel (cadejo.ui.midi.pressure-panel/pressure-panel)
-        ;; velocity-panel (cadejo.ui.midi.velocity-panel/velocity-panel)
-        midi-curve-editor (cadejo.ui.midi.midi-curve-editor/midi-curve-editor)
-        ;; pan-properties (ss/grid-panel :rows 1
-        ;;                               ;; :items [(.widget bend-panel :pan-main)
-        ;;                               ;;         (.widget pressure-panel :pan-main)
-        ;;                               ;;         (.widget velocity-panel :pan-main)])
-                                      
+        properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         pan-tabs (ss/tabbed-panel :tabs [{:title "MIDI" 
-                                          :content (.widget midi-curve-editor :pan-main)}
+                                          :content (.widget properties-editor :pan-main)}
                                          ])]
 
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
@@ -120,10 +109,7 @@
                                            (.setVisible pframe true)
                                            (.toFront pframe))))))
                         (.sync-ui! (.get-editor p)))))
-                  ;(.sync-ui! bend-panel)
-                  ;(.sync-ui! pressure-panel)
-                  ;(.sync-ui! velocity-panel)
-                  (.sync-ui! midi-curve-editor)
+                  (.sync-ui! properties-editor)
                   (.revalidate (.widget basic-ed :frame))))]
       (ss/listen (.widget ced :jb-parent)
                  :action (fn [_]
@@ -132,13 +118,8 @@
                                  sframe (.frame sed)]
                              (ss/show! sframe)
                              (.toFront sframe))))
-      ;; (.set-parent-editor! bend-panel ced)
-      ;; (.set-parent-editor! pressure-panel ced)
-      ;; (.set-parent-editor! velocity-panel ced)
-      (.set-parent-editor! midi-curve-editor ced)
-      
-      ;(.add pan-center pan-properties BorderLayout/CENTER)
+      (.set-parent-editor! properties-editor ced)
       (.add pan-center pan-tabs BorderLayout/CENTER)
       (.add pan-center pan-performance BorderLayout/SOUTH)
-      (ss/config! (.frame ced) :size [880 :by 540])
+      (ss/config! (.frame ced) :size [1082 :by 540])
       ced)))
