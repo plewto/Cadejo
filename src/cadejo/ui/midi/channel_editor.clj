@@ -1,12 +1,14 @@
 (println "--> channel-editor")
 
 (ns cadejo.ui.midi.channel-editor
+  (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.node-editor])
   ;; (:require [cadejo.ui.midi.bend-panel])
   ;; (:require [cadejo.ui.midi.pressure-panel])
   ;; (:require [cadejo.ui.midi.velocity-panel])
   (:require [cadejo.ui.midi.midi-curve-editor])
+  (:require [cadejo.ui.util.color-utilities])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout))
@@ -91,25 +93,33 @@
 
                 (sync-ui! [this]
                   (.removeAll pan-performance)
-                  (doseq [p (.children chanobj)]
-                    (let [pid (.get-property p :id)
-                          jb (ss/button :text (name pid))]
-                      (.putClientProperty jb :performance-id pid)
-                      (.add pan-performance jb)
-                      (ss/listen jb 
-                                 :action 
-                                 (fn [ev]
-                                   (let [src (.getSource ev)
-                                         pid (.getClientProperty src :performance-id)
-                                         pobj (.performance chanobj pid)
-                                         ped (.get-editor pobj)
-                                         pframe (.frame ped)]
-                                     (if (.isVisible pframe)
-                                       (.setVisible pframe false)
-                                       (do
-                                         (.setVisible pframe true)
-                                         (.toFront pframe))))))
-                      (.sync-ui! (.get-editor p))))
+                  (let [counter* (atom 0)]
+                    (doseq [p (.children chanobj)]
+                      (let [pid (.get-property p :id)
+                            jb (ss/button :text (name pid))
+                            bg (cadejo.config/performance-id-background @counter*)
+                            fg (cadejo.config/performance-id-foreground @counter*)]
+                        (.putClientProperty jb :performance-id pid)
+                        (.putClientProperty jb :color-id @counter*)
+                        (.setBackground jb bg)
+                        (.setForeground jb fg)
+                        (.color-id! (.get-editor p) @counter*)
+                        (swap! counter* inc)
+                        (.add pan-performance jb)
+                        (ss/listen jb 
+                                   :action 
+                                   (fn [ev]
+                                     (let [src (.getSource ev)
+                                           pid (.getClientProperty src :performance-id)
+                                           pobj (.performance chanobj pid)
+                                           ped (.get-editor pobj)
+                                           pframe (.frame ped)]
+                                       (if (.isVisible pframe)
+                                         (.setVisible pframe false)
+                                         (do
+                                           (.setVisible pframe true)
+                                           (.toFront pframe))))))
+                        (.sync-ui! (.get-editor p)))))
                   ;(.sync-ui! bend-panel)
                   ;(.sync-ui! pressure-panel)
                   ;(.sync-ui! velocity-panel)

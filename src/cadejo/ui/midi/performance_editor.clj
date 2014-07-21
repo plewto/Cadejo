@@ -1,8 +1,10 @@
 (println "--> performance-editor")
 
 (ns cadejo.ui.midi.performance-editor
+  (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.node-editor])
+  (:require [cadejo.ui.util.color-utilities])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout
@@ -17,6 +19,14 @@
     [this key])
   
   (node 
+    [this])
+
+  (color-id! 
+    [this n]
+    "Sets the background and foreground colors of
+     :lab-id widget")
+
+  (color-id
     [this])
 
   (status!
@@ -36,6 +46,7 @@
 
 (defn performance-editor [performance]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :performance performance)
+        color-id* (atom nil)
         pan-center (.widget basic-ed :pan-center)
         ]
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
@@ -48,6 +59,19 @@
 
                  (node [this] (.node basic-ed))
                  
+                 (color-id! [this n]
+                   (let [bg (cadejo.config/performance-id-background n)
+                         fg (cadejo.config/performance-id-foreground n)
+                         lab-id (.widget this :lab-id)]
+                     (.setOpaque lab-id true)
+                     (.setBackground lab-id bg)
+                     (.setForeground lab-id fg)
+                     (.revalidate lab-id)
+                     (println "DEBUG bg " bg  "   fg " fg)
+                     (reset! color-id* n)))
+
+                 (color-id [this] @color-id*)
+
                  (status! [this msg]
                    (.status basic-ed msg))
                  

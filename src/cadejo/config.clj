@@ -10,11 +10,18 @@
 (println "--> cadejo.config")
 
 (ns cadejo.config
-  (:require [cadejo.util.user-message :as umsg]))
+  (:require [cadejo.util.user-message :as umsg])
+  (:import java.awt.Color))
+            
 
 
 (defn cadejo-version []
   "0.1.1-SNAPSHOT")
+
+(defn channel-count [] 
+  "Returns number of MIDI channels per scene"
+  16)
+  
 
 (defn midi-input-ports []
   "Returns list of names for available MIDI input ports"
@@ -53,6 +60,34 @@
 
 (defn config-path []
   "/home/sj/.cadejo")
+
+;; Returns colors in specific sequence used for 
+;; performance node visual cues. 
+;;
+(defn performance-id-background [n]
+  (let [specs [[ 65  20 105]
+               [ 20  91 105]
+               [ 64 105  20]
+               [105  22  20]
+               [131  25 127]
+               [ 25  60 131]
+               [ 28 131  25]
+               [131  80  25]]
+        i (rem n (count specs))
+        rgb (nth specs i)
+        r (first rgb)
+        g (second rgb)
+        b (last rgb)]
+    (Color. r g b)))
+    
+(defn performance-id-foreground [n]
+  (let [specs [[239 238 204]]
+        i (rem n (count specs))
+        rgb (nth specs i)
+        r (first rgb)
+        g (second rgb)
+        b (last rgb)]
+    (Color. r g b)))
 
 
 ;; Returns the maximum number of child performance which may be attached
