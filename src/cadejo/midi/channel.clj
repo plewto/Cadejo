@@ -13,6 +13,10 @@
 
 (defprotocol ChannelProtocol
 
+  (get-scene
+    [this]
+    "Returns parent scene")
+
   (channel-number 
     [this]
     "Return s the MIDI channel number between 0 and 15 inclusive")
@@ -103,6 +107,9 @@
     @editor*)
 
   ChannelProtocol
+
+  (get-scene [this]
+    (.parent this))
 
   (channel-number [this]
     (.get-property this :channel))
