@@ -36,6 +36,11 @@
   (max (min n mx) mn))
 
 
+(defn interpolate [a b w]
+  (+ (* a w)
+     (* b (- 1 w))))
+
+
 (defn- wrap-up-octaves [f lower-limit]
   (let [ll (float lower-limit)
         r (/ f ll)
