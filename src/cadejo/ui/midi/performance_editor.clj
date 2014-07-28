@@ -123,4 +123,11 @@
                             (windowActivated [_] 
                               (.sync-ui! ped))
                             (windowOpened [_] nil)))
+      (.info-text! basic-ed (let [scene (.get-scene performance)
+                                  chanobj (.parent performance)
+                                  sid (.get-property scene :id)
+                                  cid (.get-property chanobj :id)
+                                  pid (.get-property performance :id)]
+                              (format "Scene %s   Channel %s   Performance %s"
+                                      sid cid pid)))
       ped)))

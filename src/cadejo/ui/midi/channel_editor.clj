@@ -10,8 +10,6 @@
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout
            java.awt.event.WindowListener))
-           
-  
 
 (defprotocol ChannelEditor
 
@@ -135,5 +133,8 @@
                             (windowActivated [_] 
                               (.sync-ui! ced))
                             (windowOpened [_] nil)))
-
+      (.info-text! basic-ed (let [scene (.parent chanobj)
+                                  sid (.get-property scene :id)
+                                  cid (.get-property chanobj :id)]
+                              (format "Scene %s Channel %s" sid cid)))
       ced)))
