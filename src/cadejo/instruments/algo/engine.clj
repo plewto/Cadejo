@@ -51,8 +51,6 @@
   (:kr
    (+ bias (* scale 
               (carrier-env a d1 d2 r bp sus gate)))))
-              
-
 
 (defsynth AlgoVoice [freq 440
                      note 69
@@ -510,20 +508,27 @@
       (.add-audio-bus! performance :main-out main-out)
       performance)))
 
+;; cc1 - vibrato
+;; cc7 - volume
+;; cca - general controller
+;; ccb - general controller
+;; ccc - echo mix
+;; ccd - reverb mix
+
 (defn algo-mono 
-  ([scene chan id main-out & {:keys [cc-vibrato cca ccb 
-                                     cc-volume cc-echo cc-reverb]
-                              :or {cc-vibrato 1
-                                   cc-volume 7
+  ([scene chan id main-out & {:keys [cc1 cca ccb 
+                                     cc7 ccc ccd]
+                              :or {cc1 1
+                                   cc7 7
                                    cca 16
                                    ccb 17
-                                   cc-echo 91
-                                   cc-reverb 92}}]
+                                   ccc 91
+                                   ccd 92}}]
      (let [chanobj (.channel scene chan) 
            keymode (cadejo.midi.mono-mode/mono-keymode :ALGO)
            performance (create-performance chanobj keymode main-out
-                                           cc-vibrato cca ccb 
-                                           cc-volume cc-echo cc-reverb)
+                                           cc1 cca ccb 
+                                           cc7 ccc ccd)
            voice (AlgoVoice
                   :bend-bus (.control-bus performance :bend)
                   :pressure-bus (.control-bus performance :pressure)
@@ -540,26 +545,26 @@
        (.add-synth! performance :efx efx)
        (.add-voice! performance voice)
        (.reset chanobj)
-       (Thread/sleep 100)               ; BUG 0001 Hack
+       (Thread/sleep 100)
        performance))
   ([scene chan id]
      (algo-mono scene chan id 0)))
-  
+
 (defn algo-poly
   ([scene chan id voice-count main-out
-    & {:keys [cc-vibrato cca ccb cc-volume 
-              cc-echo cc-reverb]
-       :or {cc-vibrato 1
+    & {:keys [cc1 cca ccb cc7 
+              ccc ccd]
+       :or {cc1 1
             cca 16
             ccb 17
-            cc-volume 7
-            cc-echo 91
-            cc-reverb 92}}]
+            cc7 7
+            ccc 91
+            ccd 92}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :ALGO voice-count)
            performance (create-performance chanobj id keymode main-out
-                                           cc-vibrato cca ccb 
-                                           cc-volume cc-echo cc-reverb)
+                                           cc1 cca ccb 
+                                           cc7 ccc ccd)
            voices (let [acc* (atom [])] 
                     (dotimes [i voice-count]
                       (let  [v (AlgoVoice
@@ -570,7 +575,7 @@
                                 :ccb-bus (.control-bus performance :ccb)
                                 :out-bus (.audio-bus performance :tone))]
                         (swap! acc* (fn [n](conj n v)))
-                        (Thread/sleep 100))) ; BUG 0001 Hack
+                        (Thread/sleep 100)))
                     @acc*)
            efx (cadejo.instruments.algo.efx/EfxBlock
                 :cc-volume-bus (.control-bus performance :cc-volume)

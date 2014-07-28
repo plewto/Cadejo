@@ -65,27 +65,32 @@
   ([]
      (sleep nil)))
 
+;; cca - general controller - default vibrato
+;; ccb - general controller
+;; ccc - general controller
+;; ccd - general controller
+;; cc7 - volume
 
 (defn alias-mono
   ([scene chan id]
      (alias-mono scene chan id 0))
-  ([scene chan id main-out & {:keys [cca ccb ccc ccd cc-volume]
+  ([scene chan id main-out & {:keys [cca ccb ccc ccd cc7]
                            :or {cca 1
                                 ccb 16
                                 ccc 17
                                 ccd 4
-                                cc-volume 7}}]
+                                cc7 7}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.mono-mode/mono-keymode :Alias)
            performance (create-performance chanobj id keymode main-out
-                                           cca ccb ccc ccd cc-volume)
+                                           cca ccb ccc ccd cc7)
            bend-bus (.control-bus performance :bend)
            pressure-bus (.control-bus performance :pressure)
            cca-bus (.control-bus performance cca)
            ccb-bus (.control-bus performance ccb)
            ccc-bus (.control-bus performance ccc)
            ccd-bus (.control-bus performance ccd)
-           volume-bus (.control-bus performance cc-volume)
+           volume-bus (.control-bus performance cc7)
            a-bus (.control-bus performance :a)
            b-bus (.control-bus performance :b)
            c-bus (.control-bus performance :c)

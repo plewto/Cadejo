@@ -131,6 +131,8 @@
       (.add-audio-bus! performance :tone tone-bus)
       performance)))
 
+;; cc1 - vibrato
+
 (defn combo-mono 
   ([scene chan id main-out & {:keys [cc1]
                            :or {cc1 1}}]

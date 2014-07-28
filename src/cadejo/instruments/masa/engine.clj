@@ -183,19 +183,25 @@
       (.add-audio-bus! performance :main-out main-out-bus)
       performance)))
 
+;; cc1 - vibrato
+;; cc4 - pedal
+;; cc7 - volume
+;; cca - scanner mix
+;; ccb - reverb mix
+
 (defn masa-mono 
-  ([scene chan id main-out & {:keys [cc-vibrato cc-pedal cc-volume
-                                     cc-scanner cc-reverb]
-                              :or {cc-vibrato 1
-                                   cc-pedal 4
-                                   cc-volume 7
-                                   cc-scanner 92
-                                   cc-reverb 93}}]
+  ([scene chan id main-out & {:keys [cc1 cc4 cc7
+                                     cca ccb]
+                              :or {cc1 1
+                                   cc4 4
+                                   cc7 7
+                                   cca 92
+                                   ccb 93}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.mono-mode/mono-keymode :MASA)
            performance (create-performance chanobj id keymode main-out
-                                           cc-vibrato cc-pedal cc-volume
-                                           cc-scanner cc-reverb)
+                                           cc1 cc4 cc7
+                                           cca ccb)
            vibrato-block (VibratoBlock
                           :vibrato-depth-bus (.control-bus performance :vibrato-depth)
                           :vibrato-bus (.control-bus performance :vibrato))
@@ -210,7 +216,7 @@
        (.add-synth! performance :vibrato vibrato-block)
        (.add-synth! performance :efx efx-block)
        (.add-voice! performance voice)
-       (Thread/sleep 100)               ; BUG 0001 Hack
+       (Thread/sleep 100) 
        (.reset chanobj)
        performance))
   ([scene chan id]
@@ -218,18 +224,18 @@
 
 (defn masa-poly 
   ([scene chan id voice-count main-out  
-    & {:keys [cc-vibrato cc-pedal cc-volume
-              cc-scanner cc-reverb]
-       :or {cc-vibrato 1
-            cc-pedal 4
-            cc-volume 7
-            cc-scanner 92
-            cc-reverb 93}}]
+    & {:keys [cc1 cc4 cc7
+              cca ccb]
+       :or {cc1 1
+            cc4 4
+            cc7 7
+            cca 92
+            ccb 93}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :MASA voice-count)
            performance (create-performance chanobj id keymode main-out
-                                           cc-vibrato cc-pedal cc-volume
-                                           cc-scanner cc-reverb)
+                                           cc1 cc4 cc7
+                                           cca ccb)
            vibrato-block (VibratoBlock
                           :vibrato-depth-bus (.control-bus performance :vibrato-depth)
                           :vibrato-bus (.control-bus performance :vibrato))
@@ -241,7 +247,7 @@
                                 :vibrato-bus (.control-bus performance :vibrato)
                                 :pedal-bus (.control-bus performance :pedal))]
                         (swap! acc* (fn [n](conj n v)))
-                        (Thread/sleep 100))) ; BUG 0001 Hack
+                        (Thread/sleep 100)))
                     @acc*)
            efx-block (efx/EfxBlock 
                       :in-bus (.audio-bus performance :tone)
