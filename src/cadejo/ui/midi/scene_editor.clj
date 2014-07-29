@@ -57,8 +57,15 @@
         pan-channels (ss/grid-panel :rows 2 :items jb-channels
                                     :border (factory/title "Channels"))
         reged (cadejo.ui.scale.registry-editor/registry-editor scene)
+
+        txt-tree (ss/text :text " "
+                          :multi-line? true
+                          :editable? false)
+        pan-tree (ss/border-panel :north (ss/label "Cadejo Tree")
+                                  :center txt-tree)
         pan-tab (ss/tabbed-panel 
                  :tabs [{:title "Scale Registry" :content (.widget reged :pan-main)}
+                        {:title "Tree" :content pan-tree}
                         ]
                  :border (factory/padding))
         
@@ -115,6 +122,7 @@
                         (ss/config! jb :text (format "%02d" ci)))
                       (.sync-ui! (.get-editor cobj))))
                   (.sync-ui! reged)
+                  (ss/config! txt-tree :text (.rep-tree scene 0))
                   (.revalidate (.widget basic-ed :frame))
                   ) ;; end sync-ui!
                 )]

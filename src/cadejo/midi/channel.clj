@@ -106,6 +106,14 @@
   (get-editor [this]
     @editor*)
 
+  (rep-tree [this depth]
+    (let [pad (cadejo.util.string/tab depth)
+          sb (StringBuilder.)]
+      (.append sb (format "%sChannel %s\n" pad (.get-property this :id)))
+      (doseq [p (.children this)]
+        (.append sb (.rep-tree p (inc depth))))
+      (.toString sb)))
+
   ChannelProtocol
 
   (get-scene [this]

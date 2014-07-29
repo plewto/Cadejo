@@ -6,7 +6,7 @@
 
 (ns cadejo.midi.node
   "Node defines the basic component for building trees."
-  (:require [cadejo.util.string])
+  (:require [cadejo.util.string :as strutil])
   (:require [cadejo.util.user-message :as umsg]))
 
 (defprotocol Node
@@ -71,7 +71,8 @@
     [this]
     "Returns gut editor, if any, for this node.
      Returns nil if no editor is present")
-     
+
+  (rep-tree
+    [this depth])
+
   )
-
-

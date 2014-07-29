@@ -270,6 +270,10 @@
     
     (get-editor [this]
       @editor*)
+    
+    (rep-tree [this depth]
+      (let [pad (cadejo.util.string/tab depth)]
+        (format "%sPerformance %s\n" pad (.get-property this :id))))
 
     PerformanceProtocol
 

@@ -7,6 +7,7 @@
   (:require [cadejo.midi.channel])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
+  (:require [cadejo.util.string])
   (:require [cadejo.util.user-message :as umsg])  
   (:require [cadejo.scale.registry])
   (:require [cadejo.ui.midi.scene-editor])
@@ -121,6 +122,16 @@
     (reset [this]
       (doseq [c (.children this)]
         (.reset c)))
+
+    (rep-tree [this depth]
+      (let [pad (cadejo.util.string/tab depth)
+            sb (StringBuilder. 300)]
+        (.append sb (format "%sScene %s\n" pad (.get-property this :id)))
+        (doseq [c (.children this)]
+          (if (pos? (count (.performance-ids c)))
+            (.append sb (.rep-tree c (inc depth)))))
+        (.toString sb)))
+                            
 
     (dump [this chan-filter verbose depth]
       (let [depth2 (inc depth)
