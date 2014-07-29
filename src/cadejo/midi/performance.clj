@@ -353,9 +353,9 @@
       nil)
 
     (keynum-frequency [this keynum]
-      (let [sregistry (.get-scale-registry (.get-scene this))
+      (let [sregistry (.scale-registry (.get-scene this))
             scale-id (.get-property this :scale-id)
-            tt (.get-table sregistry scale-id)]
+            tt (.table sregistry scale-id)]
         (.get-key-frequency tt keynum)))
 
     (map-velocity [this v128]
