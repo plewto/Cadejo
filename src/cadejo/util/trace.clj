@@ -16,7 +16,7 @@
   (let [frmt (format "%%%ds" (max 1 (* 4 @depth*)))]
     (format frmt " ")))
 
-(defn reset []
+(defn trace-reset []
   (set-depth 0))
 
 (defn trace-enter [& args]
