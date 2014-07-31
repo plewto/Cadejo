@@ -1,6 +1,6 @@
 (println "--> combo engine")
 
-(ns cadejo.instruments.combo.engine
+(ns cadejo.instruments.combo.combo-engine
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu])
   (:require [cadejo.instruments.combo.program])

@@ -1,4 +1,4 @@
-(ns cadejo.instruments.alias.engine
+(ns cadejo.instruments.alias.alias-engine
   (:use [overtone.core])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])

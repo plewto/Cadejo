@@ -7,7 +7,7 @@
 ;;
 ;; [8]-->(hp)-->[7]
 
-(ns cadejo.instruments.algo.engine
+(ns cadejo.instruments.algo.algo-engine
   (:require [cadejo.instruments.algo.efx])
   (:require [cadejo.instruments.algo.program])
   (:require [cadejo.instruments.algo.pp])

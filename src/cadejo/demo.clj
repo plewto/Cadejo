@@ -4,10 +4,10 @@
   (:require [cadejo.midi.scene])
   (:require [cadejo.scale.just :as just])
   ;(:require [cadejo.scale.intonation :as intonation])
-  (:require [cadejo.instruments.algo.engine])
-  (:require [cadejo.instruments.masa.engine])
-  (:require [cadejo.instruments.combo.engine])
-  (:require [cadejo.instruments.alias.engine])
+  (:require [cadejo.instruments.algo.algo-engine])
+  (:require [cadejo.instruments.masa.masa-engine])
+  (:require [cadejo.instruments.combo.combo-engine])
+  (:require [cadejo.instruments.alias.alias-engine])
   (:require [cadejo.util.math :as math]))
 
             
@@ -45,10 +45,10 @@
 ;; Polyphonic combo organ channel 3
 ;;
 (defn demo-1 [scene]
-  (let [algo (cadejo.instruments.algo.engine/algo-poly scene 0)
-        alias (cadejo.instruments.alias.engine/alias-mono scene 1)
-        masa (cadejo.instruments.masa.engine/masa-poly scene 2)
-        combo (cadejo.instruments.combo.engine/combo-poly scene 3)]
+  (let [algo (cadejo.instruments.algo.algo-engine/algo-poly scene 0)
+        alias (cadejo.instruments.alias.alias-engine/alias-mono scene 1)
+        masa (cadejo.instruments.masa.masa-engine/masa-poly scene 2)
+        combo (cadejo.instruments.combo.combo-engine/combo-poly scene 3)]
     (.reset scene)
     (doseq [c '[0 1 2 3]]
       (prog 0 c))
@@ -62,10 +62,10 @@
 ;; Polyphonic Algo and MASA with key split on channel 1
 ;;
 (defn demo-2 [scene]
-  (let [algo-0 (cadejo.instruments.algo.engine/algo-mono scene 0)
-        alias-0 (cadejo.instruments.alias.engine/alias-mono scene 0)
-        algo-1 (cadejo.instruments.algo.engine/algo-poly scene 1)
-        masa-1 (cadejo.instruments.masa.engine/masa-poly scene 1)]
+  (let [algo-0 (cadejo.instruments.algo.algo-engine/algo-mono scene 0)
+        alias-0 (cadejo.instruments.alias.alias-engine/alias-mono scene 0)
+        algo-1 (cadejo.instruments.algo.algo-engine/algo-poly scene 1)
+        masa-1 (cadejo.instruments.masa.masa-engine/masa-poly scene 1)]
     (.set-key-range! algo-1 0 59)
     (.set-key-range! masa-1 60 127)
     (.set-transpose! masa-1 -12)
@@ -83,9 +83,9 @@
 ;; channel 1 - layer mono algo and MASA with quarter-tone scale
 
 ;; (defn demo-3 [scene]
-;;   (let [algo-0 (cadejo.instruments.algo.engine/algo-poly scene 0)
-;;         algo-1 (cadejo.instruments.algo.engine/algo-mono scene 1)
-;;         masa-1 (cadejo.instruments.masa.engine/masa-mono scene 1)
+;;   (let [algo-0 (cadejo.instruments.algo.algo-engine/algo-poly scene 0)
+;;         algo-1 (cadejo.instruments.algo.algo-engine/algo-mono scene 1)
+;;         masa-1 (cadejo.instruments.masa.masa-engine/masa-mono scene 1)
 ;;         chanobj-1 (.channel scene 1)]
 ;;     ;; tuning table may be set at performance or channel level.
 ;;     (.put-property! algo-0 :tuning-table (just/just-scale :just-c1))
@@ -112,8 +112,8 @@
 ;;
 ;; (defn demo-4 [scene]
 ;;   (let [vmap (fn [v](math/sqrt (* 1/127 v)))
-;;         algo-0 (cadejo.instruments.algo.engine/algo-poly scene 0)
-;;         algo-1 (cadejo.instruments.algo.engine/algo-poly scene 1)
+;;         algo-0 (cadejo.instruments.algo.algo-engine/algo-poly scene 0)
+;;         algo-1 (cadejo.instruments.algo.algo-engine/algo-poly scene 1)
 ;;         chanobj-0 (.channel scene 0)]
 ;;     (.set-velocity-map! chanobj-0 vmap)
 ;;     (.set-bend-range! chanobj-0 1200)

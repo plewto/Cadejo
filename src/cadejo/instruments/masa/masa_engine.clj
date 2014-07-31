@@ -1,6 +1,6 @@
 (println "--> MASA")
 
-(ns cadejo.instruments.masa.engine
+(ns cadejo.instruments.masa.masa-engine
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu])
   (:require [cadejo.midi.mono-mode])

@@ -4,10 +4,10 @@
   (:require [cadejo.config])
  
   (:require [cadejo.midi.scene])
-  (:require [cadejo.instruments.algo.engine]) 
-  (:require [cadejo.instruments.alias.engine]) 
-  (:require [cadejo.instruments.masa.engine]) 
-  (:require [cadejo.instruments.combo.engine]) 
+  (:require [cadejo.instruments.algo.algo-engine :as algo]) 
+  (:require [cadejo.instruments.alias.alias-engine :as alias]) 
+  (:require [cadejo.instruments.masa.masa-engine :as masa]) 
+  (:require [cadejo.instruments.combo.combo-engine :as combo]) 
   (:require [seesaw.core :as ss])
   (:require [overtone.core :as ot]))
 
@@ -22,10 +22,10 @@
 (def sed (.get-editor s))
 
 
-(def algo0 (cadejo.instruments.algo.engine/algo-poly     s 0 :algo-0))
-(def alias1 (cadejo.instruments.alias.engine/alias-mono  s 1 :alias-1))
-(def masa2 (cadejo.instruments.masa.engine/masa-poly     s 2 :masa-2))
-(def combo3 (cadejo.instruments.combo.engine/combo-poly  s 3 :combo-3))
+(def algo0  (algo/algo-poly    s 0 :algo-0))
+(def alias1 (alias/alias-mono  s 1 :alias-1))
+(def masa2  (masa/masa-poly    s 2 :masa-2))
+(def combo3 (combo/combo-poly  s 3 :combo-3))
 
 
 (.sync-ui! sed)
