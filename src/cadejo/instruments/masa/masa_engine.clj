@@ -190,13 +190,13 @@
 ;; ccb - reverb mix
 
 (defn masa-mono 
-  ([scene chan id main-out & {:keys [cc1 cc4 cc7
-                                     cca ccb]
-                              :or {cc1 1
-                                   cc4 4
-                                   cc7 7
-                                   cca 92
-                                   ccb 93}}]
+  ([scene chan id & {:keys [cc1 cc4 cc7 cca ccb main-out]
+                     :or {cc1 1
+                          cc4 4
+                          cc7 7
+                          cca 92
+                          ccb 93
+                          main-out 0}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.mono-mode/mono-keymode :MASA)
            performance (create-performance chanobj id keymode main-out
@@ -218,19 +218,17 @@
        (.add-voice! performance voice)
        (Thread/sleep 100) 
        (.reset chanobj)
-       performance))
-  ([scene chan id]
-     (masa-mono scene chan id 0)))
+       performance)))
 
 (defn masa-poly 
-  ([scene chan id voice-count main-out  
-    & {:keys [cc1 cc4 cc7
-              cca ccb]
-       :or {cc1 1
-            cc4 4
-            cc7 7
-            cca 92
-            ccb 93}}]
+  ([scene chan id & {:keys [cc1 cc4 cc7 cca ccb voice-count main-out]
+                     :or {cc1 1
+                          cc4 4
+                          cc7 7
+                          cca 92
+                          ccb 93
+                          voice-count 8
+                          main-out 0}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :MASA voice-count)
            performance (create-performance chanobj id keymode main-out
@@ -258,6 +256,4 @@
        (.add-synth! performance :efx efx-block)
        (doseq [v voices](.add-voice! performance v))
        (.reset chanobj)
-       performance))
-  ([scene chan id]
-     (masa-poly scene chan id 8 0)))
+       performance)))

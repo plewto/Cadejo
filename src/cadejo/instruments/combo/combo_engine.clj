@@ -134,8 +134,9 @@
 ;; cc1 - vibrato
 
 (defn combo-mono 
-  ([scene chan id main-out & {:keys [cc1]
-                           :or {cc1 1}}]
+  ([scene chan id & {:keys [cc1 main-out]
+                     :or {cc1 1
+                          main-out 0}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.mono-mode/mono-keymode :Combo)
            performance (create-performance chanobj id keymode cc1)
@@ -155,14 +156,13 @@
        (.add-voice! performance voice)
        (.reset chanobj)
        (Thread/sleep 100)
-       performance))
-  ([scene chan id]
-     (combo-mono scene chan id 0)))
-
+       performance)))
 
 (defn combo-poly
-  ([scene chan id voice-count main-out & {:keys [cc1]
-                                       :or {cc1 1}}]
+  ([scene chan id & {:keys [cc1 voice-count main-out]
+                     :or {cc1 1
+                          voice-count 8
+                          main-out 0}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :Combo voice-count)
            performance (create-performance chanobj id keymode cc1)
@@ -183,6 +183,4 @@
          (.add-synth! performance :lfo lfo)
          (.add-synth! performance :efx efx)
          (.reset chanobj)
-         performance)))
-  ([scene chan id]
-     (combo-poly scene chan id 8 0)))
+         performance))))

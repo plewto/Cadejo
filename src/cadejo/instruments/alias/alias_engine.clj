@@ -72,14 +72,13 @@
 ;; cc7 - volume
 
 (defn alias-mono
-  ([scene chan id]
-     (alias-mono scene chan id 0))
-  ([scene chan id main-out & {:keys [cca ccb ccc ccd cc7]
-                           :or {cca 1
-                                ccb 16
-                                ccc 17
-                                ccd 4
-                                cc7 7}}]
+  ([scene chan id & {:keys [cca ccb ccc ccd cc7 main-out]
+                     :or {cca 1
+                          ccb 16
+                          ccc 17
+                          ccd 4
+                          cc7 7
+                          main-out 0}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.mono-mode/mono-keymode :Alias)
            performance (create-performance chanobj id keymode main-out

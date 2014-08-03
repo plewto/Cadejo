@@ -516,14 +516,14 @@
 ;; ccd - reverb mix
 
 (defn algo-mono 
-  ([scene chan id main-out & {:keys [cc1 cca ccb 
-                                     cc7 ccc ccd]
-                              :or {cc1 1
-                                   cc7 7
-                                   cca 16
-                                   ccb 17
-                                   ccc 91
-                                   ccd 92}}]
+  ([scene chan id & {:keys [cc1 cc7 cca ccb ccc ccd main-out]
+                     :or {cc1 1
+                          cc7 7
+                          cca 16
+                          ccb 17
+                          ccc 91
+                          ccd 92
+                          main-out 0}}]
      (let [chanobj (.channel scene chan) 
            keymode (cadejo.midi.mono-mode/mono-keymode :ALGO)
            performance (create-performance chanobj keymode main-out
@@ -546,20 +546,19 @@
        (.add-voice! performance voice)
        (.reset chanobj)
        (Thread/sleep 100)
-       performance))
-  ([scene chan id]
-     (algo-mono scene chan id 0)))
-
+       performance)))
+ 
 (defn algo-poly
-  ([scene chan id voice-count main-out
-    & {:keys [cc1 cca ccb cc7 
-              ccc ccd]
+  ([scene chan id 
+    & {:keys [cc1 cc7 cca ccb ccc ccd voice-count main-out] 
        :or {cc1 1
             cca 16
             ccb 17
             cc7 7
             ccc 91
-            ccd 92}}]
+            ccd 92
+            voice-count 8
+            main-out 0}}]
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :ALGO voice-count)
            performance (create-performance chanobj id keymode main-out
@@ -587,6 +586,5 @@
        (doseq [v voices]
          (.add-voice! performance v))
        (.reset chanobj)
-       performance))
-  ([scene chan id]
-     (algo-poly scene chan id 8 0)))
+       performance)))
+  
