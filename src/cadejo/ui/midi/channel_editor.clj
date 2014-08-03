@@ -44,7 +44,8 @@
 (defn channel-editor [chanobj]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
         pan-center (.widget basic-ed :pan-center)
-        pan-performance (ss/grid-panel :rows 2 :columns 3)
+        ;pan-performance (ss/grid-panel :rows 2 :columns 3)
+        pan-performance (ss/toolbar :floatable? false)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         pan-tabs (ss/tabbed-panel :tabs [{:title "MIDI" 
                                           :content (.widget properties-editor :pan-main)}
@@ -62,10 +63,10 @@
                 (node [this] (.node basic-ed))
 
                 (status! [this msg]
-                  (.status basic-ed msg))
+                  (.status! basic-ed msg))
 
                 (warning! [this msg]
-                  (.warning basic-ed msg))
+                  (.warning! basic-ed msg))
 
                 (frame [this]
                   (.widget this :frame))
@@ -81,30 +82,74 @@
                   (println "ISSUE show-hide-performance not implemented")
                   )
 
+                ;; (sync-ui! [this]
+                ;;   (.removeAll pan-performance)
+                ;;     (doseq [p (.children chanobj)]
+                ;;       (let [pid (.get-property p :id)
+                ;;             jb (ss/button :text (name pid))]
+                ;;         (.putClientProperty jb :performance-id pid)
+                ;;         (.add pan-performance jb)
+                ;;         (ss/listen jb 
+                ;;                    :action 
+                ;;                    (fn [ev]
+                ;;                      (let [src (.getSource ev)
+                ;;                            pid (.getClientProperty src :performance-id)
+                ;;                            pobj (.performance chanobj pid)
+                ;;                            ped (.get-editor pobj)
+                ;;                            pframe (.frame ped)]
+                ;;                        (if (.isVisible pframe)
+                ;;                          (.setVisible pframe false)
+                ;;                          (do
+                ;;                            (.setVisible pframe true)
+                ;;                            (.toFront pframe))))) )
+                ;;         (.sync-ui! (.get-editor p)) ))
+                ;;   (.sync-ui! properties-editor)
+                ;;   (.revalidate (.widget basic-ed :frame))
+                ;;   ) ;; end sync-ui!
+
                 (sync-ui! [this]
                   (.removeAll pan-performance)
-                    (doseq [p (.children chanobj)]
-                      (let [pid (.get-property p :id)
-                            jb (ss/button :text (name pid))]
-                        (.putClientProperty jb :performance-id pid)
-                        (.add pan-performance jb)
-                        (ss/listen jb 
-                                   :action 
-                                   (fn [ev]
-                                     (let [src (.getSource ev)
-                                           pid (.getClientProperty src :performance-id)
-                                           pobj (.performance chanobj pid)
-                                           ped (.get-editor pobj)
-                                           pframe (.frame ped)]
-                                       (if (.isVisible pframe)
-                                         (.setVisible pframe false)
-                                         (do
-                                           (.setVisible pframe true)
-                                           (.toFront pframe))))) )
-                        (.sync-ui! (.get-editor p)) ))
+                  (doseq [p (.children chanobj)]
+                    (let [itype (.get-property p :instrument-type)
+                          id (.get-property p :id)
+                          logo (.logo p :small)
+                          jb (ss/button :icon logo)]
+                      (ss/listen jb :action (fn [ev]
+                                              (let [src (.getSource ev)
+                                                    mods (.getModifiers ev)
+                                                    performance (.getClientProperty jb :performance)
+                                                    ped (.get-editor performance)
+                                                    pframe (.widget ped :frame)
+                                                    chaned (.get-editor chanobj)
+                                                    sed (.get-editor (.get-scene performance))
+                                                    id (.getClientProperty src :id)]
+                                                (println "DEBUG click mods = " mods)
+                                                (cond (= mods 17) ; shift+click remove performance
+                                                      (let [ped (.get-editor performance)] 
+                                                        (.remove-performance! chanobj id)
+                                                        (.setVisible pframe false)
+                                                        (.dispose pframe)
+                                                        (.sync-ui! sed)
+                                                        (.status! chaned (format "Performance %s removed" id)))
+
+
+                                                      :default ; hide/show performance editor
+                                                      (if (.isVisible pframe)
+                                                        (.setVisible pframe false)
+                                                        (do 
+                                                          (.setVisible pframe true)
+                                                          (.toFront pframe)))))))
+                      (.putClientProperty jb :instrument-type itype)
+                      (.putClientProperty jb :id id)
+                      (.putClientProperty jb :performance p)
+                      (.setToolTipText jb (format "%s id = %s" (name itype)(name id)))
+                      (.add pan-performance jb)
+                      (.sync-ui! (.get-editor p))
+                      ))
+
                   (.sync-ui! properties-editor)
-                  (.revalidate (.widget basic-ed :frame))
-                  ) ;; end sync-ui!
+                  (.revalidate (.widget basic-ed :frame)))
+
                 )]
 
       (ss/listen (.widget ced :jb-parent)
