@@ -481,7 +481,7 @@
                           cc-volume cc-echo-mix cc-reverb-mix]
   (let [bank (.clone cadejo.instruments.algo.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode bank)]
-    (.put-property performance :instrument-type :algo)
+    (.put-property! performance :instrument-type :algo)
     (.add-controller! performance cc-vibrato :linear 0.0)
     (.add-controller! performance cca :linear 0.0)
     (.add-controller! performance ccb :linear 0.0)
