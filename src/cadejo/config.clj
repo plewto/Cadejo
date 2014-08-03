@@ -10,6 +10,7 @@
 (println "--> cadejo.config")
 
 (ns cadejo.config
+  (:use [cadejo.util.trace])
   (:require [cadejo.util.user-message :as umsg])
   (:import java.awt.Color))
             
@@ -68,3 +69,40 @@
 ;;
 (defn max-channel-children []
   8)
+
+
+
+;; Available Instruments
+;;
+
+(def ^:private instruments* (atom (sorted-map)))
+
+(defn add-instrument! [descriptor]
+  (swap! instruments* (fn [n](assoc n 
+                               (keyword (.instrument-name descriptor))
+                               descriptor))))
+
+(defn instruments []
+  (keys @instruments*))
+
+(defn instrument-descriptor [iname]
+  (let [key (keyword iname)
+        d (get @instruments* key)]
+    (or d
+        (umsg/warning (format "Instrument %s is not available" iname)))))
+
+(defn create-instrument [iname mode & args]
+  (trace-enter "config/create-instrument")
+  (let [ides (instrument-descriptor iname)]
+    (if ides
+      (let [s (first args)
+            dummy-1 (trace-mark "s" s "   type s" (type s))
+            sed (.get-editor s)
+            dummy-2 (trace-mark "sed" sed)
+            ]
+        (trace-mark "post let")
+        (.create ides mode args)
+        (if sed (.sync-ui! sed))
+        )))
+  (trace-exit))
+        
