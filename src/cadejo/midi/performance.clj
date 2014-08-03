@@ -20,6 +20,12 @@
     [this]
     "Return grand-parent node of this")
 
+  (logo 
+    [this size]
+    [this]
+    "Return instrument logo icon
+     size may be :small :medium or :large")
+
   (set-bank! 
     [this bnk]
     "Sets program bank for this.
@@ -279,6 +285,16 @@
 
     (get-scene [this]
       (.parent (.parent this)))
+
+    (logo [this]
+      (.logo this :small))
+
+    (logo [this size]
+      (let [des (cadejo.config/instrument-descriptor 
+                 (.get-property this :instrument-type))]
+        (if des 
+          (.logo des size)
+          nil)))
 
     (set-bank! [this bnk]
       (.set-parent-performance! bnk this)
