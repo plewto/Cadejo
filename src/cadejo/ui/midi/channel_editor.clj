@@ -83,18 +83,10 @@
 
                 (sync-ui! [this]
                   (.removeAll pan-performance)
-                  (let [counter* (atom 0)]
                     (doseq [p (.children chanobj)]
                       (let [pid (.get-property p :id)
-                            jb (ss/button :text (name pid))
-                            bg (cadejo.config/performance-id-background @counter*)
-                            fg (cadejo.config/performance-id-foreground @counter*)]
+                            jb (ss/button :text (name pid))]
                         (.putClientProperty jb :performance-id pid)
-                        (.putClientProperty jb :color-id @counter*)
-                        (.setBackground jb bg)
-                        (.setForeground jb fg)
-                        (.color-id! (.get-editor p) @counter*)
-                        (swap! counter* inc)
                         (.add pan-performance jb)
                         (ss/listen jb 
                                    :action 
@@ -108,10 +100,13 @@
                                          (.setVisible pframe false)
                                          (do
                                            (.setVisible pframe true)
-                                           (.toFront pframe))))))
-                        (.sync-ui! (.get-editor p)))))
+                                           (.toFront pframe))))) )
+                        (.sync-ui! (.get-editor p)) ))
                   (.sync-ui! properties-editor)
-                  (.revalidate (.widget basic-ed :frame))))]
+                  (.revalidate (.widget basic-ed :frame))
+                  ) ;; end sync-ui!
+                )]
+
       (ss/listen (.widget ced :jb-parent)
                  :action (fn [_]
                            (let [scene (.parent chanobj)

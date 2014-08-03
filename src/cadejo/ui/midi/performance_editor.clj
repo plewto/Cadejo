@@ -1,7 +1,7 @@
 (println "--> performance-editor")
 
 (ns cadejo.ui.midi.performance-editor
-  (:require [cadejo.config])
+  ;(:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.bank-editor])
   (:require [cadejo.ui.midi.node-editor])
@@ -23,13 +23,13 @@
   (node 
     [this])
 
-  (color-id! 
-    [this n]
-    "Sets the background and foreground colors of
-     :lab-id widget")
+  ;; (color-id! 
+  ;;   [this n]
+  ;;   "Sets the background and foreground colors of
+  ;;    :lab-id widget")
 
-  (color-id
-    [this])
+  ;; (color-id
+  ;;   [this])
 
   (status!
     [this msg])
@@ -48,7 +48,7 @@
 
 (defn performance-editor [performance]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :performance performance)
-        color-id* (atom nil)
+        ;color-id* (atom nil)
         bank-ed (cadejo.ui.midi.bank-editor/bank-editor (.bank performance))
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
 
@@ -68,19 +68,7 @@
                       (umsg/warning (format "PerformanceEditor does not have %s widget" key))))
 
                  (node [this] (.node basic-ed))
-                 
-                 (color-id! [this n]
-                   (let [bg (cadejo.config/performance-id-background n)
-                         fg (cadejo.config/performance-id-foreground n)
-                         lab-id (.widget this :lab-id)]
-                     (.setOpaque lab-id true)
-                     (.setBackground lab-id bg)
-                     (.setForeground lab-id fg)
-                     (.revalidate lab-id)
-                     (reset! color-id* n)))
-
-                 (color-id [this] @color-id*)
-
+                
                  (status! [this msg]
                    (.status basic-ed msg))
                  
