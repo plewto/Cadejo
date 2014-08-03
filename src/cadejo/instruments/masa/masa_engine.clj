@@ -158,6 +158,7 @@
                           cc-scanner cc-reverb]
   (let [bank (.clone cadejo.instruments.masa.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode bank)]
+    (.put-property! performance :instrument-type :masa)
     (.add-controller! performance cc-vibrato :linear 0.0)
     (.add-controller! performance cc-pedal :linear 0.0)
     (.add-controller! performance cc-scanner :linear 0.0)

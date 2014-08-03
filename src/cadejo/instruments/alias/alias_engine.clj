@@ -15,6 +15,7 @@
                           cca ccb ccc ccd cc-volume]
   (let [bank (.clone cadejo.instruments.alias.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode bank)]
+    (.put-property! performance :instrument-type :alias)
     (.add-controller! performance cca :linear 0.0)
     (.add-controller! performance ccb :linear 0.0)
     (.add-controller! performance ccc :linear 0.0)
