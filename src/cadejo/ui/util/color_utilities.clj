@@ -6,6 +6,15 @@
 (defn- third [col]
   (nth col 2))
 
+(defn hsb 
+  ([h s b]
+     (let [rgb (Color/HSBtoRGB (float h)(float s)(float b))]
+       (Color. rgb)))
+  ([h s]
+     (hsb h s 1.0))
+  ([h]
+     (hsb h 1.0 1.0)))        
+
 (defn crossmix [a b w]
   "Return crossmix of trwo colors
    a - Color
@@ -97,3 +106,11 @@
           s (second hsb)
           v (math/clamp (+ (third hsb) n) 0.0 1.0)]
     (Color/getHSBColor h s v)))
+
+(defn channel-color-cue [c]
+  (let [h (float (/ (rem c 8) 8))
+        s (/ c 16.0)
+        b (if (< c 8) 1.000 0.250)
+        bg (hsb h s b)
+        fg (if (< c 8) (Color/BLACK)(Color/WHITE))]
+    [bg fg]))

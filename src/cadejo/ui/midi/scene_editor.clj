@@ -3,7 +3,7 @@
   (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.node-editor])
-
+  (:require [cadejo.ui.util.color-utilities])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout
@@ -50,7 +50,10 @@
         jb-channels (let [acc* (atom [])]
                       (dotimes [i channel-count]
                         (let [jb (ss/button :text (format "%02d" i)
-                                            :id (format "jb-channel-%02d" i))]
+                                            :id (format "jb-channel-%02d" i))
+                              [bg fg](cadejo.ui.util.color-utilities/channel-color-cue i)]
+                          (.setBackground jb bg)
+                          (.setForeground jb fg)
                           (.putClientProperty jb :channel i)
                           (swap! acc* (fn [n](conj n jb)))))
                       @acc*)

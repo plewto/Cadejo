@@ -33,10 +33,7 @@
 
   (show-scene
    [this])
-
-  (show-hide-performance
-    [this id])
-    
+ 
   (sync-ui!
     [this]))
 
@@ -44,7 +41,6 @@
 (defn channel-editor [chanobj]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
         pan-center (.widget basic-ed :pan-center)
-        ;pan-performance (ss/grid-panel :rows 2 :columns 3)
         pan-performance (ss/toolbar :floatable? false)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         pan-tabs (ss/tabbed-panel :tabs [{:title "MIDI" 
@@ -52,7 +48,8 @@
                                          ])]
 
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
-    (let [ced (reify ChannelEditor
+    (let [[bg fg] (cadejo.ui.util.color-utilities/channel-color-cue (.channel-number chanobj))
+          ced (reify ChannelEditor
                 
                 (widgets [this] (.widgets basic-ed))
 
@@ -77,10 +74,6 @@
                         sframe (.frame sed)]
                     (ss/show! sframe)
                     (.toFront sframe)))
-
-                (show-hide-performance [this id]
-                  (println "ISSUE show-hide-performance not implemented")
-                  )
 
                 ;; (sync-ui! [this]
                 ;;   (.removeAll pan-performance)
@@ -123,7 +116,7 @@
                                                     chaned (.get-editor chanobj)
                                                     sed (.get-editor (.get-scene performance))
                                                     id (.getClientProperty src :id)]
-                                                (println "DEBUG click mods = " mods)
+                                                (println "DEBUG channel-editor click mods = " mods)
                                                 (cond (= mods 17) ; shift+click remove performance
                                                       (let [ped (.get-editor performance)] 
                                                         (.remove-performance! chanobj id)
@@ -131,7 +124,6 @@
                                                         (.dispose pframe)
                                                         (.sync-ui! sed)
                                                         (.status! chaned (format "Performance %s removed" id)))
-
 
                                                       :default ; hide/show performance editor
                                                       (if (.isVisible pframe)
@@ -149,9 +141,10 @@
 
                   (.sync-ui! properties-editor)
                   (.revalidate (.widget basic-ed :frame)))
-
                 )]
-
+      (.setOpaque (.widget ced :lab-id) true)
+      (.setBackground (.widget ced :lab-id) bg)
+      (.setForeground (.widget ced :lab-id) fg)
       (ss/listen (.widget ced :jb-parent)
                  :action (fn [_]
                            (let [scene (.parent chanobj)
