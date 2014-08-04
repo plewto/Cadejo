@@ -87,6 +87,9 @@
                (about [this]
                  about-text)
 
+               (modes [this]
+                 (keys @constructors*))
+
                (logo [this]
                  (.logo this :small))
 
@@ -97,7 +100,7 @@
                  (keys @controllers*))
 
                (controller [this kw]
-                 (get (keyword kw) @controllers*))
+                 (get @controllers* (keyword kw)))
 
                (add-controller! [this key usage default]
                  (let [kw (keyword key)]

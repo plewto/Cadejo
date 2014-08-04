@@ -27,7 +27,6 @@
     [this flag]
     "Sets flag indicating that listeners on the text field should 
      be suspended.")
-  
 
   (listeners-suspended? 
     [this]
@@ -98,7 +97,6 @@
   
   (set-value [this value]
     (.set-value this value true))
-
 
   (get-value [this]
     (postfn (ss/config (.widget this :text-field) :text))))
