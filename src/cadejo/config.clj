@@ -10,7 +10,6 @@
 (println "--> cadejo.config")
 
 (ns cadejo.config
-  (:use [cadejo.util.trace])
   (:require [cadejo.util.user-message :as umsg])
   (:import java.awt.Color))
             
@@ -92,17 +91,9 @@
         (umsg/warning (format "Instrument %s is not available" iname)))))
 
 (defn create-instrument [iname mode & args]
-  (trace-enter "config/create-instrument")
   (let [ides (instrument-descriptor iname)]
     (if ides
       (let [s (first args)
-            dummy-1 (trace-mark "s" s "   type s" (type s))
-            sed (.get-editor s)
-            dummy-2 (trace-mark "sed" sed)
-            ]
-        (trace-mark "post let")
+            sed (.get-editor s)]
         (.create ides mode args)
-        (if sed (.sync-ui! sed))
-        )))
-  (trace-exit))
-        
+        (if sed (.sync-ui! sed))))))
