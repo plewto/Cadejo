@@ -13,6 +13,20 @@
   (:import java.awt.BorderLayout
            java.awt.event.WindowListener))
 
+;; Generate unique performance name 
+;;
+(defn- gen-performance-name [chanobj iname]
+  (let [current (.performance-ids chanobj)
+        counter* (atom 0)
+        name* (atom "")
+        found* (atom false)
+        chan (.channel-number chanobj)
+        frmt "%s-%d-%d"]
+    (while (not @found*)
+      (reset! name* (format frmt iname chan @counter*))
+      (reset! found* (not (some (fn [q](= q (keyword @name*))) current)))
+      (swap! counter* inc))
+    @name*))
 
 ;; Display modal dialog for adding performance/instrument to channel
 ;; 
@@ -93,6 +107,7 @@
                         (not (some (fn [q](= (keyword n) q))
                                    current-children)))))
         vtf-instrument-id (vtf/validated-text-field :validator pname-test
+                                                    :value (gen-performance-name chanobj iname)
                                                     :border "Instrument ID")
         jb-add (ss/button :text "Add Instrument")
         jb-cancel (ss/button :text "Cancel")
