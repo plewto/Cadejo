@@ -1,5 +1,3 @@
-(println "\t--> MASA data")
-
 (ns cadejo.instruments.masa.data
   (:use [cadejo.instruments.masa.program :only [save-program masa bank]])
   (:use [cadejo.instruments.masa.genpatch]))

@@ -1,5 +1,3 @@
-(println "\t--> ALGO program")
-
 (ns cadejo.instruments.algo.program
   (:require [cadejo.midi.program-bank])
   (:require [cadejo.util.col :as ucol])

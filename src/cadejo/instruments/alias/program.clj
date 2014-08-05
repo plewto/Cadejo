@@ -1,5 +1,3 @@
-(println "\t--> program")
-
 (ns cadejo.instruments.alias.program
   (:require [cadejo.midi.program-bank])
   (:require [cadejo.instruments.alias.constants :as constants :reload true])

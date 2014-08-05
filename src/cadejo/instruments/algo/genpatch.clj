@@ -1,5 +1,3 @@
-(println "\t--> ALGO genpatch")
-
 (ns cadejo.instruments.algo.genpatch
   (:use [cadejo.instruments.algo.program])
   (:require [cadejo.util.math :as math]))

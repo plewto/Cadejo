@@ -1,5 +1,3 @@
-(println "\t--> ALGO efx")
-
 (ns cadejo.instruments.algo.efx
   (:require [cadejo.modules.qugen :as qu])
   (:use [overtone.core]))

@@ -1,5 +1,3 @@
-(println "\t--> program")
-
 (ns cadejo.instruments.combo.program
   (:require [cadejo.midi.program-bank])
   (:require [cadejo.util.col :as col])

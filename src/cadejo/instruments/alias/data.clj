@@ -1,5 +1,3 @@
-(println "\t--> data")
-
 (ns cadejo.instruments.alias.data
   (:use [cadejo.instruments.alias.program])
   (:require [cadejo.instruments.alias.genpatch]))

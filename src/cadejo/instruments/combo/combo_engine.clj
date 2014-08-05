@@ -1,4 +1,4 @@
-(println "--> combo engine")
+(println "--> Combo")
 
 (ns cadejo.instruments.combo.combo-engine
   (:use [overtone.core])
@@ -127,7 +127,7 @@
     (.add-controller! performance cc1 :linear 0.0)
     (let [vibrato-bus (control-bus)
           tone-bus (audio-bus)]
-      (.set-pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
+      ;(.set-pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
       (.add-control-bus! performance :vibrato vibrato-bus)
       (.add-audio-bus! performance :tone tone-bus)
       performance)))

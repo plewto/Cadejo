@@ -1,5 +1,3 @@
-(println "\t--> constants")
-
 (ns cadejo.instruments.alias.constants)
 
 (def alias-parameters

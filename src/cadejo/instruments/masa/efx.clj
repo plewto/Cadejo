@@ -1,5 +1,3 @@
-(println "\t--> MASA efx")
-
 (ns cadejo.instruments.masa.efx
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu]))

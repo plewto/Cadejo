@@ -1,4 +1,3 @@
-1(println "\t--> control")
 
 ;; Provides several synth control elements:
 ;; Envelopes, addsr2 style

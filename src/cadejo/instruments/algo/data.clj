@@ -1,5 +1,3 @@
-(println "\t--> ALGO data")
-
 (ns cadejo.instruments.algo.data
   (:use [cadejo.instruments.algo.program 
          :only [algo common env1 vibrato lfo1 lfo2

@@ -1,5 +1,3 @@
-(println "\t--> head")
-
 (ns cadejo.instruments.alias.head
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu]))

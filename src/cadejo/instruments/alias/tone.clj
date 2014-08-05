@@ -1,5 +1,3 @@
-(println "\t--> tone")
-
 (ns cadejo.instruments.alias.tone
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu]))

@@ -1,5 +1,3 @@
-(println "\t--> MASA program")
-
 (ns cadejo.instruments.masa.program
   (:require [cadejo.midi.program-bank]))
 

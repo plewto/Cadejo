@@ -1,5 +1,3 @@
-(println "\t--> genpatch")
-
 (ns cadejo.instruments.combo.genpatch
   (:require [cadejo.util.math :as math])
   (:require [cadejo.instruments.combo.program :as program]))

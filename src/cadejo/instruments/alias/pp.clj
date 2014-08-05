@@ -1,5 +1,3 @@
-(println "\t--> pp")
-
 (ns cadejo.instruments.alias.pp
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg])

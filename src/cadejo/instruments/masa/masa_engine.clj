@@ -172,8 +172,8 @@
           cc-reverb-mix-bus (.control-bus performance cc-reverb)
           vibrato-bus (control-bus)
           tone-bus (audio-bus)]
-      (.set-pp-hook! cadejo.instruments.masa.program/bank
-                     cadejo.instruments.masa.pp/pp-masa)
+      ;; (.set-pp-hook! cadejo.instruments.masa.program/bank
+      ;;                cadejo.instruments.masa.pp/pp-masa)
       (.add-control-bus! performance :vibrato-depth cc-vibrato-bus)
       (.add-control-bus! performance :pedal cc-pedal-bus)
       (.add-control-bus! performance :volume cc-volume-bus)

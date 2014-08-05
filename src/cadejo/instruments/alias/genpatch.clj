@@ -1,5 +1,3 @@
-(println "\t--> genpatch")
-
 (ns cadejo.instruments.alias.genpatch
   (:use [cadejo.instruments.alias.program])
   (:require [cadejo.util.math :as math :reload true])

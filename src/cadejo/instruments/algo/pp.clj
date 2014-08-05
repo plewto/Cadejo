@@ -1,5 +1,3 @@
-(println "\t--> ALGO pp")
-
 (ns cadejo.instruments.algo.pp
   (:require [cadejo.instruments.algo.program :as program])
   (:require [cadejo.util.col]))

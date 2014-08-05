@@ -1,5 +1,3 @@
-(println "\t--> data")
-
 (ns cadejo.instruments.combo.data
   (:use [cadejo.instruments.combo.program 
          :only [bank combo save-program bypass low high band notch]])
