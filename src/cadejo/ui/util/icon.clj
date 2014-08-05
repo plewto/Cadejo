@@ -21,7 +21,8 @@
 (def logo-path (path/join "resources" "logos"))
 (def logo-extension icon-extension)
 
-(def logo-size {:small 64
+(def logo-size {:tiny 32
+                :small 64
                 :medium 128
                 :large 256})
 
