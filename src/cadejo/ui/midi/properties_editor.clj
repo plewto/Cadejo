@@ -86,7 +86,7 @@
   (let [parent* (atom nil)
         curve-panel (cadejo.ui.midi.curve-panel/curve-panel)
         cb-enable (ss/checkbox :text "Enable")
-        spin-scale (ss/spinner :model (ss/spinner-model 1.0 :from 0.25 :to 4.0 :by 0.1))
+        spin-scale (ss/spinner :model (ss/spinner-model 1.0 :from 0.1 :to 4.0 :by 0.1))
         spin-bias (ss/spinner :model (ss/spinner-model 0.0 :from -1.0 :to 1.0 :by 0.1))
         pan-scale (ss/vertical-panel :items [spin-scale]
                                      :border (factory/title "Scale"))
