@@ -4,6 +4,7 @@
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance])
+  (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.alias.program])
   (:require [cadejo.instruments.alias.pp])
   (:require [cadejo.instruments.alias.data])
@@ -194,3 +195,13 @@
        (.add-voice! performance head-block)
        (.reset chanobj)
        performance)))
+
+(def alias-descriptor 
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :alias "Matrix Synth")]
+    (.add-controller! d :cc7 "Volume" 7)
+    (.add-controller! d :cca "A"  1)
+    (.add-controller! d :ccb "B" 16)
+    (.add-controller! d :ccc "C" 17)
+    (.add-controller! d :ccd "d"  4)
+    (.add-constructor! d :mono alias-mono)
+    d))

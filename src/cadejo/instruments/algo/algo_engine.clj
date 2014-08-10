@@ -8,6 +8,7 @@
 ;; [8]-->(hp)-->[7]
 
 (ns cadejo.instruments.algo.algo-engine
+  (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.algo.efx])
   (:require [cadejo.instruments.algo.program])
   (:require [cadejo.instruments.algo.pp])
@@ -589,3 +590,16 @@
        (.reset chanobj)
        performance)))
   
+
+(def algo-descriptor 
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :algo "FM Synth")]
+    (.add-controller! d :cc1 "Vibrato" 1)
+    (.add-controller! d :cc7 "Volume" 7)
+    (.add-controller! d :cca "A" 16)
+    (.add-controller! d :ccb "B" 17)
+    (.add-controller! d :ccc "Echo mix" 91)
+    (.add-controller! d :ccc "Reverb mix" 92)
+    (.add-constructor! d :mono algo-mono)
+    (.add-constructor! d :poly algo-poly)
+    d))
+    

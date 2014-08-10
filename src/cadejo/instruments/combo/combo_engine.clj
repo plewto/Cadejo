@@ -3,6 +3,7 @@
 (ns cadejo.instruments.combo.combo-engine
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu])
+  (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.combo.program])
   (:require [cadejo.instruments.combo.pp])
   (:require [cadejo.instruments.combo.data])
@@ -185,3 +186,12 @@
          (.add-synth! performance :efx efx)
          (.reset chanobj)
          performance))))
+
+(def combo-descriptor
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :combo "Simple organ")]
+    (.add-controller! d :cc1 "Vibrato" 1)
+    (.add-constructor! d :mono combo-mono)
+    (.add-constructor! d :poly combo-poly)
+    d))
+
+

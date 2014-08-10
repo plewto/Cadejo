@@ -6,6 +6,7 @@
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance])
+  (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.masa.program])
   (:require [cadejo.instruments.masa.pp])
   (:require [cadejo.instruments.masa.data])
@@ -258,3 +259,15 @@
        (doseq [v voices](.add-voice! performance v))
        (.reset chanobj)
        performance)))
+
+(def masa-descriptor
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :masa "Organ")]
+    (.add-controller! d :cc1 "Vibrato" 1)
+    (.add-controller! d :cc4 "Pedal" 4)
+    (.add-controller! d :cc7 "Volume" 7)
+    (.add-controller! d :cca "Scanner Mix" 92)
+    (.add-controller! d :ccb "Reverb Nix" 93)
+    (.add-constructor! d :mono masa-mono)
+    (.add-constructor! d :poly masa-poly)
+    d))
+    
