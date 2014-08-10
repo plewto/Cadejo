@@ -108,107 +108,107 @@
 
 
 (defn controller-suite []
-  (let [controllers* (atom {})]
-    (reify ControllerSuite
+  (let [controllers* (atom {})
+        ccs (reify ControllerSuite
 
-      (get-controller [this ctrl]
-        (get @controllers* ctrl))
-
-      (bus [this ctrl]
-        (let [cobj (.get-controller this ctrl)]
-          (and cobj (.bus cobj))))
-
-      (add-controller! [this id ctrl curve ivalue]
-        (let [old-cc (.get-controller this ctrl) ; reuse old bus if posible
-              bus (or (and old-cc (.bus old-cc))
-                      (ot/control-bus))
-              cc (cadejo.midi.cc.controller/controller ctrl bus curve ivalue)]
-          (swap! controllers* (fn [n](assoc n ctrl cc (keyword id) cc)))
-          cc))
-
-      ;; (add-controller! [this ctrl]
-      ;;   (.add-controller! this ctrl :linear 0))
-
-      (remove-controller! [this ctrl]
-        (swap! controllers* (fn [n](dissoc n ctrl))))
-
-      (assigned-controllers [this]
-        (filter number? (keys @controllers*)))
-
-      (assigned-controller-ids [this]
-        (sort (filter keyword? (keys @controllers*))))
-
-      (enable! [this ctrl flag]
-        (let [cc (.get-controller this ctrl)]
-          (if cc (.enable! cc flag))))
-
-      (enable! [this flag]
-        (doseq [ctrl (.assigned-controllers this)]
-          (.enable! this ctrl flag)))
-
-      (trace! [this ctrl flag]
-        (let [cc (.get-controller this ctrl)]
-          (if cc (.trace! cc flag))))
-      
-      (trace! [this flag]
-        (doseq [ctrl (.assigned-controllers this)]
-          (.trace! this ctrl flag)))
-
-      (reset [this]
-        (doseq [cc (map second (seq @controllers*))]
-          (.reset cc)))
-
-      (handle-event [this event]
-        (let [ctrl (:data1 event)
-              cc (.get-controller this ctrl)]
-          (if cc (.handle-cc-event cc event))))
-      
-      (set-curve! [this ctrl curve]
-        (let [cc (.get-controller this ctrl)]
-          (if cc (.set-curve! cc curve))
-          cc))
-
-      (curve [this ctrl]
-        (let [cc (.get-controller this ctrl)]
-          (and cc (.curve cc))))
-
-      (set-scale! [this ctrl s]
-        (let [cc (.get-controller this ctrl)]
-          (if cc (.set-scale! cc s))
-          cc))
-
-      (scale [this ctrl]
-        (let [cc (.get-controller this ctrl)]
-          (and cc (.scale cc))))
-
-      (set-bias! [this ctrl b]
-        (let [cc (.get-controller this ctrl)]
-          (if cc (.set-bias! cc b))
-          cc))
-
-      (bias [this ctrl]
-        (let [cc (.get-controller this ctrl)]
-          (and cc (.bias cc))))
-
-      (?bus [this ctrl]
-        (let [cc (.get-controller this ctrl)
-              bus (if cc (.bus cc) nil)]
-          (if bus
-            (println (format "cc bus %3d = %s" ctrl (ot/control-bus-get bus)))
-            (println (format "cc bus %3d not assigned" ctrl)))))
-
-      (?buses [this]
-        (doseq [ctrl (sort (.assigned-controllers this))]
-          (.?bus this ctrl)))
-
-      (dump [this verbose depth]
-        (let [pad1 (cadejo.util.string/tab depth)]
-          (println (format "%sControllerSuite" pad1))
-          (doseq [ctrl (sort (.assigned-controllers this))]
-            (.dump (.get-controller this ctrl) verbose (inc depth)))))
-
-      (dump [this verbose]
-        (.dump this verbose 0))
-
-      (dump [this]
-        (.dump this true 0)))))
+              (get-controller [this ctrl]
+                (get @controllers* ctrl))
+              
+              (bus [this ctrl]
+                (let [cobj (.get-controller this ctrl)]
+                  (and cobj (.bus cobj))))
+              
+              (add-controller! [this id ctrl curve ivalue]
+                (let [old-cc (.get-controller this ctrl) ; reuse old bus if posible
+                      bus (or (and old-cc (.bus old-cc))
+                              (ot/control-bus))
+                      cc (cadejo.midi.cc.controller/controller ctrl bus curve ivalue)]
+                  (swap! controllers* (fn [n](assoc n ctrl cc)))
+                  (swap! controllers* (fn [n](assoc n (keyword id) cc)))
+                  cc))
+              
+              (remove-controller! [this ctrl]
+                (swap! controllers* (fn [n](dissoc n ctrl))))
+              
+              (assigned-controllers [this]
+                (filter number? (keys @controllers*)))
+              
+              (assigned-controller-ids [this]
+                (sort (filter keyword? (keys @controllers*))))
+              
+              (enable! [this ctrl flag]
+                (let [cc (.get-controller this ctrl)]
+                  (if cc (.enable! cc flag))))
+              
+              (enable! [this flag]
+                (doseq [ctrl (.assigned-controllers this)]
+                  (.enable! this ctrl flag)))
+              
+              (trace! [this ctrl flag]
+                (let [cc (.get-controller this ctrl)]
+                  (if cc (.trace! cc flag))))
+              
+              (trace! [this flag]
+                (doseq [ctrl (.assigned-controllers this)]
+                  (.trace! this ctrl flag)))
+              
+              (reset [this]
+                (doseq [cc (map second (seq @controllers*))]
+                  (.reset cc)))
+              
+              (handle-event [this event]
+                (let [ctrl (:data1 event)
+                      cc (.get-controller this ctrl)]
+                  (if cc (.handle-cc-event cc event))))
+              
+              (set-curve! [this ctrl curve]
+                (let [cc (.get-controller this ctrl)]
+                  (if cc (.set-curve! cc curve))
+                  cc))
+              
+              (curve [this ctrl]
+                (let [cc (.get-controller this ctrl)]
+                  (and cc (.curve cc))))
+              
+              (set-scale! [this ctrl s]
+                (let [cc (.get-controller this ctrl)]
+                  (if cc (.set-scale! cc s))
+                  cc))
+              
+              (scale [this ctrl]
+                (let [cc (.get-controller this ctrl)]
+                  (and cc (.scale cc))))
+              
+              (set-bias! [this ctrl b]
+                (let [cc (.get-controller this ctrl)]
+                  (if cc (.set-bias! cc b))
+                  cc))
+              
+              (bias [this ctrl]
+                (let [cc (.get-controller this ctrl)]
+                  (and cc (.bias cc))))
+              
+              (?bus [this ctrl]
+                (let [cc (.get-controller this ctrl)
+                      bus (if cc (.bus cc) nil)]
+                  (if bus
+                    (println (format "cc bus %3d = %s" ctrl (ot/control-bus-get bus)))
+                    (println (format "cc bus %3d not assigned" ctrl)))))
+              
+              (?buses [this]
+                (doseq [ctrl (sort (.assigned-controllers this))]
+                  (.?bus this ctrl)))
+              
+              (dump [this verbose depth]
+                (let [pad1 (cadejo.util.string/tab depth)]
+                  (println (format "%sControllerSuite" pad1))
+                  (doseq [ctrl (sort (.assigned-controllers this))]
+                    (.dump (.get-controller this ctrl) verbose (inc depth)))))
+              
+              (dump [this verbose]
+                (.dump this verbose 0))
+              
+              (dump [this]
+                (.dump this true 0)) )]
+    ccs))
+  

@@ -2,6 +2,7 @@
 (ns cadejo.midi.channel
   "Provides management of a single MIDI channel
    scene-->channel"
+  (:use [cadejo.util.trace])
   (:require [cadejo.config])
   (:require [cadejo.midi.node])
   (:require [cadejo.util.col :as ucol])
