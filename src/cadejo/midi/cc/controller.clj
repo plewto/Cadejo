@@ -29,9 +29,9 @@
     [this]
     "Returns SuperCollider control bus")
 
-  (enable!
-    [this flag]
-    "Enables/disables MIDI event handling")
+  ;; (enable!
+  ;;   [this flag]
+  ;;   "Enables/disables MIDI event handling")
 
   (trace! 
     [this flag]
