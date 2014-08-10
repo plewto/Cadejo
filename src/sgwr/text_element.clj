@@ -65,7 +65,7 @@
 
   sgwr.element.Element
 
-  (is-text? [this] true)
+  (element-type [this] :text)
 
   (attributes [this]
     @attributes*)

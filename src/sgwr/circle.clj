@@ -17,7 +17,7 @@
            attributes* (atom (sgwr.attributes/attributes))
            obj (reify sgwr.element.Element
                  
-                 (is-text? [this] false)
+                 (element-type [this] :circle)
 
                  (attributes [this] 
                    @attributes*)

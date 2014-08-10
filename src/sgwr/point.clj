@@ -88,7 +88,7 @@
            position* (atom [(float x)(float y)])
            pobj (reify sgwr.element.Element
                   
-                  (is-text? [this] false)
+                  (element-type [this] :point)
 
                   (attributes [this] 
                     @attributes*)

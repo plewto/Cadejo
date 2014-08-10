@@ -3,9 +3,13 @@
 
 (defprotocol Element
 
-  (is-text? 
+  ;; (is-text?   ;; use element-type insted
+  ;;   [this]
+  ;;   "Predicate true if this element is text")
+
+  (element-type 
     [this]
-    "Predicate true if this element is text")
+    "Returns unique keyword identifying element class")
 
   (attributes
     [this]
