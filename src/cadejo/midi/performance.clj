@@ -494,9 +494,11 @@
             pad2 (cadejo.util.string/tab depth2)]
         (printf "%sPerformance %s\n" pad (.get-property this :id))
         (if verbose
-          (doseq [k (.properties this :local-only)]
-            (printf "%s[%-12s] --> %s\n"
-                    pad2 k (.get-property this k))))))
+          (do 
+            (doseq [k (.properties this :local-only)]
+              (printf "%s[%-12s] --> %s\n"
+                      pad2 k (.get-property this k)))
+            (.dump controller-suite verbose (inc depth))))))
 
     (dump [this verbose]
       (.dump this verbose 0))

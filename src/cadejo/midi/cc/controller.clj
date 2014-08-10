@@ -147,11 +147,12 @@
           (let [pad1 (cadejo.util.string/tab depth)
                 pad2 (str pad1 pad1)
                 sb (StringBuilder.)]
-            (.append sb (format "%s%scc curve %s   scale %s   bias %s\n" 
+            (.append sb (format "%scc %s curve %s   scale %s   bias %s\n" 
                                 pad1 ctrl @curve* @scale* @bias*))
             (if verbose
               (do 
-                (.append sb (format "%senbale    %s  trace %s\n" pad2 @enable* @trace*))
+                (.append sb (format "%senbale    %s\n" pad2 @enable*))
+                (.append sb (format "%strace     %s\n" pad2 @trace*))
                 (.append sb (format "%smapfn     %s\n" pad2 @mapfn*))
                 (.append sb (format "%sbus       %s\n" pad2 cbus))
                 (.append sb (format "%sbus value %s\n" pad2 (ot/control-bus-get cbus)))))

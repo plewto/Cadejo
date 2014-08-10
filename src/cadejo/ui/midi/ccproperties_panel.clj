@@ -22,7 +22,7 @@
         pan-bias (ss/vertical-panel :items [spin-bias] :border (factory/title "Bias"))
         pan-south (ss/grid-panel :rows 1 :items [cb-enable pan-scale pan-bias])
         pan-main (ss/border-panel :center (.widget curve-panel :pan-main)
-                                  :south cb-enable
+                                  :south pan-south
                                   :border (factory/title (name cc-key)))
         widget-map {:curve-panel curve-panel
                     :cd-enable cb-enable

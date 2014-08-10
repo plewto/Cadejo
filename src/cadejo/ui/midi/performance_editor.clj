@@ -115,4 +115,9 @@
                                   pid (.get-property performance :id)]
                               (format "Scene %s   Channel %s   Performance %s"
                                       sid cid pid)))
+      ;; START DEBUG
+      (ss/listen (.widget ped :jb-help)
+                 :action (fn [_]
+                           (.dump (.node ped) :verbose 0)))
+      ;; END DEBUG
       ped))) 
