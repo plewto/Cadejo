@@ -124,7 +124,7 @@
   (let [bank (.clone cadejo.instruments.combo.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode bank)]
     (.put-property! performance :instrument-type :combo)
-    (.add-controller! performance cc1 :linear 0.0)
+    (.add-controller! performance :cc1 cc1 :linear 0.0)
     (let [vibrato-bus (control-bus)
           tone-bus (audio-bus)]
       ;(.set-pp-hook! bank cadejo.instruments.combo.pp/pp-combo)

@@ -46,7 +46,7 @@
     "Return instance of ControllerSuite")
 
   (add-controller!
-    [this ctrl curve ivalue]
+    [this id ctrl curve ivalue]
     "Convenience method add new controller to controller-suite")
 
   (add-control-bus! 
@@ -311,8 +311,8 @@
     (controllers [this]
       controller-suite)
 
-    (add-controller! [this ctrl curve ivalue]
-      (.add-controller! controller-suite ctrl curve ivalue))
+    (add-controller! [this id ctrl curve ivalue]
+      (.add-controller! controller-suite id ctrl curve ivalue))
 
     (add-control-bus! [this id bus]
       (swap! control-buses* (fn [n](assoc n id bus))))

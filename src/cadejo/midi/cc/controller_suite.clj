@@ -10,6 +10,7 @@
     [this ctrl]
     "Return cadejo.midi.cc.Controller object assigned to ctrl
      ctrl - int MIDI controller number 0 <= ctrl < 128
+            optionaly ctrl may be keyword for symbolic controller id
      If no controller has been assigned to ctrl return nil")
 
   (bus 
@@ -18,9 +19,10 @@
      Return nil if ctrl does not exists.")
 
   (add-controller!
-    [this ctrl curve ivalue]
-    [this ctrl]
+    [this id ctrl curve ivalue]
+    ;[this ctrl]
     "Add new controller assignment
+     id     - keyword symbolic name for this controller
      ctrl   - int, MIDI controller number  0 <= ctrl < 128
      curve  - keyword, mapping function, see cadejo.midi.curves, 
               default :linear
@@ -38,6 +40,10 @@
   (assigned-controllers 
     [this]
     "Returns unsorted list of assigned controller numbers")
+
+  (assigned-controller-ids
+    [this]
+    "Returns sorted list of symbolic controller names")
 
   (enable!
     [this ctrl flag]
@@ -112,22 +118,25 @@
         (let [cobj (.get-controller this ctrl)]
           (and cobj (.bus cobj))))
 
-      (add-controller! [this ctrl curve ivalue]
+      (add-controller! [this id ctrl curve ivalue]
         (let [old-cc (.get-controller this ctrl) ; reuse old bus if posible
               bus (or (and old-cc (.bus old-cc))
                       (ot/control-bus))
               cc (cadejo.midi.cc.controller/controller ctrl bus curve ivalue)]
-          (swap! controllers* (fn [n](assoc n ctrl cc)))
+          (swap! controllers* (fn [n](assoc n ctrl cc (keyword id) cc)))
           cc))
 
-      (add-controller! [this ctrl]
-        (.add-controller! this ctrl :linear 0))
+      ;; (add-controller! [this ctrl]
+      ;;   (.add-controller! this ctrl :linear 0))
 
       (remove-controller! [this ctrl]
         (swap! controllers* (fn [n](dissoc n ctrl))))
 
       (assigned-controllers [this]
-        (keys @controllers*))
+        (filter number? (keys @controllers*)))
+
+      (assigned-controller-ids [this]
+        (sort (filter keyword? (keys @controllers*))))
 
       (enable! [this ctrl flag]
         (let [cc (.get-controller this ctrl)]
