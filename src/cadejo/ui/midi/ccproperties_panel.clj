@@ -42,7 +42,7 @@
                   (let [ccsuite (.controllers (.node ed))
                         cc (.get-controller ccsuite cc-key)
                         ctrl (.controller-number cc)]
-                    (ss/config! pan-main :border (factory/title (format "%s %3d" cc (int ctrl)))))
+                    (ss/config! pan-main :border (factory/title (format "%s %3d" cc-key (int ctrl)))))
                   )
 
                 (node [this]
@@ -66,7 +66,13 @@
                     (.setValue spin-bias bias))) )]
 
     (ss/listen cb-enable :action (fn [_]
-                                   (.enable! (ccobj)(.isSelected cb-enable))))
+                                   (let [flag (.isSelected cb-enable)]
+                                   (.enable! (ccobj) flag)
+                                   (.enable! curve-panel flag)
+                                   (.setEnabled spin-scale flag)
+                                   (.setEnabled spin-bias flag)
+                                   (.setEnabled pan-scale flag)
+                                   (.setEnabled pan-bias flag))))
 
     (.addChangeListener spin-scale
                         (proxy [ChangeListener][]
