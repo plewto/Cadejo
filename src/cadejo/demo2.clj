@@ -6,10 +6,6 @@
   (:require [seesaw.core :as ss])
   (:require [overtone.core :as ot]))
 
-
-
-
-
 ; ---------------------------------------------------------------------- 
 ;                             Load Instruments
 
@@ -18,8 +14,8 @@
 ;; We are loading -all- instrument definitions. There should be some sort of
 ;; configuarable conditional load instead!
 
-;; ; ---------------------------------------------------------------------- 
-;; ;                                   Algo
+; ---------------------------------------------------------------------- 
+;                                   Algo
 
 (require '[cadejo.instruments.algo.algo-engine :as algo])
 (def algo-descriptor algo/algo-descriptor) 
@@ -27,8 +23,8 @@
 
 
 
-;; ; ---------------------------------------------------------------------- 
-;; ;                                   Alias
+; ---------------------------------------------------------------------- 
+;                                   Alias
 
 (require '[cadejo.instruments.alias.alias-engine :as alias])
 (def alias-descriptor alias/alias-descriptor)
