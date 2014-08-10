@@ -112,12 +112,14 @@
 
                (add-constructor! [this mode cfn]
                  (swap! constructors* (fn [n](assoc n (keyword mode) cfn))))
-
+          
                (create [this mode args]
                  (let [cfn (get @constructors* (keyword mode))]
-                   (if cfn
-                     (apply cfn args)
-                     (umsg/warning (format "%s does not support %s mode" 
-                                           iname mode))))))]
+                   (if cfn 
+                     (let [p (apply cfn args)]
+                       (.put-property! p :descriptor this)
+                       p)
+                     (umsg/warning (format "%s does not support %s mode"
+                                           iname mode))))) )]
     dobj))
 
