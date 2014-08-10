@@ -72,16 +72,30 @@ returned."
 
 (defprotocol Attributes
 
-  (id 
-    [this]
-    "Return the id (a keyword) of this element. 
-     The id attribute is currently not used by sgwr.
-     Client applications are free to use id in anyway
-     they want.")
+  ;; (id 
+  ;;   [this]
+  ;;   "Return the id (a keyword) of this element. 
+  ;;    The id attribute is currently not used by sgwr.
+  ;;    Client applications are free to use id in anyway
+  ;;    they want.")
 
-  (id!
+  ;; (id!
+  ;;   [this key]
+  ;;   "Sets id of this element")
+
+  (put-property! 
+    [this key value]
+    "Set arbitrary property value")
+
+  (properties
+    [this]
+    "Return list of property keys")
+
+  (property
+    [this key default]
     [this key]
-    "Sets id of this element")
+    "Return property value associated with key
+     If key has no value return default or nil")
 
   (color 
     [this]
@@ -171,7 +185,8 @@ returned."
   ([c s]
      (attributes c s 1.0 false))
   ([c s w f]
-     (let [id* (atom nil)
+     (let [;id* (atom nil)
+           properties* (atom {})
            color* (atom nil)
            style* (atom nil)
            width* (atom nil)
@@ -181,10 +196,22 @@ returned."
            
            att (reify Attributes
 
-                 (id [this] @id*)
+                 ;; (id [this] @id*)
                    
-                 (id! [this key]
-                   (reset! id* (keyword key)))
+                 ;; (id! [this key]
+                 ;;   (reset! id* (keyword key)))
+
+                 (put-property! [this key value]
+                   (swap! properties* (fn [n](assoc n key value))))
+
+                 (properties [this]
+                   (keys @properties*))
+
+                 (property [this key default]
+                   (get @properties* key default))
+
+                 (property [this key]
+                   (.property this key nil))
 
                  (color [this] @color*)
                  
@@ -225,7 +252,6 @@ returned."
                          g (.getGreen c)
                          b (.getBlue c)]
                      (str
-                      (format "id %s RGB[%3d %3d %3d]  " @id* r g b)
                       (format "style %d  width %3.1f  filled %s  hidden %s  "
                               (.style this)(.width this)
                               (.filled? this)(.hidden? this))
