@@ -23,7 +23,6 @@
     [this p]
     "Convert 'real' point p [x y] to pixel coordinates [column row]")
 
-
   (inv-map
     [this q]
     "Inversion of map-point, converts pixel coordinates [column row]
@@ -33,6 +32,10 @@
     [this q]
     "Clip 'physical' point q to canvas bounds
      For point q [u v]  0 <= u < width  and 0 <= v < height")
+
+  (distance 
+    [this p1 p2]
+    "Return distance between points p1 and p2")
 
   (zoom!
     [this ratio]
@@ -78,6 +81,9 @@
         (let [[u v] q]
           [(util/clamp u 0 w)
            (util/clamp v 0 h)]))
+
+      (distance [this p1 p2]
+        (util/distance p1 p2))
 
       (zoom! [this _] nil)  ;; ignore
 
@@ -141,6 +147,9 @@
                  [(util/clamp u 0 w)
                   (util/clamp v 0 h)]))
              
+             (distance [this p1 p2]
+               (util/distance p1 p2))
+
              (zoom! [this ratio]
                (let [[p0 p1] @view*
                      [x0 y0] p0
@@ -171,8 +180,8 @@
 
 
 
-(defn polar [size r]
- 
+(defn polar [size r & {:keys [units]
+                       :or {units :rad}}]
   "The polar coordinate system maps points based on their distance 
    from the origin and their angle of rotation from the polar-axis. 
    The origin is always placed at the center of the canvas with the 
@@ -182,13 +191,24 @@
    size - 'physical' size of canvas in pixels, canvas is assumed to 
            be square.
  
-   r - maximum radius of view as a real number."
- 
+   r - maximum radius of view as a real number.
+
+   :units - angular units options, possible values
+            :deg - degrees
+            :rad - radians (default)"
   (let [params* (atom {:width (int size)
                        :height (int size)
                        :offset (* 1/2 (int size))
                        :radius (float r)
                        :scale (float 0.0)})
+        unit-hook (cond (= units :deg)
+                        util/deg->rad
+                        :default
+                        identity)
+        inv-unit-hook (cond (= units :deg)
+                            util/rad->deg
+                            :default
+                            identity)
         zoom-ratio* (atom 1.0)
         cs (reify CoordinateSystem
 
@@ -206,31 +226,39 @@
                                          :scale (float scale))))
                  (.view this)))
 
-             ;; point p [distance phi]
+             ;; point p [r phi]  --> pixel [column row]
              (map-point [this p]
-               (let [[r phi] p
+               (let [r (first p)
+                     phi (unit-hook (second p))
                      offset (:offset @params*)
                      scale (:scale @params*)
                      u (+ offset (* scale r (Math/cos phi)))
-                     v (+ offset (* scale r (Math/sin phi)))]
+                     v (+ offset (* scale r (Math/sin (* -1 phi))))]
                  (.clip this [u v])))
 
-             ;; 'physical' point q, pixel [column, row]
+             ;; 'physical' point q, pixel [column row] --> [radius phi]
              (inv-map [this q]
                (let [[u v] q
                      offset (:offset @params*)
                      scale (:scale @params*)
-                     x (- u offset)
-                     y (- offset v)
-                     r (/ (Math/sqrt (+ (Math/pow x 2)(Math/pow y 2))) scale)
-                     phi (Math/atan2 y x)]
-                 [r phi]))
+                     u2 (- u offset)
+                     v2 (- offset v)
+                     r (/ (Math/sqrt (+ (Math/pow u2 2)(Math/pow v2 2))) scale)
+                     phi (let [p (Math/atan2 v2 u2)]
+                           (if (neg? p)(+ p (* 2 Math/PI)) p))]
+                 [r (inv-unit-hook phi)]))
 
              (clip [this q]
                (let [[u v] q]
                  [(util/clamp u 0 (:width @params*))
                   (util/clamp v 0 (:height @params*))]))
 
+             (distance [this p1 p2]
+               (let [[r1 phi1] p1
+                     [r2 phi2] p2]
+                 (Math/sqrt (- (+ (* r1 r1)(* r2 r2))
+                               (* 2 r1 r2 (Math/cos (- (unit-hook phi1) (unit-hook phi2))))))))
+             
              (zoom! [this ratio]
                (let [r2 (/ (:radius @params*) ratio)
                      s2 (/ (:scale @params*) ratio)]
