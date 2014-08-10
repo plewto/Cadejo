@@ -27,13 +27,15 @@
    Returns n such that  mn <= n <= mx"
   (max (min n mx) mn))
 
+
+(defn sqr [x](* x x))
+
 (defn distance [p0 p1]
   (let [[x0 y0] p0
         [x1 y1] p1
         dx (- x1 x0)
         dy (- y1 y0)]
-    (sqrt(+ (* dx dx)(* dy dy)))))
-
+    (sqrt (+ (sqr dx)(sqr dy)))))
 
 
 ; ---------------------------------------------------------------------- 
@@ -47,3 +49,4 @@
        p1))
   ([s1 s2]
      (combine-shapes s1 s2 false)))
+
