@@ -12,16 +12,27 @@
   (:require [cadejo.instruments.alias.head])
   (:require [cadejo.instruments.alias.tone])
   (:require [cadejo.instruments.alias.efx]))
-  
+
+(def alias-descriptor 
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :alias "Matrix Synth")]
+    (.add-controller! d :cc7 "Volume" 7)
+    (.add-controller! d :cca "A"  1)
+    (.add-controller! d :ccb "B" 16)
+    (.add-controller! d :ccc "C" 17)
+    (.add-controller! d :ccd "d"  4)
+    d))
+
 (defn create-performance [chanobj id keymode main-out
                           cca ccb ccc ccd cc-volume]
   (let [bank (.clone cadejo.instruments.alias.program/bank)
-        performance (cadejo.midi.performance/performance chanobj id keymode bank)]
+        performance (cadejo.midi.performance/performance chanobj id keymode
+                                                         bank alias-descriptor
+                                                         [:cca cca :linear 0.0]
+                                                         [:ccb ccb :linear 0.0]
+                                                         [:ccc ccc :linear 0.0]
+                                                         [:ccd ccd :linear 0.0]
+                                                         [:cc7 cc-volume :linear 1.0])]
     (.put-property! performance :instrument-type :alias)
-    (.add-controller! performance :cca cca :linear 0.0)
-    (.add-controller! performance :ccb ccb :linear 0.0)
-    (.add-controller! performance :ccc ccc :linear 0.0)
-    (.add-controller! performance :ccd ccd :linear 0.0)
     (.add-controller! performance :cc7 cc-volume :linear 1.0)
     (let [a-bus (control-bus)
           b-bus (control-bus)
@@ -196,12 +207,4 @@
        (.reset chanobj)
        performance)))
 
-(def alias-descriptor 
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :alias "Matrix Synth")]
-    (.add-controller! d :cc7 "Volume" 7)
-    (.add-controller! d :cca "A"  1)
-    (.add-controller! d :ccb "B" 16)
-    (.add-controller! d :ccc "C" 17)
-    (.add-controller! d :ccd "d"  4)
-    (.add-constructor! d :mono alias-mono)
-    d))
+(.add-constructor! alias-descriptor :mono alias-mono)

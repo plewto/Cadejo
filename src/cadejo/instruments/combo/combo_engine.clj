@@ -11,6 +11,11 @@
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance]))
 
+(def combo-descriptor
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :combo "Simple organ")]
+    (.add-controller! d :cc1 "Vibrato" 1)
+    d))
+
 (defsynth LFO [vibrato-freq 5.00
                vibrato-sens 0.01
                vibrato-bus 0
@@ -123,9 +128,10 @@
 
 (defn ^:private create-performance [chanobj id keymode cc1]
   (let [bank (.clone cadejo.instruments.combo.program/bank)
-        performance (cadejo.midi.performance/performance chanobj id keymode bank)]
+        performance (cadejo.midi.performance/performance chanobj id keymode 
+                                                         bank combo-descriptor
+                                                         [:cc1 cc1 :linear 0.0])]
     (.put-property! performance :instrument-type :combo)
-    (.add-controller! performance :cc1 cc1 :linear 0.0)
     (let [vibrato-bus (control-bus)
           tone-bus (audio-bus)]
       ;(.set-pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
@@ -134,7 +140,7 @@
       performance)))
 
 ;; cc1 - vibrato
-
+;;
 (defn combo-mono 
   ([scene chan id & {:keys [cc1 main-out]
                      :or {cc1 1
@@ -187,11 +193,5 @@
          (.reset chanobj)
          performance))))
 
-(def combo-descriptor
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :combo "Simple organ")]
-    (.add-controller! d :cc1 "Vibrato" 1)
-    (.add-constructor! d :mono combo-mono)
-    (.add-constructor! d :poly combo-poly)
-    d))
-
-
+(.add-constructor! combo-descriptor :mono combo-mono)
+(.add-constructor! combo-descriptor :poly combo-poly)

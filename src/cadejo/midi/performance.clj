@@ -411,7 +411,6 @@
       (.reset keymode)
       (.program-change @bank* 0 (concat (.synths this)(.voices this))))
 
-
     (handle-event [this event]
       (let [cmd (:command event)]
         ;; :note-on
@@ -507,16 +506,25 @@
 
 (defn- load-editor [pobj]
   (if (cadejo.config/load-gui)
-    (cadejo.ui.midi.performance-editor/performance-editor pobj)))
+    (let [rs (cadejo.ui.midi.performance-editor/performance-editor pobj)]
+      rs)
+    nil))
 
-(defn performance [parent-channel id keymode bank]
+(defn performance [parent-channel id keymode bank descriptor & args]
   "Creates new Performance instance. 
    parent-channel - An instance of cadejo.midi.cahnnel
    id - Unique keyword id.
-   keymode - An object implementing cadejo.midi.keymode."
+   keymode - An object implementing cadejo.midi.keymode.
+   args - optional MIDI cc specifications
+          each cc spec should be vector of form [id ctrl-num :curve init-value]
+          where  id - unique keyword mnemonic
+                 ctrl-num - MIDI controller number 0 <= ctrl < 128
+                 :curve  - default mapping curve (typically :linear)
+                 init-value - float initial bus value  0.0 <= ivalue <= 1.0"
   (let [bend-handler* (atom nil)
         pressure-handler* (atom nil)
         editor* (atom nil)
+        csuite (cadejo.midi.cc.controller-suite/controller-suite)
         pobj (Performance. parent-channel 
                            (atom {})    ; local properties
                            (atom bank)
@@ -527,12 +535,18 @@
                            keymode
                            bend-handler*
                            pressure-handler*
-                           (cadejo.midi.cc.controller-suite/controller-suite)
+                           csuite
                            editor*)]
+    (doseq [ccspec args]
+      (let [[id cnum curve ival] ccspec]
+        (.add-controller! csuite (keyword id)(int cnum)(keyword curve)(float ival))))
     (.add-performance! parent-channel id pobj)
     (.put-property! pobj :id id)
+    (.put-property! pobj :descriptor descriptor)
     (.set-parent! keymode pobj)
     (reset! editor* (load-editor pobj))
     (reset! bend-handler* (cadejo.midi.bend-handler/bend-handler pobj))
     (reset! pressure-handler* (cadejo.midi.pressure-handler/pressure-handler pobj))
     pobj))
+
+

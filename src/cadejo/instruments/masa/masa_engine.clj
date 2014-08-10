@@ -12,6 +12,15 @@
   (:require [cadejo.instruments.masa.data])
   (:require [cadejo.instruments.masa.efx :as efx]))
 
+(def masa-descriptor
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :masa "Organ")]
+    (.add-controller! d :cc1 "Vibrato" 1)
+    (.add-controller! d :cc4 "Pedal" 4)
+    (.add-controller! d :cc7 "Volume" 7)
+    (.add-controller! d :cca "Scanner Mix" 92)
+    (.add-controller! d :ccb "Reverb Nix" 93)
+    d))
+
 (defsynth VibratoBlock [vibrato-depth-bus 0
                         vibrato-bus 0
                         gate 0
@@ -158,13 +167,14 @@
                           cc-vibrato cc-pedal cc-volume
                           cc-scanner cc-reverb]
   (let [bank (.clone cadejo.instruments.masa.program/bank)
-        performance (cadejo.midi.performance/performance chanobj id keymode bank)]
+        performance (cadejo.midi.performance/performance chanobj id keymode 
+                                                         bank masa-descriptor
+                                                         [:cc1 cc-vibrato :linear 0.0]
+                                                         [:cc4 cc-pedal :linear 0.0]
+                                                         [:cc7 cc-volume :linear 1.0]
+                                                         [:cca cc-scanner :linear 1.0]
+                                                         [:ccb cc-reverb :linear 1.0])]
     (.put-property! performance :instrument-type :masa)
-    (.add-controller! performance :cc1 cc-vibrato :linear 0.0)
-    (.add-controller! performance :cc4 cc-pedal :linear 0.0)
-    (.add-controller! performance :cc7 cc-scanner :linear 0.0)
-    (.add-controller! performance :cca cc-reverb :linear 0.0)
-    (.add-controller! performance :ccb cc-volume :linear 1.0)
     (let [bend-bus (.control-bus performance :bend)
           cc-vibrato-bus (.control-bus performance cc-vibrato)
           cc-pedal-bus (.control-bus performance cc-pedal)
@@ -260,14 +270,8 @@
        (.reset chanobj)
        performance)))
 
-(def masa-descriptor
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :masa "Organ")]
-    (.add-controller! d :cc1 "Vibrato" 1)
-    (.add-controller! d :cc4 "Pedal" 4)
-    (.add-controller! d :cc7 "Volume" 7)
-    (.add-controller! d :cca "Scanner Mix" 92)
-    (.add-controller! d :ccb "Reverb Nix" 93)
-    (.add-constructor! d :mono masa-mono)
-    (.add-constructor! d :poly masa-poly)
-    d))
+(.add-constructor! masa-descriptor :mono masa-mono)
+(.add-constructor! masa-descriptor :poly masa-poly)
+
+
     

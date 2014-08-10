@@ -1,4 +1,5 @@
 (ns cadejo.instruments.descriptor
+  (:use [cadejo.util.trace])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.icon]))
 
@@ -117,7 +118,6 @@
                  (let [cfn (get @constructors* (keyword mode))]
                    (if cfn 
                      (let [p (apply cfn args)]
-                       (.put-property! p :descriptor this)
                        p)
                      (umsg/warning (format "%s does not support %s mode"
                                            iname mode))))) )]

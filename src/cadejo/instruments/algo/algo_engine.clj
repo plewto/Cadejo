@@ -20,6 +20,16 @@
   (:require [cadejo.modules.qugen :as qu])
   (:use [overtone.core]))
 
+(def algo-descriptor 
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :algo "FM Synth")]
+    (.add-controller! d :cc1 "Vibrato" 1)
+    (.add-controller! d :cc7 "Volume" 7)
+    (.add-controller! d :cca "A" 16)
+    (.add-controller! d :ccb "B" 17)
+    (.add-controller! d :ccc "Echo mix" 91)
+    (.add-controller! d :ccc "Reverb mix" 92)
+    d))
+
 (defcgen op-freq [f0 detune bias]
   (:kr 
    (+ bias (* detune f0))))
@@ -481,14 +491,15 @@
                           cc-vibrato cca ccb  
                           cc-volume cc-echo-mix cc-reverb-mix]
   (let [bank (.clone cadejo.instruments.algo.program/bank)
-        performance (cadejo.midi.performance/performance chanobj id keymode bank)]
+        performance (cadejo.midi.performance/performance chanobj id keymode 
+                                                         bank algo-descriptor
+                                                         [:cc1 cc-vibrato :linear 0.0]
+                                                         [:cc7 cc-volume :linear 1.0]
+                                                         [:cca cca :linear 0.0]
+                                                         [:ccb ccb :linear 0.0]
+                                                         [:ccc cc-echo-mix :linear 1.0]
+                                                         [:ccd cc-reverb-mix :linear 1.0])]
     (.put-property! performance :instrument-type :algo)
-    (.add-controller! performance :cc1 cc-vibrato :linear 0.0)
-    (.add-controller! performance :cca cca :linear 0.0)
-    (.add-controller! performance :ccb ccb :linear 0.0)
-    (.add-controller! performance :cc7 cc-volume :linear 1.0)
-    (.add-controller! performance :ccc cc-echo-mix :linear 1.0)
-    (.add-controller! performance :ccd cc-reverb-mix :linear 1.0)
     (let [bend-bus (.control-bus performance :bend)
           pressure-bus (.control-bus performance :pressure)
           vibrato-depth-bus (.control-bus performance cc-vibrato)
@@ -509,6 +520,7 @@
       (.add-audio-bus! performance :tone tone-bus)
       (.add-audio-bus! performance :main-out main-out)
       performance)))
+
 
 ;; cc1 - vibrato
 ;; cc7 - volume
@@ -589,17 +601,6 @@
          (.add-voice! performance v))
        (.reset chanobj)
        performance)))
-  
-
-(def algo-descriptor 
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :algo "FM Synth")]
-    (.add-controller! d :cc1 "Vibrato" 1)
-    (.add-controller! d :cc7 "Volume" 7)
-    (.add-controller! d :cca "A" 16)
-    (.add-controller! d :ccb "B" 17)
-    (.add-controller! d :ccc "Echo mix" 91)
-    (.add-controller! d :ccc "Reverb mix" 92)
-    (.add-constructor! d :mono algo-mono)
-    (.add-constructor! d :poly algo-poly)
-    d))
     
+(.add-constructor! algo-descriptor :mono algo-mono)
+(.add-constructor! algo-descriptor :poly algo-poly)
