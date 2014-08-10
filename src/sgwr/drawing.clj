@@ -10,6 +10,7 @@
   (:require [sgwr.point])
   (:require [sgwr.rectangle])
   (:require [sgwr.text-element])
+  (:require [sgwr.utilities :as util])
   (:import javax.swing.JPanel
            java.awt.Dimension
            java.awt.geom.AffineTransform
@@ -38,6 +39,20 @@
     [this]
     "Return the coordinate-system")
 
+  (background
+    [this]
+    "Return background image")
+
+  (background!
+    [this bg]
+    "Set background image
+     bg - Instance of Image which should have the same 'physical' dimensions 
+          as the drawing.")
+  
+  (paper!
+    [this c]
+    "Fill background with color c")
+
   (freeze!
     [this]
     "Convert the current drawing to a fixed background.
@@ -46,17 +61,7 @@
      That is the background is not effected by any future changes
      in the zoom or view. Freezing also removes all elements from the
      drawing and is not reversible.") 
-
-  (background
-    [this]
-    "Returns the background color")
-
-  (background!
-    [this bg]
-    "Sets the background color, see attributes/create-color
-     Once a drawing has been frozen changing the background will have
-     no effect.")
-
+  
   (view 
     [this]
     "Return the current 'view' as determined by the coordinate system.")
@@ -110,7 +115,37 @@
             1  5  9 13 - sans-serif  plain bold italic bold-italic
             2  6 10 14 - serif       plain bold italic bold-italic
             3  7 11 15 - dialog      plain bold italic bold-italic")
-     
+
+  (closest 
+    [this p filter]
+    [this p]
+    "Return the drawing element with construction-point closest to p
+     and for which the filter function returns true
+     p - point [x y]
+     filter - Test function which takes a single element argument 
+     and returns boolean. Default filter is always true")
+
+  (unselect!
+    [this filter]
+    [this]
+    "Mark all elements for which filter returns true as un-selected.
+     If filter not specified un-select all elements.
+     filter should be a function which takes a single Element argument and
+     returns Bool.")
+
+  (select! 
+    [this filter]
+    "Mark all elements for which filter true as selected
+     filter should be a function which takes single Element argument
+     and returns Bool.")
+    
+  (invert-selection! 
+    [this])
+
+  (selected
+    [this]
+    "Return seq of all selected elements")
+
   (current-position 
     [this]
     "Returns the position of the most recently added element.
@@ -205,8 +240,13 @@
      p0 - base-line point 
      txt - the text")
 
+  (remove!
+    [this e]
+    "Remove specific element from drawing")
+
   (elements
-    [this])
+    [this]
+    "Return seq of all drawing elements")
 
   (add-mouse-motion-listener! 
     [this mml]
@@ -221,6 +261,7 @@
   (remove-mouse-listener!
     [this ml])
 
+ 
   (where 
     [this]
     "Returns the most current position of the mouse over the drawing.
@@ -260,7 +301,6 @@
         mouse-released-position* (atom [0 0]) ;; as pixel [col row]
         physical-bounds (Dimension. width height)
         position* (atom [0.0 0.0])
-        background* (atom (sgwr.attributes/create-color :black))
         attributes* (atom (sgwr.attributes/attributes))
         elements* (atom [])
         background-image (BufferedImage. (.getWidth physical-bounds)
@@ -279,6 +319,18 @@
 
               (coordinate-system [this] cs)
 
+              (background [this] background-image)
+                
+              (background! [this image]
+                (let [g2d (.createGraphics background-image)]
+                  (.drawImage g2d image null-transform-op 0 0)
+                  (.render this)))
+              
+              (paper! [this c]
+                (let [g2d (.createGraphics background-image)]
+                  (.setColor g2d (sgwr.attributes/create-color c))
+                  (.fillRect g2d 0 0 width height)))
+
               (freeze! [this]
                 (let [g2d (.createGraphics background-image)]
                   (.drawImage g2d image null-transform-op 0 0)
@@ -289,14 +341,6 @@
 
               (attributes! [this att]
                 (reset! attributes* att))
-
-
-              (background [this] @background*)
-
-              (background! [this bg]
-                (reset! background* (sgwr.attributes/create-color bg))
-                (.render this)
-                @background*)
 
               (view [this]
                 (.view cs))
@@ -317,6 +361,48 @@
               (style! [this s]
                 (.style! @attributes* s))
               
+              (closest [this p]
+                (.closest this p (fn [_] true)))
+
+              (closest [this p filter]
+                (let [rs* (atom nil)
+                      mindist* (atom 1e64)]
+                  (doseq [e @elements*]
+                    (if (filter e)
+                      (doseq [cp (.construction-points e)]
+                        (let [d (util/distance p cp)]
+                          (if (< d @mindist*)
+                            (do
+                              (reset! mindist* d)
+                              (reset! rs* e)))))))
+                  @rs*))
+
+              (unselect! [this]
+                (.unselect! this (fn [_] true)))
+
+              (unselect! [this filter]
+                (doseq [e (.elements this)]
+                  (if (filter e)
+                    (.select! (.attributes e) false))))
+                
+              (select! [this filter]
+                (doseq [e (.elements this)]
+                  (if (filter e)
+                    (.select! (.attributes e) true))))
+
+              (invert-selection! [this]
+                (doseq [e (.elements this)]
+                  (let [att (.attributes e)
+                        f (.selected? att)]
+                    (.select! att (not f)))))
+                
+              (selected [this]
+                (let [acc* (atom [])]
+                  (doseq [e (.elements this)]
+                    (if (.selected? (.attributes e))
+                      (swap! acc* (fn [n](conj n e)))))
+                  @acc*))
+
               (current-position [this]
                 @position*)
               
@@ -327,7 +413,6 @@
                 (reset! elements* [])
                 (if include-frozen
                   (let [g2d (.createGraphics background-image)]
-                    (.setColor g2d @background*)
                     (.clearRect g2d 0 0 (.getWidth physical-bounds)(.getHeight physical-bounds))))
                 (.render this))
               
@@ -346,7 +431,6 @@
                 (let [g2d (.createGraphics image)
                       w (.getWidth physical-bounds)
                       h (.getHeight physical-bounds)]
-                  (.setColor g2d @background*)
                   (.fillRect g2d 0 0 w h)
                   (.drawImage g2d background-image null-transform-op 0 0)
                   (doseq [e @elements*]
@@ -359,7 +443,8 @@
                         (.setColor g2d c)
                         (.setStroke g2d strk)
                         (cond 
-                         (.is-text? e)
+                         ;(.is-text? e)
+                         (= (.element-type e) :text)
                          (let [fnt (.get-font e cs)
                                tx (.text e)
                                pos (.map-point cs(first (.construction-points e)))
@@ -384,9 +469,9 @@
                   (.repaint cpan)))
               
               (plot-to! [this points]
-                (let [rgb (.color-rgb @attributes*)
-                      g2d (.createGraphics image)
+                (let [g2d (.createGraphics image)
                       q0* (atom (.map-point cs (first points)))]
+                  (.setColor g2d (.color @attributes*))
                   (doseq [p (rest points)]
                     (let [q1 (.map-point cs p)
                           [u0 v0] @q0*
@@ -481,6 +566,9 @@
 
               (elements [this]
                 @elements*)
+              
+              (remove! [this e]
+                (swap! elements* (fn [n](remove (fn [q](= q e)) n))))
 
               (add-mouse-motion-listener! [this mml]
                 (.addMouseMotionListener cpan mml))
@@ -569,6 +657,7 @@
    in radians."
   ([w]
      (polar-drawing w 1.0))
-  ([w r]
-     (let [cs (sgwr.coordinate-system/polar w r)]
+  ([w r & {:keys [units]
+           :or {units :rad}}]
+     (let [cs (sgwr.coordinate-system/polar w r :units units)]
        (create-drawing cs))))
