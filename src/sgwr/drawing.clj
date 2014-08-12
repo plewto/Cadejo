@@ -18,7 +18,18 @@
            java.awt.image.AffineTransformOp
            java.awt.Rectangle
            java.awt.event.MouseMotionListener
-           java.awt.event.MouseListener))
+           java.awt.event.MouseListener
+           javax.imageio.ImageIO
+           java.io.File))
+
+(defn read-image [fqn]
+  "Read image file into BufferedImage
+   fqn - The fully qualifed filename
+   If fqn does not exists return nil")
+  (let [f (File. fqn)]
+    (if (.exists f)
+      (ImageIO/read f)
+      nil)))
 
 (def selected-color* (atom (sgwr.attributes/create-color :yellow)))
 (def zoom-ratio* (atom 2/3))
@@ -49,6 +60,11 @@
      bg - Instance of Image which should have the same 'physical' dimensions 
           as the drawing.")
   
+  (read-background! 
+    [this fqn]
+    "Set background image from file
+     fqn - string, the fully qualified filename")
+
   (paper!
     [this c]
     "Fill background with color c")
@@ -324,8 +340,15 @@
               (background! [this image]
                 (let [g2d (.createGraphics background-image)]
                   (.drawImage g2d image null-transform-op 0 0)
-                  (.render this)))
+                  (.render this)
+                  true))
               
+              (read-background! [this fqn]
+                (let [bi (read-image fqn)]
+                  (if bi 
+                    (.background! this bi)
+                    false)))
+
               (paper! [this c]
                 (let [g2d (.createGraphics background-image)]
                   (.setColor g2d (sgwr.attributes/create-color c))
