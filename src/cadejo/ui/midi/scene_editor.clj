@@ -6,9 +6,7 @@
   (:require [cadejo.ui.util.color-utilities])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
-  (:import java.awt.BorderLayout
-           )
-  )
+  (:import java.awt.BorderLayout))
 
 (def channel-count (cadejo.config/channel-count))
 (def frame-size [1000 :by 610])
@@ -67,12 +65,9 @@
         pan-tree (ss/border-panel :north (ss/label "Cadejo Tree")
                                   :center txt-tree)
         pan-tab (ss/tabbed-panel 
-                 :tabs [{:title "Scale Registry" :content (.widget reged :pan-main)}
-                        {:title "Tree" :content pan-tree}
-                        ]
-                 :border (factory/padding))
-        
-        ]
+                 :tabs [{:title "Tree" :content pan-tree}
+                        {:title "Scale Registry" :content (.widget reged :pan-main)}]
+                 :border (factory/padding))]
     (ss/config! (.widget basic-ed :frame) :on-close :nothing)
     (ss/config! (.widget basic-ed :frame) :size frame-size)
     (.add pan-center pan-channels BorderLayout/SOUTH)
