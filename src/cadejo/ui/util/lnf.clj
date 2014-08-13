@@ -25,12 +25,11 @@
                                                               .getClassName
                                                               SubstanceLookAndFeel/setSkin)))])))
 
-
-
 ;; A few example panels
 ;;
 
 (def greek (map str '(Alpha Beta Gamma Delta Epsilon Zeta Eta Theta Iota Kappa Lambda)))
+
 
 (def pan-border
   (let [lab1 (label "Raised Bevel")
@@ -91,23 +90,20 @@
                    (.setBorder pan-radio (BorderFactory/createTitledBorder "Radio Button"))
                    (grid-panel :rows 4 :vgap 4 :items [pan-simple pan-checkbox pan-toggle pan-radio])))
   
-(def lnf-selector-frame
-  (let [pan-tabs (tabbed-panel :tabs [{:title :borders :content pan-border}
-                                      {:title :buttons :content pan-buttons}
-                                      ])
+
+
+(defn skin-dialog []
+  (let [pan-tabs (tabbed-panel :tabs [{:title :buttons :content pan-buttons}
+                                      {:title :borders :content pan-border}])
         pan-main (border-panel :north (create-lnf-selector)
                                :center pan-tabs)
-        f (frame :title "Substance Skins"
-                 :content pan-main
-                 :on-close :hide)]
-    (-> f pack!)
-    f))
-
-
-(defn show-lnf-frame []
-  (show! lnf-selector-frame))
-
-(defn hide-lnf-frame []
-  (hide! lnf-selector-frame))
-
-(show-lnf-frame)
+        jb-dismis (button :text "Dismis")
+        dia (dialog :title "Substance Skins"
+                    :type :plain
+                    :content pan-main
+                    :on-close :dispose
+                    :size [500 :by 400]
+                    :options [jb-dismis])]
+    (listen jb-dismis :action (fn [_]
+                                (return-from-dialog dia true)))
+    (show! dia)))
