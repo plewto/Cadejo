@@ -1,7 +1,8 @@
 (ns cadejo.ui.util.icon
   (:require [cadejo.util.path :as path])
   (:require [seesaw,icon])
-  (:import java.io.File))
+  (:import java.io.File
+           javax.imageio.ImageIO))
 
 
 (def icon-path (path/join "resources" "icons"))
@@ -17,14 +18,13 @@
   (seesaw.icon/icon (icon-file name)))
 
 
-
 (def logo-path (path/join "resources" "logos"))
 (def logo-extension icon-extension)
 
-(def logo-size {:tiny 32
-                :small 64
+(def logo-size {:tiny    32
+                :small   64
                 :medium 128
-                :large 256})
+                :large  256})
 
 (defn logo-file [iname size]
   (let [fqn (path/join logo-path 
@@ -40,3 +40,24 @@
   ([iname size]
      (let [f (logo-file iname size)]
        (seesaw.icon/icon f))))
+
+
+;; (defn splash []
+;;   (let [fqn (path/join logo-path
+;;                        (format "splash.%s" logo-extension))
+;;         f (File. fqn)
+;;     (seesaw.icon/icon f)))
+
+
+;; (defn splash []
+;;   (let [fqn (path/join logo-path
+;;                        (format "splash.%s" logo-extension))
+;;         f (File. fqn)
+;;         simg (ImageIO/read f)]
+;;     simg))
+
+
+
+;; Filename for splash screen image
+(def splash-filename (path/join logo-path
+                                (format "splash.%s" logo-extension)))
