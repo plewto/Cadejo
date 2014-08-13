@@ -270,11 +270,11 @@
                                        (.remove-property! (.node bpan) :bend-curve)
                                        (.remove-property! (.node bpan) :bend-range)))))
     (ss/listen jb-dec :action (fn [_]
-                                (let [r (max 0 (- (.getValue spin-range) 100))]
+                                (let [r (int (max 0 (- (.getValue spin-range) 100)))]
                                   (.setValue spin-range r))))
 
     (ss/listen jb-inc :action (fn [_]
-                                (let [r (min 2400 (+ (.getValue spin-range) 100))]
+                                (let [r (int (min 2400 (+ (.getValue spin-range) 100)))]
                                   (.setValue spin-range r))))
 
     (.addChangeListener spin-range
