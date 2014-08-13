@@ -25,7 +25,7 @@
 (defn read-image [fqn]
   "Read image file into BufferedImage
    fqn - The fully qualifed filename
-   If fqn does not exists return nil")
+   If fqn does not exists return nil"
   (let [f (File. fqn)]
     (if (.exists f)
       (ImageIO/read f)
