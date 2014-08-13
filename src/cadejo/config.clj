@@ -7,8 +7,6 @@
 ;; configuration files from the user's cadejo folder and/or via 
 ;; command line arguments. 
 
-(println "--> cadejo.config")
-
 (ns cadejo.config
   (:require [cadejo.util.user-message :as umsg])
   (:import java.awt.Color))
