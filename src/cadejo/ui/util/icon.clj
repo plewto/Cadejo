@@ -42,22 +42,8 @@
        (seesaw.icon/icon f))))
 
 
-;; (defn splash []
-;;   (let [fqn (path/join logo-path
-;;                        (format "splash.%s" logo-extension))
-;;         f (File. fqn)
-;;     (seesaw.icon/icon f)))
-
-
-;; (defn splash []
-;;   (let [fqn (path/join logo-path
-;;                        (format "splash.%s" logo-extension))
-;;         f (File. fqn)
-;;         simg (ImageIO/read f)]
-;;     simg))
-
-
-
 ;; Filename for splash screen image
-(def splash-filename (path/join logo-path
-                                (format "splash.%s" logo-extension)))
+(def ^:private splash-filename (path/join logo-path
+                                (format "splash2.%s" logo-extension)))
+
+(def splash-image (seesaw.icon/icon (File. splash-filename)))
