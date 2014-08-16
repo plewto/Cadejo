@@ -96,7 +96,8 @@
   (let [pan-tabs (tabbed-panel :tabs [{:title :buttons :content pan-buttons}
                                       {:title :borders :content pan-border}])
         pan-main (border-panel :north (create-lnf-selector)
-                               :center pan-tabs)
+                               ;:center pan-tabs
+                               )
         jb-dismis (button :text "Dismis")
         dia (dialog :title "Substance Skins"
                     :type :plain
