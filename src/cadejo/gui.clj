@@ -1,6 +1,7 @@
 (ns cadejo.gui
   (:require [cadejo.core])
   (:require [cadejo.config :as config])
+  (:require [cadejo.about])
   (:require [seesaw.core :as ss])
   (:require [overtone.core :as ot])
   (:require [cadejo.ui.util.icon])
@@ -13,9 +14,9 @@
 (defn cadejo-splash []
   (let [lab-header (ss/label :icon cadejo.ui.util.icon/splash-image)
         jb-skin (ss/button :text "Skin")
-        jb-about (ss/button :text "About")
+        jb-about (ss/toggle :text "About" :enabled? false)
         jb-help (ss/button :text "Help")
-        jb-exit (ss/button :text "Exit")
+        jb-exit (ss/button :text "Exit" :enabled? false) ;; ISSUE: exit action not implemented
         txt-status (ss/text :multi-line? false
                            :editable? false
                            :border (factory/bevel))
@@ -59,10 +60,16 @@
                                   :items device-buttons
                                   :border (factory/title "Select Scene MIDI Device"))
 
+        txt-about (ss/text :multi-line? true
+                           :editable? false)
+        ;jb-about-dismiss  (ss/button :text "Dismiss")
+        pan-about (ss/border-panel :center txt-about)
+
+
         pan-center (ss/card-panel
                     :items [[pan-server-options :server]
                             [pan-scene :scene]
-                            ]
+                            [pan-about :about]]
                    :border (factory/padding))
 
         pan-main (ss/border-panel :north lab-header
@@ -75,6 +82,7 @@
     (if (ot/server-connected?) 
       (do 
         (ss/show-card! pan-center :scene)
+        (ss/config! jb-about :enabled? true)
         (ss/config! txt-status :text "Using existing server")))
     
     (ss/listen jb-help :action (fn [_](println (.size f)))) ;; DEBUG
@@ -99,7 +107,8 @@
                            (ot/boot-external-server)
                            (ss/show-card! pan-center :scene))
                          :default
-                         nil))))
+                         nil)
+                   (ss/config! jb-about :enabled? true))))
                          
     (ss/listen jb-create-scene :action 
                (fn [_]
@@ -117,7 +126,17 @@
                    (ss/config! txt-status :text (format "Scene %s %s created" name dev)))))
       
     (ss/listen jb-skin :action (fn [_](cadejo.ui.util.lnf/skin-dialog)))
-             
+       
+    (ss/listen jb-about :action (fn [_]
+                                  (if (.isSelected jb-about)
+                                    (do 
+                                      (ss/config! txt-about :text cadejo.about/about-text)
+                                      (ss/show-card! pan-center :about))
+                                    (ss/show-card! pan-center :scene))))
+
+    ;; (ss/listen jb-about-dismiss :action (fn [_]
+    ;;                                       (ss/show-card! pan-center :scene)))
+      
     
     (ss/show! f)))
 
