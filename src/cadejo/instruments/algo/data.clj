@@ -4,6 +4,8 @@
                 op1 op2 op3 op4 op5 op6 op7 op8
                 echo reverb
                 save-program bank]])
+  (:use [cadejo.midi.program-bank
+         :only [program-count start-reserved]])
   (:require [cadejo.instruments.algo.genpatch]))
 
 (.register-function! bank 
@@ -2562,76 +2564,11 @@
                    :delay-2 1.000    :damp 0.00   :mix 0.00)
           (reverb  :size 0.50        :mix  0.00))))
 
-;; ------------------------------------------------------------ 126 Intial program 
+;; ------------------------------------------------------------ 120 - 127 random program 
 ;;
-(let [enable '[1 1 1   1 1 1   1 1]]
-  (save-program 126 "Default Program"
-    (algo (common  :amp  0.20 
-                   :lp 10000
-                   :port-time 0.00 
-                   :cc-volume-depth 0.0
-                   :env1->pitch 0.0000
-                   :lfo1->pitch 0.0000 
-                   :lfo2->pitch 0.0000)
-          (env1    0.000 0.100 0.100 0.000   1.00 1.00   :bias 0.00 :scale +1.00)
-          (vibrato :freq 7.00 :depth 0.00 :delay 0.00 :sens 0.03)
-          (lfo1    :freq 7.00  :cca->freq 0.00 :ccb->freq 0.00
-                   :env1  0.00 :pressure 0.00  :cca 0.00 :ccb 0.00
-                   :skew 0.50 :env1->skew 0.0)
-          (lfo2    :freq 7.00 :cca->freq 0.00 :ccb->freq 0.00
-                   :pressure 0.00 :lfo1 0.00 :cca 0.00 :ccb 0.00
-                   :skew 0.50  :lfo1->skew 0.00)
 
-          (op1 (nth enable 0)  :addsr   [0.00 0.10 0.10 0.00   1.00 1.00] 
-               :detune 1.000   :bias +0         :amp 1.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)
-          (op2 (nth enable 1)  :addsr   [0.00 0.10 0.10 0.00   1.00 1.00] :env-bias 0   :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000    
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0 
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00       :hp  50)
-          (op3 (nth enable 2) :addsr   [0.00 0.10 0.10 0.00    1.00 1.00] :env-bias 0  :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)     
-
-          (op4 (nth enable 3) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00]
-               :detune 1.000   :bias +0        :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00  :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)
-          (op5 (nth enable 4) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00] :env-bias 0  :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)
-          (op6 (nth enable 5) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00] :env-bias 0  :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00       :hp  50
-               :fb   0.00      :env->fb 0.00    :lfo1->fb 0.00 
-               :pressure->fb 0.00 :cca->fb 0.00 :ccb->fb 0.00)
-
-          (op7 (nth enable 6) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00]
-               :detune 1.000   :bias +0        :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00  :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00)
-          (op8 (nth enable 7) :addsr   [0.00 0.10 0.10 0.00  1.00 1.00] :env-bias 0  :env-scale +1
-               :detune 1.000   :bias +0         :amp 0.000
-               :left-key 60    :left-scale +0   :right-key 60 :right-scale +0
-               :velocity 0.00  :pressure 0.00   :cca 0.00    :ccb 0.00
-               :lfo1 0.00      :lfo2 0.00       :hp  50
-               :fb   0.00      :env->fb 0.00    :lfo2->fb 0.00 
-               :pressure->fb 0.00 :cca->fb 0.00 :ccb->fb 0.00)
-          (echo :delay-1 0.25       :fb 0.50
-                :delay-2 1.00       :damp 0.0   :mix 0.00)
-          (reverb :size 0.5 :mix 0.00))))
-
-;; ------------------------------------------------------------ 127 random program 
-;;
-(save-program 127 :random "Random" "Generate random ALGO program" nil)
+(let [count* (atom 0)]
+  (doseq [r (range start-reserved program-count)]
+  (let [name (format "Random %d" @count*)]
+    (save-program r :random name "Generate random patch" nil)
+    (swap! count* inc))))

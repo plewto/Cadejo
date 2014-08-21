@@ -1,6 +1,8 @@
 (ns cadejo.instruments.combo.data
   (:use [cadejo.instruments.combo.program 
          :only [bank combo save-program bypass low high band notch]])
+  (:use [cadejo.midi.program-bank
+         :only [program-count start-reserved]])
   (:require [cadejo.instruments.combo.genpatch]))
 
 (.register-function! bank
@@ -195,5 +197,11 @@
            :flanger [:rate 4.973 :depth 0.418 :fb +0.77 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program 63 :random "Random" "Generate random Combo program" nil)
-(save-program 127 :random "Random" "Generate random Combo program" nil)
+;; ------------------------------------------------------------ 120 - 127 random program 
+;;
+
+(let [count* (atom 0)]
+  (doseq [r (range start-reserved program-count)]
+  (let [name (format "Random %d" @count*)]
+    (save-program r :random name "Generate random patch" nil)
+    (swap! count* inc))))

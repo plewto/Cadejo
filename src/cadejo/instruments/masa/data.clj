@@ -1,5 +1,7 @@
 (ns cadejo.instruments.masa.data
   (:use [cadejo.instruments.masa.program :only [save-program masa bank]])
+  (:use [cadejo.midi.program-bank
+         :only [program-count start-reserved]])
   (:use [cadejo.instruments.masa.genpatch]))
 
 (.register-function! bank
@@ -343,4 +345,11 @@
       :reverb-mix 0.400
       :amp 0.20                      :pedal-sens 0.00))
 
-(save-program 127 :random "Random" "Generate random MASA program" nil)
+;; ------------------------------------------------------------ 120 - 127 random program 
+;;
+
+(let [count* (atom 0)]
+  (doseq [r (range start-reserved program-count)]
+  (let [name (format "Random %d" @count*)]
+    (save-program r :random name "Generate random patch" nil)
+    (swap! count* inc))))

@@ -25,12 +25,15 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [overtone.core :as ot]))
 
-;; (if (cadejo.config/load-gui)
-;;   (require 'cadejo.ui.midi.bank-editor))
-
 (def enable-trace false)
 
 (def program-count 128)
+(def reserved-slots 8)  ;; Number of program numbers reserved for 
+                        ;; functions. Reserved slots appear at end
+                        ;; of the bank
+
+(def start-reserved (- program-count reserved-slots))
+
 
 (declare program-bank)
 
@@ -500,7 +503,7 @@
                              (atom (str name))
                              (atom (str remarks))
                              (atom {})            ; function-registry
-                             (atom {})            ; programs
+                             (atom (sorted-map))  ; programs
                              (atom nil)           ; current-program data
                              (atom nil)           ; current-program number
                              (atom identity)      ; notification-hook
@@ -508,8 +511,6 @@
                              editor*)]
        (.set-notification-hook! bnk (fn [& args] nil))
        (.set-pp-hook! bnk (fn [& args] nil))
-       ;(if (cadejo.config/load-gui)
-       ;  (swap! editor* (fn [n](cadejo.ui.midi.bank-editor/bank-editor bnk))))
        bnk))
   ([format]
      (program-bank format 
