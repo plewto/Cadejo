@@ -1,6 +1,4 @@
-;; The cleverly named cadejo.midi.am-bank replaces the depreciated
-;; cadejo.midi.program and cadejo.midi.bank name-spaces.
-;;
+
 ;; program-bank is responsible for holding program or "patch" data for
 ;; specific Cadejo instruments. Features include:
 ;;
@@ -11,6 +9,8 @@
 ;;    MIDI program change. The function -MUST- be "registered" with the
 ;;    bank. This is in contrast to the previous behavior where any arbitrary
 ;;    function could be executed on program-change. 
+;;    The final 8 slots (program numbers 120-127) are now reserved for
+;;    'functional' programs.
 ;; 
 ;; C) The program slot also contains a list of parameter key/value pairs
 ;;    which serves as arguments to the selected function. The default
@@ -18,6 +18,7 @@
 ;;
 ;; D) Basic serialization for bank read and write now implemented. 
 ;;
+;; 
 
 (ns cadejo.midi.program-bank
   (:require [cadejo.config])
