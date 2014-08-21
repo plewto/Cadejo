@@ -50,9 +50,8 @@
           lfo3-bus (control-bus)
           filter-in-bus (audio-bus 2)
           filter-out-bus (audio-bus 2)
-          efx-in-bus (audio-bus 2)
-          bank cadejo.instruments.alias.program/bank]
-      ;(.set-pp-hook! bank cadejo.instruments.alias.pp/pp-alias)
+          efx-in-bus (audio-bus 2)]
+      (.set-pp-hook! bank cadejo.instruments.alias.pp/pp-alias)
       (.add-control-bus! performance :a a-bus)
       (.add-control-bus! performance :b b-bus)
       (.add-control-bus! performance :c c-bus)

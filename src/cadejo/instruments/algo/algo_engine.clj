@@ -509,7 +509,7 @@
           cc-echo-mix-bus (.control-bus performance cc-echo-mix)
           cc-reverb-mix-bus (.control-bus performance cc-reverb-mix)
           tone-bus (audio-bus 1)]
-      ;(.set-pp-hook! bank cadejo.instruments.algo.pp/pp-algo)
+      (.set-pp-hook! bank cadejo.instruments.algo.pp/pp-algo)
       (.set-bank! performance bank)
       (.add-control-bus! performance :vibrato-depth vibrato-depth-bus)
       (.add-control-bus! performance :cca cca-bus)
