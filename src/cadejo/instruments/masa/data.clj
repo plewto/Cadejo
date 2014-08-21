@@ -348,8 +348,17 @@
 ;; ------------------------------------------------------------ 120 - 127 random program 
 ;;
 
-(let [count* (atom 0)]
-  (doseq [r (range start-reserved program-count)]
-  (let [name (format "Random %d" @count*)]
-    (save-program r :random name "Generate random patch" nil)
-    (swap! count* inc))))
+;; (let [count* (atom 0)]
+;;   (doseq [r (range start-reserved program-count)]
+;;   (let [name (format "Random %d" @count*)]
+;;     (save-program r :random name "Generate random patch" nil)
+;;     (swap! count* inc))))
+
+(save-program 120 :random "Random" "Generate random patch" nil)
+(save-program 121 :random "Random-enhramonic" "Random patch with enharmonic gamut" '[:gamut enharmonic])
+(save-program 122 :random "Random-semi-harmonic" "Random patch with semi-harmonic gamut" '[:gamut semi-enharmonic])
+(save-program 123 :random "Random-prime" "Random pitch with prime harmonics" '[:gamut prime])
+(save-program 124 :random "Random-harmonic" "Random patch with harmonic gamut" '[:gamut harmonic])
+(save-program 125 :random "Random-odd" "Random patch with odd harmonics" '[:gamut odd])
+(save-program 126 :random "Random-B3" "Random patch with B3 gamut" '[:gamut b3])
+(save-program 127 :random "Random" "Generate random patch" nil)

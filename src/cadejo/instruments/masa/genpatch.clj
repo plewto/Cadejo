@@ -2,18 +2,19 @@
   (:require [cadejo.util.math :as math])
   (:use [cadejo.instruments.masa.program]))
         
-(defn random-masa-program []
-  (let [harmonic-type (rand-nth '[b3 b3 b3 b3
-                                  odd odd odd
-                                  harmonic
-                                  prime 
-                                  semi-enharmonic semi-enharmonic 
-                                  enharmonic])
+(defn random-masa-program [& {:keys [gamut]
+                              :or {gamut nil}}]
+  (let [harmonic-type (or gamut (rand-nth '[b3 b3 b3 b3
+                                            odd odd odd
+                                            harmonic
+                                            prime 
+                                            semi-enharmonic semi-enharmonic 
+                                            enharmonic]))
         rand-amp (fn [](int (rand 9)))
         rand-enharm (fn [] (+ 0.5 (rand 8)))
         rand-harm (fn [n] (math/coin 0.7 n (+ n (rand))))
         rand-one (fn [] (* (math/coin 0.5 -1 +1)(rand)))]
-    (println ";; Harmonics gamut " harmonic-type)
+    (println ";; MASA Harmonics gamut " harmonic-type)
     (masa 
      :harmonics (cond (= harmonic-type 'b3) b3
                       (= harmonic-type 'odd) odd

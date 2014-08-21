@@ -82,20 +82,38 @@
         (.append sb "\n")))
     (.toString sb)))
 
+;; (defn pp-masa 
+;;   ([pnum pname data remarks]
+;;      (println "DEBUG masa-pp executed")
+;;      (with-out-str
+;;        (let [dmap (cadejo.util.col/alist->map data)]
+;;          (printf ";; MASA ---------------------------------- %s %s\n"
+;;                  pnum pname)
+;;          (printf "(save-program %3s \"%s\" \"%s\"\n"
+;;                  pnum pname remarks)
+;;          (printf "%s(masa " pad1)
+;;          (print (str-harmonics dmap))
+;;          (print (str-registration dmap))
+;;          (print (str-pedals dmap))
+;;          (print (str-percussion dmap))
+;;          (print (str-common dmap))
+;;          (print (str-scanner dmap))
+;;          (print (str-reverb dmap))
+;;          (println "))")))))
+
 (defn pp-masa 
   ([pnum pname data remarks]
-     (with-out-str
-       (let [dmap (cadejo.util.col/alist->map data)]
-         (printf ";; MASA ---------------------------------- %s %s\n"
-                 pnum pname)
-         (printf "(save-program %3s \"%s\" \"%s\"\n"
-                 pnum pname remarks)
-         (printf "%s(masa " pad1)
-         (print (str-harmonics dmap))
-         (print (str-registration dmap))
-         (print (str-pedals dmap))
-         (print (str-percussion dmap))
-         (print (str-common dmap))
-         (print (str-scanner dmap))
-         (print (str-reverb dmap))
-         (println "))")))))
+     (let [dmap (cadejo.util.col/alist->map data)]
+       (println "MASA-pp executed " dmap) ;; DEBUG
+       (str (format ";; MASA -------------------------------------- %s %s\n" pnum pname)
+            (format "(save-program %3d \"%s\" \"%s\"\n" pnum pname remarks)
+            (format "%s(masa " pad1)
+            (str-harmonics dmap)
+            (str-registration dmap)
+            (str-pedals dmap)
+            (str-percussion dmap)
+            (str-common dmap)
+            (str-scanner dmap)
+            (str-reverb dmap)
+            "))\n"))))
+  
