@@ -4,23 +4,23 @@
         
 (defn random-masa-program [& {:keys [gamut]
                               :or {gamut nil}}]
-  (let [harmonic-type (or gamut (rand-nth '[b3 b3 b3 b3
-                                            odd odd odd
-                                            harmonic
-                                            prime 
-                                            semi-enharmonic semi-enharmonic 
-                                            enharmonic]))
+  (let [harmonic-type (or gamut (rand-nth '[:b3 :b3 :b3 :b3
+                                            :odd :odd :odd
+                                            :harmonic
+                                            :prime 
+                                            :semi-enharmonic :semi-enharmonic 
+                                            :enharmonic]))
         rand-amp (fn [](int (rand 9)))
         rand-enharm (fn [] (+ 0.5 (rand 8)))
         rand-harm (fn [n] (math/coin 0.7 n (+ n (rand))))
         rand-one (fn [] (* (math/coin 0.5 -1 +1)(rand)))]
     (println ";; MASA Harmonics gamut " harmonic-type)
     (masa 
-     :harmonics (cond (= harmonic-type 'b3) b3
-                      (= harmonic-type 'odd) odd
-                      (= harmonic-type 'harmonic) harmonic
-                      (= harmonic-type 'prime) prime
-                      (= harmonic-type 'semi-enharmonic)
+     :harmonics (cond (= harmonic-type :b3) b3
+                      (= harmonic-type :odd) odd
+                      (= harmonic-type :harmonic) harmonic
+                      (= harmonic-type :prime) prime
+                      (= harmonic-type :semi-enharmonic)
                       (sort [(rand-harm 1)(rand-harm 2)(rand-harm 3)
                              (rand-harm 4)(rand-harm 5)(rand-harm 6)
                              (rand-harm 7)(rand-harm 8)(rand-harm 9)])
