@@ -58,6 +58,7 @@
 
       (get-button [this]
         (let [jb (ss/button :text label)]
+          (.setEnabled jb false)
           (swap! buttons* (fn [n](conj n jb)))
           jb)))))
                 
