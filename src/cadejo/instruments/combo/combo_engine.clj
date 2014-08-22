@@ -2,6 +2,7 @@
 
 (ns cadejo.instruments.combo.combo-engine
   (:use [overtone.core])
+  (:use [cadejo.util.trace])
   (:require [cadejo.modules.qugen :as qu])
   (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.combo.program])
@@ -127,16 +128,21 @@
     (out:ar out-bus (* gain reverb))))
 
 (defn ^:private create-performance [chanobj id keymode cc1]
+  (trace-enter "combo.create-performance")
   (let [bank (.clone cadejo.instruments.combo.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode 
                                                          bank combo-descriptor
                                                          [:cc1 cc1 :linear 0.0])]
+    (trace-mark "post let 100")
     (.put-property! performance :instrument-type :combo)
+    (.set-parent-performance! bank performance)
     (let [vibrato-bus (control-bus)
           tone-bus (audio-bus)]
+      (trace-mark "post-let 200")
       (.set-pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
       (.add-control-bus! performance :vibrato vibrato-bus)
       (.add-audio-bus! performance :tone tone-bus)
+      (trace-exit "combo.create-performance")
       performance)))
 
 ;; cc1 - vibrato
@@ -171,6 +177,7 @@
                      :or {cc1 1
                           voice-count 8
                           main-out 0}}]
+     (trace-enter "combo-poly")
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :Combo voice-count)
            performance (create-performance chanobj id keymode cc1)
@@ -191,6 +198,7 @@
          (.add-synth! performance :lfo lfo)
          (.add-synth! performance :efx efx)
          (.reset chanobj)
+         (trace-exit "combo-poly")
          performance))))
 
 (.add-constructor! combo-descriptor :mono combo-mono)

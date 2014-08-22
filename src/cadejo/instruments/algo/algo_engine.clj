@@ -500,6 +500,7 @@
                                                          [:ccc cc-echo-mix :linear 1.0]
                                                          [:ccd cc-reverb-mix :linear 1.0])]
     (.put-property! performance :instrument-type :algo)
+    (.set-parent-performance! bank performance)
     (let [bend-bus (.control-bus performance :bend)
           pressure-bus (.control-bus performance :pressure)
           vibrato-depth-bus (.control-bus performance cc-vibrato)

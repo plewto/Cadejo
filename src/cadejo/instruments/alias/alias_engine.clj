@@ -34,6 +34,7 @@
                                                          [:cc7 cc-volume :linear 1.0])]
     (.put-property! performance :instrument-type :alias)
     (.add-controller! performance :cc7 cc-volume :linear 1.0)
+    (.set-parent-performance! bank performance)
     (let [a-bus (control-bus)
           b-bus (control-bus)
           c-bus (control-bus)

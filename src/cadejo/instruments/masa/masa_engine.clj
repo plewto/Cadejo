@@ -175,6 +175,7 @@
                                                          [:cca cc-scanner :linear 1.0]
                                                          [:ccb cc-reverb :linear 1.0])]
     (.put-property! performance :instrument-type :masa)
+    (.set-parent-performance! bank performance)
     (let [bend-bus (.control-bus performance :bend)
           cc-vibrato-bus (.control-bus performance cc-vibrato)
           cc-pedal-bus (.control-bus performance cc-pedal)
