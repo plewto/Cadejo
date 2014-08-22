@@ -104,7 +104,6 @@
 (defn pp-masa 
   ([pnum pname data remarks]
      (let [dmap (cadejo.util.col/alist->map data)]
-       (println "MASA-pp executed " dmap) ;; DEBUG
        (str (format ";; MASA -------------------------------------- %s %s\n" pnum pname)
             (format "(save-program %3d \"%s\" \"%s\"\n" pnum pname remarks)
             (format "%s(masa " pad1)
