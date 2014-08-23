@@ -10,7 +10,6 @@
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout
            java.awt.event.WindowListener))
-          
 
 (defprotocol PerformanceEditor
 
@@ -48,8 +47,7 @@
         pan-center (.widget basic-ed :pan-center)
         descriptor (.get-property performance :descriptor)
         available-controllers (.controllers descriptor)
-        cc-panels* (atom [])
-        ]
+        cc-panels* (atom [])]
     (doseq [i (range 0 (count available-controllers) 4)]
       (let [cced (cadejo.ui.midi.cceditor-tab/cceditor-tab descriptor i)]
         (.addTab pan-tabs (format "CC\\%d" i)(.widget cced :pan-main))
@@ -66,10 +64,10 @@
                  (node [this] (.node basic-ed))
                 
                  (status! [this msg]
-                   (.status basic-ed msg))
+                   (.status! basic-ed msg))
                  
                  (warning! [this msg]
-                   (.warning basic-ed msg))
+                   (.warning! basic-ed msg))
                  
                  (frame [this]
                    (.widget this :frame))
@@ -85,8 +83,10 @@
                    (.sync-ui! bank-ed)
                    (.sync-ui! properties-editor)
                    (doseq [cced @cc-panels*]
-                     (.sync-ui! cced))))]
+                     (.sync-ui! cced)) ))]
+                    
       (.set-parent-editor! properties-editor ped)
+      (.set-parent-editor! bank-ed ped)
       (doseq [cced @cc-panels*]
         (.set-parent-editor! cced ped))
       (.add pan-center pan-tabs BorderLayout/CENTER)

@@ -188,7 +188,7 @@
 
 (defprotocol ChannelEditor
 
-   (widgets 
+  (widgets 
     [this])
 
   (widget
@@ -196,7 +196,7 @@
   
   (node 
     [this])
-
+  
   (status!
     [this msg])
 

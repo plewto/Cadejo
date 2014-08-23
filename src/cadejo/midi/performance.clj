@@ -435,8 +435,10 @@
               (.handle-event controller-suite event)
 
               (= cmd :program-change)
-              (let [s (concat (.synths this)(.voices this))]
-                (.handle-event @bank* event s))
+              (let [s (concat (.synths this)(.voices this))
+                    ped (.get-editor this)]
+                (.handle-event @bank* event s)
+                (if ped (.sync-ui! ped)))
 
               :default
               ;; Should never see this!
