@@ -171,7 +171,7 @@
 
     (.config-path! cnfig (let [p (System/getProperties)
                                h (.getProperty p "user.home")]
-                           (path/join h ".cadejo")))
+                           (path/join h "cadejoConfig")))
     cnfig))
 
 
