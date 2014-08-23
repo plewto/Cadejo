@@ -140,8 +140,8 @@
         jb-init (button :text "Init")
         jb-open (button :text "Open")
         jb-save (button :text "Save")
-        jb-undo (.button undo-stack)
-        jb-redo (.button redo-stack)
+        jb-undo (.get-button undo-stack)
+        jb-redo (.get-button redo-stack)
         pan-toolbar (grid-panel :rows 1
                               :items [jb-init jb-open jb-save
                                       jb-undo jb-redo])
