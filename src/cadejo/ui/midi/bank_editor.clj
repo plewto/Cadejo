@@ -57,6 +57,17 @@
   (sync-ui!
     [this])
 
+  (enable! 
+    [this flag])
+
+  (instrument-editor!
+    [this cfn]
+    "Set instrument editor")
+
+  (instrument-editor
+    [this]
+    "Return instrument editor or nil")
+
 )
   
 
@@ -76,6 +87,8 @@
 
 (defn bank-editor [bnk]
   (let [parent* (atom nil)
+        enabled* (atom true)
+        instrument-editor* (atom nil)
         enable-list-selection-listener* (atom true)
         undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo")
         redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo")
@@ -89,14 +102,14 @@
         jb-transmit (ss/button :text "Transmit")
         jb-new (ss/button :text "New")
         jb-edit (ss/button :text "Edit")
-        tb-store (ss/toggle :text "Store")
+        ;tb-store (ss/toggle :text "Store")
         jb-help (ss/button :text "Help")
         tbar1 (ss/grid-panel :rows 1
                              :items [jb-init jb-name jb-open jb-save
                                      jb-undo jb-redo jb-help])
 
         tbar2 (ss/grid-panel :rows 1
-                             :items [jb-transmit jb-new jb-edit tb-store])
+                             :items [jb-transmit jb-new jb-edit])
         lab-name (ss/label :text " "
                            :border (factory/bevel))
         lab-filename (ss/label :text (cadejo.config/config-path)
@@ -121,11 +134,26 @@
                      (fn [f] 
                        (path/has-extension? (.getAbsolutePath f) file-extension)))
 
-        widget-map {:lab-name lab-name
+        create-instrument-editor (fn []
+                                   (let [performance (.node @parent*)
+                                         itype (.get-property performance :instrument-type)
+                                         descriptor (.get-property performance :descriptor)
+                                         ied (.create-editor descriptor performance)]
+                                     (reset! instrument-editor* ied)))
+
+        widget-map {:jb-init jb-init
+                    :jb-name jb-name
+                    :jb-open jb-open
+                    :jb-save jb-save
+                    :jb-transmit jb-transmit
+                    :jb-new jb-new
+                    :jb-edit jb-edit
+                    :jb-help jb-help
+                    :lst-programs lst-programs
+                    :lab-name lab-name
                     :lab-filename lab-filename
                     :list-programs lst-programs
-                    :pan-main pan-main
-                    }
+                    :pan-main pan-main}
         bank-ed (reify BankEditor
                   
                   (widgets [this] widget-map)
@@ -173,14 +201,29 @@
                     (.warning! @parent* msg))
 
                   (sync-ui! [this]
-                    (let [plst (.widget this :list-programs)
-                          pnum (or (.current-program-number bnk) 0)]
-                      (reset! enable-list-selection-listener* false)
-                      (ss/config! (.widget this :lab-name) :text (.bank-name bnk))
-                      (ss/config! plst :model (create-program-list bnk))
-                      (.setSelectedIndex plst pnum)
-                      (.ensureIndexIsVisible plst pnum)
-                      (reset! enable-list-selection-listener* true)))
+                    (if @enabled*
+                      (let [plst (.widget this :list-programs)
+                            pnum (or (.current-program-number bnk) 0)]
+                        (reset! enable-list-selection-listener* false)
+                        (ss/config! (.widget this :lab-name) :text (.bank-name bnk))
+                        (ss/config! plst :model (create-program-list bnk))
+                        (.setSelectedIndex plst pnum)
+                        (.ensureIndexIsVisible plst pnum)
+                        (reset! enable-list-selection-listener* true))))
+
+                  (enable! [this flag]
+                    (reset! enbaled* flag)
+                    (doseq [w (map second (seq widget-map))]
+                      (.setEnabled w flag)))
+
+                  (instrument-editor! [this ied]
+                    (reset! instrument-editor* ied))
+
+                  (instrument-editor [this]
+                    (or @instrument-editor*
+                        (do (.warning! this "Instrument editor not defined")
+                            nil)))
+
                   )]
     (.addListSelectionListener 
      lst-programs
@@ -193,7 +236,7 @@
           @enable-list-selection-listener* ; program change
           (let [pnum (.getSelectedIndex lst-programs)
                 reserved (>= pnum start-reserved)]
-            (doseq [jc [jb-name jb-new jb-edit tb-store]]
+            (doseq [jc [jb-name jb-new jb-edit]]
                     (.setEnabled jc (not reserved)))
             (.program-change bnk pnum))
 
@@ -301,26 +344,6 @@
                             :success-fn success
                             :cancel-fn cancel)] )))
 
-    ;; (ss/listen jb-undo :action
-    ;;            (fn [_]
-    ;;              (let [src (.pop-state undo-stack)]
-    ;;                (if src
-    ;;                  (do (.push-redo-state! this  (first src))
-    ;;                      (.copy-state! bnk (second src))
-    ;;                      (.sync-ui! this)
-    ;;                      (.status! this (format "Undo %s" (first src))))
-    ;;                  (.warning! this "Nothing to Undo")))))
-
-    ;; (ss/listen jb-redo :action
-    ;;            (fn [_]
-    ;;              (let [src (.pop-state redo-stack)]
-    ;;                (if src
-    ;;                  (do (.push-undo-state! bank-ed (first src))
-    ;;                      (.copy-state! bnk (second src))
-    ;;                      (.sync-ui! bank-ed)
-    ;;                      (.status! bank-ed (format "Redo %s" (first src))))
-    ;;                  (.warning! bank-ed "Nothing to Redo")))))
-
     (ss/listen jb-undo :action (fn [_](.undo! bank-ed)))
 
     (ss/listen jb-redo :action (fn [_](.redo! bank-ed)))
@@ -345,10 +368,24 @@
                        (.status! bank-ed (format "New program %d" pnum)))
                      (do
                        (.warning! bank-ed (format "Can not edit reserved slot %s" pnum)))))))
-
+  
   
     (ss/listen jb-edit :action
                (fn [_]
+                 (trace-enter "jb-edit.action")
+                 (let [ied @instrument-editor*]
+                   (if (not ied)
+                     (create-instrument-editor)))
+                 (let [ied @instrument-editor*]
+                   (if ied
+                     (do 
+                       (let [f (.widget ied :frame)]
+                         (.enable! bank-ed false)
+                         (ss/show! f)
+                         (.toFront f)))
+                     (.warning! bank-ed "Editor not defined")))
+                 (trace-exit "jb-edit.action")
                  ))
-
+                   
+    
     bank-ed))
