@@ -1,11 +1,9 @@
-(ns cadejo.ui.instruments.instrument-editor
+(ns cadejo.ui.instruments.instrument-editor-framework
   (:use [cadejo.util.trace])
   (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.path :as path])
-
-  
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.overwrite-warning])
   (:require [cadejo.ui.util.undo-stack])
@@ -16,41 +14,13 @@
            java.io.File
            javax.swing.JFileChooser
            javax.swing.Box
-           java.awt.event.FocusListener
-           
-           )
-            
-  )
-
+           java.awt.event.FocusListener))
 
 (defn- third [col] (nth col 2))
 
 (def all-file-filter (seesaw.chooser/file-filter
                       "All Files"
                       (fn [_] true)))
-
-;; (defprotocol InstrumentEditor
-
-;;   (widgets
-;;     [this])
-
-;;   (widget
-;;     [this key])
-
-;;   (status!
-;;     [this msg])
-
-;;   (warning!
-;;     [this msg])
-
-;;   (push-undo-state!
-;;     [this])
-
-;;   (push-redo-state!
-;;     [this])
-
-;;   (sync-ui!
-;;     [this]))
 
 
 (defprotocol InstrumentEditorFramework
@@ -124,7 +94,7 @@
       nil)))
 
 
-(defn instrument-editor [performance]
+(defn instrument-editor-framework [performance]
   (let [client-editor* (atom nil)
         undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo")
         redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo")
@@ -255,8 +225,6 @@
                                              (.push-undo-state! ied "Remarks Change")
                                              (swap! program* (fn [n](assoc n :remarks remtext)))
                                              (.status! ied "Remarks Change")))))
-                                             
-
 
         (ss/listen jb-save :action
                    (fn [_]
@@ -323,7 +291,6 @@
                        (reset! data* (third udframe))
                        (.sync-ui! ied)
                        (.status! ied (format "Undo %s" (first udframe))))))
-
 
         (ss/listen jb-redo :action
                    (fn [_]
