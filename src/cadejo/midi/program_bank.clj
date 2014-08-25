@@ -390,7 +390,7 @@
         (spit filename (pr-str rec))
         filename)
       (catch java.io.FileNotFoundException e
-        (umsg/warning "File Not Found Exception"
+        (umsg/warning "FileNotFoundException"
                       (format "write-bank  bank format  %s" (.data-format this))
                       (format "filename \"%s\"" filename))
         nil)))
@@ -421,7 +421,7 @@
                                (:remarks pobj))))
             this)))
       (catch java.io.FileNotFoundException e
-        (umsg/warning "File Not Found Exception"
+        (umsg/warning "FileNotFoundException"
                       (format "read-bank!  bank format  %s" (.data-format this))
                       (format "filename \"%s\"" filename))
         nil)))
