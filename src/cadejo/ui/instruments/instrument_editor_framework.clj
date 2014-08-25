@@ -324,6 +324,16 @@
                      (.sync-ui! ied)
                      (.status! ied "Revert to original")))
 
+        (ss/listen jb-init :action
+                   (fn [_]
+                     (.push-undo-state! ied "Initialize Program")
+                     (let [prog (.initial-program descriptor)]
+                       (reset! program* prog)
+                       (reset! data* (ucol/alist->map (:args prog)))
+                       (.sync-ui! ied)
+                       (.status! ied "Initialized Program"))))
+
+
         (ss/listen jb-store :action
                    (fn [_]
                      (let [banked (.get-property performance :bank-editor)

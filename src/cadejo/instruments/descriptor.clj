@@ -84,6 +84,14 @@
     "Create and return instrument editor GUI.
      Returns nil if editor-constructor has not been set")
 
+  (initial-program!
+    [this pdata]
+    "Sets initial program patch data")
+
+  (initial-program 
+    [this]
+    "Returns map for initial instrument program")
+
   )
                        
 
@@ -92,6 +100,10 @@
   (let [controllers* (atom (sorted-map))
         constructors* (atom (sorted-map))
         editor-constructor* (atom nil)
+        iprogram* (atom {:function-id nil
+                         :name "Init"
+                         :remarks "Initial program"
+                         :args []})
         dobj (reify InstrumentDescriptor
 
                (instrument-name [this] 
@@ -145,6 +157,14 @@
                      (umsg/warning (format "%s editor is not defined" iname)))
                    (trace-exit "descriptor.create-editor")
                    (cfn performance)))
+
+               (initial-program! [this pdata]
+                 (swap! iprogram* (fn [n](assoc n :args pdata))))
+
+               (initial-program [this]
+                 @iprogram*)
+
+
                )]
     dobj))
 

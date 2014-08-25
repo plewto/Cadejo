@@ -16,6 +16,7 @@
 (def combo-descriptor
   (let [d (cadejo.instruments.descriptor/instrument-descriptor :combo "Simple organ")]
     (.add-controller! d :cc1 "Vibrato" 1)
+    (.initial-program! d (cadejo.instruments.combo.program/combo))
     d))
 
 (.set-editor-constructor! combo-descriptor cadejo.instruments.combo.combo-editor/combo-editor)
