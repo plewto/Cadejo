@@ -11,7 +11,6 @@
   (:require [seesaw.chooser])
   (:import javax.swing.event.ListSelectionListener
            javax.swing.event.CaretListener
-           javax.swing.JFileChooser
            java.io.File
            )
   )
@@ -212,7 +211,7 @@
                         (reset! enable-list-selection-listener* true))))
 
                   (enable! [this flag]
-                    (reset! enbaled* flag)
+                    (reset! enabled* flag)
                     (doseq [w (map second (seq widget-map))]
                       (.setEnabled w flag)))
 

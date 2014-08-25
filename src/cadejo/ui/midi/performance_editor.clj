@@ -42,8 +42,7 @@
         bank-ed (cadejo.ui.midi.bank-editor/bank-editor (.bank performance))
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         pan-tabs (ss/tabbed-panel :tabs [{:title "Bank" :content (.widget bank-ed :pan-main)}
-                                         {:title "MIDI" :content (.widget properties-editor :pan-main)}
-                                         ])
+                                         {:title "MIDI" :content (.widget properties-editor :pan-main)}])
         pan-center (.widget basic-ed :pan-center)
         descriptor (.get-property performance :descriptor)
         available-controllers (.controllers descriptor)
@@ -52,7 +51,6 @@
       (let [cced (cadejo.ui.midi.cceditor-tab/cceditor-tab descriptor i)]
         (.addTab pan-tabs (format "CC\\%d" i)(.widget cced :pan-main))
         (swap! cc-panels* (fn [n](conj n cced)))))
-
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
     (let [ped (reify PerformanceEditor
                  (widgets [this] (.widgets basic-ed))
@@ -84,9 +82,9 @@
                    (.sync-ui! properties-editor)
                    (doseq [cced @cc-panels*]
                      (.sync-ui! cced)) ))]
-                    
       (.set-parent-editor! properties-editor ped)
       (.set-parent-editor! bank-ed ped)
+      (.put-property! performance :bank-editor bank-ed)
       (doseq [cced @cc-panels*]
         (.set-parent-editor! cced ped))
       (.add pan-center pan-tabs BorderLayout/CENTER)

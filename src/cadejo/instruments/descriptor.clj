@@ -73,13 +73,25 @@
                                  ignored by mono mode, default 8
  
                   All other options relate to MIDI cc assignments 
-                  Use controllers method to discover whats available."))
+                  Use controllers method to discover whats available.")
+
+  (set-editor-constructor! 
+    [this cfn]
+    "Set constructor function for instrument editor GUI")
+  
+  (create-editor 
+    [this performance]
+    "Create and return instrument editor GUI.
+     Returns nil if editor-constructor has not been set")
+
+  )
                        
 
 
 (defn instrument-descriptor [iname about-text]
   (let [controllers* (atom (sorted-map))
         constructors* (atom (sorted-map))
+        editor-constructor* (atom nil)
         dobj (reify InstrumentDescriptor
 
                (instrument-name [this] 
@@ -120,6 +132,19 @@
                      (let [p (apply cfn args)]
                        p)
                      (umsg/warning (format "%s does not support %s mode"
-                                           iname mode))))) )]
+                                           iname mode))))) 
+
+               (set-editor-constructor! [this cfn]
+                 (reset! editor-constructor* cfn))
+
+               (create-editor [this performance]
+                 (trace-enter "descriptor.create-editor")
+                 (let [cfn @editor-constructor*]
+                   (if cfn 
+                     (cfn performance)
+                     (umsg/warning (format "%s editor is not defined" iname)))
+                   (trace-exit "descriptor.create-editor")
+                   (cfn performance)))
+               )]
     dobj))
 

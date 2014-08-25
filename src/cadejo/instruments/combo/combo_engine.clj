@@ -8,6 +8,7 @@
   (:require [cadejo.instruments.combo.program])
   (:require [cadejo.instruments.combo.pp])
   (:require [cadejo.instruments.combo.data])
+  (:require [cadejo.instruments.combo.combo-editor])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance]))
@@ -16,6 +17,8 @@
   (let [d (cadejo.instruments.descriptor/instrument-descriptor :combo "Simple organ")]
     (.add-controller! d :cc1 "Vibrato" 1)
     d))
+
+(.set-editor-constructor! combo-descriptor cadejo.instruments.combo.combo-editor/combo-editor)
 
 (defsynth LFO [vibrato-freq 5.00
                vibrato-sens 0.01
