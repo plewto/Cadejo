@@ -52,6 +52,12 @@
     [this flag]
     "Sets overwrite warning status")
 
+  (warn-on-unsaved-data
+    [this])
+
+  (warn-on-unsaved-data!
+    [this flag])
+
   (enable-tooltips
     [this]
     "Returns Boolean indicating that GUI tooltips are to be used.
@@ -91,6 +97,7 @@
   (create-instrument 
     [this iname mode args]
     "Create instance of instrument and link it into a Cadejo process tree.")
+
   )
 
 
@@ -99,6 +106,7 @@
         load-gui* (atom false)
         max-undo-count* (atom 10)
         overwrite-warn* (atom true)
+        unsaved-warn* (atom true)
         enable-tooltips* (atom true)
         config-path* (atom nil)
         instruments* (atom nil)
@@ -134,6 +142,12 @@
 
                 (warn-on-file-overwrite! [this flag]
                   (reset! overwrite-warn* flag))
+
+                (warn-on-unsaved-data [this]
+                  @unsaved-warn*)
+
+                (warn-on-unsaved-data! [this flag]
+                  (reset! unsaved-warn* flag))
 
                 (enable-tooltips [this]
                   @enable-tooltips*)
@@ -214,6 +228,12 @@
 
 (defn warn-on-file-overwrite! [flag]
   (.warn-on-file-overwrite! @current-config* flag))
+
+(defn warn-on-unsaved-data []
+  (.warn-on-unsaved-data @current-config*))
+
+(defn warn-on-unsaved-data! [flag]
+  (.warn-on-unsaved-data! @current-config* flag))
 
 (defn enable-tooltips []
   (.enable-tooltips @current-config*))
