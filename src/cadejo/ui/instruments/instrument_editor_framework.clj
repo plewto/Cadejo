@@ -168,7 +168,8 @@
                         :on-close :nothing
                         :size [600 :by 300]
                         :icon (.logo descriptor :tiny))
-        widget-map {:lab-name lab-name
+        widget-map {:jb-help jb-help
+                    :lab-name lab-name
                     :pan-main pan-main
                     :frame frame}
         ied (reify InstrumentEditorFramework
