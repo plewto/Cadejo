@@ -65,7 +65,7 @@
        b)))
   
 ;; Return pad style filter selection button
-;; ftype - filter type one of :bp :br :lp :hp  
+;; ftype - filter type one of :bp :br :lp :hp :bypass 
 ;; n - button style 1,2,...
 ;;
 (defn filter-button 
