@@ -137,28 +137,27 @@
         pan-common (let [pan-name (ss/vertical-panel :items [txt-name]
                                                      :border (factory/title "Name"))
                          pan-remarks (ss/vertical-panel :items [(ss/scrollable txt-remarks)]
-                                                        :border (factory/title "Remarks"))
-                         pan-south (ss/grid-panel :rows 1
-                                                  :items [jb-revert jb-init 
-                                                          (Box/createHorizontalStrut 1)
-                                                          spin-program jb-store jb-cancel]
-                                                  :border (factory/padding))]
+                                                        :border (factory/title "Remarks"))]
                      (ss/border-panel :north pan-name
-                                      :center pan-remarks
-                                      :south pan-south))
+                                      :center pan-remarks))
         pan-tabs (ss/tabbed-panel
                   :tabs [{:title "Common" :content pan-common}]
                   :border (factory/padding))
-
         lab-status (ss/label :text ""
                              :border (factory/bevel))
         lab-id (ss/label :text (format "%s program [%3d]" (name id) pnum)
                          :border (factory/bevel))
         lab-name (ss/label :text (format "name '%s'" (name (:name @program*)))
                            :border (factory/bevel))
-        pan-south (ss/grid-panel :rows 1
+        pan-south1 (ss/grid-panel :rows 1
+                                  :items [jb-revert jb-init
+                                          (Box/createHorizontalStrut 1)
+                                          spin-program jb-store jb-cancel]
+                                  :border (factory/padding))
+        pan-south2 (ss/grid-panel :rows 1
                                  :items [lab-status lab-name lab-id]
                                  :border (factory/padding))
+        pan-south (ss/vertical-panel :items [pan-south1 pan-south2])
         pan-main (ss/border-panel
                   :north tbar1
                   :center pan-tabs
@@ -207,8 +206,7 @@
                 (ss/config! txt-remarks :text (str (:remarks @program*)))
                 (ss/config! lab-name :text (format "Name %s" (:name @program*)))
                 (if @client-editor*
-                  (.sync-ui! @client-editor*)))
-               )]
+                  (.sync-ui! @client-editor*))) )]
 
         (.addFocusListener txt-name (proxy [FocusListener][]
                                       (focusGained [_])
@@ -333,7 +331,6 @@
                        (.sync-ui! ied)
                        (.status! ied "Initialized Program"))))
 
-
         (ss/listen jb-store :action
                    (fn [_]
                      (let [banked (.get-property performance :bank-editor)
@@ -382,5 +379,9 @@
                                       :no-fn no-fn)]
                              (ss/pack! dia)
                              (ss/show! dia)))) )))
+
+        (ss/listen jb-help :action ;; DEBUG
+                   (fn [_]
+                     (println (ss/config frame :size))))
                                       
         ied))
