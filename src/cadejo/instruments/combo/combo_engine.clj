@@ -47,11 +47,13 @@
 (defcgen pulse-width [wave]
   (:ir (+ (* -0.4 (qu/clamp wave 0 1)) 0.5)))
 
-;; (0.0 --> 0)
-;; (1.0 --> 1.5)
+;; (0.0 --> 0.0)
+;; (1.0 --> 4.0)
 ;;
 (defcgen feedback [wave]
-  (:ir (* 1.5 (qu/clamp wave 0 1))))
+  (:ir (* 4 (qu/clamp wave 0 1))))
+
+
 
 (defsynth ToneBlock [freq 100
                      gate 0
@@ -63,19 +65,21 @@
                      wave3 0.00
                      amp4  1.00
                      wave4 0.00
-                     chorus 0.00        ; range 0.0-1.0 --> detune
+                     chorus 0.00        ; range 0.0-1.0 --> detune (1 2 3 4) --> (1 3 4 5)
                      filter 8.00
                      filter-type lp-filter
                      bend-bus 0
                      vibrato-bus 0
                      out-bus 0]
   (let [vibrato (in:kr vibrato-bus) 
-        dt (+ 1 (* 1/200 (qu/clamp chorus 0.0 1.0)))
+        dt2 (+ 1 (* 1/2 chorus))
+        dt3 (+ 1 (* 1/3 chorus))
+        dt4 (+ 1 (* 1/4 chorus))
         f0 (* freq (in:kr bend-bus))
         f1 (* f0 vibrato)
-        f2 (* 2 dt f0 vibrato)
-        f3 (* 3 dt dt f0 vibrato)
-        f4 (* 4 dt dt dt f0 vibrato)
+        f2 (* 2 dt2 f0 vibrato)
+        f3 (* 3 dt3 f0 vibrato)
+        f4 (* 4 dt4 f0 vibrato)
         w1 (* (amp-scale amp1)
               (pulse:ar f1 (pulse-width wave1)))
         w2 (* (amp-scale amp2)
