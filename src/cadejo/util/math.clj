@@ -32,9 +32,14 @@
   "Ratio of single cent."
   (expt 2.0 1/1200))
 
+(defn amp->db [amp]
+  (* 20 (logn amp 10)))
+
+(defn db->amp [db]
+  (Math/pow 10 (/ db 20.0)))
+
 (defn clamp [n mn mx]
   (max (min n mx) mn))
-
 
 (defn interpolate [a b w]
   (+ (* a w)
