@@ -72,7 +72,7 @@
     [this]
     "returns flag indicating if listeners should be active")
 
-  (get-value 
+  (get-value
     [this]
     "Returns the current mapped value of the slider.")
     

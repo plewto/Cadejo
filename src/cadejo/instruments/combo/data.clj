@@ -10,11 +10,11 @@
                      cadejo.instruments.combo.genpatch/random-combo-program)
 
 (save-program 0  "Ngaire" "Remarks for program 0"
-    (combo :a1      0.174  :w1  0.209
-           :a2      1.000  :w2 0.624
-           :a3      0.339  :w3 0.990
-           :a4      0.053  :w4 0.499
-           :chorus  0.508
+    (combo :a1      1.000  :w1 0.000  ; 0.174 0.209
+           :a2      0.000  :w2 0.624  ; 1.000
+           :a3      0.000  :w3 0.990  ; 0.339
+           :a4      0.000  :w4 0.499  ; 0.053
+           :chorus  0.000             ; 0.508
            :vibrato [:freq 6.419 :sens 0.010]
            :filter  [:freq  8    :type    low]
            :flanger [:rate 3.639 :depth 0.193 :fb +0.00 :mix 0.000]
