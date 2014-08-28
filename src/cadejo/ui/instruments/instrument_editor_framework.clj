@@ -52,6 +52,11 @@
   (client-editor
     [this])
 
+  (set-data! 
+    [this param value]
+    "Set data parameter parm to value 
+     Update synths")
+
   (sync-ui!
     [this]) )
 
@@ -200,6 +205,18 @@
 
               (client-editor [this]
                 @client-editor*)
+
+              (set-data! [this param value]
+                (.push-undo-state! this "Parameter Change")
+                (swap! data* (fn [n](assoc n param value)))
+                (let [s (.synths performance)
+                      d (ucol/map->alist @data*)
+                      pp (.pp-hook bank)]
+                  (apply ot/ctl (cons s d))
+                  (if pp
+                    (let [data (ucol/map->alist @data*)]
+                      (println (pp -1 "" data ""))))
+                  (.sync-ui! @client-editor*)))
 
               (sync-ui! [this]
                 (ss/config! txt-name :text (str (:name @program*)))

@@ -26,7 +26,10 @@
   
   (push-redo-state!
     [this msg])
-  
+
+  (set-data!
+    [this param value])
+
   (sync-ui!
     [this])
 )
