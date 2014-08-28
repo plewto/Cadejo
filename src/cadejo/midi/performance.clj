@@ -119,6 +119,11 @@
   (voices
     [this]
     "Returns a list of all voices for this performance.")
+
+  (ctl
+    [this param value]
+    "Apply overtone.core/ctl to all synths and voices")
+
     
   (keymode 
     [this]
@@ -364,6 +369,12 @@
 
     (voices [this] @voices*)
       
+    (ctl [this param value]
+      (let [s (.synths this)
+            v (.voices this)
+            a (flatten (merge s v))]
+        (ot/ctl a param value)))
+
     (keymode [this]
       (umsg/warning "Performance.keymode not implemented")
       nil)
