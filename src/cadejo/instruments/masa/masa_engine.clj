@@ -12,8 +12,10 @@
   (:require [cadejo.instruments.masa.data])
   (:require [cadejo.instruments.masa.efx :as efx]))
 
+(def clipboard* (atom nil))
+
 (def masa-descriptor
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :masa "Organ")]
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :masa "Organ" clipboard*)]
     (.add-controller! d :cc1 "Vibrato" 1)
     (.add-controller! d :cc4 "Pedal" 4)
     (.add-controller! d :cc7 "Volume" 7)

@@ -20,8 +20,10 @@
   (:require [cadejo.modules.qugen :as qu])
   (:use [overtone.core]))
 
+(def clipboard* (atom nil))
+
 (def algo-descriptor 
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :algo "FM Synth")]
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :algo "FM Synth" clipboard*)]
     (.add-controller! d :cc1 "Vibrato" 1)
     (.add-controller! d :cc7 "Volume" 7)
     (.add-controller! d :cca "A" 16)

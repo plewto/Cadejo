@@ -92,11 +92,17 @@
     [this]
     "Returns map for initial instrument program")
 
+  (clipboard-data!
+    [this data])
+
+  (clipboard-data
+    [this])
+
   )
                        
 
 
-(defn instrument-descriptor [iname about-text]
+(defn instrument-descriptor [iname about-text clipboard*]
   (let [controllers* (atom (sorted-map))
         constructors* (atom (sorted-map))
         editor-constructor* (atom nil)
@@ -150,13 +156,10 @@
                  (reset! editor-constructor* cfn))
 
                (create-editor [this performance]
-                 (trace-enter "descriptor.create-editor")
                  (let [cfn @editor-constructor*]
-                   (if cfn 
+                   (if cfn
                      (cfn performance)
-                     (umsg/warning (format "%s editor is not defined" iname)))
-                   (trace-exit "descriptor.create-editor")
-                   (cfn performance)))
+                     (umsg/warning (format "%s editor is not defined" iname)))))
 
                (initial-program! [this pdata]
                  (swap! iprogram* (fn [n](assoc n :args pdata))))
@@ -164,6 +167,11 @@
                (initial-program [this]
                  @iprogram*)
 
+               (clipboard-data! [this data]
+                 (reset! clipboard* data))
+
+               (clipboard-data [this]
+                 @clipboard*)
 
                )]
     dobj))
