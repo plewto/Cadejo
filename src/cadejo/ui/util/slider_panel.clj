@@ -52,7 +52,6 @@
     [this]
     "Returns map for swing components")
 
-
   (widget
     [this key]
     "Returns specific swing component
@@ -87,7 +86,7 @@
   )
 
 
-(deftype SliderPanel [widgets value* suspend* mapfn invmap]
+(deftype SliderPanel [widgets value* suspend* mapfn invmap formatfn]
     SliderPanelProtocol
 
     (widget-map [this]
@@ -112,6 +111,8 @@
         (swap! suspend* (fn [n] suspend))
         (swap! value* (fn [n] x))
         (.setValue (.widget this :slider) pos)
+        (ss/config! (.widget this :lab-value)
+                    :text (formatfn x))
         (swap! suspend* (fn [n] temp))
         pos))
 
@@ -215,7 +216,7 @@
                  :lab-value lab-value}
         labtab (or label-table
                    (create-default-label-table steps (get ticks :major 1/2) mapfn formatter))
-        sp (SliderPanel. widgets value* (atom false) mapfn invmap)]
+        sp (SliderPanel. widgets value* (atom false) mapfn invmap formatter)]
     (.setLabelTable slider labtab)
     (ss/listen slider :state-changed (fn [ev]
                                        (if (not (.listeners-suspended? sp))
