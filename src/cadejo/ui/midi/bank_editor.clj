@@ -188,6 +188,8 @@
                         (ss/config! plst :model (create-program-list bnk))
                         (.setSelectedIndex plst pnum)
                         (.ensureIndexIsVisible plst pnum)
+                        (if @instrument-editor*
+                          (.sync-ui! @instrument-editor*))
                         (reset! enable-list-selection-listener* true))))
 
                   (instrument-editor! [this ied]
@@ -348,17 +350,12 @@
                (fn [_]
                  (let [pnum (.getSelectedIndex lst-programs)]
                    (if pnum
-                     (let [ied @instrument-editor*
-                           prog (.get-program bnk pnum)]
-                       (if (and ied prog)
-                         (let [data-map (ucol/alist->map (.current-program-data bnk))
+                     (let [prog (.get-program bnk pnum)]
+                       (if prog
+                         (let [data (.current-program-data bnk)
                                pname (name (:name prog))]
                            (reset! enable-list-selection-listener* false)
-                           (.data! ied pnum data-map)
-                           (.status! ied (format "Program %s" pnum))
-                           (ss/config! (.widget ied :lab-name)
-                                       :text (format "Name '%s'" pname))
-                           (.program-change bnk pnum)
+                           (.program-change bnk pnum) ;; sync-ui called
                            (reset! enable-list-selection-listener* true))))))))
   
     (ss/listen jb-edit :action
