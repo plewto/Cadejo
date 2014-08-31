@@ -233,10 +233,13 @@
                 (if prog 
                   (let [data-map (ucol/alist->map (.current-program-data bnk))
                         pname (name (:name prog))]
-                    (.data! ied pnum data-map)
-                    (.status! ied (format "Program %s" pnum))
-                    (ss/config! (.widget ied :lab-name)
-                                :text (format "Name '%s'" pname)))))) )
+                    ;; (.data! ied pnum data-map)      ;; ISSUE add program! function 
+                    ;; (.sync-ui! ied)
+                    ;; (.status! ied (format "Program %s" pnum))
+                    ;; (ss/config! (.widget ied :lab-name)
+                    ;;             :text (format "Name '%s'" pname))
+                    (.program! ied pnum prog)
+                    )))))
 
           :default                      ; do nothing
           nil))))
@@ -369,7 +372,9 @@
                        (let [f (.widget ied :frame)]
                          (.data! ied 
                                  (.current-program-number bnk)
-                                 (ucol/alist->map (.current-program-data bnk)))
+                                 (ucol/alist->map (.current-program-data bnk))
+                                 false)
+                         (.sync-ui! ied)
                          (ss/show! f)
                          (.toFront f)))
                      (.warning! bank-ed "Editor not defined"))) ))
