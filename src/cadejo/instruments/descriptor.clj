@@ -92,17 +92,20 @@
     [this]
     "Returns map for initial instrument program")
 
-  (clipboard-data!
-    [this data])
+  ;; (clipboard-data!
+  ;;   [this data])
 
-  (clipboard-data
+  ;; (clipboard-data
+  ;;   [this])
+
+  (clipboard
     [this])
 
   )
                        
 
 
-(defn instrument-descriptor [iname about-text clipboard*]
+(defn instrument-descriptor [iname about-text program-clipboard*]
   (let [controllers* (atom (sorted-map))
         constructors* (atom (sorted-map))
         editor-constructor* (atom nil)
@@ -167,11 +170,13 @@
                (initial-program [this]
                  @iprogram*)
 
-               (clipboard-data! [this data]
-                 (reset! clipboard* data))
+               ;; (clipboard-data! [this data]
+               ;;   (reset! clipboard* data))
 
-               (clipboard-data [this]
-                 @clipboard*)
+               ;; (clipboard-data [this]
+               ;;   @clipboard*)
+
+               (clipboard [this] program-clipboard*)
 
                )]
     dobj))
