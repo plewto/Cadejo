@@ -24,7 +24,7 @@
 
 (defn read-image [fqn]
   "Read image file into BufferedImage
-   fqn - The fully qualifed filename
+   fqn - The fully qualified filename
    If fqn does not exists return nil"
   (let [f (File. fqn)]
     (if (.exists f)
@@ -199,7 +199,7 @@
      Each point is mapped via the coordinate system and rendered as a single
      pixel on the canvas. 
 
-     Note that plot! is unique amognst all of the other drawing 
+     Note that plot! is unique amongst all of the other drawing 
      methods. Pixels rendered by plot! are not permanently added to the 
      drawing. These points will be erased the next time the drawing is 
      rendered; either by adding additional elements are by a coordinate 
@@ -208,7 +208,8 @@
 
   (plot-to!
     [this points]
-    "Like plot! but connects points with straight lines instead of discrete pixels")
+    "Like plot! but connects points with straight lines instead of discrete 
+     pixels")
 
   (point!
     [this p]
@@ -276,17 +277,17 @@
 
   (remove-mouse-listener!
     [this ml])
-
  
   (where 
     [this]
     "Returns the most current position of the mouse over the drawing.
-     The position coordinates are in accordance with the current coordinate system.")
+     The position coordinates are in accordance with the current coordinate 
+     system.")
 
   (mouse-pressed-where
     [this]
-    "Returns the most recent position of a mouse was pressed in terms of the 
-     current coordinate system")
+    "Returns the most recent position of where mouse was pressed in terms of 
+     the current coordinate system")
 
   (mouse-released-where
     [this]
@@ -309,7 +310,18 @@
 
 ;; cs - coordinate-system
 ;;
-(defn- create-drawing [cs]
+;; refresh-delay - int, Sets minimum delay time in milliseconds between 
+;; drawing repaints.
+;;
+;; Any swing components placed on top of the drawing tend to flicker as the
+;; drawing's container is re-sized. Adding a few ms delay smooths this
+;; flickering out. However adding delay makes any mouse-motion-listeners
+;; less responsive.  To get around this the refresh delay is set to zero
+;; whenever the mouse enters the drawing and reverts to it's normal value
+;; on mouse exit.
+;;
+
+(defn- create-drawing [cs refresh-delay]
   (let [[width height](.canvas-bounds cs)
         mouse-dragged* (atom nil)  ;; true if mouse position results from drag
         mouse-position* (atom [0 0]) ;; as pixel [col row]
@@ -325,13 +337,11 @@
         image (BufferedImage. (.getWidth physical-bounds)
                               (.getHeight physical-bounds)
                               BufferedImage/TYPE_INT_RGB)
-
-        cpan (proxy [JPanel][true]
-               (paint [g]
-                 (.drawImage g image null-transform-op 0 0)))
+        refresh-delay* (atom refresh-delay)
+        cpan* (atom nil)
 
         drw (reify Drawing
-              (drawing-canvas [this] cpan)
+              (drawing-canvas [this] @cpan*)
 
               (coordinate-system [this] cs)
 
@@ -480,7 +490,7 @@
                          
                          :default
                          (.draw g2d shape))))))
-                (.repaint cpan))
+                (.repaint @cpan*))
 
               ;;; plot is ephemeral  - graph will be wiped out on next repaint.
               (plot! [this points]
@@ -489,7 +499,7 @@
                     (let [q (.map-point cs p)
                           [u v] q]
                       (.setRGB image (int u)(int v) rgb)))
-                  (.repaint cpan)))
+                  (.repaint @cpan*)))
               
               (plot-to! [this points]
                 (let [g2d (.createGraphics image)
@@ -501,7 +511,7 @@
                           [u1 v1] q1]
                       (.drawLine g2d u0 v0 u1 v1)
                       (reset! q0* q1)))
-                  (.repaint cpan)))
+                  (.repaint @cpan*)))
 
               (point! [this p]
                 (let [obj (sgwr.point/point p)]
@@ -594,16 +604,16 @@
                 (swap! elements* (fn [n](remove (fn [q](= q e)) n))))
 
               (add-mouse-motion-listener! [this mml]
-                (.addMouseMotionListener cpan mml))
+                (.addMouseMotionListener @cpan* mml))
                 
               (remove-mouse-motion-listener! [this mml]
-                (.removeMouseMotionListener cpan mml))
+                (.removeMouseMotionListener @cpan* mml))
 
               (add-mouse-listener! [this ml]
-                (.addMouseListener cpan ml))
+                (.addMouseListener @cpan* ml))
 
               (remove-mouse-listener! [this ml]
-                (.removeMouseListener cpan ml))
+                (.removeMouseListener @cpan* ml))
 
               (where [this]
                 (.inv-map cs @mouse-position*))
@@ -627,7 +637,17 @@
               (to-string [this]
                 (.to-string this false)))]
 
-    (.addMouseMotionListener cpan (proxy [MouseMotionListener][]
+    (reset! cpan* (proxy [JPanel][true]
+                    (paint [g]
+                      (.drawImage g image null-transform-op 0 0)
+                      (dotimes [i (.getComponentCount @cpan*)]
+                        (let [cmp (.getComponent @cpan* i)]
+                          (.repaint cmp)))
+                      (Thread/sleep @refresh-delay*)
+                      )))
+
+
+    (.addMouseMotionListener @cpan* (proxy [MouseMotionListener][]
                                     (mouseDragged [ev]
                                       (reset! mouse-dragged* true)
                                       (reset! mouse-position* [(.getX ev)(.getY ev)]))
@@ -636,10 +656,12 @@
                                       (reset! mouse-dragged* false)
                                       (reset! mouse-position* [(.getX ev)(.getY ev)]))))
 
-    (.addMouseListener cpan (proxy [MouseListener][]
+    (.addMouseListener @cpan* (proxy [MouseListener][]
                               (mouseClicked [ev] )
-                              (mouseEntered [ev] )
-                              (mouseExited [ev] )
+                              (mouseEntered [ev] 
+                                (reset! refresh-delay* 0))
+                              (mouseExited [ev] 
+                                (reset! refresh-delay* refresh-delay))
                               (mousePressed [ev] 
                                 (reset! mouse-pressed-position* [(.getX ev)(.getY ev)]))
                               (mouseReleased [ev]
@@ -647,13 +669,15 @@
     
     drw))
 
-(defn native-drawing [w h]
-  "Create drawing with 'native' coordinate system.
+(defn native-drawing 
+     "Create drawing with 'native' coordinate system.
    The native system uses integer coordinate positions
    with x=0 corresponding to the left edge and x=w the right hand edge
    and y=0 the top and y=h the bottom."
-  (let [cs (sgwr.coordinate-system/native w h)]
-    (create-drawing cs)))
+  ([w h & {:keys [refresh-delay]
+           :or {refresh-delay 0}}]
+     (let [cs (sgwr.coordinate-system/native w h)]
+       (create-drawing cs refresh-delay))))
 
 (defn cartesian-drawing 
   "Create a drawing with a rectangular Cartesian coordinate system.
@@ -666,9 +690,10 @@
    and x1 (y1) corresponds to the left (bottom)"
   ([w h]
      (cartesian-drawing w h [-1.0 -1.0][+1.0 +1.0]))
-  ([w h p0 p1]
+  ([w h p0 p1 & {:keys [refresh-delay]
+                 :or {refresh-delay 0}}]
      (let [cs (sgwr.coordinate-system/cartesian w h p0 p1)]
-       (create-drawing cs))))
+       (create-drawing cs refresh-delay))))
   
 (defn polar-drawing 
   "Create drawing with polar coordinate system. 
@@ -680,7 +705,8 @@
    in radians."
   ([w]
      (polar-drawing w 1.0))
-  ([w r & {:keys [units]
-           :or {units :rad}}]
+  ([w r & {:keys [units refresh-delay]
+           :or {units :rad
+                refresh-delay 0}}]
      (let [cs (sgwr.coordinate-system/polar w r :units units)]
-       (create-drawing cs))))
+       (create-drawing cs refresh-delay))))
