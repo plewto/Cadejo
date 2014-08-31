@@ -39,7 +39,11 @@
 
 (defn performance-editor [performance]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :performance performance)
-        bank-ed (cadejo.ui.midi.bank-editor/bank-editor (.bank performance))
+        ;bank-ed (cadejo.ui.midi.bank-editor/bank-editor (.bank performance))
+        bank-ed (let [bank (.bank performance)
+                      bed (cadejo.ui.midi.bank-editor/bank-editor bank)]
+                  (.editor! bank bed)
+                  bed)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         pan-tabs (ss/tabbed-panel :tabs [{:title "Bank" :content (.widget bank-ed :pan-main)}
                                          {:title "MIDI" :content (.widget properties-editor :pan-main)}])

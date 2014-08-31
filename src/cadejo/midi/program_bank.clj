@@ -236,8 +236,15 @@
     "Copy state of other bank into this.
      data format of both banks must be identical")
 
-  (get-editor 
-    [this])
+  ;; (get-editor 
+  ;;   [this])
+
+  (editor 
+    [this]
+    "Returns bank editor GUI, may be nil if editor has not been set")
+
+  (editor!
+    [this ed])
 
   (dump 
     [this verbose depth]
@@ -462,8 +469,13 @@
       (umsg/warning (format "Can not copy %s bank data to %s bank"
                             (.data-format other)
                             (.data-format this)))))
-  (get-editor [this]
-    @editor*)
+  ;; (get-editor [this]
+  ;;   @editor*)
+
+  (editor [this] @editor*)
+
+  (editor! [this bed] 
+    (reset! editor* bed))
 
   (dump [this verbose depth]
     (let [depth2 (inc depth)
