@@ -25,6 +25,9 @@
      If stack empty print warning, return nil
      Disable buttons if stack empty after popping value")
 
+  (clear-stack!
+    [this])
+
   (get-button 
     [this]
     "Each call to get-button returns a new instance of JButton
@@ -55,6 +58,11 @@
               (.setEnabled b (not (.is-empty? this))))
             rs)
           (umsg/warning (format "Nothing to %s" label))))
+
+      (clear-stack! [this]
+        (.reset stack* [])
+        (doseq [b @buttons*]
+          (.setEnabled b false)))
 
       (get-button [this]
         (let [jb (ss/button :text label)]
