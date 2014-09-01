@@ -74,7 +74,8 @@
      (let [i1 (icon (format "switches/filter_%s_off_%02d.png" (name ftype) n))
            i2 (icon (format "switches/filter_%s_on_%02d.png" (name ftype) n))
            b (toggle i1 i2)]
-       (ss/config! b :size [48 :by 48]))))
+       (ss/config! b :size [48 :by 48])
+       b)))
 
 ;; Return 'rocker' style toggle button
 ;; n - button-style 1,2,3,...
@@ -85,4 +86,17 @@
      (let [i1 (icon (format "switches/rocker_off_%02d.png" n))
            i2 (icon (format "switches/rocker_on_%02d.png" n))
            b (toggle i1 i2)]
-       (ss/config! b :size [48 :by 84]))))
+       (ss/config! b :size [48 :by 84])
+       b)))
+
+(defn number-button 
+  ([n](number-button n 1))
+  ([n style]
+     (let [s (if (neg? n) "n" "p")
+           i1 (icon (format "switches/numpad_%s%03d_off_%02d.png" s n style))
+           i2 (icon (format "switches/numpad_%s%03d_on_%02d.png" s n style))
+           b (toggle i1 i2)]
+       (ss/config! b :size [48 :by 48])
+       b)))
+     
+
