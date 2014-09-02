@@ -35,6 +35,12 @@
     [this flag]
     "Sets flag indicating whether GUI components are to be use are not.")
 
+  (enable-pp
+    [this])
+
+  (enable-pp!
+    [this flag])
+
   (maximum-undo-count 
     [this]
     "Returns maximum depth of undo/redo operations")
@@ -104,6 +110,7 @@
 (defn cadejo-config []
   (let [input-ports* (atom [])
         load-gui* (atom false)
+        enable-pp* (atom false)
         max-undo-count* (atom 10)
         overwrite-warn* (atom true)
         unsaved-warn* (atom true)
@@ -131,6 +138,11 @@
                 (load-gui! [this flag]
                   (reset! load-gui* flag))
                   
+                (enable-pp [this] @enable-pp*)
+
+                (enable-pp! [this flag]
+                  (reset! enable-pp* flag))
+
                 (maximum-undo-count [this]
                   @max-undo-count*)
 
@@ -216,6 +228,13 @@
 
 (defn load-gui! [flag]
   (.load-gui! @current-config* flag))
+
+
+(defn enable-pp []
+  (.enable-pp @current-config*))
+
+(defn enable-pp! [flag]
+  (.enable-pp! @current-config* flag))
 
 (defn maximum-undo-count []
   (.maximum-undo-count @current-config*))
