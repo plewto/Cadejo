@@ -124,7 +124,7 @@
      For all other argument combinations a prog map is created
      Returns the added program map on success, returns nil on failure.")
 
-  (set-current-program!
+  (store-current-program!
     [this pnum name remarks]
     [this pnum name]
     "Set data slot pnum to data in current-program.
@@ -133,6 +133,9 @@
      remarks - optional remarks applied to data.
      If pnum is valid return record of the new program
      If pnum is invalid display warning and return nil")
+
+  (get-current-program 
+    [this])
 
   (get-program 
     [this pnum]
@@ -149,7 +152,7 @@
 
   (current-program-data
     [this]
-    "Returns the current program data")
+    "Returns the current data from current program")
 
   (current-program-number
     [this]
@@ -236,9 +239,6 @@
     "Copy state of other bank into this.
      data format of both banks must be identical")
 
-  ;; (get-editor 
-  ;;   [this])
-
   (editor 
     [this]
     "Returns bank editor GUI, may be nil if editor has not been set")
@@ -323,12 +323,15 @@
   (set-program! [this pnum name args]
     (.set-program! this pnum nil name args ""))
  
-  (set-current-program! [this pnum name remarks]
+  (store-current-program! [this pnum name remarks]
     (let [pobj (program nil name (.current-program-data this) remarks)]
       (swap! programs* (fn [n](assoc n pnum pobj)))))
 
-  (set-current-program! [this pnum name]
-    (.set-current-program this pnum name ""))
+  (store-current-program! [this pnum name]
+    (.store-current-program this pnum name ""))
+
+  (get-current-program [this]
+    (program nil "?" @current-program-data* ""))
 
   (get-program [this pnum]
     (and pnum (get @programs* pnum)))
@@ -382,10 +385,10 @@
     
   (handle-event [this event synths]
     (let [pnum (:data1 event)
-          ed (.get-editor this)]
+          ed (.editor this)]
       (.program-change this pnum synths)
       (if ed 
-        (.sync-ui ed))))
+        (.sync-ui! ed))))
 
   (write-bank [this filename]
     (try
@@ -469,9 +472,6 @@
       (umsg/warning (format "Can not copy %s bank data to %s bank"
                             (.data-format other)
                             (.data-format this)))))
-  ;; (get-editor [this]
-  ;;   @editor*)
-
   (editor [this] @editor*)
 
   (editor! [this bed] 

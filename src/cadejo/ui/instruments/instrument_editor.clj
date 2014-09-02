@@ -1,6 +1,4 @@
-
 (ns cadejo.ui.instruments.instrument-editor
-  (:use [cadejo.util.trace])
   (:require [cadejo.config])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.path :as path])
@@ -66,42 +64,6 @@
 
 
 
-;; (defprotocol EditorTab
-;;
-;;   (parent-editor!
-;;     [this ied]
-;;     "Set parent instrument editor")
-;;
-;;   (parent-editor
-;;     [this])
-;;
-;;   (parent-performance
-;;     [this])
-;;
-;;   (parent-bank
-;;     [this])
-;;
-;;   (widgets
-;;     [this])
-;;
-;;   (widget
-;;     [this key])
-;;
-;;   (set-value!
-;;     [this param key])
-;;
-;;   (status! 
-;;     [this msg])
-;;
-;;   (warning!
-;;     [this msg])
-;;
-;;   (sync-ui!
-;;     [this])
-;;
-;; ) ;; end EditorTab
-
-
 (defprotocol InstrumentEditor
 
   (parent-performance 
@@ -110,9 +72,6 @@
   (parent-bank 
     [this])
 
-  ;; (add-tab!
-  ;;   [this label component])
-
   (add-sub-editor!
     [this label subed])
 
@@ -120,7 +79,6 @@
     [this]
     "Return current data as map")
 
-  ;; ISSUE add program! function  
   (program! 
     [this pnum prog])
 
@@ -287,13 +245,10 @@
               (parent-bank [this]
                 (.bank performance))
 
-              ;; (add-tab! [this label comp]
-              ;;   (.addTab pan-tabs label comp))
-
               (add-sub-editor! [this label subed]
-                (.addTab pan-tabs lebel (.widget subed :pan-main))
+                (.addTab pan-tabs label (.widget subed :pan-main))
                 (swap! sub-editors* (fn [n](conj n subed)))
-                (.parent-editor! subed this))
+                (.parent! subed this))
 
               (program! [this pnum prog]
                 (.push-undo-state! this "Program change")
@@ -301,7 +256,6 @@
                 (reset! program* (dissoc prog :args))
                 (reset! data* (ucol/alist->map (:args prog)))
                 (.sync-ui! this))
-
 
               (data [this] @data*)
 
@@ -356,12 +310,7 @@
                 (ss/config! lab-status :text (format "WARNING: %s" msg)))
 
               (push-undo-state! [this msg]
-                (trace-enter "InstrumentEditor.push-undo-state!  msg = " msg)
-                (trace-mark  "program*    --> " program*)
-                (trace-mark  "data*       --> " data*)
-                (.push-state! undo-stack [msg (dissoc @program* :args) @data*])
-                (trace-exit "InstrumentEditor.push-undo-state!  msg = " msg)
-                )
+                (.push-state! undo-stack [msg (dissoc @program* :args) @data*]))
 
               (push-redo-state! [this msg]
                 (.push-state! redo-stack [msg (dissoc @program* :args) @data*]))
@@ -378,21 +327,19 @@
               (sync-synths [this]
                 (let [d (ucol/map->alist @data*)
                       sv (concat (.synths performance)(.voices performance))]
-                  (apply ot/ctl (cons sv d))   ;; ISSUE CHECK THIS !!!!!
-                  ))
+                  (apply ot/ctl (cons sv d))))
 
               (sync-ui! [this]
                 (let [pnum (min 119 (or (.current-program-number bank) 0))
                       pname (str (:name @program*))
                       prem (str (:remarks @program*))]
+                  (reset! data* (ucol/alist->map (.current-program-data bank)))
                   (.setValue spin-prognum pnum)
                   (ss/config! txt-name :text pname)
                   (ss/config! lab-name :text pname)
                   (ss/config! txt-remarks :text prem)
                   (doseq [t @sub-editors*]
-                    (.sync-ui! t))))
-              ) ;; end ied
-        ]
+                    (.sync-ui! t))))) ]
     (.addFocusListener txt-name (proxy [FocusListener][]
                                   (focusGained [_])
                                   (focusLost [_]
@@ -509,6 +456,13 @@
                    (.sync-synths ied)
                    (.pp ied)
                    (.status! ied "Transmit"))))
+    
+    ;; (ss/listen jb-transmit :action
+    ;;            (fn [_]
+    ;;              (let [pnum (.current-program-number bank)]
+    ;;                (.program-change bank pnum)
+    ;;                (.sync-ui! ied)
+    ;;                (.status! ied (format "Transmit %03d" pnum)))))
 
     (ss/listen jb-init :action
                (fn [_]
@@ -546,8 +500,14 @@
                        
                        
 
+    ;; START DEBUG
+    (ss/listen jb-help :action 
+               (fn [_]
+                 (println (format "Frame size      %s" (.getSize frame)))
+                 (println (format "pan-common size %s" (.getSize pan-common)))
+                 ))
+    ;; END DEBUG
 
-    (ss/listen jb-help :action (fn [_](println (.getSize frame)))) ;; DEBUG
 
     (.clear-stack! undo-stack)
 

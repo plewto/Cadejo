@@ -210,9 +210,7 @@
                                                  (do 
                                                    (.warning! bank-ed "No editor defined")
                                                    nil)
-                                                 (reset! instrument-editor* ied))))
-        ]
-
+                                                 (reset! instrument-editor* ied)))) ]
     (.addListSelectionListener 
      lst-programs
      (proxy [ListSelectionListener][]
@@ -224,27 +222,19 @@
           @enable-list-selection-listener* ; program change
           (let [pnum (.getSelectedIndex lst-programs)
                 reserved (>= pnum start-reserved)]
-            (doseq [jc [jb-name jb-edit]]
-                    (.setEnabled jc (not reserved)))
             (.program-change bnk pnum) 
             (if @instrument-editor*
               (let [ied @instrument-editor*
-                    prog (.get-program bnk pnum)]
+                    prog (.get-current-program bnk)]
                 (if prog 
                   (let [data-map (ucol/alist->map (.current-program-data bnk))
                         pname (name (:name prog))]
-                    ;; (.data! ied pnum data-map)      ;; ISSUE add program! function 
-                    ;; (.sync-ui! ied)
-                    ;; (.status! ied (format "Program %s" pnum))
-                    ;; (ss/config! (.widget ied :lab-name)
-                    ;;             :text (format "Name '%s'" pname))
                     (.program! ied pnum prog)
-                    )))))
+                    (.sync-ui! ied) )))))
+                    
 
           :default                      ; do nothing
           nil))))
-          
-          
                                
     (ss/listen jb-init :action (fn [_]
                                  (.push-undo-state! bank-ed "Initialize Bank")
@@ -358,8 +348,11 @@
                          (let [data (.current-program-data bnk)
                                pname (name (:name prog))]
                            (reset! enable-list-selection-listener* false)
-                           (.program-change bnk pnum) ;; sync-ui called
+                           (.program-change bnk pnum) 
+                           (.sync-ui! bank-ed)
                            (reset! enable-list-selection-listener* true))))))))
+
+
   
     (ss/listen jb-edit :action
                (fn [_]

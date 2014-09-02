@@ -1,4 +1,5 @@
 (ns cadejo.instruments.combo.program
+  (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.midi.program-bank])
   (:require [cadejo.util.col :as col])
   (:require [cadejo.util.user-message :as umsg]))
@@ -40,11 +41,11 @@
           (swap! rs* (fn [n] false)))))
     @rs*))
 
-(def bypass 0)
-(def low 1)
-(def high 2)
-(def band 3)
-(def notch 4)
+(def bypass bypass-filter)
+(def low lp-filter)
+(def high hp-filter)
+(def band bp-filter)
+(def notch br-filter)
 
 (defn- combo-vibrato [& {:keys [freq sens]
                                   :or {freq 5.00
@@ -54,7 +55,7 @@
 
 (defn- combo-filter [& {:keys [freq type]
                                  :or {freq 8
-                                      type bypass}}]
+                                      type bypass-filter}}]
   (list :filter (int freq)
         :filter-type (int type)))
 
@@ -82,7 +83,7 @@
                      amp 0.20
                      reverb 0.0
                      vibrato [:freq 5.0 :sens 0.010]
-                     filter [:freq 8 :type bypass]
+                     filter [:freq 8 :type bypass-filter]
                      flanger [:rate 0.25 :depth 0.25 :fb 0.50 :mix 0.00]}}]
   (let [data (flatten (list :amp1 (float a1)
                             :amp2 (float a2)

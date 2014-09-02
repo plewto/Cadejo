@@ -2,7 +2,7 @@
 
 (ns cadejo.instruments.combo.combo-engine
   (:use [overtone.core])
-  (:use [cadejo.util.trace])
+  (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.modules.qugen :as qu])
   (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.combo.program])
@@ -22,8 +22,6 @@
     (.set-editor-constructor! d cadejo.instruments.combo.combo-editor/combo-editor)
     d))
 
-
-
 (defsynth LFO [vibrato-freq 5.00
                vibrato-sens 0.01
                vibrato-bus 0
@@ -32,11 +30,11 @@
                (in:kr vibrato-depth-bus))]
     (out:kr vibrato-bus (+ 1 (* amp (sin-osc:kr vibrato-freq))))))
 
-(def bypass-filter 0)
-(def lp-filter 1)
-(def hp-filter 2)
-(def bp-filter 3)
-(def br-filter 4)
+;; (def bypass-filter 0)
+;; (def lp-filter 1)
+;; (def hp-filter 2)
+;; (def bp-filter 3)
+;; (def br-filter 4)
 
 ;; (1.0 --> 0db)
 ;; (0.0 --> -60db)
@@ -56,8 +54,6 @@
 (defcgen feedback [wave]
   (:ir (* 4 (qu/clamp wave 0 1))))
 
-
-
 (defsynth ToneBlock [freq 100
                      gate 0
                      amp1  1.00
@@ -68,8 +64,8 @@
                      wave3 0.00
                      amp4  1.00
                      wave4 0.00
-                     chorus 0.00        ; range 0.0-1.0 --> detune (1 2 3 4) --> (1 3 4 5)
-                     filter 8.00
+                     chorus 0.00 
+                     filter 8.00 ; range 1, 2, 4, 6 or 8
                      filter-type lp-filter
                      bend-bus 0
                      vibrato-bus 0
@@ -139,21 +135,17 @@
     (out:ar out-bus (* gain reverb))))
 
 (defn ^:private create-performance [chanobj id keymode cc1]
-  (trace-enter "combo.create-performance")
   (let [bank (.clone cadejo.instruments.combo.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode 
                                                          bank combo-descriptor
                                                          [:cc1 cc1 :linear 0.0])]
-    (trace-mark "post let 100")
     (.put-property! performance :instrument-type :combo)
     (.set-parent-performance! bank performance)
     (let [vibrato-bus (control-bus)
           tone-bus (audio-bus)]
-      (trace-mark "post-let 200")
       (.set-pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
       (.add-control-bus! performance :vibrato vibrato-bus)
       (.add-audio-bus! performance :tone tone-bus)
-      (trace-exit "combo.create-performance")
       performance)))
 
 ;; cc1 - vibrato
@@ -188,7 +180,6 @@
                      :or {cc1 1
                           voice-count 8
                           main-out 0}}]
-     (trace-enter "combo-poly")
      (let [chanobj (.channel scene chan)
            keymode (cadejo.midi.poly-mode/poly-keymode :Combo voice-count)
            performance (create-performance chanobj id keymode cc1)
@@ -209,7 +200,6 @@
          (.add-synth! performance :lfo lfo)
          (.add-synth! performance :efx efx)
          (.reset chanobj)
-         (trace-exit "combo-poly")
          performance))))
 
 (.add-constructor! combo-descriptor :mono combo-mono)
