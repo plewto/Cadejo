@@ -1,47 +1,47 @@
 (ns cadejo.util.trace)
 
+(def ^:private enable* (atom true))
 (def ^:private depth* (atom 0))
+(def ^:private pad* (atom ""))
+(def ^:private stack* (atom []))
 
-(defn set-depth [d]
-  (swap! depth* (fn [n] d)))
+(defn- increment []
+  (swap! depth* inc)
+  (swap! pad* (fn [n](str n "    "))))
 
-(defn inc-depth []
-  (swap! depth* inc))
+(defn- decrement []
+  (swap! depth* (fn [n](max 0 (dec n))))
+  (swap! pad* (fn [n]
+                (if (pos? (count n))
+                  (subs n 0 (- (count n) 4))
+                  ""))))
 
-(defn dec-depth []
-  (let [d (max 0 (dec @depth*))]
-    (set-depth d)))
+(defn trace-enable [flag]
+  (reset! enable* flag))
 
-(defn- pad []
-  (let [frmt (format "%%%ds" (max 1 (* 4 @depth*)))]
-    (format frmt " ")))
+(defn trace-enter [msg & {:keys [return]
+                          :or {return nil}}]
+  (if @enable*
+    (do
+      (println (format ";; %s-->[%d] %s" @pad* @depth* msg))
+      (increment)
+      (swap! stack* (fn [n](conj n msg))))
+    return))
 
-(defn trace-reset []
-  (set-depth 0))
+(defn trace-exit [& {:keys [msg return]
+                     :or {msg nil
+                          return nil}}]
+  (if @enable*
+    (do
+      (decrement)
+      (println (format ";; %s<--[%d] %s " @pad* @depth* (or msg (last @stack*))))
+      (swap! stack* pop)))
+  return)
 
-(defn trace-enter [& args]
-  (print (pad))
-  (print ">>> ")
-  (doseq [a args](print (format "%s " a)))
-  (println)
-  (inc-depth))
-
-(defn trace-mark [& args]
-  (print (pad))
-  (print "--- MARK ")
-  (doseq [a args](print (format "%s " a)))
-  (println))
-
-(defn trace-is-null? [text obj]
-  (print (pad))
-  (printf "--- is-null? %s %s" text (if obj "no" "yes"))
-  (println))
-
-(defn trace-exit [& args]
-  (dec-depth)
-  (print (pad))
-  (print "<<< ")
-  (doseq [a args](print (format "%s " a)))
-  (println)
-  (dec-depth))
-  
+(defn trace-mark [msg & {:keys [return]
+                         :or {return nil}}]
+  (if @enable*
+    (let [d (max 0 (dec @depth*))
+          p (if (pos? d)(subs @pad* 0 (- (count @pad*) 4)) "")]
+    (println (format ";; %s   [%d] MARK: %s" p d msg))))
+  return)
