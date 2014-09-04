@@ -2,6 +2,7 @@
 (ns cadejo.midi.performance
   "A Performance is a node with a single Channel parent and a set of
    sc synths, properties and keymodes. "
+  (:use [cadejo.util.trace])
   (:require [cadejo.config])
   (:require [cadejo.midi.bend-handler])
   (:require [cadejo.midi.pressure-handler])
@@ -123,7 +124,6 @@
   (ctl
     [this param value]
     "Apply overtone.core/ctl to all synths and voices")
-
     
   (keymode 
     [this]
@@ -188,7 +188,7 @@
     "Return instrument amplitude scale factor in db")
 
   ;; all-notes-off (via keymode)
-  ;; apply default program 127 from bank
+  ;;
   (reset
     [this])
 
@@ -207,17 +207,17 @@
     [this key]
     "Diagnostic, display tap value for all voices")
 
-  (programs? 
-    [this]
-    "Display program bank contents")
+  ;; (programs? 
+  ;;   [this]
+  ;;   "Display program bank contents")
 
-  (program 
-    [this pnum]
-    "Simulate MIDI program-change")
+  ;; (program 
+  ;;   [this pnum]
+  ;;   "Simulate MIDI program-change")
 
-  (dump-program 
-    [this pnum]
-    "List program pnum parameters")
+  ;; (dump-program 
+  ;;   [this pnum]
+  ;;   "List program pnum parameters")
 
   (dump 
     [this verbose depth]
@@ -302,7 +302,7 @@
           nil)))
 
     (set-bank! [this bnk]
-      (.set-parent-performance! bnk this)
+      (.parent! bnk this)
       (swap! bank* (fn [n] bnk)))
 
     (bank [this] @bank*)
@@ -420,7 +420,7 @@
 
     (reset [this]
       (.reset keymode)
-      (.program-change @bank* 0 (concat (.synths this)(.voices this))))
+      (.program-change @bank* 0 ))
 
     (handle-event [this event]
       (let [cmd (:command event)]
@@ -446,16 +446,14 @@
               (.handle-event controller-suite event)
 
               (= cmd :program-change)
-              (let [s (concat (.synths this)(.voices this))
-                    ped (.get-editor this)]
-                (.handle-event @bank* event s)
-                (if ped (.sync-ui! ped)))
+              (.handle-event @bank* event)
 
               :default
               ;; Should never see this!
               (umsg/error "Performance.handle-event cond default"
                           (format "channel = %s  command = %s"
-                                  (:channel event) cmd)))))
+                                  (:channel event) cmd)))) )
+      
      
     (buses? [this]
       (println "Performance control bus state")
@@ -480,26 +478,31 @@
             (println (format "\tvoice %2d tap %s --> %s"
                              n key value))))))
       
-    (programs? [this]
-      (.dump (.bank this)))
+    ;; (programs? [this]
+    ;;   (.dump (.bank this)))
 
-    (program [this pnum]
-      (let [slist (concat (.synths this)
-                          (.voices this))
-            bnk (.bank this)
-            chan (.channel-number (.parent this))
-            qevent {:channel chan :command :program-change :data1 pnum :data2 0}]
-        (.handle-event bnk qevent slist)))
-        
+    ;; (program [this pnum]
+    ;;   (let [slist (concat (.synths this)
+    ;;                       (.voices this))
+    ;;         bnk (.bank this)
+    ;;         chan (.channel-number (.parent this))
+    ;;         qevent {:channel chan :command :program-change :data1 pnum :data2 0}]
+    ;;     (.handle-event bnk qevent slist)))
 
-    (dump-program [this pnum]
-      (let [data (.data (.bank this))
-            dmap (cadejo.util.col/alist->map data)]
-        (println "Program " pnum)
-        (doseq [k (sort (keys dmap))]
-          (let [v (get dmap k)]
-            (printf "\t[%-16f] --> %s\n" k v)))
-        (println)))
+    ;; (program [this pnum]
+    ;;   (let [bnk (.bank this)
+    ;;         chan (.channel-number (.parent this))
+    ;;         ev {:channel chan :command :program-change :data1 pnum :data2 0}]
+    ;;     (.handle-event bnk ev)))
+
+    ;; (dump-program [this pnum]
+    ;;   (let [data (.data (.bank this))
+    ;;         dmap (cadejo.util.col/alist->map data)]
+    ;;     (println "Program " pnum)
+    ;;     (doseq [k (sort (keys dmap))]
+    ;;       (let [v (get dmap k)]
+    ;;         (printf "\t[%-16f] --> %s\n" k v)))
+    ;;     (println)))
                
     (dump [this verbose depth]
       (let [depth2 (inc depth)

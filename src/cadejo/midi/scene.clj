@@ -111,7 +111,9 @@
               (.handle-event chanobj event))
             (do
               ;; FUTURE handle non-channel events here
-              )))))
+              )
+            ))))
+      
 
     (scale-registry [this]
       sregistry)
