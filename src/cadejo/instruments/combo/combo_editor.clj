@@ -1,4 +1,5 @@
 (ns cadejo.instruments.combo.combo-editor
+  (:use [cadejo.util.trace])
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
@@ -185,8 +186,10 @@
                      (.push-undo-state! ied msg))
 
                    (sync-ui! [this]
+                     (trace-enter "ComboEditor.sync-ui")
                      (reset! enable-param-updates* false)
                      (let [data (.data ied)
+                           dummy (trace-mark "ComboEditor.sync-ui!  data count = " (count (seq data)))  ;; DEBUG
                            a1 (int (* 100 (:amp1 data)))
                            a2 (int (* 100 (:amp2 data)))
                            a3 (int (* 100 (:amp3 data)))
@@ -229,7 +232,10 @@
                        (.setValue slide-amp amp)
                        (.setSelected (get filter-buttons f-mode tb-filter-bypass) true)
                        (.setSelected (get harmonic-buttons harmonic tb-filter-8) true)
-                       (reset! enable-param-updates* true))))
+                       (reset! enable-param-updates* true))
+                     (trace-exit "Comboeditor.sync-ui")
+                     ) ; end sync-ui
+                   )
         
         change-listener (proxy [ChangeListener][]
                           (stateChanged [ev]

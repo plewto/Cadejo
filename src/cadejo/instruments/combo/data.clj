@@ -9,18 +9,18 @@
                      :random
                      cadejo.instruments.combo.genpatch/random-combo-program)
 
-(save-program 0  "Ngaire" "Remarks for program 0"
-    (combo :a1      0.174  :w1 0.209 
-           :a2      1.000  :w2 0.000
-           :a3      0.339  :w3 0.000
-           :a4      0.053  :w4 0.499
-           :chorus  0.001
-           :vibrato [:freq 6.419 :sens 0.010]
-           :filter  [:freq  8    :type    low]
-           :flanger [:rate 3.639 :depth 0.193 :fb +0.00 :mix 0.000]
+(save-program 0  "Alpha" "Remarks for program 0"
+    (combo :a1      1.000  :w1 0.000 
+           :a2      0.000  :w2 0.000
+           :a3      0.000  :w3 0.000
+           :a4      0.000  :w4 0.000
+           :chorus  0.000
+           :vibrato [:freq 5.000 :sens 0.010]
+           :filter  [:freq 8     :type bypass]
+           :flanger [:rate 1.000 :depth 0.100 :fb +0.50 :mix 0.000]
            :reverb  0.000  :amp 0.400))
 
-(save-program 1 "Bright"
+(save-program 1 "Beta"
    (combo :a1      1.000  :w1 0.000
           :a2      0.800  :w2 0.000
           :a3      0.000  :w3 0.000
@@ -31,7 +31,7 @@
           :flanger [:rate 0.250 :depth 0.250 :fb +0.50 :mix 0.000]
           :reverb  0.000  :amp 0.200))
 
-(save-program 2 "Margaid"
+(save-program 2 "Gamma"
    (combo :a1      0.800  :w1 0.000
           :a2      0.000  :w2 0.000
           :a3      1.000  :w3 0.100
@@ -42,7 +42,7 @@
           :flanger [:rate 0.250 :depth 0.250 :fb +0.50 :mix 0.300]
           :reverb  0.500  :amp 0.300))
 
-(save-program 3 "Ealisaid"
+(save-program 3 "Delta"
     (combo :a1      0.950  :w1 0.774
            :a2      0.350  :w2 0.722
            :a3      0.450  :w3 1.000
@@ -53,7 +53,7 @@
            :flanger [:rate 0.219 :depth 0.250 :fb -0.60 :mix 0.200]
            :reverb  0.600  :amp 0.500))
 
-(save-program 4 "Blaanid"
+(save-program 4 "Epsilon"
     (combo :a1      0.643  :w1 0.378
            :a2      0.859  :w2 0.950
            :a3      1.000  :w3 0.614
@@ -64,7 +64,7 @@
            :flanger [:rate 0.294 :depth 0.319 :fb -0.04 :mix 0.746]
            :reverb  0.000  :amp 0.200))
 
-(save-program   5 "Voirrey" ""
+(save-program   5 "Zeta"
     (combo :a1      0.755  :w1 0.381
            :a2      0.904  :w2 0.406
            :a3      0.122  :w3 0.005
@@ -75,7 +75,7 @@
            :flanger [:rate 0.094 :depth 0.239 :fb +0.69 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program   6 "Ruiha" ""
+(save-program   6 "Eta" 
     (combo :a1      0.143  :w1 0.413
            :a2      1.000  :w2 0.567
            :a3      0.624  :w3 0.765
@@ -86,7 +86,7 @@
            :flanger [:rate 0.935 :depth 0.101 :fb -0.96 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program   7 "Aroha" ""
+(save-program   7 "Theta"
     (combo :a1      1.000  :w1 0.370
            :a2      0.864  :w2 0.537
            :a3      0.100  :w3 0.324
@@ -97,7 +97,7 @@
            :flanger [:rate 0.049 :depth 0.305 :fb +0.76 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program 8 "Mere"
+(save-program 8 "Iota"
     (combo :a1      1.000  :w1  0.653
            :a2      0.883  :w2 0.982
            :a3      0.866  :w3 0.370
@@ -108,7 +108,7 @@
            :flanger [:rate 0.077 :depth 0.173 :fb -0.59 :mix 0.275]
            :reverb  0.834  :amp 0.200))
 
-(save-program   9 "Moana" ""
+(save-program   9 "Kappa"
     (combo :a1      0.907  :w1 0.381
            :a2      1.000  :w2 0.258
            :a3      0.761  :w3 0.502
@@ -119,7 +119,7 @@
            :flanger [:rate 0.499 :depth 0.139 :fb +0.63 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program 10  "CreepingBeetle"
+(save-program 10  "Lambda"
     (combo :a1      0.000  :w1 0.386
            :a2      0.000  :w2 0.905
            :a3      1.000  :w3 0.300
@@ -130,7 +130,7 @@
            :flanger [:rate 0.393 :depth 0.735 :fb +0.14 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program 11  "Whetu"
+(save-program 11  "Mu"
     (combo :a1      0.200  :w1  0.621
            :a2      1.000  :w2 0.576
            :a3      0.220  :w3 0.362
@@ -141,7 +141,7 @@
            :flanger [:rate 0.074 :depth 0.937 :fb +0.62 :mix 0.100]
            :reverb  1.000  :amp 0.400))
 
-(save-program  12 "Sayen" ""
+(save-program  12 "Nu"
     (combo :a1      1.000  :w1 0.911
            :a2      0.513  :w2 0.697
            :a3      0.434  :w3 0.189
@@ -152,7 +152,7 @@
            :flanger [:rate 0.403 :depth 0.226 :fb +0.27 :mix 0.915]
            :reverb  0.000  :amp 0.200))
 
-(save-program  13 "Moema" ""
+(save-program  13 "Xi" ""
     (combo :a1      0.551  :w1 0.322
            :a2      0.494  :w2 0.184
            :a3      1.000  :w3 0.180
@@ -163,7 +163,7 @@
            :flanger [:rate 0.483 :depth 0.500 :fb -0.78 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program  14 "Schnitzel" ""
+(save-program  14 "Omicron" ""
     (combo :a1      1.000  :w1 0.000
            :a2      0.000  :w2 0.740
            :a3      0.000  :w3 0.900

@@ -1,6 +1,7 @@
 (println "--> Combo")
 
 (ns cadejo.instruments.combo.combo-engine
+  (:use [cadejo.util.trace])
   (:use [overtone.core])
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.modules.qugen :as qu])
@@ -140,10 +141,10 @@
                                                          bank combo-descriptor
                                                          [:cc1 cc1 :linear 0.0])]
     (.put-property! performance :instrument-type :combo)
-    (.set-parent-performance! bank performance)
+    (.parent! bank performance)
     (let [vibrato-bus (control-bus)
           tone-bus (audio-bus)]
-      (.set-pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
+      (.pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
       (.add-control-bus! performance :vibrato vibrato-bus)
       (.add-audio-bus! performance :tone tone-bus)
       performance)))
