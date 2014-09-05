@@ -543,7 +543,7 @@
                           main-out 0}}]
      (let [chanobj (.channel scene chan) 
            keymode (cadejo.midi.mono-mode/mono-keymode :ALGO)
-           performance (create-performance chanobj keymode main-out
+           performance (create-performance chanobj id keymode main-out
                                            cc1 cca ccb 
                                            cc7 ccc ccd)
            voice (AlgoVoice
