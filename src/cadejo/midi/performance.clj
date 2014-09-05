@@ -420,7 +420,10 @@
 
     (reset [this]
       (.reset keymode)
-      (.program-change @bank* 0 ))
+      (.reset controller-suite)
+      (.reset @bend-handler*)
+      (.reset @pressure-handler*)
+      (.program-change @bank* 0))
 
     (handle-event [this event]
       (let [cmd (:command event)]
