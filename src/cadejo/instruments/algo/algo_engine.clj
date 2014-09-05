@@ -495,14 +495,15 @@
   (let [bank (.clone cadejo.instruments.algo.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode 
                                                          bank algo-descriptor
-                                                         [:cc1 cc-vibrato :linear 0.0]
-                                                         [:cc7 cc-volume :linear 1.0]
-                                                         [:cca cca :linear 0.0]
-                                                         [:ccb ccb :linear 0.0]
-                                                         [:ccc cc-echo-mix :linear 1.0]
-                                                         [:ccd cc-reverb-mix :linear 1.0])]
+                                                         [:cc1 cc-vibrato    :linear 0.0]
+                                                         [:cc7 cc-volume     :linear 1.0]
+                                                         [:cca cca           :linear 0.0]
+                                                         [:ccb ccb           :linear 0.0]
+                                                         [:ccc cc-echo-mix   :linear 0.0]
+                                                         [:ccd cc-reverb-mix :linear 0.0])]
     (.put-property! performance :instrument-type :algo)
-    (.set-parent-performance! bank performance)
+    (.parent! bank performance)
+    (.set-bank! performance bank)
     (let [bend-bus (.control-bus performance :bend)
           pressure-bus (.control-bus performance :pressure)
           vibrato-depth-bus (.control-bus performance cc-vibrato)
@@ -512,8 +513,7 @@
           cc-echo-mix-bus (.control-bus performance cc-echo-mix)
           cc-reverb-mix-bus (.control-bus performance cc-reverb-mix)
           tone-bus (audio-bus 1)]
-      (.set-pp-hook! bank cadejo.instruments.algo.pp/pp-algo)
-      (.set-bank! performance bank)
+      (.pp-hook! bank cadejo.instruments.algo.pp/pp-algo)
       (.add-control-bus! performance :vibrato-depth vibrato-depth-bus)
       (.add-control-bus! performance :cca cca-bus)
       (.add-control-bus! performance :ccb ccb-bus)

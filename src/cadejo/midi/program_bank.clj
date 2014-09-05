@@ -1,3 +1,22 @@
+;; A ProgramBank is a map between MIDI program numbers and "program"
+;; objects where a program is a simple map as returned by the
+;; create-program function. Each program has the following fields: 
+;;   :function-id - a keyword or nil indicating which function executes
+;;                  to generate actual program data.
+;;   :name        - a string giving the program's name
+;;   :remarks     - an optional string holding remarks text
+;;   :args        - A list of arguments passed to the program function.
+;;                  If :function-id is nil the :args field is the 
+;;                  literal program data as an association-list of
+;;                  parameter/value pairs.
+;;
+;; A certain number of upper program numbers are reserved for programs with
+;; non-nil function-ids. All programs below this cutoff should have a
+;; function-id of nil. Programs above the cutoff may have non-nil
+;; function-ids and the function-registry is a map of permissible
+;; functions. 
+;;
+
 (ns cadejo.midi.program-bank
   (:use [cadejo.util.trace])
   (:require [cadejo.config])
@@ -8,12 +27,10 @@
   (:import java.io.FileNotFoundException) )
 
 (def program-count 128)
-(def reserved-slots 8)  ;; Number of program numbers reserved for 
+(def reserved-slots 8)  ;; Number of program slots reserved for 
                         ;; functions. Reserved slots appear at end
                         ;; of the bank
-
 (def start-reserved (- program-count reserved-slots))
-
 
 (declare program-bank)
 
@@ -414,7 +431,7 @@
                        (dotimes [pnum program-count]
                          (let [prog (.program other pnum)]
                            (if prog 
-                             (.program! this pnum prog))))
+                             (.store-program! this pnum prog))))
                        this)
                      (umsg/warning (format "Can not copy %s bank into %s bank"
                                            (.data-format other)

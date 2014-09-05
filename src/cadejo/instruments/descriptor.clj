@@ -73,7 +73,8 @@
                                  ignored by mono mode, default 8
  
                   All other options relate to MIDI cc assignments 
-                  Use controllers method to discover whats available.")
+                  Use controllers method to discover whats available.
+     returns Performance or nil")
 
   (set-editor-constructor! 
     [this cfn]

@@ -37,7 +37,8 @@
                                                          [:cc7 cc-volume :linear 1.0])]
     (.put-property! performance :instrument-type :alias)
     (.add-controller! performance :cc7 cc-volume :linear 1.0)
-    (.set-parent-performance! bank performance)
+    (.parent! bank performance)
+    (.set-bank! performance bank)
     (let [a-bus (control-bus)
           b-bus (control-bus)
           c-bus (control-bus)
@@ -55,7 +56,7 @@
           filter-in-bus (audio-bus 2)
           filter-out-bus (audio-bus 2)
           efx-in-bus (audio-bus 2)]
-      (.set-pp-hook! bank cadejo.instruments.alias.pp/pp-alias)
+      (.pp-hook! bank cadejo.instruments.alias.pp/pp-alias)
       (.add-control-bus! performance :a a-bus)
       (.add-control-bus! performance :b b-bus)
       (.add-control-bus! performance :c c-bus)

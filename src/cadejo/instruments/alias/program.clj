@@ -8,7 +8,7 @@
   
 (defn save-program 
   ([pnum function-id pname remarks data]
-     (.set-program! bank pnum function-id pname data remarks))
+     (.store-program! bank pnum function-id pname remarks data))
   ([pnum pname remarks data]
      (save-program pnum nil pname remarks data))
   ([pnum pname data]

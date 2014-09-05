@@ -142,6 +142,7 @@
                                                          [:cc1 cc1 :linear 0.0])]
     (.put-property! performance :instrument-type :combo)
     (.parent! bank performance)
+    (.set-bank! performance bank)
     (let [vibrato-bus (control-bus)
           tone-bus (audio-bus)]
       (.pp-hook! bank cadejo.instruments.combo.pp/pp-combo)
