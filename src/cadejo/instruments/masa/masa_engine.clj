@@ -172,12 +172,13 @@
         performance (cadejo.midi.performance/performance chanobj id keymode 
                                                          bank masa-descriptor
                                                          [:cc1 cc-vibrato :linear 0.0]
-                                                         [:cc4 cc-pedal :linear 0.0]
-                                                         [:cc7 cc-volume :linear 1.0]
-                                                         [:cca cc-scanner :linear 1.0]
-                                                         [:ccb cc-reverb :linear 1.0])]
+                                                         [:cc4 cc-pedal   :linear 0.0]
+                                                         [:cc7 cc-volume  :linear 1.0]
+                                                         [:cca cc-scanner :linear 0.0]
+                                                         [:ccb cc-reverb  :linear 0.0])]
     (.put-property! performance :instrument-type :masa)
-    (.set-parent-performance! bank performance)
+    (.parent! bank performance)
+    (.set-bank! performance bank)
     (let [bend-bus (.control-bus performance :bend)
           cc-vibrato-bus (.control-bus performance cc-vibrato)
           cc-pedal-bus (.control-bus performance cc-pedal)
@@ -186,7 +187,7 @@
           cc-reverb-mix-bus (.control-bus performance cc-reverb)
           vibrato-bus (control-bus)
           tone-bus (audio-bus)]
-      (.set-pp-hook! bank cadejo.instruments.masa.pp/pp-masa)
+      (.pp-hook! bank cadejo.instruments.masa.pp/pp-masa)
       (.add-control-bus! performance :vibrato-depth cc-vibrato-bus)
       (.add-control-bus! performance :pedal cc-pedal-bus)
       (.add-control-bus! performance :volume cc-volume-bus)
@@ -225,6 +226,7 @@
                             :pedal-bus (.control-bus performance :pedal))
            efx-block (efx/EfxBlock :in-bus (.audio-bus performance :tone)
                                    :out-bus main-out
+                                   :volume-bus (.control-bus performance :volume)
                                    :scanner-mix-bus (.control-bus performance :scanner-mix)
                                    :reverb-mix-bus (.control-bus performance :reverb-mix))]
        (.add-synth! performance :vibrato vibrato-block)
@@ -237,7 +239,7 @@
 (defn masa-poly 
   ([scene chan id & {:keys [cc1 cc4 cc7 cca ccb voice-count main-out]
                      :or {cc1 1
-                          cc4 4
+                          cc4 5
                           cc7 7
                           cca 92
                           ccb 93
@@ -264,6 +266,7 @@
            efx-block (efx/EfxBlock 
                       :in-bus (.audio-bus performance :tone)
                       :out-bus main-out
+                      :volume-bus (.control-bus performance :volume)
                       :scanner-mix-bus (.control-bus performance :scanner-mix)
                       :reverb-mix-bus (.control-bus performance :reverb-mix))]
        (.add-synth! performance :vibrato vibrato-block)
