@@ -140,8 +140,8 @@
               (if @trace*
                 (println 
                  (format 
-                  "cc %3d chan [%02d] %s(%f)  scale = %f  bias = %f --> %f"
-                  ctrl (:channel event) @curve* x s b y))))))
+                  "cc %3d chan [%02d] %s(%f)  scale = %f  bias = %f --> %f  bus %s"
+                  ctrl (:channel event) @curve* x s b y cbus))))))
 
         (dump [this verbose depth]
           (let [pad1 (cadejo.util.string/tab depth)

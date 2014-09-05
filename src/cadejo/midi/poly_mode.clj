@@ -62,8 +62,8 @@
                           (.synths @parent*))
                     :note keynum :freq freq :velocity vel :gate 1 :dbscale dbscale)
             (if @trace*
-              (println (format "Key Down chan %02d key %03d vel %5.3f" 
-                               (:channel event) keynum vel))))))))
+              (println (format "Key Down chan %02d key %03d vel %5.3f    freq %5.3f" 
+                               (:channel event) keynum vel freq ))))))))
 
   (key-up [this event]
     (let [keynum (:note event)
