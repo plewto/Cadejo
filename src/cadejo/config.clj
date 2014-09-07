@@ -110,7 +110,7 @@
 (defn cadejo-config []
   (let [input-ports* (atom [])
         load-gui* (atom false)
-        enable-pp* (atom false)
+        enable-pp* (atom true)
         max-undo-count* (atom 10)
         overwrite-warn* (atom true)
         unsaved-warn* (atom true)
