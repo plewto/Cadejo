@@ -280,10 +280,13 @@
                     (keys @function-registry*))
 
                   (init-bank! [this]
-                    (reset! programs* (sorted-map))
+                    (doseq [pnum (range start-reserved)]
+                      (swap! programs* (fn [n](dissoc n pnum nil))))
                     (reset! current-program-number* 0)
                     (reset! current-program* null-program)
-                    (reset! current-data* {}))
+                    (reset! current-data* {})
+                    (reset! name* "New Bank")
+                    (reset! remarks* ""))
 
                   (pp-hook! [this ppfn]
                     (reset! pp-hook* ppfn))
