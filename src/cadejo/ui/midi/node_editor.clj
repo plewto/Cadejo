@@ -67,7 +67,7 @@
                 :text (format " %s %s "
                               (name type-id) (.get-property @node* :id))
                 :font (ssfont/font :size id-font-size))
-        jb-parent (ss/button :text "Show Parent" 
+        jb-parent (ss/button :text "Parent" 
                              :id (keyword "jb-show-parent"))
         jb-help (ss/button :text "Help"
                            :id (keyword (format "jb-help-%s" type-id)))

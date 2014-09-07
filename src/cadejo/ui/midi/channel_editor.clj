@@ -214,7 +214,7 @@
 
 
 (defn channel-editor [chanobj]
-  (let [[bg fg] (cadejo.ui.util.color-utilities/channel-color-cue (.channel-number chanobj))
+  (let [;[bg fg] (cadejo.ui.util.color-utilities/channel-color-cue (.channel-number chanobj))
         basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
         pan-center (.widget basic-ed :pan-center)
         tbar-performance (ss/toolbar :floatable? true)
@@ -258,9 +258,9 @@
                   (.removeAll tbar-performance)
                   (.add tbar-performance (let [lab (ss/label :text (format " %2d " (.channel-number chanobj))
                                                              :border (factory/line))]
-                                           (.setOpaque lab true)
-                                           (.setBackground lab bg)
-                                           (.setForeground lab fg)
+                                           ;; (.setOpaque lab true)
+                                           ;; (.setBackground lab bg)
+                                           ;; (.setForeground lab fg)
                                            lab))
                   (doseq [p (.children chanobj)]
                     (let [itype (.get-property p :instrument-type)
@@ -301,9 +301,9 @@
                   (.sync-ui! properties-editor)
                   (.revalidate (.widget basic-ed :frame)))
                 )]
-      (.setOpaque (.widget ced :lab-id) true)
-      (.setBackground (.widget ced :lab-id) bg)
-      (.setForeground (.widget ced :lab-id) fg)
+      ;; (.setOpaque (.widget ced :lab-id) true)
+      ;; (.setBackground (.widget ced :lab-id) bg)
+      ;; (.setForeground (.widget ced :lab-id) fg)
       (ss/listen (.widget ced :jb-parent)
                  :action (fn [_]
                            (let [scene (.parent chanobj)

@@ -107,10 +107,10 @@
           v (math/clamp (+ (third hsb) n) 0.0 1.0)]
     (Color/getHSBColor h s v)))
 
-(defn channel-color-cue [c]
-  (let [h (float (/ (rem c 8) 8))
-        s (/ c 16.0)
-        b (if (< c 8) 1.000 0.250)
-        bg (hsb h s b)
-        fg (if (< c 8) (Color/BLACK)(Color/WHITE))]
-    [bg fg]))
+;; (defn channel-color-cue [c]
+;;   (let [h (float (/ (rem c 8) 8))
+;;         s (/ c 16.0)
+;;         b (if (< c 8) 1.000 0.250)
+;;         bg (hsb h s b)
+;;         fg (if (< c 8) (Color/BLACK)(Color/WHITE))]
+;;     [bg fg]))

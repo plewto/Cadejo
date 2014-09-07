@@ -49,9 +49,10 @@
                       (dotimes [i channel-count]
                         (let [jb (ss/button :text (format "%02d" i)
                                             :id (format "jb-channel-%02d" i))
-                              [bg fg](cadejo.ui.util.color-utilities/channel-color-cue i)]
-                          (.setBackground jb bg)
-                          (.setForeground jb fg)
+                              ;[bg fg](cadejo.ui.util.color-utilities/channel-color-cue i)
+                              ]
+                          ;; (.setBackground jb bg)
+                          ;; (.setForeground jb fg)
                           (.putClientProperty jb :channel i)
                           (swap! acc* (fn [n](conj n jb)))))
                       @acc*)
