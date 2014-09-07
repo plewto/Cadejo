@@ -26,30 +26,42 @@
         rb-internal (ss/radio :text "Internal" :group grp)
         rb-external (ss/radio :text "External" :group grp)
         rb-existing (ss/radio :text "Existing" :group grp :enabled? false)
-        pan-options (ss/vertical-panel :items [rb-default rb-internal rb-external rb-existing])
+        pan-options (ss/vertical-panel :items [rb-default rb-internal
+                                               rb-external rb-existing])
         jb-start-server (ss/button :text "Start Server"
                                    :enabled? false
                                    :size [400 :by 100])
-        pan-server-main (ss/border-panel :north lab-title
-                                         :west pan-options
-                                         :center (ss/vertical-panel :items [jb-start-server]
-                                                                    :border (factory/padding 16)))]
-    (ss/listen rb-default :action (fn [_]
-                                     (reset! selected* :default)
-                                     (ss/config! jb-start-server :enabled? true)))
-    (ss/listen rb-internal :action (fn [_]
-                                     (reset! selected* :internal)
-                                     (ss/config! jb-start-server :enabled? true)))
-    (ss/listen rb-external :action (fn [_]
-                                     (reset! selected* :external)
-                                     (ss/config! jb-start-server :enabled? true)))
-    (ss/listen rb-existing :action (fn [_]
-                                     (reset! selected* :existing)
-                                     (ss/config! jb-start-server :enabled? true)))
+        pan-server-main (ss/border-panel 
+                         :north lab-title
+                         :west pan-options
+                         :center (ss/vertical-panel
+                                  :items [jb-start-server]
+                                  :border (factory/padding 16)))]
+    (ss/listen rb-default :action
+               (fn [_]
+                 (reset! selected* :default)
+                 (ss/config! jb-start-server :enabled? true)))
+
+    (ss/listen rb-internal :action 
+               (fn [_]
+                 (reset! selected* :internal)
+                 (ss/config! jb-start-server :enabled? true)))
+
+    (ss/listen rb-external :action 
+               (fn [_]
+                 (reset! selected* :external)
+                 (ss/config! jb-start-server :enabled? true)))
+
+    (ss/listen rb-existing :action 
+               (fn [_]
+                 (reset! selected* :existing)
+                 (ss/config! jb-start-server :enabled? true)))
+
     (ss/listen jb-start-server :action 
                (fn [_]
                  (let [s @selected*]
-                   (ss/config! txt-status :text (format "Booting %s server" s))
+                   (ss/config! txt-status
+                               :text (format "Booting %s server" s))
                    (cond (= s :default)
                          (ot/boot-server)
                          (= s :internal)
@@ -83,7 +95,8 @@
     (doseq [t (cadejo.util.midi/transmitters)]
       (let [[flag dev] t
             info (.getDeviceInfo dev)
-            [hw-name sys-dev](cadejo.util.midi/parse-device-name (.getName info))
+            [hw-name sys-dev](cadejo.util.midi/parse-device-name 
+                              (.getName info))
             tb (ss/radio :text (format "%s %s" hw-name sys-dev)
                          :group grp
                          :enabled? flag)]
@@ -97,29 +110,38 @@
           pan-midi-main (ss/border-panel
                          :north lab-title
                          :west pan-west
-                         :center (ss/vertical-panel :items [jb-create-scene]))]
+                         :center (ss/vertical-panel
+                                  :items [jb-create-scene]))]
       (ss/listen jb-create-scene
-                 :action (fn [_]
-                           (let [rb @selected-button*
-                                 name (.getClientProperty rb :name)
-                                 dev (.getClientProperty rb :dev)
-                                 s (cadejo.midi.scene/scene dev)
-                                 sed (.get-editor s)
-                                 sframe (.frame sed)]
-                             (.put-property! s :midi-device-name name)
-                             (.setEnabled rb false)
-                             (.setEnabled jb-create-scene false)
-                             (.sync-ui! sed)
-                             (ss/show! sframe)
-                             (ss/config! txt-status :text (format "Scene %s %s created" name dev)))))
+                 :action 
+                 (fn [_]
+                   (let [rb @selected-button*
+                         name (.getClientProperty rb :name)
+                         dev (.getClientProperty rb :dev)
+                         s (cadejo.midi.scene/scene dev)
+                         sed (.get-editor s)
+                         sframe (.frame sed)]
+                     (.put-property! s :midi-device-name name)
+                     (.setEnabled rb false)
+                     (.setEnabled jb-create-scene false)
+                     (.sync-ui! sed)
+                     (ss/show! sframe)
+                     (ss/config! txt-status
+                                 :text (format "Scene %s %s created" 
+                                               name dev)))))
       pan-midi-main)))
 
 
 (defn cadejo-splash []
   (let [lab-header (ss/label :icon cadejo.ui.util.icon/splash-image)
         grp-card (ss/button-group)
-        tb-show-server (ss/toggle :text "Server" :group grp-card :selected? true :enabled? true)
-        tb-show-midi (ss/toggle :text "MIDI" :group grp-card :enabled? false)
+        tb-show-server (ss/toggle :text "Server"
+                                  :group grp-card
+                                  :selected? true
+                                  :enabled? true)
+        tb-show-midi (ss/toggle :text "MIDI"
+                                :group grp-card
+                                :enabled? false)
         tb-show-about (ss/toggle :text "About" :group grp-card)
         jb-config (ss/button :text "Config" :enabled? false)
         jb-skin (ss/button :text "Skin")
@@ -132,8 +154,12 @@
                     :border (factory/bevel))
         pan-tbar (ss/vertical-panel
                   :items [(ss/grid-panel :rows 1
-                                         :items [tb-show-server tb-show-midi tb-show-about
-                                                 jb-config jb-skin jb-help jb-exit])])
+                                         :items [tb-show-server
+                                                 tb-show-midi
+                                                 tb-show-about
+                                                 jb-config
+                                                 jb-skin jb-help
+                                                 jb-exit])])
         pan-south (ss/vertical-panel :items [pan-tbar txt-status]
                                      :border (factory/padding 4))
                   
@@ -164,6 +190,13 @@
                                        (ss/show-card! pan-cards :about)))
     (ss/listen jb-skin :action (fn [_]
                                  (cadejo.ui.util.lnf/skin-dialog)))
+
+    (if (ot/server-connected?)
+      (do
+        (ss/show-card! pan-cards :midi)
+        (ss/config! tb-show-server :enabled? false)
+        (ss/config! tb-show-midi :enabled? true)
+        (ss/config! txt-status :text "Using existing server")))
 
     (ss/show! f)))
 
