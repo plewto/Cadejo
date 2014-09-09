@@ -197,6 +197,7 @@
         id (.get-property performance :id)
         descriptor (cadejo.config/instrument-descriptor itype)
         clipboard* (.clipboard descriptor)
+        ;revert-program* (atom nil)
         current-directory* (atom (cadejo.config/config-path))
         bank (.bank performance)
         file-extension (format "%s_program"
@@ -227,10 +228,11 @@
                                  :border (factory/padding))
 
         ;; South toolbar
-        ;;    transmit revert spinner store
+        ;;    init transmit revert spinner store
         ;;
-        ;; jb-transmit (ss/button :text "Transmit")
-        ;; jb-revert (ss/button :text "Revert")
+        jb-init (ss/button :text "Init")
+        ;; jb-revert (ss/toggle :text "Revert" :enabled? true)
+        ;; jb-undo-revert (ss/toggle :text "Undo Revert" :enabled? false)
         jb-store (ss/button :text "Store")
         spin-program (ss/spinner 
                       :model (ss/spinner-model 0 
@@ -239,7 +241,8 @@
                                                :by 1))
         pan-store (ss/horizontal-panel :items [jb-store spin-program]
                                        :border (factory/line))
-        pan-south1 (ss/horizontal-panel :items [ ;jb-transmit jb-revert
+        pan-south1 (ss/horizontal-panel :items [jb-init 
+                                                ;jb-revert jb-undo-revert
                                                 (Box/createHorizontalStrut 8)
                                                 pan-store]
                                         :border (factory/padding))
@@ -266,7 +269,7 @@
         frame (ss/frame :title (format "%s Editor" (name id))
                         :content pan-main
                         :on-close :hide
-                        :size [1050 :by 440]
+                        :size [1050 :by 650]
                         :icon (.logo descriptor :tiny))
                                   
         widget-map {:lab-name lab-name
@@ -341,24 +344,20 @@
               (sync-ui! [this]
                 (let [prog (.current-program bank)
                       data (.current-data bank)]
-
                   (ss/config! lab-name :text (str (:name prog))))
                 (doseq [s @sub-editors*]
-                  (.sync-ui! s))
-                ) ;; end sync-ui!
-              ) ;; end ied
+                  (.sync-ui! s))) )
 
-        name-editor (program-name-editor ied)
-        ]
+        name-editor (program-name-editor ied)]
 
     (.add-sub-editor! ied "Common" name-editor)
-
+    
     (ss/listen jb-show-parent :action
                (fn [_](let [ped (.get-editor performance)
                             f (.frame ped)]
                         (.setVisible f true)
                         (.toFront f))))
-
+    
     (ss/listen jb-copy :action 
                (fn [_](.program->clipboard ied)))
 
@@ -428,6 +427,30 @@
                              (umsg/warning "InstrumentEditor jb-save action"
                                            "default cond executed")
                              (.warning! ied "Unknown save error")))))))
+
+    (ss/listen jb-init :action
+               (fn [_]
+                 (let [bank-ed (.editor bank)
+                       iprog (.initial-program descriptor)]
+                   (.current-program! bank iprog)
+                   (.sync-ui! bank-ed)
+                   (.status! ied "Initial Program"))))
+
+    ;; (ss/listen jb-revert :action
+    ;;            (fn [_]
+    ;;              (reset! revert-program* (.current-program bank))
+    ;;              (.doClick (.widget (.editor bank) :jb-transmit))
+    ;;              (ss/config! jb-revert :enabled? false)
+    ;;              (ss/config! jb-undo-revert :enabled? true)))
+
+    ;; (ss/listen jb-undo-revert :action
+    ;;            (fn [_]
+    ;;              (let [bank-ed (.editor bank)]
+    ;;                (.current-program! bank @revert-program*)
+    ;;                (reset! revert-program* nil)
+    ;;                (.sync-ui! bank-ed)
+    ;;                (ss/config! jb-revert :enabled? true)
+    ;;                (ss/config! jb-undo-revert :enabled? false))))
 
     (ss/listen jb-store :action
                (fn [_]

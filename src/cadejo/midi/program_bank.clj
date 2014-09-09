@@ -382,10 +382,10 @@
                           (apply ot/ctl (cons (synths) data)) 
                           (if (cadejo.config/enable-pp)
                             (println (apply @pp-hook* (list pnum (:name prog) data (:remarks prog)))))
-                          (if ped (.sync-ui! ped))
                           (reset! current-program-number* pnum)
                           (reset! current-program* prog)
                           (reset! current-data* (ucol/alist->map data))
+                          (if ped (.sync-ui! ped))
                           true)
                         nil)))
                

@@ -3,7 +3,7 @@
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
-  (:require [cadejo.ui.instruments.instrument-editor])
+  (:require [cadejo.ui.instruments.instrument-editor :as ied])
   (:require [cadejo.ui.instruments.subedit])
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
@@ -52,7 +52,7 @@
 
 
 (defn combo-editor [performance]
-  (let [ied (cadejo.ui.instruments.instrument-editor/instrument-editor performance)
+  (let [ied (ied/instrument-editor performance)
         enable-param-updates* (atom true)
         slide-a1 (slider)
         slide-a2 (slider)
@@ -179,17 +179,12 @@
                    (warning! [this msg]
                      (.warning! ied msg))
 
-                   (set-value! [this param val]
-                     (.set-value! ied param val false))
-
-                   (push-undo-state! [this msg]
-                     (.push-undo-state! ied msg))
+                   (set-param! [this param val]
+                     (.set-param! ied param val))
 
                    (sync-ui! [this]
-                     (trace-enter "ComboEditor.sync-ui")
                      (reset! enable-param-updates* false)
-                     (let [data (.data ied)
-                           dummy (trace-mark "ComboEditor.sync-ui!  data count = " (count (seq data)))  ;; DEBUG
+                     (let [data (.current-data (.bank performance))
                            a1 (int (* 100 (:amp1 data)))
                            a2 (int (* 100 (:amp2 data)))
                            a3 (int (* 100 (:amp3 data)))
@@ -233,7 +228,6 @@
                        (.setSelected (get filter-buttons f-mode tb-filter-bypass) true)
                        (.setSelected (get harmonic-buttons harmonic tb-filter-8) true)
                        (reset! enable-param-updates* true))
-                     (trace-exit "Comboeditor.sync-ui")
                      ) ; end sync-ui
                    )
         
@@ -246,7 +240,7 @@
                                     bias (or (.getClientProperty slider :bias) 0)
                                     pos (int (ss/config slider :value))
                                     val (float (+ bias (* scale pos)))]
-                                (.set-value! ied param val false)))))
+                                (.set-param! ied param val)))))
         
         filter-action (proxy [ActionListener][]
                         (actionPerformed [ev]
@@ -255,14 +249,14 @@
                                 val (.getClientProperty tb :value)]
                             (doseq [hb (map second (seq harmonic-buttons))]
                               (.setEnabled hb (not (= val bypass-filter))))
-                            (.set-value! ied param val false))))
+                            (.set-param! ied param val))))
         
         harmonic-action (proxy [ActionListener][]
                           (actionPerformed [ev]
                             (let [tb (.getSource ev)
                                   param :filter
                                   val (.getClientProperty tb :value)]
-                              (.set-value! ied param val false))))]
+                              (.set-param! ied param val))))]
     
     (.putClientProperty slide-a1 :param :amp1)
     (.putClientProperty slide-a2 :param :amp2)
@@ -326,5 +320,5 @@
     (.addActionListener tb-filter-6 harmonic-action)
     (.addActionListener tb-filter-8 harmonic-action)
     (.add-sub-editor! ied "Combo" combo-ed)
-    (ss/config! (.widget ied :frame) :size [888 :by 634])
+    ;(ss/config! (.widget ied :frame) :size [888 :by 634])
     ied))

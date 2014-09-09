@@ -2,36 +2,13 @@ Switch filename formats
 
 Filter switches:
 
-    filter_xx_off_nn.png
-    filter_xx_on_nn.png
+  ss_filter_cv_off.png
+  ss_filter_cv_on.png
 
-    xx -> filter type, one of: 'lp' 'hp' 'bp' 'br' 'bypass'
-    nn -> button style as two digit number I.E. '01'
+  Where ss is button style as two-digit integer
+        cv is filter curve, one of 'lp' 'hp' 'bp' 'br' or 'bypass'
 
-Numbered switches:
+-----------------------------------------------------------
 
-    numpad_sxxx_off_nn.png
-    numpad_sxxx_on_nn.png
-
-    s   -> sign, one of:  'n' 'p'
-    xxx -> digit representation (three digits) I.E.  '009'
-    nn  -> button style as two digits number I.E. '01'
-           '0' is considered positive --> 'p000'
-
-
-General pad switches
-
-    pad_off_nn.png
-    pad_on_nn.png
-
-    nn -> button style as two digits number I.E. '01'	
-    
-Rocker Switches
-
-    rocker_off_nn.png
-    rocker_on_nn.png
- 
-    nn -> button style as two digits number I.E. '01'	                    
-
-
-    
+style size       name
+00     48 x  48  default  
