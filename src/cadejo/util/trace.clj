@@ -35,7 +35,10 @@
     (do
       (decrement)
       (println (format ";; %s<--[%d] %s " @pad* @depth* (or msg (last @stack*))))
-      (swap! stack* pop)))
+      (try
+        (swap! stack* pop)
+        (catch Exception ex
+          (println ";; ERROR trace-exit empty stack")))))
   return)
 
 (defn trace-mark [msg & {:keys [return]
