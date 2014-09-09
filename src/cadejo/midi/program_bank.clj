@@ -143,10 +143,22 @@
     "Returns map representing current-program. 
      The map has the following keys :function-id :name :remarks :args")
 
+  (current-program!
+    [this prog]
+    "Sets current-program to prog
+     GUI editor, if any, is not updated
+     synths are updated")
+
   (current-data
     [this]
     "Returns the current data as a map. Note that the current data may differ
      from the :args filed of the current program")     
+
+  (current-data! 
+    [this dmap]
+    "Sets current-data to dmap
+     GUI editor, if any, is not updated
+     synths are updated")
 
   (set-param! 
     [this param value]
@@ -310,8 +322,16 @@
                   (current-program [this]
                     @current-program*)
 
+                  (current-program! [this prog]
+                    (reset! current-program* prog)
+                    (.current-data! this (ucol/alist->map (:args prog))))
+
                   (current-data [this]
                     @current-data*)
+
+                  (current-data! [this dmap]
+                    (reset! current-data* dmap)
+                    (apply ot/ctl (synths) (ucol/map->alist dmap)))
 
                   (set-param! [this param value]
                     (ot/ctl (synths) param value)
@@ -367,8 +387,7 @@
                           (reset! current-program* prog)
                           (reset! current-data* (ucol/alist->map data))
                           true)
-                        (do
-                          nil))))
+                        nil)))
                
                   (handle-event [this event]
                     (let [pnum (:data1 event)]
@@ -475,3 +494,4 @@
                  (dump [this]
                    (.dump this false 1)) )]
        bank)))
+k

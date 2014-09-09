@@ -67,7 +67,7 @@
 
 
 (defn- format-program-cell [pnum bank]
-  (let [prog (.get-program bank pnum)
+  (let [prog (.program bank pnum false)
         fid (:function-id prog)
         name (:name prog)]
     (format "[%03d] %s %s"
@@ -115,12 +115,11 @@
                                   :center pan-center
                                   :south pan-south)
         file-extension (.toLowerCase (name (.data-format bnk)))
-      
+
         file-filter (seesaw.chooser/file-filter
                      (format "%s Bank" file-extension)
                      (fn [f] 
                        (path/has-extension? (.getAbsolutePath f) file-extension)))
-
        
         widget-map {:jb-init jb-init
                     :jb-name jb-name
@@ -190,7 +189,9 @@
                         (.ensureIndexIsVisible plst pnum)
                         (if @instrument-editor*
                           (.sync-ui! @instrument-editor*))
-                        (reset! enable-list-selection-listener* true))))
+                        (reset! enable-list-selection-listener* true)))
+                    )
+                    
 
                   (instrument-editor! [this ied]
                     (reset! instrument-editor* ied))
@@ -220,28 +221,24 @@
           nil
           
           @enable-list-selection-listener* ; program change
-          (let [pnum (.getSelectedIndex lst-programs)
-                reserved (>= pnum start-reserved)]
+          (let [pnum (.getSelectedIndex lst-programs)]
             (.program-change bnk pnum) 
             (if @instrument-editor*
               (let [ied @instrument-editor*
-                    prog (.get-current-program bnk)]
+                    prog (.current-program bnk)]
                 (if prog 
-                  (let [data-map (ucol/alist->map (.current-program-data bnk))
-                        pname (name (:name prog))]
-                    (.program! ied pnum prog)
-                    (.sync-ui! ied) )))))
-                    
+                  (do
+                    (.set-store-location! ied pnum)
+                    (.sync-ui! ied)
+                    )))))
 
           :default                      ; do nothing
-          nil))))
+          nil) 
+         )))
                                
     (ss/listen jb-init :action (fn [_]
                                  (.push-undo-state! bank-ed "Initialize Bank")
-                                 (.bank-name! bnk "New Bank")
-                                 (.bank-remarks! bnk "")
-                                 (doseq [p (range 0 start-reserved)]
-                                   (.set-program! bnk p nil "" []))
+                                 (.init-bank! bnk)
                                  (.sync-ui! bank-ed)
                                  (.status! bank-ed "New Bank")))
 
@@ -342,18 +339,12 @@
     (ss/listen jb-transmit :action
                (fn [_]
                  (let [pnum (.getSelectedIndex lst-programs)]
-                   (if pnum
-                     (let [prog (.get-program bnk pnum)]
-                       (if prog
-                         (let [data (.current-program-data bnk)
-                               pname (name (:name prog))]
-                           (reset! enable-list-selection-listener* false)
-                           (.program-change bnk pnum) 
-                           (.sync-ui! bank-ed)
-                           (reset! enable-list-selection-listener* true))))))))
+                   (if pnum 
+                     (do 
+                       (reset! enable-list-selection-listener* false)
+                       (.program-change bnk pnum)
+                       (reset! enable-list-selection-listener* true))))))
 
-
-  
     (ss/listen jb-edit :action
                (fn [_]
                  (let [ied @instrument-editor*]
@@ -363,12 +354,16 @@
                    (if ied
                      (do 
                        (let [f (.widget ied :frame)]
-                         (.data! ied 
-                                 (.current-program-number bnk)
-                                 (ucol/alist->map (.current-program-data bnk))
-                                 false)
+                         (.set-store-location! ied (.current-program-number bnk))
                          (.sync-ui! ied)
                          (ss/show! f)
                          (.toFront f)))
-                     (.warning! bank-ed "Editor not defined"))) ))
+                     (.warning! bank-ed "Editor not defined"))) 
+                 )
+               )
+
+
+    
+    (.program bnk 0)
+    (.sync-ui! bank-ed)
     bank-ed))

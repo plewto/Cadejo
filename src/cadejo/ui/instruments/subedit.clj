@@ -21,12 +21,8 @@
   (warning!
     [this msg])
 
-  (set-value! 
+  (set-param! 
     [this param value])
 
-  (push-undo-state!
-    [this msg])
-
   (sync-ui!
-    [this])
-)
+    [this]))

@@ -1,6 +1,5 @@
-(println "--> performance-editor")
-
 (ns cadejo.ui.midi.performance-editor
+  (:use [cadejo.util.trace])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.bank-editor])
   (:require [cadejo.ui.midi.cceditor-tab])
@@ -39,7 +38,6 @@
 
 (defn performance-editor [performance]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :performance performance)
-        ;bank-ed (cadejo.ui.midi.bank-editor/bank-editor (.bank performance))
         bank-ed (let [bank (.bank performance)
                       bed (cadejo.ui.midi.bank-editor/bank-editor bank)]
                   (.editor! bank bed)
@@ -85,7 +83,8 @@
                    (.sync-ui! bank-ed)
                    (.sync-ui! properties-editor)
                    (doseq [cced @cc-panels*]
-                     (.sync-ui! cced)) ))]
+                     (.sync-ui! cced))))]
+
       (.set-parent-editor! properties-editor ped)
       (.set-parent-editor! bank-ed ped)
       (.put-property! performance :bank-editor bank-ed)
@@ -120,6 +119,7 @@
       ;; START DEBUG
       (ss/listen (.widget ped :jb-help)
                  :action (fn [_]
-                           (.dump (.node ped) :verbose 0)))
+                           ;(.dump (.node ped) :verbose 0)
+                           (println)(println)))
       ;; END DEBUG
       ped))) 
