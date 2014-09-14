@@ -91,16 +91,29 @@
         pan-tone (ss/border-panel :center (ss/vertical-panel 
                                            :items [pan-mixer pan-wave])
                                   :south pan-detune)
-        tb-filter-bypass (factory/filter-button :bypass)
-        tb-filter-lp (factory/filter-button :lp)
-        tb-filter-hp (factory/filter-button :hp)
-        tb-filter-bp (factory/filter-button :bp)
-        tb-filter-br (factory/filter-button :br)
-        tb-filter-1  (factory/number-button  1)
-        tb-filter-2  (factory/number-button  2)
-        tb-filter-4  (factory/number-button  4)
-        tb-filter-6  (factory/number-button  6)
-        tb-filter-8  (factory/number-button  8)
+        filter-button-style 10
+        tb-filter-bypass (factory/filter-button :bypass filter-button-style)
+        tb-filter-lp (factory/filter-button :lp filter-button-style)
+        tb-filter-hp (factory/filter-button :hp filter-button-style)
+        tb-filter-bp (factory/filter-button :bp filter-button-style)
+        tb-filter-br (factory/filter-button :br filter-button-style)
+        ;; tb-filter-1  (factory/number-button  1)
+        ;; tb-filter-2  (factory/number-button  2)
+        ;; tb-filter-4  (factory/number-button  4)
+        ;; tb-filter-6  (factory/number-button  6)
+        ;; tb-filter-8  (factory/number-button  8)
+
+        ;; tb-filter-bypass (ss/toggle :text "Off")
+        ;; tb-filter-lp (ss/toggle :text "Low")
+        ;; tb-filter-hp (ss/toggle :text "High")
+        ;; tb-filter-bp (ss/toggle :text "Band")
+        ;; tb-filter-br (ss/toggle :text "Notch")
+        tb-filter-1  (ss/toggle :text "1")
+        tb-filter-2  (ss/toggle :text "2")
+        tb-filter-4  (ss/toggle :text "4")
+        tb-filter-6  (ss/toggle :text "6")
+        tb-filter-8  (ss/toggle :text "8")
+
         filter-buttons  {bypass-filter tb-filter-bypass
                          lp-filter tb-filter-lp
                          hp-filter tb-filter-hp
@@ -257,7 +270,10 @@
                                   param :filter
                                   val (.getClientProperty tb :value)]
                               (.set-param! ied param val))))]
-    
+    ;; (doseq [b (map second (seq filter-buttons))]
+    ;;   (ss/config! b :size [48 :by 48]))
+    (doseq [b (map second (seq harmonic-buttons))]
+      (ss/config! b :size [48 :by 48]))
     (.putClientProperty slide-a1 :param :amp1)
     (.putClientProperty slide-a2 :param :amp2)
     (.putClientProperty slide-a3 :param :amp3)

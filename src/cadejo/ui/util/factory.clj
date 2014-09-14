@@ -44,6 +44,11 @@
 ;; Buttons
 ;;
 
+(defn button-size [n]
+  (get {0 [48 :by 48]
+       }
+       n [48 :by 48]))
+
 ;; Return JToggleButton with 2-icons
 (defn toggle [i-unselected i-selected]
   (let [b (ss/toggle)]
@@ -51,52 +56,17 @@
     (.setSelectedIcon b i-selected)
     b))
 
-
-;; Return 'pad' style toggle-button
-;; n - button style 1,2,...
-;;
-(defn pad-button 
-  ([](pad-button 1))
-  ([n]   
-     (let [i1 (icon (format "switches/pad_off_%02d.png" n))
-           i2 (icon (format "switches/pad_on_%02d.png" n))
-           b (toggle i1 i2)]
-       (ss/config! b :size [48 :by 48])
-       b)))
-  
 ;; Return pad style filter selection button
 ;; ftype - filter type one of :bp :br :lp :hp :bypass 
 ;; n - button style 1,2,...
 ;;
 (defn filter-button 
-  ([ftype](filter-button ftype 1))
+  ([ftype](filter-button ftype 0))
   ([ftype n]
-     (let [i1 (icon (format "switches/filter_%s_off_%02d.png" (name ftype) n))
-           i2 (icon (format "switches/filter_%s_on_%02d.png" (name ftype) n))
-           b (toggle i1 i2)]
-       (ss/config! b :size [48 :by 48])
+     (let [s (button-size n)
+           i1 (icon (format "switches/%02d_filter_%s_off.png" n (name ftype)))
+           i2 (icon (format "switches/%02d_filter_%s_on.png" n (name ftype)))
+           b (toggle i1 i2 )]
+       (ss/config! b :size s)
        b)))
-
-;; Return 'rocker' style toggle button
-;; n - button-style 1,2,3,...
-;; 
-(defn rocker-button
-  ([](rocker-button 1))
-  ([n]
-     (let [i1 (icon (format "switches/rocker_off_%02d.png" n))
-           i2 (icon (format "switches/rocker_on_%02d.png" n))
-           b (toggle i1 i2)]
-       (ss/config! b :size [48 :by 84])
-       b)))
-
-(defn number-button 
-  ([n](number-button n 1))
-  ([n style]
-     (let [s (if (neg? n) "n" "p")
-           i1 (icon (format "switches/numpad_%s%03d_off_%02d.png" s n style))
-           i2 (icon (format "switches/numpad_%s%03d_on_%02d.png" s n style))
-           b (toggle i1 i2)]
-       (ss/config! b :size [48 :by 48])
-       b)))
-     
 

@@ -10,5 +10,15 @@ Filter switches:
 
 -----------------------------------------------------------
 
-style size       name
-00     48 x  48  default  
+style  size     name
+00     48 x 48  Default
+01     48 x 48  Business
+02     48 x 48  Business  blue, black
+03     48 x 48  Cerulean
+04     48 x 48  ChallengerDeep
+05     48 x 48  Dust
+06     48 x 48  Gemini
+07     48 x 48  Graphite  Aqua
+08     48 x 48  Ravan
+09     48 x 48  Sahara
+10     48 x 48  Twighlight

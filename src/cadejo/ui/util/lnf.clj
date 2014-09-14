@@ -95,8 +95,16 @@
 (defn skin-dialog []
   (let [pan-tabs (tabbed-panel :tabs [{:title :buttons :content pan-buttons}
                                       {:title :borders :content pan-border}])
+        
+        pan-buttons (let [grp1 (button-group)
+                          tb1 (toggle :text "Alpha" :group grp1 :selected? true :enabled? true)
+                          tb2 (toggle :text "Beta" :group grp1 :selected? false :enabled? true)
+                          tb3 (toggle :text "Gamma (selected)" :selected? true :enabled? false)
+                          tb4 (toggle :text "Delta (unselected)" :selected? false :enabled? false)]
+                      (grid-panel :rows 2 :columns 2 :items [tb1 tb2 tb3 tb4]))
+        
         pan-main (border-panel :north (create-lnf-selector)
-                               ;:center pan-tabs
+                               :center pan-buttons
                                )
         jb-dismis (button :text "Dismis")
         dia (dialog :title "Substance Skins"
