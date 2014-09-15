@@ -129,8 +129,8 @@
                        (.setEnabled pan-scale true)
                        (.setEnabled pan-bias true)
                        (.set-curve! curve-panel pcurve)
-                       (.setValue spin-scale pscale)
-                       (.setValue spin-bias pbias)
+                       (.setValue spin-scale (Double. pscale))
+                       (.setValue spin-bias (Double. pbias))
                        )
                      (do
                        (.setSelected cb-enable false)
