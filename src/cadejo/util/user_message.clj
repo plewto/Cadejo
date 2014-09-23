@@ -1,6 +1,12 @@
 (ns cadejo.util.user-message
   "Provides notification, warnings and error messages to user.")
 
+(defn message [& args]
+  (doseq [m args]
+    (printf ";; %s\n" m))
+  (println))
+
+
 ;; Display warning message
 ;; args the warning text.
 ;;
