@@ -1,118 +1,200 @@
 (ns cadejo.ui.util.lnf
-  (:use [seesaw.core])
+  (:require [cadejo.config :as config])
+  (:require [cadejo.util.path :as path])
+  (:require [cadejo.util.user-message :as umsg])
+  (:require [cadejo.ui.util.factory :as factory])
+  (:require [seesaw.core :as ss])
+  (:require [seesaw.icon])
   (:require [seesaw.swingx :as swingx])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel
            org.pushingpixels.substance.api.UiThreadingViolationException
-           java.awt.BorderLayout
-           javax.swing.BorderFactory
-           javax.swing.border.BevelBorder
-           java.awt.Color))
+           java.io.File))
 
-;; Code shamelessly lifted from seesaw examples
+(def ^:private skins (SubstanceLookAndFeel/getAllSkins))
+
+(def available-skins (keys skins))
+
+;; Map skin to 'normal' icon index
 ;;
-(defn create-lnf-selector []
-  (swingx/titled-panel :title "Substance Skins"
-                       :content (combobox 
-                                 :model    (vals (SubstanceLookAndFeel/getAllSkins))
-                                 :renderer (fn [this {:keys [value]}]
-                                             (text! this (.getClassName value)))
-                                 :listen   [:selection (fn [e]
-                                        ; Invoke later because CB doens't like changing L&F while
-                                        ; it's doing stuff.
-                                                         (invoke-later
-                                                          (-> e
-                                                              selection
-                                                              .getClassName
-                                                              SubstanceLookAndFeel/setSkin)))])))
+(def skin-icon-index 
+  {"Autumn" 0,
+   "Business" 10,
+   "Business Black Steel" 12,
+   "Business Blue Steel" 12,
+   "Cerulean" 11,
+   "Challenger Deep" 19,
+   "Creme" 9,
+   "Creme Coffee" 9,
+   "Dust" 9,
+   "Dust Coffee" 7,
+   "Emerald Dusk" 21,
+   "Gemini" 10,
+   "Graphite" 15,
+   "Graphite Aqua" 14,
+   "Graphite Glass" 14,
+   "Magellan" 17,
+   "Mariner" 9,
+   "Mist Aqua" 12,
+   "Mist Silver" 12,
+   "Moderate" 12,
+   "Nebula" 12,
+   "Nebula Brick Wall" 12,
+   "Office Black 2007" 10,
+   "Office Blue 2007" 6,
+   "Office Silver 2007" 12,
+   "Raven" 22,
+   "Sahara" 12,
+   "Twilight" 23})
 
-;; A few example panels
+;; Map skin to 'selected' icon index
 ;;
+(def skin-selected-icon-index 
+  {"Autumn" 2,
+   "Business" 12,
+   "Business Black Steel" 5,
+   "Business Blue Steel" 5,
+   "Cerulean" 6,
+   "Challenger Deep" 18,
+   "Creme" 6,
+   "Creme Coffee" 3,
+   "Dust" 8,
+   "Dust Coffee" 1,
+   "Emerald Dusk" 20,
+   "Gemini" 2,
+   "Graphite" 10,
+   "Graphite Aqua" 15,
+   "Graphite Glass" 15,
+   "Magellan" 16,
+   "Mariner" 2,
+   "Mist Aqua" 5,
+   "Mist Silver" 4,
+   "Moderate" 5,
+   "Nebula" 6,
+   "Nebula Brick Wall" 6,
+   "Office Black 2007" 1,
+   "Office Blue 2007" 1,
+   "Office Silver 2007" 1,
+   "Raven" 12,
+   "Sahara" 25,
+   "Twilight" 24})
 
-(def greek (map str '(Alpha Beta Gamma Delta Epsilon Zeta Eta Theta Iota Kappa Lambda)))
-
-
-(def pan-border
-  (let [lab1 (label "Raised Bevel")
-        lab2 (label "Lowered Bevel")
-        lab3 (label "Raised Etched")
-        lab4 (label "Lowered Etched")
-        lab5 (label "Raised Soft Bevel")
-        lab6 (label "Lowered Soft Bevel")
-        lab7 (label "Black Line Border")
-        lab8 (label "Matte Border 4")
-        lab9 (label "Title Border")
-        pan-demos (grid-panel :columns 4 :rows 4 :hgap 8 :vgap 8
-                              :items [lab1 lab2 lab3 
-                                      lab4 lab5 lab6
-                                      lab7 lab8 lab9])
-        pan-main (border-panel :north "Border Examples"
-                               :center pan-demos)]
-    (.setBorder lab1 (BorderFactory/createBevelBorder BevelBorder/RAISED))
-    (.setBorder lab2 (BorderFactory/createBevelBorder BevelBorder/LOWERED))
-    (.setBorder lab3 (BorderFactory/createEtchedBorder BevelBorder/RAISED))
-    (.setBorder lab4 (BorderFactory/createEtchedBorder BevelBorder/LOWERED))
-    (.setBorder lab5 (BorderFactory/createSoftBevelBorder BevelBorder/RAISED))
-    (.setBorder lab6 (BorderFactory/createSoftBevelBorder BevelBorder/LOWERED))
-    (.setBorder lab7 (BorderFactory/createLineBorder Color/BLACK))
-    (.setBorder lab8 (BorderFactory/createMatteBorder 4 4 4 4 Color/GRAY))
-    (.setBorder lab9 (BorderFactory/createTitledBorder "Foo"))
-    pan-main))
-
-(def pan-buttons (let [count 4
-                       pan-simple (horizontal-panel 
-                                   :items (let [acc* (atom [])]
-                                            (dotimes [i count]
-                                              (swap! acc* (fn [n](conj n (button :text (nth greek i))))))
-                                            @acc*))
-                       pan-checkbox (horizontal-panel
-                                     :items (let [acc* (atom [])]
-                                              (dotimes [i count]
-                                                (swap! acc* (fn [n](conj n (checkbox :text (nth greek i))))))
-                                              (.setSelected (first @acc*) true)
-                                              @acc*))
-                       grp1 (button-group)
-                       pan-toggle (horizontal-panel 
-                                   :items (let [acc* (atom [])]
-                                            (dotimes [i count]
-                                              (swap! acc* (fn [n](conj n (toggle :text (nth greek i) :group grp1)))))
-                                            (.setSelected (second @acc*) true)
-                                            @acc*))
-                       grp2 (button-group)
-                       pan-radio (horizontal-panel 
-                                  :items (let [acc* (atom [])]
-                                           (dotimes [i count]
-                                             (swap! acc* (fn [n](conj n (radio :text (nth greek i) :group grp2)))))
-                                           (.setSelected (nth @acc* 2) true)
-                                           @acc*))]
-                   (.setBorder pan-simple (BorderFactory/createTitledBorder "Button"))
-                   (.setBorder pan-checkbox (BorderFactory/createTitledBorder "Checkbox"))
-                   (.setBorder pan-toggle (BorderFactory/createTitledBorder "Toggle Button"))
-                   (.setBorder pan-radio (BorderFactory/createTitledBorder "Radio Button"))
-                   (grid-panel :rows 4 :vgap 4 :items [pan-simple pan-checkbox pan-toggle pan-radio])))
-  
+(defn skin-name [i]
+  (nth available-skins i))
 
 
+;; Return java.io.File for icon using the current config/icon-style
+;; group - keyword, major icon grouping  :curve :filter :env ....
+;; subgroup - keyword, specific icon within in group 
+;;
+(defn- get-icon-file 
+  ([style group subgroup]
+     (let [name (format "%02d_%s%s.png"
+                        style 
+                        (name group)
+                        (if subgroup (format "_%s" (name subgroup)) ""))
+           pathname (path/join "resources" "icons" name)]
+       (File. pathname)))
+  ([group subgroup]
+     (get-icon-file (config/icon-style) group subgroup nil)))
+
+
+;; Return 'normal' un-selected icon
+;; style    - int or String, style may be either int icon index 
+;;            0 <= style <= 25 or skin name as String
+;; group    - keyword, major icon group 
+;; subgroup - keyword, specific icon within group.
+;;
+(defn read-icon 
+  ([style group subgroup]
+     (let [sty (cond (= (type style) java.lang.String)
+                     (get skin-icon-index style 11)
+                     (= (type style) java.lang.Long)
+                     (min (max 0 style) 25)
+                     :default 11)
+           f (get-icon-file sty group subgroup)]
+       (seesaw.icon/icon f)))
+  ([group subgroup]
+     (read-icon (config/icon-style) group subgroup)))
+
+
+;; Return 'selected' icon
+;; style    - int or String, style may be either int icon index 
+;;            0 <= style <= 25 or skin name as String
+;; group    - keyword, major icon group 
+;; subgroup - keyword, specific icon within group.
+;;
+(defn read-selected-icon
+  ([style group subgroup]
+     (let [sty (cond (= (type style) java.lang.String)
+                     (get skin-selected-icon-index style)
+                     (= (type style) java.lang.Long)
+                     (min (max 0 style) 25)
+                     :default 6)
+           f (get-icon-file sty group subgroup)]
+       (seesaw.icon/icon f)))
+  ([group subgroup]
+     (read-selected-icon (config/selected-icon-style) group subgroup)))
+
+;; Return skin-selectin panel
+;;
+(defn- lnf-selector-panel []
+  (let [grp (ss/button-group)
+        buttons (let [acc* (atom [])
+                      counter* (atom 0)]
+                  (doseq [[k s](seq skins)]
+                    (let [tb (ss/toggle :text (format "%2d %s" @counter* k)
+                                        :group grp
+                                        :selected? (= k (config/current-skin)))]
+                      (.putClientProperty tb :skin s)
+                      (swap! acc* (fn [n](conj n tb)))
+                      (swap! counter* inc)
+                      (ss/listen tb :action
+                                 (fn [ev]
+                                   (let [src (.getSource ev)
+                                         skin (.getClientProperty src :skin)]
+                                     ;(reset! current-skin-name* (.getDisplayName skin))
+                                     (config/current-skin! (.getDisplayName skin))
+                                     (ss/invoke-later
+                                      (SubstanceLookAndFeel/setSkin (.getClassName skin))))))))
+                  @acc*)]
+    (ss/grid-panel :rows 6 :columns 5 :items buttons)))
+                                        
+;; Pop up skin selection dialog.
+;;                  
 (defn skin-dialog []
-  (let [pan-tabs (tabbed-panel :tabs [{:title :buttons :content pan-buttons}
-                                      {:title :borders :content pan-border}])
-        
-        pan-buttons (let [grp1 (button-group)
-                          tb1 (toggle :text "Alpha" :group grp1 :selected? true :enabled? true)
-                          tb2 (toggle :text "Beta" :group grp1 :selected? false :enabled? true)
-                          tb3 (toggle :text "Gamma (selected)" :selected? true :enabled? false)
-                          tb4 (toggle :text "Delta (unselected)" :selected? false :enabled? false)]
-                      (grid-panel :rows 2 :columns 2 :items [tb1 tb2 tb3 tb4]))
-        
-        pan-main (border-panel :north (create-lnf-selector)
-                               :center pan-buttons
-                               )
-        jb-dismis (button :text "Dismis")
-        dia (dialog :title "Substance Skins"
-                    :type :plain
-                    :content pan-main
-                    :on-close :dispose
-                    :size [500 :by 400]
-                    :options [jb-dismis])]
-    (listen jb-dismis :action (fn [_]
-                                (return-from-dialog dia true)))
-    (show! dia)))
+  (let [pan-main 
+        (swingx/titled-panel
+         :title "Substance Skins"
+         :content (ss/border-panel 
+                   :center (lnf-selector-panel)
+                   :south (ss/label 
+                           :text (format "Current config icon style is %s" 
+                                         (config/icon-style))
+                           :border (factory/bevel))))
+        jb-dismis (ss/button :text "Dismis")
+        dia (ss/dialog :title "Substance Skins"
+                       :content pan-main
+                       :on-close :dispose
+                       :size [1000 :by 500]
+                       :options [jb-dismis])]
+    (ss/listen jb-dismis :action (fn [_](ss/return-from-dialog dia true)))
+    (ss/show! dia)))
+
+
+;; Set initial skin
+;;
+(defn set-initial-skin []
+  (let [skin-name (config/initial-skin)
+        skin (get skins skin-name)]
+    (if skin 
+      (do 
+        (ss/invoke-later
+         (SubstanceLookAndFeel/setSkin (.getClassName skin)))
+        (config/current-skin! skin-name)
+        (umsg/message (format "Using skin '%s' icon-style %s"
+                              skin-name (config/icon-style)))))
+    (if (and skin-name (not skin))
+      (umsg/warning (format "config initial-skin value '%s' is invalid" skin-name)))))
+  
+      
+  
