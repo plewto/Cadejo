@@ -1,11 +1,15 @@
-(println "--> cadejo.config")
 (ns cadejo.config
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.util.midi])
-  (:import java.awt.Color))
+  (:import org.pushingpixels.substance.api.SubstanceLookAndFeel))
 
 (def ^:private +VERSION+ "0.1.1-SNAPSHOT")
+
+(def ^:private available-skins (map str (keys (SubstanceLookAndFeel/getAllSkins))))
+
+(def splash-frame* (atom nil))
+
 
 (defprotocol CadejoConfig
 
@@ -35,11 +39,55 @@
     [this flag]
     "Sets flag indicating whether GUI components are to be use are not.")
 
+  (icon-style
+    [this]
+    "Return icon style index. 
+     If icon-style is not explicitly set derive style from current-skin
+     The returned value is either an int indicating the icon index directly
+     or a string indicating the current skin")
+
+  (icon-style!
+    [this n]
+    "Set icon style 
+     n - int, style index 0 <= n <= 25
+     If icon style is not explicitly set the style is derived from the current skin")
+
+  (selected-icon-style 
+    [this]
+    "Return icon style for 'selected' buttons
+     If not explicitly set the style is derived from the current skin")
+
+  (selected-icon-style!
+    [this n]
+    "Set icon style for selected buttons.
+     If not explicitly set, icon style is derived from current skin")
+
+  (initial-skin 
+    [this]
+    "Return string, the name of initial-skin.")
+
+  (initial-skin!
+    [this skin-name]
+    "Set initial-skin
+     skin-name - string")
+
+  (current-skin
+    [this]
+    "Used internally")
+
+  (current-skin!
+    [this skin-name]
+    "Used internally")
+
   (enable-pp
-    [this])
+    [this]
+    "Return flag, if true pretty-printer hook is executed on MIDI program 
+     change")
+     
 
   (enable-pp!
-    [this flag])
+    [this flag]
+    "Enable/disable pretty-printer hook on MIDI program change")
 
   (maximum-undo-count 
     [this]
@@ -66,10 +114,25 @@
 
   (enable-tooltips
     [this]
-    "Returns Boolean indicating that GUI tooltips are to be used.
-     Note that currently (2014.08.15) this flag is not universally enforced")
+    "Returns flag indicating that GUI tooltips are to be used.
+     Tooltips are automatically enabled if button text is disabled.")
 
   (enable-tooltips!
+    [this flag])
+
+  (enable-button-text
+    [this]
+    "Returns flag indicating if button text is enabled.
+     Button text is automatically enabled if icons are disabled.")
+
+  (enable-button-text!
+    [this flag])
+
+  (enable-button-icons
+    [this]
+    "Returns flag indicating if button icons are enabled.")
+
+  (enable-button-icons!
     [this flag])
 
   (config-path 
@@ -81,11 +144,6 @@
     [this path]
     "Change path to configuration directory.")
 
-  ;; (maximum-channel-children 
-  ;;   [this])
-
-  ;; (maximum-channel-children!
-  ;;   [this n])
 
   (add-instrument! 
     [this descriptor]
@@ -110,11 +168,17 @@
 (defn cadejo-config []
   (let [input-ports* (atom [])
         load-gui* (atom false)
+        icon-style* (atom nil)
+        selected-icon-style* (atom nil)
+        initial-skin* (atom "Dust")
+        current-skin* (atom "Dust")
         enable-pp* (atom true)
         max-undo-count* (atom 10)
         overwrite-warn* (atom true)
         unsaved-warn* (atom true)
         enable-tooltips* (atom true)
+        enable-button-text* (atom false)
+        enable-button-icons* (atom true)
         config-path* (atom nil)
         instruments* (atom nil)
         cnfig (reify CadejoConfig
@@ -137,7 +201,33 @@
 
                 (load-gui! [this flag]
                   (reset! load-gui* flag))
-                  
+
+                (icon-style [this] 
+                  (or @icon-style*
+                      @current-skin*
+                      11))
+
+                (icon-style! [this n]
+                  (reset! icon-style* (int (min (max 0 n) 25))))
+
+                (selected-icon-style [this]
+                  (or @selected-icon-style*
+                      @current-skin*
+                      6))
+
+                (selected-icon-style! [this n]
+                  (reset! selected-icon-style* (min (max 0 n) 25)))
+
+                (initial-skin [this] @initial-skin*)
+
+                (initial-skin! [this skin-name]
+                  (reset! initial-skin* skin-name))
+                
+                (current-skin [this] @current-skin*)
+
+                (current-skin! [this skin-name]
+                  (reset! current-skin* skin-name))
+
                 (enable-pp [this] @enable-pp*)
 
                 (enable-pp! [this flag]
@@ -162,10 +252,24 @@
                   (reset! unsaved-warn* flag))
 
                 (enable-tooltips [this]
-                  @enable-tooltips*)
+                  (or @enable-tooltips*
+                      (not (.enable-button-text this))))
 
                 (enable-tooltips! [this flag]
                   (reset! enable-tooltips* flag))
+                
+                (enable-button-text [this]
+                  (or @enable-button-text*
+                      (not (.enable-button-icons this))))
+
+                (enable-button-text! [this flag]
+                  (reset! enable-button-text* flag))
+
+                (enable-button-icons [this]
+                  @enable-button-icons*)
+
+                (enable-button-icons! [this flag]
+                  (reset! enable-button-icons* flag))
 
                 (config-path[this]
                   @config-path*)
@@ -215,10 +319,8 @@
 (defn channel-count [] 
   (.channel-count @current-config*))
 
-
 (defn midi-input-ports []
   (.midi-input-ports @current-config*))
-
 
 (defn midi-input-port [n]
   (.midi-input-port @current-config* n))
@@ -229,6 +331,29 @@
 (defn load-gui! [flag]
   (.load-gui! @current-config* flag))
 
+(defn icon-style []
+  (.icon-style @current-config*))
+
+(defn icon-style! [n]
+  (.icon-style! @current-config* n))
+
+(defn selected-icon-style []
+  (.selected-icon-style @current-config*))
+
+(defn selected-icon-style! [n]
+  (.selected-icon-style! @current-config* n))
+
+(defn initial-skin []
+  (.initial-skin @current-config*))
+
+(defn initial-skin! [skin-name]
+  (.initial-skin! @current-config* skin-name))
+
+(defn current-skin []
+  (.current-skin @current-config*))
+
+(defn current-skin! [skin-name]
+  (.current-skin! @current-config* skin-name))
 
 (defn enable-pp []
   (.enable-pp @current-config*))
@@ -260,6 +385,18 @@
 (defn enable-tooltips! [flag]
   (.enable-tooltips! @current-config* flag))
 
+(defn enable-button-text []
+  (.enable-button-text @current-config*))
+
+(defn enable-button-text! [flag]
+  (.enable-button-text! @current-config* flag))
+
+(defn enable-button-icons []
+  (.enable-button-icons @current-config*))
+
+(defn enable-button-icons! [flag]
+  (.enable-button-icons! @current-config* flag))
+
 (defn config-path []
   (.config-path @current-config*))
 
@@ -277,5 +414,3 @@
 
 (defn create-instrument [iname mode & args]
   (.create-instrument @current-config* iname mode args))
-
-
