@@ -2,6 +2,7 @@
   "Provides undo/redo stack with associated JButton"
   (:require [seesaw.core :as ss])
   (:require [cadejo.util.user-message :as umsg])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.config]))
 
 
@@ -65,9 +66,28 @@
           (.setEnabled b false)))
 
       (get-button [this]
-        (let [jb (ss/button :text label)]
+        (let [jb (ss/button)]
           (.setEnabled jb false)
           (swap! buttons* (fn [n](conj n jb)))
+          (if (.equalsIgnoreCase label "undo")
+            (do
+              (if (cadejo.config/enable-button-text)
+                (ss/config! jb :text label))
+              (if (cadejo.config/enable-button-icons)
+                (do
+                  (.setIcon jb (lnf/read-icon :general :undo))
+                  (.setSelectedIcon jb (lnf/read-selected-icon :general :undo))))
+              (if (cadejo.config/enable-tooltips)
+                (.setToolTipText jb "Undo")))
+            (do
+              (if (cadejo.config/enable-button-text)
+                (ss/config! jb :text label))
+              (if (cadejo.config/enable-button-icons)
+                (do
+                  (.setIcon jb (lnf/read-icon :general :redo))
+                  (.setSelectedIcon jb (lnf/read-selected-icon :general :redo))))
+              (if (cadejo.config/enable-tooltips)
+                (.setToolTipText jb "Redo"))))
           jb)))))
                 
      
