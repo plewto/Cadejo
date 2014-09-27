@@ -176,9 +176,11 @@
         max-undo-count* (atom 10)
         overwrite-warn* (atom true)
         unsaved-warn* (atom true)
+        
         enable-tooltips* (atom true)
-        enable-button-text* (atom false)
-        enable-button-icons* (atom true)
+        enable-button-text* (atom true)
+        enable-button-icons* (atom false)
+        
         config-path* (atom nil)
         instruments* (atom nil)
         cnfig (reify CadejoConfig
@@ -414,3 +416,50 @@
 
 (defn create-instrument [iname mode & args]
   (.create-instrument @current-config* iname mode args))
+
+
+; ---------------------------------------------------------------------- 
+;                               Set Defaults
+;
+; Available Skins (case sensitive)
+; "Autumn"
+; "Business"
+; "Business Black Steel"
+; "Business Blue Steel"
+; "Cerulean"
+; "Challenger Deep"
+; "Creme"
+; "Creme Coffee"
+; "Dust"
+; "Dust Coffee"
+; "Emerald Dusk"
+; "Gemini"
+; "Graphite"
+; "Graphite Aqua"
+; "Graphite Glass"
+; "Magellan"
+; "Mariner"
+; "Mist Aqua"
+; "Mist Silver"
+; "Moderate"
+; "Nebula"
+; "Nebula Brick Wall"
+; "Office Black 2007"
+; "Office Blue 2007"
+; "Office Silver 2007"
+; "Raven"
+; "Sahara"
+; "Twilight"
+
+
+(load-gui! true)
+;; (icon-style! nil) ;; use skin default
+(initial-skin! "Business")
+(enable-pp! true)
+(maximum-undo-count! 10)
+(warn-on-file-overwrite! true)
+(warn-on-unsaved-data! true)
+(enable-tooltips! true)
+(enable-button-text! true)
+(enable-button-icons! false)
+;(config-path "~/.cadejo")
