@@ -1,15 +1,16 @@
-(println "--> cadejo.ui.midi.curve-panel")
 (ns cadejo.ui.midi.curve-panel
-  (:require [cadejo.config])
-  (:require [cadejo.util.path :as path])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
-  (:require [seesaw.icon :as icon])
-  (:use [seesaw.core :only [border-panel button button-group
-                            grid-panel label listen radio]])
-  (:import java.io.File
-           javax.swing.JLabel))
+  (:require [seesaw.core :as ss])
+  (:import java.awt.Dimension))
+
+(def ^:private rows 7)
+(def ^:private columns 3)
+(def ^:private icon-size 36)
+(def ^:private height (* (inc rows) icon-size))
+(def ^:private width (* columns icon-size))
+(def ^:private panel-size (Dimension. width height))
 
 (def tooltips {:zero "Constant y=0.0"
                :half "Constant y=0.5"
@@ -34,12 +35,9 @@
                nil ""})
 
 (defn- set-tooltips [buttons]
-  (if (cadejo.config/enable-tooltips)
-    (doseq [b buttons]
-      (let [curve (.getClientProperty b :curve)]
-        (.setToolTipText b (get tooltips curve ""))))))
-
-(def icon-extension "png")
+  (doseq [b buttons]
+    (let [curve (.getClientProperty b :curve)]
+      (.setToolTipText b (get tooltips curve "")))))
 
 (def curve-order [:zero :half :one 
                   :linear :quadratic :cubic
@@ -50,65 +48,7 @@
                   :iconvex2 :iconvex4 :iconvex6
                   :ilogistic :ilogistic2 nil])
 
-
-;; (def blank-icon (let [style (cadejo.config/icon-style)
-;;                       pathname (path/append-extension
-;;                                 (path/join "resources" "icons"
-;;                                            (format "%02d_blank_36" style))
-;;                                 icon-extension)
-;;                       ico (icon/icon (File. pathname))]
-;;                   ico))
-                                
-
-                  
-;; (def blank-icon (let [pathname (path/append-extension
-;;                                 (path/join "resources" "icons" 
-;;                                            "curves" "blank")
-;;                        icon-extension)
-;;                       ico (icon/icon (File. pathname))]
-;;                   ico))
-
-
-
-
-;; (defn- get-icon-filename [base selected inverted]
-;;   (let [file (str (if selected "s" "u")
-;;                   (if inverted "" "n")
-;;                   base)
-;;         pathname (path/append-extension
-;;                   (path/join "resources" "icons" "curves" (name file))
-;;                   icon-extension)]
-;;     (File. pathname)))
-
-;; (defn- get-icon-filename [base selected inverted]
-;;   (let [style (cadejo.config/icon-style)
-;;         file (format "%02d_curve_%s%s_%s"
-;;                      style 
-;;                      (if inverted "i" "")
-;;                      base
-;;                      (if selected "01" "00"))
-;;         pathname (path/append-extension
-;;                   (path/join "resources" "icons" (name file))
-;;                   icon-extension)]
-;;     (println (format "DEBUG base = '%s' sel = %s  inv = %s  --> path '%s'" base selected inverted pathname)) 
-;;     (File. pathname)))
-
-;; (defn- get-icon-filename [base selected]   ;; DEPRECIATE MOVE TO lnf
-;;   (let [style (cadejo.config/icon-style)
-;;         file (format "%02d_curve_%s_%s"
-;;                      style 
-;;                      base
-;;                      (if selected "01" "00"))
-;;         pathname (path/append-extension
-;;                   (path/join "resources" "icons" (name file))
-;;                   icon-extension)]
-;;     (File. pathname)))
-
-
-(def blank-icon (lnf/read-icon (cadejo.config/icon-style) :blank :36))
-
-
-
+(def blank-icon (lnf/read-icon :blank :36))
 
 (defn- create-buttons [grp]
   (let [acc* (atom [])
@@ -116,21 +56,16 @@
     (doseq [curve curve-order]
       (if curve
         (let [curve-name (name curve)
-              ;; inverted (= (first curve-name) \i)
-              ;; s-icon (get-icon-filename curve-name true inverted)
-              ;; u-icon (get-icon-filename curve-name false inverted)
-              ;; s-icon (get-icon-filename curve-name true)
-              ;; u-icon (get-icon-filename curve-name false)
               u-icon (lnf/read-icon :curve curve)
               s-icon (lnf/read-selected-icon :curve curve)
-              jrb (radio :group grp)]
+              jrb (ss/radio :group grp)]
           (.putClientProperty jrb :curve curve)
-          (.setIcon jrb u-icon) ; (icon/icon u-icon))
-          (.setSelectedIcon jrb s-icon) ; (icon/icon s-icon))
+          (.setIcon jrb u-icon)
+          (.setSelectedIcon jrb s-icon)
           (.setSelected jrb (= curve :linear))
           (swap! acc* (fn [n](conj n jrb)))
           (swap! rvsmap* (fn [n](assoc n curve jrb))))
-        (let [jrb (radio)]
+        (let [jrb (ss/radio)]
           (.putClientProperty jrb :curve nil)
           (.setIcon jrb blank-icon)
           (swap! acc* (fn [n](conj n jrb))))))
@@ -161,14 +96,19 @@
   ([]
      (curve-panel nil))
   ([title]
-     (let [bgrp (button-group)
+     (let [bgrp (ss/button-group)
            [buttons rvsmap] (create-buttons bgrp)
-           pan-center (grid-panel :rows 7 :columns 3 :items buttons)
-           pan-main (border-panel :center pan-center
-                                  :border (if title 
-                                            (factory/title title)
-                                            (factory/padding)))
-           
+           pan-center (let [pan (ss/grid-panel :rows rows 
+                                          :columns columns 
+                                          :items buttons
+                                          :border (if title 
+                                                    (factory/title title)
+                                                    (factory/padding)))]
+                        (.setMaximumSize pan panel-size)
+                        (.setMinimumSize pan panel-size)
+                        (.setPreferredSize pan panel-size)
+                        pan)
+           pan-main (ss/border-panel :north pan-center)
            current-curve* (atom :linear)
            widgets {:button-group bgrp
                     :buttons buttons
@@ -176,7 +116,7 @@
        (doseq [b buttons]
          (let [c (.getClientProperty b :curve)]
            (if c 
-             (listen b :action 
+             (ss/listen b :action 
                      (fn [ev] 
                        (let [src (.getSource ev)]
                          (reset! current-curve*
@@ -188,7 +128,8 @@
          
          (widget [this key]
            (or (get widgets key)
-               (umsg/warning (format "CurvePanel does not have %s widget" key))))
+               (umsg/warning 
+                (format "CurvePanel does not have %s widget" key))))
          
          (set-curve! [this curve]
            (let [jrb (get rvsmap curve)]
@@ -211,4 +152,4 @@
          (add-action-listener! [this afn]
            (doseq [b buttons]
              (if (.getClientProperty b :curve)
-               (listen b :action afn))))))))
+               (ss/listen b :action afn))))  ))))
