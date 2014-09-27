@@ -3,7 +3,7 @@
   (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.node-editor])
-  (:require [cadejo.ui.util.color-utilities])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout))
@@ -48,11 +48,7 @@
         jb-channels (let [acc* (atom [])]
                       (dotimes [i channel-count]
                         (let [jb (ss/button :text (format "%02d" i)
-                                            :id (format "jb-channel-%02d" i))
-                              ;[bg fg](cadejo.ui.util.color-utilities/channel-color-cue i)
-                              ]
-                          ;; (.setBackground jb bg)
-                          ;; (.setForeground jb fg)
+                                            :id (format "jb-channel-%02d" i))]
                           (.putClientProperty jb :channel i)
                           (swap! acc* (fn [n](conj n jb)))))
                       @acc*)
@@ -66,15 +62,19 @@
         pan-tree (ss/border-panel :north (ss/label "Cadejo Tree")
                                   :center txt-tree)
         pan-tab (ss/tabbed-panel 
-                 :tabs [{:title "Tree" :content pan-tree}
-                        {:title "Scale Registry" :content (.widget reged :pan-main)}]
+                 :tabs [{:title (if (cadejo.config/enable-button-text) "Tree" "")
+                         :icon (lnf/read-icon :tree :info)
+                         :content pan-tree}
+                        {:title (if (cadejo.config/enable-button-text) "Scale Registry" "")
+                         :icon (lnf/read-icon :general :staff)
+                         :content (.widget reged :pan-main)}]
                  :border (factory/padding))]
     (ss/config! (.widget basic-ed :frame) :on-close :nothing)
     (ss/config! (.widget basic-ed :frame) :size frame-size)
     (.add pan-center pan-channels BorderLayout/SOUTH)
     (.add pan-center pan-tab BorderLayout/CENTER)
 
-    (.setEnabled (.widget basic-ed :jb-parent) false)
+    ;(.setEnabled (.widget basic-ed :jb-parent) false)
     (.info-text! basic-ed (format "MIDI device %s" (.get-property scene :id)))
     (let [sed (reify SceneEditor 
                 
@@ -122,9 +122,18 @@
                       (.sync-ui! (.get-editor cobj))))
                   (.sync-ui! reged)
                   (ss/config! txt-tree :text (.rep-tree scene 0))
-                  (.revalidate (.widget basic-ed :frame))
-                  ) ;; end sync-ui!
-                )]
+                  (.revalidate (.widget basic-ed :frame))) )]
+
+      (ss/listen (.widget basic-ed :jb-parent)
+                 :action (fn [_]
+                           (let [f @cadejo.config/splash-frame*]
+                             (if f 
+                               (do 
+                                 (.setVisible f true)
+                                 (.toFront f))))))
+      (if (cadejo.config/enable-tooltips)
+        (.setToolTipText (.widget basic-ed :jb-parent) "Display Cadejo Startup Window"))
+      (.putClientProperty (.widget basic-ed :jb-help) :topic :scene)
       (doseq [jb jb-channels]
         (ss/listen jb :action (fn [ev]
                                 (let [src (.getSource ev)

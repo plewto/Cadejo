@@ -1,21 +1,19 @@
 (ns cadejo.ui.scale.registry-editor
   "Provides ScaleRegistry GUI"
- (:require [cadejo.scale.registry])
+  (:require [cadejo.config :as config])
+  (:require [cadejo.scale.registry])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.overwrite-warning])
   (:require [cadejo.ui.util.undo-stack])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.scale.eqtemp])
   (:require [cadejo.ui.scale.addscale])
   (:require [cadejo.ui.scale.subeditors :as subeditors])
   (:require [seesaw.chooser])
   (:require [seesaw.border :as ssb])
-  (:use [seesaw.core :only [add! border-panel button button-group card-panel 
-                            config config! grid-panel label listbox listen
-                            scrollable spinner spinner-model show-card! toggle
-                            vertical-panel]]))
-
+  (:require [seesaw.core :as ss]))
 
 (def current-filename* (atom ""))
 
@@ -25,7 +23,6 @@
                    description
                    (fn [f]
                      (path/has-extension? (.getAbsolutePath f) ext)))))
-
 
 (defn open-dialog [ed registry]
   (let [ext cadejo.scale.registry/file-extension
@@ -77,7 +74,6 @@
              :success-fn success
              :cancel-fn cancel)]))
 
-
 (defprotocol RegistryEditor
 
   (widgets 
@@ -128,8 +124,7 @@
     "Returns pair [lower upper]")
 
   (enable-wrap!
-    [this flag])
-)
+    [this flag]))
 
 (defn registry-editor [scene]
   (let [sregistry (.scale-registry scene)
@@ -137,58 +132,65 @@
         redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo")
         enable-change-listeners* (atom true)
         ;; North toolbar
-        jb-init (button :text "Init")
-        jb-open (button :text "Open")
-        jb-save (button :text "Save")
+        jb-init (ss/button)
+        jb-open (ss/button)
+        jb-save (ss/button)
         jb-undo (.get-button undo-stack)
         jb-redo (.get-button redo-stack)
-        pan-toolbar (grid-panel :rows 1
-                              :items [jb-init jb-open jb-save
-                                      jb-undo jb-redo])
+        jb-help (ss/button)
+        pan-toolbar (ss/toolbar :floatable? false
+                                :items [jb-init jb-open jb-save 
+                                        :separator jb-undo jb-redo
+                                        :separator jb-help])
         ;; West registered scale list
-        lst-registry (listbox :model (.registered-tables sregistry)
+        lst-registry (ss/listbox :model (.registered-tables sregistry)
                               :size [200 :by 300])
-        pan-west (vertical-panel :items [(scrollable lst-registry)]
+        pan-west (ss/vertical-panel :items [(ss/scrollable lst-registry)]
                                  :border (factory/title "Registered Scales"))
         ;; Edit limits
-        spin-range-low (spinner :model (spinner-model 0 :from 0 :to 127 :by 1))
-        spin-range-high (spinner :model (spinner-model 127 :from 0 :to 127 :by 1))
-        spin-wrap-low (spinner :model (spinner-model 0 :from 0 :to 200 :by 10))
-        spin-wrap-high (spinner :model (spinner-model 20000 :from 4000 :to 20000 :by 1000))
-        pan-range-low (vertical-panel :items [spin-range-low]
-                                      :border (factory/title "Low"))
-        pan-range-high (vertical-panel :items [spin-range-high]
-                                       :border (factory/title "High"))
-        pan-range (vertical-panel :items [pan-range-low pan-range-high]
-                                  :border (factory/title "Key range"))
-        pan-wrap-low (vertical-panel :items [spin-wrap-low]
-                                      :border (factory/title "Low"))
-        pan-wrap-high (vertical-panel :items [spin-wrap-high]
-                                       :border (factory/title "High"))
-        pan-wrap (vertical-panel :items [pan-wrap-low pan-wrap-high]
-                                 :border (factory/title "Wrap"))
-        pan-limits (vertical-panel :items [pan-range pan-wrap])
+        spin-range-low (ss/spinner :model (ss/spinner-model
+                                           0 :from 0 :to 127 :by 1))
+        spin-range-high (ss/spinner :model (ss/spinner-model
+                                            127 :from 0 :to 127 :by 1))
+        spin-wrap-low (ss/spinner :model (ss/spinner-model
+                                          0 :from 0 :to 200 :by 10))
+        spin-wrap-high (ss/spinner :model (ss/spinner-model
+                                           20000
+                                           :from 4000 :to 20000 :by 1000))
+        pan-range-low (ss/vertical-panel :items [spin-range-low]
+                                         :border (factory/title "Low"))
+        pan-range-high (ss/vertical-panel :items [spin-range-high]
+                                          :border (factory/title "High"))
+        pan-range (ss/vertical-panel :items [pan-range-low pan-range-high]
+                                     :border (factory/title "Key range"))
+        pan-wrap-low (ss/vertical-panel :items [spin-wrap-low]
+                                        :border (factory/title "Low"))
+        pan-wrap-high (ss/vertical-panel :items [spin-wrap-high]
+                                         :border (factory/title "High"))
+        pan-wrap (ss/vertical-panel :items [pan-wrap-low pan-wrap-high]
+                                    :border (factory/title "Wrap"))
+        pan-limits (ss/vertical-panel :items [pan-range pan-wrap])
         ;; South toolbar
-        group (button-group)
-        jb-delete (button :text "X")
-        jtb-add (toggle :text "+" :group group :selected? true)
-        jtb-edit (toggle :text "Edit" :group group)
-        jtb-detail (toggle :text "Detail" :group group)
-        pan-south (grid-panel :rows 1 
-                              :items [jb-delete jtb-add
+        group (ss/button-group)
+        jb-delete (ss/button)
+        jtb-add (ss/toggle :group group :selected? true)
+        jtb-edit (ss/toggle :group group)
+        jtb-detail (ss/toggle :group group)
+        pan-south (ss/toolbar :floatable? false
+                              :items [jb-delete jtb-add 
                                       jtb-edit jtb-detail])
         ;; Main Panels
-
-        pan-subedit (card-panel :border (factory/line))
-        pan-center (border-panel :west pan-limits
+        pan-subedit (ss/card-panel :border (factory/line))
+        pan-center (ss/border-panel :west pan-limits
                                  :center pan-subedit)
-        pan-main (border-panel :north pan-toolbar
+        pan-main (ss/border-panel :north pan-toolbar
                                :south pan-south
                                :west pan-west
                                :center pan-center)
         ;; splice labels
-        lab-splice-source (label :text " " :border (factory/title "Source"))
-        lab-splice-destination (label :text " "
+        lab-splice-source (ss/label :text " "
+                                    :border (factory/title "Source"))
+        lab-splice-destination (ss/label :text " "
                                       :border (factory/title "Destination"))
         widget-map {:jb-init jb-init
                     :jb-open jb-open
@@ -223,9 +225,8 @@
 
              (sync-ui! [this]
                (reset! enable-change-listeners* false)
-               (config! lst-registry :model (.registered-tables sregistry))
-               (reset! enable-change-listeners* true)
-               )
+               (ss/config! lst-registry :model (.registered-tables sregistry))
+               (reset! enable-change-listeners* true))
 
              (selected-table-id [this]
                (.getSelectedValue lst-registry))
@@ -240,15 +241,15 @@
 
              (push-undo-state! [this action]
                (let [state (.clone sregistry)]
-                 (.push-state undo-stack [action state])))
+                 (.push-state! undo-stack [action state])))
 
              (push-redo-state! [this action]
                (let [state (.clone sregistry)]
-                 (.push-state redo-stack [action state])))
+                 (.push-state! redo-stack [action state])))
 
              (undo! [this]
                (if (not (.is-empty? undo-stack))
-                 (let [[action state](.pop-state undo-stack)]
+                 (let [[action state](.pop-state! undo-stack)]
                    (.push-redo-state! this action)
                    (.copy-state! sregistry state)
                    (.sync-ui! this)
@@ -257,7 +258,7 @@
 
              (redo! [this]
                (if (not (.is-empty? redo-stack))
-                 (let [[action state](.pop-state redo-stack)]
+                 (let [[action state](.pop-state! redo-stack)]
                    (.push-undo-state! this action)
                    (.copy-state! sregistry state)
                    (.sync-ui! this)
@@ -296,36 +297,80 @@
                (.setEnabled pan-wrap-high flag)
                (.setEnabled pan-wrap flag)))]
 
-    (listen jb-init :action
+    (.putClientProperty jb-help :topic :scale-registry)
+    (if (config/enable-button-text)
+      (do
+        (ss/config! jb-init :text "Reset")   
+        (ss/config! jb-open :text "Open")   
+        (ss/config! jb-save :text "Save")   
+        (ss/config! jb-delete :text "Delete")   
+        (ss/config! jtb-add :text "+")
+        (ss/config! jtb-edit :text "Edit")
+        (ss/config! jtb-detail :text "Detail")
+        (ss/config! jb-help :text "Help")
+        ))
+        
+
+    (if (config/enable-button-icons)
+      (do 
+        (.setIcon jb-init (lnf/read-icon :general :reset))
+        (.setIcon jb-open (lnf/read-icon :general :open))
+        (.setIcon jb-save (lnf/read-icon :general :save))
+        (.setIcon jb-delete (lnf/read-icon :general :delete))
+        (.setIcon jtb-add (lnf/read-icon :general :add))
+        (.setIcon jtb-edit (lnf/read-icon :edit nil))
+        (.setIcon jtb-detail (lnf/read-icon :general :detail))
+        (.setIcon jb-help (lnf/read-icon :general :help))
+        (.setSelectedIcon  jb-init (lnf/read-selected-icon :general :reset))
+        (.setSelectedIcon  jb-open (lnf/read-selected-icon :general :open))
+        (.setSelectedIcon  jb-save (lnf/read-selected-icon :general :save))
+        (.setSelectedIcon  jb-delete (lnf/read-selected-icon :general :delete))
+        (.setSelectedIcon  jtb-add (lnf/read-selected-icon :general :add))
+        (.setSelectedIcon  jtb-edit (lnf/read-selected-icon :edit nil))
+        (.setSelectedIcon  jtb-detail (lnf/read-selected-icon :general :detail))
+        (.setSelectedIcon  jb-help (lnf/read-selected-icon :general :help))))
+    
+    (if (config/enable-tooltips)
+      (do
+        (.setToolTipText jb-init "Initialize scale registry")
+        (.setToolTipText jb-open "Read scale registry file")
+        (.setToolTipText jb-save "Save scale registry file")
+        (.setToolTipText jb-delete "Remove tuning-table from registry")
+        (.setToolTipText jtb-add "Add tuning-tables to registry")
+        (.setToolTipText jtb-edit "Edit tuning-table")
+        (.setToolTipText jtb-detail "Detail edito tuning-table")
+        (.setToolTipText jb-help "Scale registry help")))
+
+    (ss/listen jb-init :action
             (fn [_]
               (.push-undo-state! ed "Initialize Registry")
               (doseq [k (.registered-tables sregistry)]
                 (.remove-table! sregistry k))
               (.add-table! sregistry :eq-12 cadejo.scale.eqtemp/default-table)
-              (config! lab-splice-source :text " ")
-              (config! lab-splice-destination :text " ")
+              (ss/config! lab-splice-source :text " ")
+              (ss/config! lab-splice-destination :text " ")
               (.sync-ui! ed)
               (.status! ed "Initialized Scale Registry")))
 
-    (listen jb-open :action (fn [_]
+    (ss/listen jb-open :action (fn [_]
                               (open-dialog ed (.registry ed))))
 
-    (listen jb-save :action (fn [_]
+    (ss/listen jb-save :action (fn [_]
                               (save-dialog ed (.registry ed))))
 
-    (listen jb-undo :action (fn [_](.undo! ed)))
+    (ss/listen jb-undo :action (fn [_](.undo! ed)))
 
-    (listen jb-redo :action (fn [_](.redo! ed)))
+    (ss/listen jb-redo :action (fn [_](.redo! ed)))
               
-    (listen jb-delete :action
+    (ss/listen jb-delete :action
             (fn [_]
               (let [id (.selected-table-id ed)]
                 (if id 
                   (do 
                     (.push-undo-state! ed (format "Delete %s" id))
                     (.remove-table! sregistry id)
-                    (config! lab-splice-source :text " ")
-                    (config! lab-splice-destination :text " ")
+                    (ss/config! lab-splice-source :text " ")
+                    (ss/config! lab-splice-destination :text " ")
                     (.sync-ui! ed)
                     (.status! ed (format "Deleted scale %s" id)))
                   (warning! ed "No scale selected for deletion")))))
@@ -336,41 +381,39 @@
           transpose-subeditor (subeditors/transpose-editor ed)
           splice-subeditor (subeditors/splice-editor ed lab-splice-source
                                                      lab-splice-destination)
-          pan-edit (grid-panel :rows 1
+          pan-edit (ss/grid-panel :rows 1
                                     :items [linear-subeditor
                                             transpose-subeditor
                                             splice-subeditor])]
-      (add! pan-subedit [addscale-subeditor :addscale])
-      (add! pan-subedit [pan-edit :transpose])
-      (add! pan-subedit [(label :text "Nothing to see here") :detail])
-      )
+      (ss/add! pan-subedit [addscale-subeditor :addscale])
+      (ss/add! pan-subedit [pan-edit :transpose])
+      (ss/add! pan-subedit [(ss/label :text "Nothing to see here") :detail]))
 
     ;; update splice source & destination labels
-    (listen lst-registry :selection 
+    (ss/listen lst-registry :selection 
             (fn [_] 
               (if (and @enable-change-listeners*
                        (not (.getValueIsAdjusting lst-registry)))
                 (do
-                  (config! lab-splice-destination :text
-                           (config lab-splice-source :text))
-                  (config! lab-splice-source :text
+                  (ss/config! lab-splice-destination :text
+                           (ss/config lab-splice-source :text))
+                  (ss/config! lab-splice-source :text
                            (name (.getSelectedValue lst-registry)))))))
 
-    (listen jtb-add :action 
+    (ss/listen jtb-add :action 
             (fn [_]
               (.enable-keyrange! ed false)
               (.enable-wrap! ed false)
-              (show-card! pan-subedit :addscale)))
+              (ss/show-card! pan-subedit :addscale)))
     
-    (listen jtb-edit :action 
+    (ss/listen jtb-edit :action 
             (fn [_]
               (.enable-keyrange! ed true)
               (.enable-wrap! ed true)
-              (show-card! pan-subedit :transpose)))
+              (ss/show-card! pan-subedit :transpose)))
 
-    (listen jtb-detail :action
+    (ss/listen jtb-detail :action
             (fn [_]
-              (show-card! pan-subedit :detail)
+              (ss/show-card! pan-subedit :detail)
               (.warning! ed "Detail editor not implemented")))
-
     ed))

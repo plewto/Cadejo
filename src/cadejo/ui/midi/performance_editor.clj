@@ -1,11 +1,12 @@
 (ns cadejo.ui.midi.performance-editor
-  (:use [cadejo.util.trace])
+  (:require [cadejo.config :as config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.bank-editor])
   (:require [cadejo.ui.midi.cceditor-tab])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.midi.properties-editor])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout
            java.awt.event.WindowListener))
@@ -43,15 +44,22 @@
                   (.editor! bank bed)
                   bed)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
-        pan-tabs (ss/tabbed-panel :tabs [{:title "Bank" :content (.widget bank-ed :pan-main)}
-                                         {:title "MIDI" :content (.widget properties-editor :pan-main)}])
+        pan-tabs (ss/tabbed-panel :tabs [{:title (if (config/enable-button-text) "Bank" "")
+                                          :icon (lnf/read-icon :general :bank)
+                                          :content (.widget bank-ed :pan-main)}
+                                         {:title (if (config/enable-button-text) "MIDI" "")
+                                          :icon (lnf/read-icon :midi :plug)
+                                          :content (.widget properties-editor :pan-main)}])
         pan-center (.widget basic-ed :pan-center)
         descriptor (.get-property performance :descriptor)
         available-controllers (.controllers descriptor)
         cc-panels* (atom [])]
     (doseq [i (range 0 (count available-controllers) 4)]
       (let [cced (cadejo.ui.midi.cceditor-tab/cceditor-tab descriptor i)]
-        (.addTab pan-tabs (format "CC\\%d" i)(.widget cced :pan-main))
+        (.addTab pan-tabs 
+                 (if (config/enable-button-text) (format "CC\\%d" i) "")
+                 (lnf/read-icon :midi :ctrl)
+                 (.widget cced :pan-main))
         (swap! cc-panels* (fn [n](conj n cced)))))
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
     (let [ped (reify PerformanceEditor
@@ -84,7 +92,6 @@
                    (.sync-ui! properties-editor)
                    (doseq [cced @cc-panels*]
                      (.sync-ui! cced))))]
-
       (.set-parent-editor! properties-editor ped)
       (.set-parent-editor! bank-ed ped)
       (.put-property! performance :bank-editor bank-ed)
@@ -116,10 +123,5 @@
                                   pid (.get-property performance :id)]
                               (format "Scene %s   Channel %s   Performance %s"
                                       sid cid pid)))
-      ;; START DEBUG
-      (ss/listen (.widget ped :jb-help)
-                 :action (fn [_]
-                           ;(.dump (.node ped) :verbose 0)
-                           (println)(println)))
-      ;; END DEBUG
+      ;(.putClientProperty jb-help :topic :performance)
       ped))) 

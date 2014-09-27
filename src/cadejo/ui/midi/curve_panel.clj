@@ -4,6 +4,7 @@
   (:require [cadejo.util.path :as path])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [seesaw.icon :as icon])
   (:use [seesaw.core :only [border-panel button button-group
                             grid-panel label listen radio]])
@@ -48,22 +49,66 @@
                   :ilinear :iquadratic :icubic
                   :iconvex2 :iconvex4 :iconvex6
                   :ilogistic :ilogistic2 nil])
-                  
-(def blank-icon (let [pathname (path/append-extension
-                                (path/join "resources" "icons" 
-                                           "curves" "blank")
-                       icon-extension)
-                      ico (icon/icon (File. pathname))]
-                  ico))
 
-(defn- get-icon-filename [base selected inverted]
-  (let [file (str (if selected "s" "u")
-                  (if inverted "" "n")
-                  base)
-        pathname (path/append-extension
-                  (path/join "resources" "icons" "curves" (name file))
-                  icon-extension)]
-    (File. pathname)))
+
+;; (def blank-icon (let [style (cadejo.config/icon-style)
+;;                       pathname (path/append-extension
+;;                                 (path/join "resources" "icons"
+;;                                            (format "%02d_blank_36" style))
+;;                                 icon-extension)
+;;                       ico (icon/icon (File. pathname))]
+;;                   ico))
+                                
+
+                  
+;; (def blank-icon (let [pathname (path/append-extension
+;;                                 (path/join "resources" "icons" 
+;;                                            "curves" "blank")
+;;                        icon-extension)
+;;                       ico (icon/icon (File. pathname))]
+;;                   ico))
+
+
+
+
+;; (defn- get-icon-filename [base selected inverted]
+;;   (let [file (str (if selected "s" "u")
+;;                   (if inverted "" "n")
+;;                   base)
+;;         pathname (path/append-extension
+;;                   (path/join "resources" "icons" "curves" (name file))
+;;                   icon-extension)]
+;;     (File. pathname)))
+
+;; (defn- get-icon-filename [base selected inverted]
+;;   (let [style (cadejo.config/icon-style)
+;;         file (format "%02d_curve_%s%s_%s"
+;;                      style 
+;;                      (if inverted "i" "")
+;;                      base
+;;                      (if selected "01" "00"))
+;;         pathname (path/append-extension
+;;                   (path/join "resources" "icons" (name file))
+;;                   icon-extension)]
+;;     (println (format "DEBUG base = '%s' sel = %s  inv = %s  --> path '%s'" base selected inverted pathname)) 
+;;     (File. pathname)))
+
+;; (defn- get-icon-filename [base selected]   ;; DEPRECIATE MOVE TO lnf
+;;   (let [style (cadejo.config/icon-style)
+;;         file (format "%02d_curve_%s_%s"
+;;                      style 
+;;                      base
+;;                      (if selected "01" "00"))
+;;         pathname (path/append-extension
+;;                   (path/join "resources" "icons" (name file))
+;;                   icon-extension)]
+;;     (File. pathname)))
+
+
+(def blank-icon (lnf/read-icon (cadejo.config/icon-style) :blank :36))
+
+
+
 
 (defn- create-buttons [grp]
   (let [acc* (atom [])
@@ -71,13 +116,17 @@
     (doseq [curve curve-order]
       (if curve
         (let [curve-name (name curve)
-              inverted (= (first curve-name) \i)
-              s-icon (get-icon-filename curve-name true inverted)
-              u-icon (get-icon-filename curve-name false inverted)
+              ;; inverted (= (first curve-name) \i)
+              ;; s-icon (get-icon-filename curve-name true inverted)
+              ;; u-icon (get-icon-filename curve-name false inverted)
+              ;; s-icon (get-icon-filename curve-name true)
+              ;; u-icon (get-icon-filename curve-name false)
+              u-icon (lnf/read-icon :curve curve)
+              s-icon (lnf/read-selected-icon :curve curve)
               jrb (radio :group grp)]
           (.putClientProperty jrb :curve curve)
-          (.setIcon jrb (icon/icon u-icon))
-          (.setSelectedIcon jrb (icon/icon s-icon))
+          (.setIcon jrb u-icon) ; (icon/icon u-icon))
+          (.setSelectedIcon jrb s-icon) ; (icon/icon s-icon))
           (.setSelected jrb (= curve :linear))
           (swap! acc* (fn [n](conj n jrb)))
           (swap! rvsmap* (fn [n](assoc n curve jrb))))

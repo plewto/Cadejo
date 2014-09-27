@@ -1,7 +1,9 @@
 (ns cadejo.ui.midi.node-editor
   "Defines interface for all 'editor' components"
+  (:require [cadejo.config :as config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [seesaw.core :as ss])
   (:require [seesaw.font :as ssfont]))
 
@@ -41,8 +43,6 @@
     "Display warning message")
   ) 
 
-
-
 (def id-font-size 24)
 
  
@@ -67,13 +67,10 @@
                 :text (format " %s %s "
                               (name type-id) (.get-property @node* :id))
                 :font (ssfont/font :size id-font-size))
-        jb-parent (ss/button :text "Parent" 
-                             :id (keyword "jb-show-parent"))
-        jb-help (ss/button :text "Help"
-                           :id (keyword (format "jb-help-%s" type-id)))
-        pan-tools (ss/grid-panel :rows 1 
-                              :items [jb-parent jb-help]
-                              :border (factory/padding))
+        jb-parent (ss/button :id (keyword "jb-show-parent"))
+        jb-help (ss/button :id (keyword (format "jb-help-%s" type-id)))
+        pan-tools (ss/toolbar :floatable? false
+                              :items [ :separator jb-parent jb-help])
         pan-north (ss/border-panel 
                    :west (ss/vertical-panel :items [lab-id]
                                             :border (factory/bevel 4))
@@ -126,14 +123,28 @@
              (info-text! [this msg]
                (ss/config! lab-info :text msg))
 
-
              (status! [this msg]
                (ss/config! lab-status :text msg)
                msg)
 
              (warning! [this msg]
                (.status! this (format "WARNING! %s" msg))) )]
-   
+    (if (config/enable-button-text)
+      (do
+        (ss/config! jb-parent :text "Parent")
+        (ss/config! jb-help :text "Help")))
+    (if (config/enable-button-icons)
+      (do
+        (.setIcon jb-parent (lnf/read-icon :tree :up))
+        (.setSelectedIcon jb-parent (lnf/read-selected-icon :tree :up))
+        (.setIcon jb-help (lnf/read-icon :general :help))
+        (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))))
+    (if (config/enable-tooltips)
+      (do 
+        (.setToolTipText jb-parent "Display Parent Window")
+        (.setToolTipText jb-help "Help")))
+        
+
     ;; START DEBUG
     (ss/listen jb-help :action (fn [_]
                                  (println (ss/config editor-frame :size))))

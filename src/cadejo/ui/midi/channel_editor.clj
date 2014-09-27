@@ -7,6 +7,7 @@
   (:require [cadejo.ui.midi.properties-editor])
   (:require [cadejo.ui.util.color-utilities])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.validated-text-field :as vtf])
   (:require [clojure.string ])
   (:require [seesaw.core :as ss])
@@ -37,7 +38,7 @@
         about (.about descriptor)
         lab-logo (ss/label :icon logo)
         lab-name (ss/label :text (format "  %s   %s" iname about))
-        jb-help (ss/button :text "Help")
+        jb-help (ss/button)
         pan-head (ss/border-panel :west lab-logo
                                   :center lab-name
                                   :east jb-help
@@ -123,6 +124,18 @@
                        :modal? true
                        :on-close :dispose
                        :size [300 :by 500])]
+    (if (cadejo.config/enable-button-text)
+      (do
+        (ss/config! jb-help :text "Help")))
+    (if (cadejo.config/enable-button-icons)
+      (do
+        (.setIcon jb-help (lnf/read-icon :general :help))
+        (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))))
+    (if (cadejo.config/enable-tooltips)
+      (do
+        (.setToolTipText jb-help "Add Instrument Help")))
+    (.putClientProperty jb-help :topic :add-instrument-dialog)
+
 
     (ss/listen jb-cancel :action 
                (fn [_]
@@ -220,11 +233,12 @@
         tbar-performance (ss/toolbar :floatable? true)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         pan-add-performance (add-performance-panel chanobj)
-        pan-tabs (ss/tabbed-panel :tabs [
-                                         {:title "MIDI" 
-                                          :content (.widget properties-editor :pan-main)}
-                                         {:title "Add"
+        pan-tabs (ss/tabbed-panel :tabs [{:title (if (cadejo.config/enable-button-text) "Add Instrument" "")
+                                          :icon (lnf/read-icon :general :instrument)
                                           :content pan-add-performance}
+                                         {:title (if (cadejo.config/enable-button-text) "MIDI" "")
+                                          :icon (lnf/read-icon :midi :plug)
+                                          :content (.widget properties-editor :pan-main)}
                                          ])]
 
     (ss/config! (.widget basic-ed :frame) :on-close :hide)

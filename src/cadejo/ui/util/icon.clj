@@ -1,6 +1,6 @@
 (ns cadejo.ui.util.icon
   (:require [cadejo.util.path :as path])
-  (:require [seesaw,icon])
+  (:require [seesaw.icon])
   (:import java.io.File
            javax.imageio.ImageIO))
 

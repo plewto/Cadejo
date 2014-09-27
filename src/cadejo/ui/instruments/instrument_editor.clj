@@ -1,16 +1,17 @@
 (ns cadejo.ui.instruments.instrument-editor
-  (:use [cadejo.util.trace])
-  (:require [cadejo.config])
+  (:require [cadejo.config :as config])
   (:require [cadejo.midi.program-bank])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.user-message :as umsg])
   (:use [cadejo.ui.util.overwrite-warning :only [overwrite-warning]])
   (:require [overtone.core :as ot])
   (:require [seesaw.core :as ss])
   (:require [seesaw.chooser :as ssc])
+  (:require [seesaw.font :as ssfont])
   (:import 
    java.awt.event.FocusListener
    java.io.File
@@ -148,7 +149,8 @@
     [this])
 
   (add-sub-editor!
-    [this label subed])
+    [this label subed]
+    [this lable icon subed])
 
   (current-program 
     [this]
@@ -192,13 +194,14 @@
   (sync-ui!
     [this]))
 
+(def id-font-size 24)
+
 (defn instrument-editor [performance]
   (let [itype (.get-property performance :instrument-type)
         id (.get-property performance :id)
-        descriptor (cadejo.config/instrument-descriptor itype)
+        descriptor (config/instrument-descriptor itype)
         clipboard* (.clipboard descriptor)
-        ;revert-program* (atom nil)
-        current-directory* (atom (cadejo.config/config-path))
+        current-directory* (atom (config/config-path))
         bank (.bank performance)
         file-extension (format "%s_program"
                                (.toLowerCase (name (.data-format bank))))
@@ -213,27 +216,27 @@
         ;;   lab-id show-parent open save copy paste help
         ;;
         lab-id (ss/label :text (name id)
+                         :font (ssfont/font :size id-font-size)
                          :border (factory/bevel))
-        jb-show-parent (ss/button :text "Parent")
-        jb-copy (ss/button :text "Copy")
-        jb-paste (ss/button :text "Paste" :enabled? false)
-        jb-open (ss/button :text "Open Program")
-        jb-save (ss/button :text "Save Program")
-        jb-help (ss/button :text "Help")
-        pan-north (ss/grid-panel :rows 1
-                                 :items [lab-id jb-show-parent 
-                                         jb-copy jb-paste
-                                         jb-open jb-save 
-                                         jb-help]
-                                 :border (factory/padding))
+        jb-show-parent (ss/button)
+        jb-copy (ss/button)
+        jb-paste (ss/button :enabled? false)
+        jb-open (ss/button)
+        jb-save (ss/button)
+        jb-help (ss/button)
+        pan-north (ss/toolbar :floatable? false
+                              :items [lab-id 
+                                      :separator jb-show-parent
+                                      :separator jb-open jb-save
+                                      :separator jb-copy jb-paste
+                                      :separator jb-help]
+                              :border (factory/padding))
 
         ;; South toolbar
         ;;    init transmit revert spinner store
         ;;
-        jb-init (ss/button :text "Init")
-        ;; jb-revert (ss/toggle :text "Revert" :enabled? true)
-        ;; jb-undo-revert (ss/toggle :text "Undo Revert" :enabled? false)
-        jb-store (ss/button :text "Store")
+        jb-init (ss/button)
+        jb-store (ss/button)
         spin-program (ss/spinner 
                       :model (ss/spinner-model 0 
                                                :min 0 
@@ -242,7 +245,6 @@
         pan-store (ss/horizontal-panel :items [jb-store spin-program]
                                        :border (factory/line))
         pan-south1 (ss/horizontal-panel :items [jb-init 
-                                                ;jb-revert jb-undo-revert
                                                 (Box/createHorizontalStrut 8)
                                                 pan-store]
                                         :border (factory/padding))
@@ -289,6 +291,11 @@
                 (.addTab pan-tabs label (.widget subed :pan-main))
                 (.parent! subed this))
 
+              (add-sub-editor! [this label icon subed]
+                (swap! sub-editors* (fn [n](conj n subed)))
+                (.addTab pan-tabs label icon (.widget subed :pan-main))
+                (.parent! subed this))
+
               (current-program [this]
                 (.current-program bank))
 
@@ -328,7 +335,7 @@
 
               (pp [this]
                 (let [prog (.current-program this)]
-                  (if (and prog (cadejo.config/enable-pp))
+                  (if (and prog (config/enable-pp))
                     (let [pname (:name prog)
                           rem (:remarks prog)
                           pnum (int (.getValue spin-program))
@@ -350,7 +357,8 @@
 
         name-editor (program-name-editor ied)]
 
-    (.add-sub-editor! ied "Common" name-editor)
+    ;(.add-sub-editor! ied "Common" name-editor)
+    (.add-sub-editor! ied "Common" (lnf/read-icon :edit :text) name-editor)
     
     (ss/listen jb-show-parent :action
                (fn [_](let [ped (.get-editor performance)
@@ -436,22 +444,6 @@
                    (.sync-ui! bank-ed)
                    (.status! ied "Initial Program"))))
 
-    ;; (ss/listen jb-revert :action
-    ;;            (fn [_]
-    ;;              (reset! revert-program* (.current-program bank))
-    ;;              (.doClick (.widget (.editor bank) :jb-transmit))
-    ;;              (ss/config! jb-revert :enabled? false)
-    ;;              (ss/config! jb-undo-revert :enabled? true)))
-
-    ;; (ss/listen jb-undo-revert :action
-    ;;            (fn [_]
-    ;;              (let [bank-ed (.editor bank)]
-    ;;                (.current-program! bank @revert-program*)
-    ;;                (reset! revert-program* nil)
-    ;;                (.sync-ui! bank-ed)
-    ;;                (ss/config! jb-revert :enabled? true)
-    ;;                (ss/config! jb-undo-revert :enabled? false))))
-
     (ss/listen jb-store :action
                (fn [_]
                  (let [bank-ed (.editor bank)
@@ -468,15 +460,51 @@
                                       :args (ucol/map->alist
                                              (.current-data bank))))
                    (.sync-ui! bank-ed)
-                   (.status! ied (format "Stored program %s" pnum))
-                   )))
+                   (.status! ied (format "Stored program %s" pnum)))))
 
+    (if (config/enable-button-text)
+      (do
+        (ss/config! jb-show-parent :text "Show Parent")
+        (ss/config! jb-copy :text  "Copy Program")
+        (ss/config! jb-paste :text  "Paste Program")
+        (ss/config! jb-open :text  "Open Program")
+        (ss/config! jb-save :text  "Save Program")
+        (ss/config! jb-help :text  "Help")
+        (ss/config! jb-init :text  "Init")
+        (ss/config! jb-store :text  "Store Program")))
+    (if (config/enable-button-icons)
+      (do
+        (.setIcon jb-show-parent (lnf/read-icon :tree :up))
+        (.setIcon jb-copy (lnf/read-icon :general :copy))
+        (.setIcon jb-paste (lnf/read-icon :general :paste))
+        (.setIcon jb-open (lnf/read-icon :general :open))
+        (.setIcon jb-save (lnf/read-icon :general :save))
+        (.setIcon jb-init (lnf/read-icon :general :reset))
+        (.setIcon jb-help (lnf/read-icon :general :help))
+        (.setIcon jb-store (lnf/read-icon :general :bankstore))
+        (.setSelectedIcon jb-show-parent (lnf/read-selected-icon :tree :up))
+        (.setSelectedIcon jb-copy (lnf/read-selected-icon :general :copy))
+        (.setSelectedIcon jb-paste (lnf/read-selected-icon :general :paste))
+        (.setSelectedIcon jb-open (lnf/read-selected-icon :general :open))
+        (.setSelectedIcon jb-save (lnf/read-selected-icon :general :save))
+        (.setSelectedIcon jb-init (lnf/read-selected-icon :general :reset))
+        (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))
+        (.setSelectedIcon jb-store (lnf/read-selected-icon :general :bankstore))))
+    (if (config/enable-tooltips)
+      (do
+        (.setToolTipText jb-show-parent "Show Parent")
+        (.setToolTipText jb-copy "Copy program data to clipboard")
+        (.setToolTipText jb-paste "Paste clipboard to program")
+        (.setToolTipText jb-open "Open program file")
+        (.setToolTipText jb-save "Save program file")
+        (.setToolTipText jb-init "Initialize program")
+        (.setToolTipText jb-help "Program help")
+        (.setToolTipText jb-store "Store program to bank")))
+    (.putClientProperty jb-help :topic :program)
     ;; START DEBUG
     (ss/listen jb-help :action (fn [_]
                                  (println (ss/config frame :size))
                                  (println)))
-
-    
     ;; END DEBUG
 
     ied))
