@@ -1,0 +1,7 @@
+;; List of help topics
+
+:cadejo  - splash screen
+:scene   - scene editor
+:add-instrument-dialog - channel-editor
+:performance - performance-editor
+:bank-editor
