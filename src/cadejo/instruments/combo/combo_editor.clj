@@ -1,8 +1,8 @@
 (ns cadejo.instruments.combo.combo-editor
-  (:use [cadejo.util.trace])
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.instruments.instrument-editor :as ied])
   (:require [cadejo.ui.instruments.subedit])
   (:require [seesaw.core :as ss])
@@ -91,26 +91,17 @@
         pan-tone (ss/border-panel :center (ss/vertical-panel 
                                            :items [pan-mixer pan-wave])
                                   :south pan-detune)
-        filter-button-style 10
-        tb-filter-bypass (factory/filter-button :bypass filter-button-style)
-        tb-filter-lp (factory/filter-button :lp filter-button-style)
-        tb-filter-hp (factory/filter-button :hp filter-button-style)
-        tb-filter-bp (factory/filter-button :bp filter-button-style)
-        tb-filter-br (factory/filter-button :br filter-button-style)
-        ;; tb-filter-1  (factory/number-button  1)
-        ;; tb-filter-2  (factory/number-button  2)
-        ;; tb-filter-4  (factory/number-button  4)
-        ;; tb-filter-6  (factory/number-button  6)
-        ;; tb-filter-8  (factory/number-button  8)
-
-        ;; tb-filter-bypass (ss/toggle :text "Off")
-        ;; tb-filter-lp (ss/toggle :text "Low")
-        ;; tb-filter-hp (ss/toggle :text "High")
-        ;; tb-filter-bp (ss/toggle :text "Band")
-        ;; tb-filter-br (ss/toggle :text "Notch")
+        ;filter-button-style 10
+        tb-filter-bypass (factory/filter-button :bypass)
+        tb-filter-lp (factory/filter-button :lp)
+        tb-filter-hp (factory/filter-button :hp)
+        tb-filter-bp (factory/filter-button :bp)
+        tb-filter-br (factory/filter-button :br)
+     
         tb-filter-1  (ss/toggle :text "1")
         tb-filter-2  (ss/toggle :text "2")
         tb-filter-4  (ss/toggle :text "4")
+        tb-filter-3  (ss/toggle :text "3")
         tb-filter-6  (ss/toggle :text "6")
         tb-filter-8  (ss/toggle :text "8")
 
@@ -121,6 +112,7 @@
                          br-filter tb-filter-br}
         harmonic-buttons {1 tb-filter-1
                           2 tb-filter-2
+                          3 tb-filter-3
                           4 tb-filter-4
                           6 tb-filter-6
                           8 tb-filter-8}
@@ -132,6 +124,7 @@
                                                   tb-filter-br
                                                   tb-filter-1
                                                   tb-filter-2
+                                                  tb-filter-3
                                                   tb-filter-4
                                                   tb-filter-6
                                                   tb-filter-8]
@@ -145,6 +138,7 @@
                      (ss/config! tb-filter-br :group fgroup)
                      (ss/config! tb-filter-1 :group hgroup)
                      (ss/config! tb-filter-2 :group hgroup)
+                     (ss/config! tb-filter-3 :group hgroup)
                      (ss/config! tb-filter-4 :group hgroup)
                      (ss/config! tb-filter-6 :group hgroup)
                      (ss/config! tb-filter-8 :group hgroup)
@@ -305,6 +299,7 @@
     (.putClientProperty tb-filter-br :value br-filter)
     (.putClientProperty tb-filter-1 :value 1)
     (.putClientProperty tb-filter-2 :value 2)
+    (.putClientProperty tb-filter-3 :value 3)
     (.putClientProperty tb-filter-4 :value 4)
     (.putClientProperty tb-filter-6 :value 6)
     (.putClientProperty tb-filter-8 :value 8)
@@ -332,6 +327,7 @@
     (.addActionListener tb-filter-br filter-action)
     (.addActionListener tb-filter-1 harmonic-action)
     (.addActionListener tb-filter-2 harmonic-action)
+    (.addActionListener tb-filter-3 harmonic-action)
     (.addActionListener tb-filter-4 harmonic-action)
     (.addActionListener tb-filter-6 harmonic-action)
     (.addActionListener tb-filter-8 harmonic-action)
