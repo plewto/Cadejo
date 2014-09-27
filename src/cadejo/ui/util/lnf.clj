@@ -2,7 +2,7 @@
   (:require [cadejo.config :as config])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.util.user-message :as umsg])
-  (:require [cadejo.ui.util.factory :as factory])
+  ;(:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
   (:require [seesaw.icon])
   (:require [seesaw.swingx :as swingx])
@@ -169,8 +169,7 @@
                    :center (lnf-selector-panel)
                    :south (ss/label 
                            :text (format "Current config icon style is %s" 
-                                         (config/icon-style))
-                           :border (factory/bevel))))
+                                         (config/icon-style)))))
         jb-dismis (ss/button :text "Dismis")
         dia (ss/dialog :title "Substance Skins"
                        :content pan-main

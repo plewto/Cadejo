@@ -241,12 +241,13 @@
                       :model (ss/spinner-model 0 
                                                :min 0 
                                                :max max-program-number 
-                                               :by 1))
-        pan-store (ss/horizontal-panel :items [jb-store spin-program]
-                                       :border (factory/line))
-        pan-south1 (ss/horizontal-panel :items [jb-init 
+                                               :by 1)
+                      :size [72 :by 24])
+        pan-south1 (ss/horizontal-panel :items [jb-init
+                                                (Box/createHorizontalStrut 24)
+                                                jb-store
                                                 (Box/createHorizontalStrut 8)
-                                                pan-store]
+                                                spin-program]
                                         :border (factory/padding))
 
         lab-status (ss/label :text " ")
