@@ -94,16 +94,12 @@
         jb-transmit (ss/button)
         jb-edit (ss/button)
         jb-help (ss/button)
-        ;; tbar1 (ss/grid-panel :rows 1
-        ;;                      :items [jb-init jb-name jb-open jb-save
-        ;;                              jb-undo jb-redo jb-help])
         tbar1 (ss/toolbar :floatable? false
-                          :items [jb-init jb-name jb-open jb-save
-                                  jb-undo jb-redo jb-help])
-        ;; tbar2 (ss/grid-panel :rows 1
-        ;;                      :items [jb-transmit jb-edit])
-        tbar2 (ss/toolbar :floatable? false
-                          :items [jb-transmit jb-edit])
+                          :items [jb-init jb-name 
+                                  jb-open jb-save
+                                  :separator jb-undo jb-redo 
+                                  :separator jb-edit jb-transmit 
+                                  :separator jb-help])
         lab-name (ss/label :text " "
                            :border (factory/bevel))
         lab-filename (ss/label :text (config/config-path)
@@ -111,7 +107,7 @@
         pan-info (ss/grid-panel :rows 1
                                 :items [lab-name lab-filename])
         pan-south (ss/grid-panel :columns 1
-                                 :items [tbar2 pan-info])
+                                 :items [pan-info])
         lst-programs (ss/listbox :model (create-program-list bnk))
         pan-center (ss/horizontal-panel :items [(ss/scrollable lst-programs)]
                                         :border (factory/padding))

@@ -20,16 +20,16 @@
   (let [lab-title (ss/label :text "Select Server"
                            :halign :center
                            :border (factory/padding 8))
-        selected* (atom nil)
+        selected* (atom :default)
         grp (ss/button-group)
-        rb-default  (ss/radio :text "Default" :group grp)
+        rb-default  (ss/radio :text "Default" :group grp :selected? true)
         rb-internal (ss/radio :text "Internal" :group grp)
         rb-external (ss/radio :text "External" :group grp)
         rb-existing (ss/radio :text "Existing" :group grp :enabled? false)
         pan-options (ss/vertical-panel :items [rb-default rb-internal
                                                rb-external rb-existing])
         jb-start-server (ss/button :text "Start Server"
-                                   :enabled? false
+                                   :enabled? true
                                    :size [400 :by 100])
         pan-server-main (ss/border-panel 
                          :north lab-title
@@ -231,13 +231,15 @@
     (ss/listen jb-exit :action (fn [_]
                                  (status "Exit NOT IMPLEMENTED")))
 
+    (.putClientProperty jb-help :topic :cadejo)
+
     (if (ot/server-connected?)
       (do
         (ss/show-card! pan-cards :midi)
         (ss/config! tb-show-server :enabled? false)
         (ss/config! tb-show-midi :enabled? true)
         (ss/config! txt-status :text "Using existing server")))
-
+    (reset! config/splash-frame* f)
     (ss/show! f)))
 
 (cadejo-splash)

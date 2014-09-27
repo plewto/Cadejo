@@ -249,8 +249,8 @@
                                                 pan-store]
                                         :border (factory/padding))
 
-        lab-status (ss/label :text "<status>")
-        lab-name (ss/label :text "<name>")
+        lab-status (ss/label :text " ")
+        lab-name (ss/label :text " ")
         pan-south2 (ss/grid-panel 
                     :rows 1
                     :items [(ss/vertical-panel :items [lab-status]
@@ -338,7 +338,7 @@
                   (if (and prog (config/enable-pp))
                     (let [pname (:name prog)
                           rem (:remarks prog)
-                          pnum (int (.getValue spin-program))
+                          pnum (int (max 0 (min max-program-number (.getValue spin-program))))
                           d (ucol/map->alist (.current-data this))
                           ppf (.pp-hook bank)]
                       (if ppf
@@ -358,7 +358,10 @@
         name-editor (program-name-editor ied)]
 
     ;(.add-sub-editor! ied "Common" name-editor)
-    (.add-sub-editor! ied "Common" (lnf/read-icon :edit :text) name-editor)
+    (.add-sub-editor! ied 
+                      (if (config/enable-button-text) "Common" "")
+                      (if (config/enable-button-icons)(lnf/read-icon :edit :text) nil)
+                      name-editor)
     
     (ss/listen jb-show-parent :action
                (fn [_](let [ped (.get-editor performance)
@@ -448,7 +451,7 @@
                (fn [_]
                  (let [bank-ed (.editor bank)
                        prog (.current-program bank)
-                       pnum (int (.getValue spin-program))
+                       pnum (int (max 0 (min max-program-number (.getValue spin-program))))
                        name (str (:name prog))
                        remarks (str (:remarks prog))]
                    (.push-undo-state! bank-ed
@@ -464,7 +467,7 @@
 
     (if (config/enable-button-text)
       (do
-        (ss/config! jb-show-parent :text "Show Parent")
+        (ss/config! jb-show-parent :text "Parent")
         (ss/config! jb-copy :text  "Copy Program")
         (ss/config! jb-paste :text  "Paste Program")
         (ss/config! jb-open :text  "Open Program")

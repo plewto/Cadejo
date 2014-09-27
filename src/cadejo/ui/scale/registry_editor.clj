@@ -138,9 +138,16 @@
         jb-undo (.get-button undo-stack)
         jb-redo (.get-button redo-stack)
         jb-help (ss/button)
+        jb-delete (ss/button)
+        group (ss/button-group)
+        jtb-add (ss/radio :group group :selected? true)
+        jtb-edit (ss/radio :group group)
+        jtb-detail (ss/radio :group group)
+
         pan-toolbar (ss/toolbar :floatable? false
                                 :items [jb-init jb-open jb-save 
                                         :separator jb-undo jb-redo
+                                        :separator jb-delete jtb-add jtb-edit jtb-detail
                                         :separator jb-help])
         ;; West registered scale list
         lst-registry (ss/listbox :model (.registered-tables sregistry)
@@ -172,19 +179,19 @@
         pan-limits (ss/vertical-panel :items [pan-range pan-wrap])
         ;; South toolbar
         group (ss/button-group)
-        jb-delete (ss/button)
-        jtb-add (ss/toggle :group group :selected? true)
-        jtb-edit (ss/toggle :group group)
-        jtb-detail (ss/toggle :group group)
-        pan-south (ss/toolbar :floatable? false
-                              :items [jb-delete jtb-add 
-                                      jtb-edit jtb-detail])
+        ;; jb-delete (ss/button)
+        ;; jtb-add (ss/toggle :group group :selected? true)
+        ;; jtb-edit (ss/toggle :group group)
+        ;; jtb-detail (ss/toggle :group group)
+        ;; pan-south (ss/toolbar :floatable? false
+        ;;                       :items [jb-delete jtb-add 
+        ;;                               jtb-edit jtb-detail])
         ;; Main Panels
         pan-subedit (ss/card-panel :border (factory/line))
         pan-center (ss/border-panel :west pan-limits
                                  :center pan-subedit)
         pan-main (ss/border-panel :north pan-toolbar
-                               :south pan-south
+                               ;:south pan-south
                                :west pan-west
                                :center pan-center)
         ;; splice labels
@@ -304,12 +311,10 @@
         (ss/config! jb-open :text "Open")   
         (ss/config! jb-save :text "Save")   
         (ss/config! jb-delete :text "Delete")   
-        (ss/config! jtb-add :text "+")
+        (ss/config! jtb-add :text "Add Tables")
         (ss/config! jtb-edit :text "Edit")
         (ss/config! jtb-detail :text "Detail")
-        (ss/config! jb-help :text "Help")
-        ))
-        
+        (ss/config! jb-help :text "Help")))
 
     (if (config/enable-button-icons)
       (do 

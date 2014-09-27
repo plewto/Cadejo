@@ -45,10 +45,10 @@
                   bed)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         pan-tabs (ss/tabbed-panel :tabs [{:title (if (config/enable-button-text) "Bank" "")
-                                          :icon (lnf/read-icon :general :bank)
+                                          :icon (if (config/enable-button-icons) (lnf/read-icon :general :bank) nil)
                                           :content (.widget bank-ed :pan-main)}
                                          {:title (if (config/enable-button-text) "MIDI" "")
-                                          :icon (lnf/read-icon :midi :plug)
+                                          :icon (if (config/enable-button-icons) (lnf/read-icon :midi :plug) nil)
                                           :content (.widget properties-editor :pan-main)}])
         pan-center (.widget basic-ed :pan-center)
         descriptor (.get-property performance :descriptor)
@@ -58,7 +58,7 @@
       (let [cced (cadejo.ui.midi.cceditor-tab/cceditor-tab descriptor i)]
         (.addTab pan-tabs 
                  (if (config/enable-button-text) (format "CC\\%d" i) "")
-                 (lnf/read-icon :midi :ctrl)
+                 (if (config/enable-button-icons)(lnf/read-icon :midi :ctrl) nil)
                  (.widget cced :pan-main))
         (swap! cc-panels* (fn [n](conj n cced)))))
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
@@ -123,5 +123,5 @@
                                   pid (.get-property performance :id)]
                               (format "Scene %s   Channel %s   Performance %s"
                                       sid cid pid)))
-      ;(.putClientProperty jb-help :topic :performance)
+      (.putClientProperty (.widget basic-ed :jb-help) :topic :performance)
       ped))) 

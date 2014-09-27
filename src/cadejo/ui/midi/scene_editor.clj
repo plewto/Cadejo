@@ -63,10 +63,10 @@
                                   :center txt-tree)
         pan-tab (ss/tabbed-panel 
                  :tabs [{:title (if (cadejo.config/enable-button-text) "Tree" "")
-                         :icon (lnf/read-icon :tree :info)
+                         :icon (if (cadejo.config/enable-button-icons)(lnf/read-icon :tree :info) nil)
                          :content pan-tree}
                         {:title (if (cadejo.config/enable-button-text) "Scale Registry" "")
-                         :icon (lnf/read-icon :general :staff)
+                         :icon (if (cadejo.config/enable-button-icons)(lnf/read-icon :general :staff) nil)
                          :content (.widget reged :pan-main)}]
                  :border (factory/padding))]
     (ss/config! (.widget basic-ed :frame) :on-close :nothing)

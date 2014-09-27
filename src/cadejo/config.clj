@@ -453,8 +453,7 @@
 
 
 (load-gui! true)
-;; (icon-style! nil) ;; use skin default
-(initial-skin! "Business")
+(initial-skin! "Cerulean")
 (enable-pp! true)
 (maximum-undo-count! 10)
 (warn-on-file-overwrite! true)

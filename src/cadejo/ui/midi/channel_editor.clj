@@ -173,7 +173,7 @@
 
 
 
-;; Provides button for each available instrument
+;; Provides buttons for available instruments
 ;;
 (defn- add-performance-panel [chanobj]
   (let [buttons (let [acc* (atom [])]
@@ -225,21 +225,18 @@
   (sync-ui!
     [this]))
 
-
 (defn channel-editor [chanobj]
-  (let [;[bg fg] (cadejo.ui.util.color-utilities/channel-color-cue (.channel-number chanobj))
-        basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
+  (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
         pan-center (.widget basic-ed :pan-center)
         tbar-performance (ss/toolbar :floatable? true)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         pan-add-performance (add-performance-panel chanobj)
-        pan-tabs (ss/tabbed-panel :tabs [{:title (if (cadejo.config/enable-button-text) "Add Instrument" "")
-                                          :icon (lnf/read-icon :general :instrument)
+        pan-tabs (ss/tabbed-panel :tabs [{:title (if (cadejo.config/enable-button-text) "Add Instruments" "")
+                                          :icon (if (cadejo.config/enable-button-icons)(lnf/read-icon :general :instrument) nil)
                                           :content pan-add-performance}
                                          {:title (if (cadejo.config/enable-button-text) "MIDI" "")
-                                          :icon (lnf/read-icon :midi :plug)
-                                          :content (.widget properties-editor :pan-main)}
-                                         ])]
+                                          :icon (if (cadejo.config/enable-button-icons)(lnf/read-icon :midi :plug) nil)
+                                          :content (.widget properties-editor :pan-main)}])]
 
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
     (let [ced (reify ChannelEditor
@@ -272,9 +269,6 @@
                   (.removeAll tbar-performance)
                   (.add tbar-performance (let [lab (ss/label :text (format " %2d " (.channel-number chanobj))
                                                              :border (factory/line))]
-                                           ;; (.setOpaque lab true)
-                                           ;; (.setBackground lab bg)
-                                           ;; (.setForeground lab fg)
                                            lab))
                   (doseq [p (.children chanobj)]
                     (let [itype (.get-property p :instrument-type)
@@ -313,11 +307,7 @@
                       ))
 
                   (.sync-ui! properties-editor)
-                  (.revalidate (.widget basic-ed :frame)))
-                )]
-      ;; (.setOpaque (.widget ced :lab-id) true)
-      ;; (.setBackground (.widget ced :lab-id) bg)
-      ;; (.setForeground (.widget ced :lab-id) fg)
+                  (.revalidate (.widget basic-ed :frame))) )]
       (ss/listen (.widget ced :jb-parent)
                  :action (fn [_]
                            (let [scene (.parent chanobj)
@@ -328,7 +318,7 @@
       (.set-parent-editor! properties-editor ced)
       (.add pan-center pan-tabs BorderLayout/CENTER)
       (.add pan-center tbar-performance BorderLayout/SOUTH)
-      (ss/config! (.frame ced) :size [1092 :by 568])
+      (ss/config! (.frame ced) :size [1281 :by 568])
       (.addWindowListener (.widget ced :frame)
                           (proxy [WindowListener][]
                             (windowClosed [_] nil)
