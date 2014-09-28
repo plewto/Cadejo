@@ -1,4 +1,4 @@
-(defproject cadejo "0.1.1-SNAPSHOT"
+(defproject cadejo "0.1.2-SNAPSHOT"
   :description "MIDI management tool for Overtone"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -9,6 +9,3 @@
                  [com.github.insubstantial/substance "7.1"]
                  [overtone "0.9.1"]]
   :main cadejo.gui)
-
-
-

@@ -4,7 +4,7 @@
   (:require [cadejo.util.midi])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel))
 
-(def ^:private +VERSION+ "0.1.1-SNAPSHOT")
+(def ^:private +VERSION+ "0.1.2-SNAPSHOT")
 
 (def ^:private available-skins (map str (keys (SubstanceLookAndFeel/getAllSkins))))
 
@@ -453,7 +453,7 @@
 
 
 (load-gui! true)
-(initial-skin! "Cerulean")
+(initial-skin! "Creme")
 (enable-pp! true)
 (maximum-undo-count! 10)
 (warn-on-file-overwrite! true)
