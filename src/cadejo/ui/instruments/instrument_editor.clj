@@ -233,9 +233,8 @@
                               :border (factory/padding))
 
         ;; South toolbar
-        ;;    init transmit revert spinner store
+        ;;    store spinner
         ;;
-        jb-init (ss/button)
         jb-store (ss/button)
         spin-program (ss/spinner 
                       :model (ss/spinner-model 0 
@@ -243,9 +242,7 @@
                                                :max max-program-number 
                                                :by 1)
                       :size [72 :by 24])
-        pan-south1 (ss/horizontal-panel :items [jb-init
-                                                (Box/createHorizontalStrut 24)
-                                                jb-store
+        pan-south1 (ss/horizontal-panel :items [jb-store
                                                 (Box/createHorizontalStrut 8)
                                                 spin-program]
                                         :border (factory/padding))
@@ -439,15 +436,7 @@
                              (umsg/warning "InstrumentEditor jb-save action"
                                            "default cond executed")
                              (.warning! ied "Unknown save error")))))))
-
-    (ss/listen jb-init :action
-               (fn [_]
-                 (let [bank-ed (.editor bank)
-                       iprog (.initial-program descriptor)]
-                   (.current-program! bank iprog)
-                   (.sync-ui! bank-ed)
-                   (.status! ied "Initial Program"))))
-
+    
     (ss/listen jb-store :action
                (fn [_]
                  (let [bank-ed (.editor bank)
@@ -461,11 +450,12 @@
                                     (assoc prog 
                                       :name name
                                       :remarks remarks
+                                      :function-id nil
                                       :args (ucol/map->alist
                                              (.current-data bank))))
                    (.sync-ui! bank-ed)
                    (.status! ied (format "Stored program %s" pnum)))))
-
+    
     (if (config/enable-button-text)
       (do
         (ss/config! jb-show-parent :text "Parent")
@@ -474,7 +464,6 @@
         (ss/config! jb-open :text  "Open Program")
         (ss/config! jb-save :text  "Save Program")
         (ss/config! jb-help :text  "Help")
-        (ss/config! jb-init :text  "Init")
         (ss/config! jb-store :text  "Store Program")))
     (if (config/enable-button-icons)
       (do
@@ -483,7 +472,6 @@
         (.setIcon jb-paste (lnf/read-icon :general :paste))
         (.setIcon jb-open (lnf/read-icon :general :open))
         (.setIcon jb-save (lnf/read-icon :general :save))
-        (.setIcon jb-init (lnf/read-icon :general :reset))
         (.setIcon jb-help (lnf/read-icon :general :help))
         (.setIcon jb-store (lnf/read-icon :general :bankstore))
         (.setSelectedIcon jb-show-parent (lnf/read-selected-icon :tree :up))
@@ -491,7 +479,6 @@
         (.setSelectedIcon jb-paste (lnf/read-selected-icon :general :paste))
         (.setSelectedIcon jb-open (lnf/read-selected-icon :general :open))
         (.setSelectedIcon jb-save (lnf/read-selected-icon :general :save))
-        (.setSelectedIcon jb-init (lnf/read-selected-icon :general :reset))
         (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))
         (.setSelectedIcon jb-store (lnf/read-selected-icon :general :bankstore))))
     (if (config/enable-tooltips)
@@ -501,10 +488,10 @@
         (.setToolTipText jb-paste "Paste clipboard to program")
         (.setToolTipText jb-open "Open program file")
         (.setToolTipText jb-save "Save program file")
-        (.setToolTipText jb-init "Initialize program")
         (.setToolTipText jb-help "Program help")
         (.setToolTipText jb-store "Store program to bank")))
     (.putClientProperty jb-help :topic :program)
+
     ;; START DEBUG
     (ss/listen jb-help :action (fn [_]
                                  (println (ss/config frame :size))

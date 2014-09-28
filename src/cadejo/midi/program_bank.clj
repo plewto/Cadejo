@@ -10,7 +10,7 @@
 ;;                  literal program data as an association-list of
 ;;                  parameter/value pairs.
 ;;
-;; A certain number of upper program numbers are reserved for programs with
+;; A fixed number of upper program numbers are reserved for programs with
 ;; non-nil function-ids. All programs below this cutoff should have a
 ;; function-id of nil. Programs above the cutoff may have non-nil
 ;; function-ids and the function-registry is a map of permissible
@@ -18,7 +18,6 @@
 ;;
 
 (ns cadejo.midi.program-bank
-  (:use [cadejo.util.trace])
   (:require [cadejo.config])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.string])
@@ -52,6 +51,43 @@
      (create-program nil name args)))
 
 (def ^:private null-program (create-program nil "nil" "" []))
+
+(defn dump-program [prog]
+  (println "dump-program")
+  (println (format "\t:function-id  %s" (:function-id prog)))
+  (println (format "\t:name        '%s'" (:name prog)))
+  (println (format "\t:remarks     '%s'" (:remarks prog)))
+  (println (format "\t:args         %s" (:args prog))))
+
+(defn diff-programs [p1 p2]
+  (require 'clojure.set)
+  (println "diff-programs")
+  (let [id1 (:function-id p1)
+        name1 (:name p1)
+        rem1 (:remarks p1)
+        data1 (ucol/alist->map (:args p1))
+        id2 (:function-id p2)
+        name2 (:name p2)
+        rem2 (:remarks p2)
+        data2 (ucol/alist->map (:args p2))]
+    (if (and (= id1 id2)(= name1 name2)(= rem1 rem2)(= data1 data2))
+      (println "Programs are identical")
+      (do
+        (if (not (= id1 id2))
+          (println (format "\tid1 = %s  id2 = %s" id1 id2)))
+        (if (not (= name1 name2))
+          (println (format "\tname1 = '%s'  name2 = '%s'" name1 name2)))
+        (if (not (= rem1 rem2))
+          (println (format "\trem1 = '%s'  rem2 = '%s'" rem1 rem2)))
+        (doseq [key (clojure.set/union (keys data1)(keys data2))]
+          (let [v1 (get data1 key)
+                v2 (get data2 key)]
+            (if (not (= v1 v2))
+              (println (format "\tdata key = %s  v1 = %s  v2 = %s" key v1 v2)))))))))
+          
+        
+
+
 
 (defprotocol ProgramBank
 
@@ -152,7 +188,7 @@
   (current-data
     [this]
     "Returns the current data as a map. Note that the current data may differ
-     from the :args filed of the current program")     
+     from the :args feild of the current program")     
 
   (current-data! 
     [this dmap]
@@ -293,7 +329,7 @@
 
                   (init-bank! [this]
                     (doseq [pnum (range start-reserved)]
-                      (swap! programs* (fn [n](dissoc n pnum nil))))
+                      (swap! programs* (fn [n](dissoc n pnum))))
                     (reset! current-program-number* 0)
                     (reset! current-program* null-program)
                     (reset! current-data* {})
@@ -462,7 +498,7 @@
                    (reset! editor* ed))
 
                  (editor [this] @editor*)
-  
+
                  (dump [this verbose depth]
                    (let [pad (cadejo.util.string/tab depth)
                          pad2 (str pad pad)

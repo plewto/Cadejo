@@ -192,25 +192,26 @@
                    (sync-ui! [this]
                      (reset! enable-param-updates* false)
                      (let [data (.current-data (.bank performance))
-                           a1 (int (* 100 (:amp1 data)))
-                           a2 (int (* 100 (:amp2 data)))
-                           a3 (int (* 100 (:amp3 data)))
-                           a4 (int (* 100 (:amp4 data)))
-                           w1 (int (* 100 (:wave1 data)))
-                           w2 (int (* 100 (:wave2 data)))
-                           w3 (int (* 100 (:wave3 data)))
-                           w4 (int (* 100 (:wave4 data)))
-                           detune (int (min 100 (* 100 (:chorus data))))
+                           a1 (int (* 100 (get data :amp1 0)))
+                           a2 (int (* 100 (get data :amp2 0)))
+                           a3 (int (* 100 (get data :amp3 0)))
+                           a4 (int (* 100 (get data :amp4 0)))
+                           w1 (int (* 100 (get data :wave1 0)))
+                           w2 (int (* 100 (get data :wave2 0)))
+                           w3 (int (* 100 (get data :wave3 0)))
+                           w4 (int (* 100 (get data :wave4 0)))
+                           detune (int (min 100 (* 100 (get data :chorus 0))))
                            frate (int (+ rate-bias 
-                                         (* rate-scale (:flanger-rate data))))
-                           fdepth (int (* 100 (:flanger-depth data)))
-                           ffb (int (* 100 (:flanger-fb data)))
-                           fmix (int (* 100 (:flanger-mix data)))
+                                         (* rate-scale (get data :flanger-rate 1.0))))
+                           fdepth (int (* 100 (get data :flanger-depth 0)))
+                           ffb (int (* 100 (get data :flanger-fb 0)))
+                           fmix (int (* 100 (get data :flanger-mix 0)))
                            vrate (int (+ rate-bias
-                                         (* rate-scale (:vibrato-freq data))))
-                           vsens (int (min 100 (* 1000 (:vibrato-sens data))))
-                           rev (int (* 100 (:reverb-mix data)))
-                           amp (int (* 100 (:amp data)))
+                                         (* rate-scale (get data :vibrato-freq 5))))
+                           vsens (int (min 100 (* 1000 (get data :vibrato-sens 0))))
+                           
+                           rev (int (* 100 (get data :reverb-mix 0)))
+                           amp (int (* 100 (get data :amp 1)))
                            f-mode (get data :filter-type bypass-filter)
                            harmonic (min 16 (max 1 (get data :filter 2)))]
                        (doseq [tb (map second (seq harmonic-buttons))]
@@ -233,11 +234,9 @@
                        (.setValue slide-reverb rev)
                        (.setValue slide-amp amp)
                        (.setSelected (get filter-buttons f-mode tb-filter-bypass) true)
-                       (.setSelected (get harmonic-buttons harmonic tb-filter-8) true)
-                       (reset! enable-param-updates* true))
-                     ) ; end sync-ui
-                   )
-        
+                       (.setSelected (get harmonic-buttons harmonic tb-filter-8) true))
+                     (reset! enable-param-updates* true)))
+                   
         change-listener (proxy [ChangeListener][]
                           (stateChanged [ev]
                             (if @enable-param-updates*
