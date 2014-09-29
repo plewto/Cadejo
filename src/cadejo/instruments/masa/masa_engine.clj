@@ -10,7 +10,8 @@
   (:require [cadejo.instruments.masa.program])
   (:require [cadejo.instruments.masa.pp])
   (:require [cadejo.instruments.masa.data])
-  (:require [cadejo.instruments.masa.efx :as efx]))
+  (:require [cadejo.instruments.masa.efx :as efx])
+  (:require [cadejo.instruments.masa.masa-editor]))
 
 (def clipboard* (atom nil))
 
@@ -21,6 +22,7 @@
     (.add-controller! d :cc7 "Volume" 7)
     (.add-controller! d :cca "Scanner Mix" 92)
     (.add-controller! d :ccb "Reverb Nix" 93)
+    (.set-editor-constructor! d cadejo.instruments.masa.masa-editor/masa-editor)
     d))
 
 (defsynth VibratoBlock [vibrato-depth-bus 0
@@ -165,9 +167,9 @@
     (out:ar out-bus out-sig)))
 
 
-(defn create-performance [chanobj id keymode main-out-bus 
-                          cc-vibrato cc-pedal cc-volume
-                          cc-scanner cc-reverb]
+(defn- create-performance [chanobj id keymode main-out-bus 
+                           cc-vibrato cc-pedal cc-volume
+                           cc-scanner cc-reverb]
   (let [bank (.clone cadejo.instruments.masa.program/bank)
         performance (cadejo.midi.performance/performance chanobj id keymode 
                                                          bank masa-descriptor

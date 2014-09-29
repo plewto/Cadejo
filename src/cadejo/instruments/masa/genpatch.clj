@@ -1,6 +1,7 @@
 (ns cadejo.instruments.masa.genpatch
   (:require [cadejo.util.math :as math])
-  (:use [cadejo.instruments.masa.program]))
+  (:use [cadejo.instruments.masa.masa-constants])
+  (:require [cadejo.instruments.masa.program :as program]))
         
 (defn random-masa-program [& {:keys [gamut]
                               :or {gamut nil}}]
@@ -15,7 +16,7 @@
         rand-harm (fn [n] (math/coin 0.7 n (+ n (rand))))
         rand-one (fn [] (* (math/coin 0.5 -1 +1)(rand)))]
     (println ";; MASA Harmonics gamut " harmonic-type)
-    (masa 
+    (program/masa 
      :harmonics (cond (= harmonic-type :b3) b3
                       (= harmonic-type :odd) odd
                       (= harmonic-type :harmonic) harmonic
