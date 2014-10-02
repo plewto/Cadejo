@@ -41,12 +41,12 @@
                                   :paint-labels? true
                                   :paint-ticks? true)
         slider-pedal (ss/slider :orientation :vertical
-                                :value 0 :min 0 :max 8
+                                :value 0 :min -8 :max 8
                                 :minor-tick-spacing 1
                                 :major-tick-spacing 4
                                 :paint-labels? true
-                                :snap-to-ticks? true
-                                :paint-ticks? true)
+                                :paint-track? true
+                                :snap-to-ticks? true)
         jb-perc (ss/radio)
         pan (ss/border-panel
              :north (ss/label :text (str n)
