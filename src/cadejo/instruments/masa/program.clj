@@ -17,7 +17,7 @@
                       percussion
                       decay sustain 
                       vrate vsens vdepth vdelay
-                      amp pedal-sens
+                      amp 
                       scanner-delay
                       scanner-delay-mod
                       scanner-mod-rate
@@ -37,7 +37,6 @@
                     vdepth 0
                     vdelay 0
                     amp 0.3
-                    pedal-sens 0
                     scanner-delay 0.01
                     scanner-delay-mod 0.5
                     scanner-mod-rate 7
@@ -92,7 +91,6 @@
    :vdepth (float vdepth)
    :vdelay (float vdelay)
    :amp (float amp)
-   :pedal-sens (float pedal-sens)
    :scanner-delay (float scanner-delay)
    :scanner-delay-mod (float scanner-delay-mod)
    :scanner-mod-rate (float scanner-mod-rate)
@@ -116,7 +114,6 @@
         :vdepth       0.00
         :vdelay       0.00
         :amp          0.30
-        :pedal-sens   0.00
         :scanner-delay      0.01
         :scanner-delay-mod  0.5
         :scanner-mod-rate   7.0

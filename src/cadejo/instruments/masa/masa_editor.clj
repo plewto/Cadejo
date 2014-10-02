@@ -1,11 +1,13 @@
-(println "Loading masa-editor")
 (ns cadejo.instruments.masa.masa-editor
   (:use [cadejo.util.trace])
+  (:require [cadejo.instruments.masa.gamut-editor])
+  (:require [cadejo.instruments.masa.efx-editor])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.instruments.instrument-editor :as ied])
   (:require [cadejo.ui.instruments.subedit])
+
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
            javax.swing.event.ChangeListener))
@@ -83,7 +85,7 @@
                      (let [q (create-drawbar-panel (inc n))]
                        (swap! acc* (fn [n](conj n q)))))
                    @acc*)
-        enable-sliders* (atom true)
+        enable-change-listener* (atom true)
         slider-decay (ss/slider :orientation :vertical
                                 :value 0 :min 0 :max 100
                                 :minor-tick-spacing 5
@@ -178,14 +180,84 @@
                (.set-param! ied param val))
 
              (sync-ui! [this]
-               (reset! enable-sliders* false)
+               (reset! enable-change-listener* false)
+               (let [data (.current-data (.bank performance))
+                     a1 (int (get data :a1 0))
+                     a2 (int (get data :a2 0))
+                     a3 (int (get data :a3 0))
+                     a4 (int (get data :a4 0))
+                     a5 (int (get data :a5 0))
+                     a6 (int (get data :a6 0))
+                     a7 (int (get data :a7 0))
+                     a8 (int (get data :a8 0))
+                     a9 (int (get data :a9 0))
 
-               (reset! enable-sliders* true)
-               ))
+                     p1 (int (* 8 (get data :p1 0)))
+                     p2 (int (* 8 (get data :p2 0)))
+                     p3 (int (* 8 (get data :p3 0)))
+                     p4 (int (* 8 (get data :p4 0)))
+                     p5 (int (* 8 (get data :p5 0)))
+                     p6 (int (* 8 (get data :p6 0)))
+                     p7 (int (* 8 (get data :p7 0)))
+                     p8 (int (* 8 (get data :p8 0)))
+                     p9 (int (* 8 (get data :p9 0)))
+
+                     pr1 (pos? (get data :perc1 0))
+                     pr2 (pos? (get data :perc2 0))
+                     pr3 (pos? (get data :perc3 0))
+                     pr4 (pos? (get data :perc4 0))
+                     pr5 (pos? (get data :perc5 0))
+                     pr6 (pos? (get data :perc6 0))
+                     pr7 (pos? (get data :perc7 0))
+                     pr8 (pos? (get data :perc8 0))
+                     pr9 (pos? (get data :perc9 0))
+                     decay (int (* 100 (get data :decay 0)))
+                     sustain (int (* 100 (get data :sustain 0)))
+                     vrate (min 100 (int (- (* 100/9 (get data :vrate 7)) 100/9)))
+                     vsens (min 100 (int (* 30000 (get data :vsens 0.001))))
+                     vdepth (int (* 100 (get data :vdepth)))
+                     vdelay (int (* 25/2 (get data :vdelay)))
+                     [sa1 sa2 sa3 sa4 sa5 sa6 sa7 sa8 sa9](map first drawbars)
+                     [sp1 sp2 sp3 sp4 sp5 sp6 sp7 sp8 sp9](map second drawbars)
+                     [jb1 jb2 jb3 jb4 jb5 jb6 jb7 jb8 jb9](map third drawbars)]
+                 (.setValue sa1 a1)
+                 (.setValue sa2 a2)
+                 (.setValue sa3 a3)
+                 (.setValue sa4 a4)
+                 (.setValue sa5 a5)
+                 (.setValue sa6 a6)
+                 (.setValue sa7 a7)
+                 (.setValue sa8 a8)
+                 (.setValue sa9 a9)
+                 (.setValue sp1 p1)
+                 (.setValue sp2 p2)
+                 (.setValue sp3 p3)
+                 (.setValue sp4 p4)
+                 (.setValue sp5 p5)
+                 (.setValue sp6 p6)
+                 (.setValue sp7 p7)
+                 (.setValue sp8 p8)
+                 (.setValue sp9 p9)
+                 (.setValue slider-decay decay)
+                 (.setValue slider-sustain sustain)
+                 (.setValue slider-vrate vrate)
+                 (.setValue slider-vsens vsens)
+                 (.setValue slider-vdepth vdepth)
+                 (.setValue slider-vdelay vdelay)
+                 (.setSelected jb1 pr1)
+                 (.setSelected jb2 pr2)
+                 (.setSelected jb3 pr3)
+                 (.setSelected jb4 pr4)
+                 (.setSelected jb5 pr5)
+                 (.setSelected jb6 pr6)
+                 (.setSelected jb7 pr7)
+                 (.setSelected jb8 pr8)
+                 (.setSelected jb9 pr9)
+                 (reset! enable-change-listener* true) )))
 
         change-listener (proxy [ChangeListener][]
                           (stateChanged [ev]
-                            (if @enable-sliders*
+                            (if @enable-change-listener*
                               (let [slider (.getSource ev)
                                     param (.getClientProperty slider :param)
                                     scale (.getClientProperty slider :scale)
@@ -201,7 +273,7 @@
                               param (.getClientProperty b :param)
                               val (if (.isSelected b) 1.0 0.0)]
                           (.status! ied (format "[%s] --> %s" param (if (zero? val) "off" "on ")))
-                          (.set-param! ied param val)))) ]
+                          (.set-param! ied param val))))]
              
     (.putClientProperty slider-decay :param :decay) ;; [0.0 ... 1.0]
     (.putClientProperty slider-decay :scale 1/100)
@@ -218,8 +290,8 @@
     (.putClientProperty slider-vrate :param :vrate) ;; [1.0 ... 10.0]
     (.putClientProperty slider-vrate :scale 9/100)
     (.putClientProperty slider-vrate :bias 1)
-    (.putClientProperty slider-vrate :rvs-scale 1)
-    (.putClientProperty slider-vrate :rvs-bias 0)
+    (.putClientProperty slider-vrate :rvs-scale 100/9)
+    (.putClientProperty slider-vrate :rvs-bias -100/9)
 
     (.putClientProperty slider-vsens :param :vsens) ;; [0.00 ... 0.03]
     (.putClientProperty slider-vsens :scale 3/10000)
@@ -255,26 +327,9 @@
 
 (defn masa-editor [performance]
   (let [ied (ied/instrument-editor performance)
-        rtab (registration-tab performance ied)]
+        rtab (registration-tab performance ied)
+        gtab (cadejo.instruments.masa.gamut-editor/gamut-tab performance ied)
+        fxed (cadejo.instruments.masa.efx-editor/efx-tab performance ied)
+        ]
     
     ied))
-
-
-
-
-;;; TEST ********************************************
-
-
-;; (let [acc* (atom [])]
-;;   (dotimes [n 9]
-;;     (let [q (create-drawbar-panel (inc n))]
-;;       (swap! acc* (fn [n](conj n (nth q 3))))))
-;;   (let [pan-main (ss/grid-panel :rows 1 :items @acc*)
-;;         f (ss/frame :title "Test"
-;;                     :content pan-main
-;;                     :on-close :dispose)]
-;;     (ss/pack! f)
-;;     (ss/show! f)))
-                    
-    
-    

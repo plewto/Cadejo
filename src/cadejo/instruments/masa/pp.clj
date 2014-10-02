@@ -59,7 +59,7 @@
 
 (defn- str-common [dmap]
   (let [sb (StringBuilder.)]
-    (doseq [k '(:amp :pedal-sens :decay :sustain :vrate :vsens :vdepth :vdelay)]
+    (doseq [k '(:amp :decay :sustain :vrate :vsens :vdepth :vdelay)]
       (.append sb (format "%s%-13s %4.2f\n"
                           pad2 k (extract k dmap 1.0))))
     (.toString sb)))
@@ -81,25 +81,6 @@
       (if (not (= k :reverb-mix))
         (.append sb "\n")))
     (.toString sb)))
-
-;; (defn pp-masa 
-;;   ([pnum pname data remarks]
-;;      (println "DEBUG masa-pp executed")
-;;      (with-out-str
-;;        (let [dmap (cadejo.util.col/alist->map data)]
-;;          (printf ";; MASA ---------------------------------- %s %s\n"
-;;                  pnum pname)
-;;          (printf "(save-program %3s \"%s\" \"%s\"\n"
-;;                  pnum pname remarks)
-;;          (printf "%s(masa " pad1)
-;;          (print (str-harmonics dmap))
-;;          (print (str-registration dmap))
-;;          (print (str-pedals dmap))
-;;          (print (str-percussion dmap))
-;;          (print (str-common dmap))
-;;          (print (str-scanner dmap))
-;;          (print (str-reverb dmap))
-;;          (println "))")))))
 
 (defn pp-masa 
   ([pnum pname data remarks]

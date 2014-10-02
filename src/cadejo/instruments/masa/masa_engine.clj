@@ -1,5 +1,4 @@
 (println "--> MASA")
-
 (ns cadejo.instruments.masa.masa-engine
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu])
@@ -18,10 +17,11 @@
 (def masa-descriptor
   (let [d (cadejo.instruments.descriptor/instrument-descriptor :masa "Organ" clipboard*)]
     (.add-controller! d :cc1 "Vibrato" 1)
-    (.add-controller! d :cc4 "Pedal" 4)
+    (.add-controller! d :cc4 "Pedal" 4)  ;; adds to partial amplitude 
+                                         ;; if partial amplitud is at max, pedal has no effect
     (.add-controller! d :cc7 "Volume" 7)
     (.add-controller! d :cca "Scanner Mix" 92)
-    (.add-controller! d :ccb "Reverb Nix" 93)
+    (.add-controller! d :ccb "Reverb Mix" 93)
     (.set-editor-constructor! d cadejo.instruments.masa.masa-editor/masa-editor)
     d))
 
@@ -71,7 +71,7 @@
                      vibrato-bus 0
                      pedal-bus 0
                      amp 0.2
-                     pedal-sens 0
+                     ;pedal-sens 0
                      r1 0.5
                      r2 1.5
                      r3 1.0
@@ -241,7 +241,7 @@
 (defn masa-poly 
   ([scene chan id & {:keys [cc1 cc4 cc7 cca ccb voice-count main-out]
                      :or {cc1 1
-                          cc4 5
+                          cc4 16
                           cc7 7
                           cca 92
                           ccb 93

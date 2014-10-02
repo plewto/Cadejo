@@ -14,7 +14,7 @@
         :pedals       [ 0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00]
         :percussion   [    0     0     0     0     0     0     0     0     0]
         :amp          0.20
-        :pedal-sens   0.00
+        ;:pedal-sens   0.00
         :decay        0.20
         :sustain      0.90
         :vrate        5.00
@@ -38,7 +38,7 @@
         :pedals       [ 0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00]
         :percussion   [    0     0     0     0     1     0     0     1     0]
         :amp          0.28
-        :pedal-sens   0.00
+        ;:pedal-sens   0.00
         :decay        0.20
         :sustain      0.90
         :vrate        5.44
@@ -64,13 +64,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.000  :vdepth 0.000    :vsens 0.020      :vdelay 0.000
-      :scanner-:delay-mod 0.200      :scanner-delay 0.010
+      :scanner-delay-mod 0.200      :scanner-delay 0.010
       :scanner-mod-rate  1.000       :scanner-mod-spread 0.000
       :scanner-scan-rate 7.000       :scanner-crossmix 0.200
       :scanner-mix 0.200 
       :room-size 0.500               :reverb-damp 0.500
       :reverb-mix 0.200
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.20))                      
 
 (save-program 3 "Bro Jack"
    (masa
@@ -80,13 +80,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.000  :vdepth 0.000    :vsens 0.010      :vdelay 0.000
-      :scanner-:delay-mod 0.200      :scanner-delay 0.010
+      :scanner-delay-mod 0.200      :scanner-delay 0.010
       :scanner-mod-rate  1.000       :scanner-mod-spread 0.000
       :scanner-scan-rate 7.000       :scanner-crossmix 0.200
       :scanner-mix 0.100 
       :room-size 0.500               :reverb-damp 0.500
       :reverb-mix 0.200
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.20))
 
 (save-program 4 "Tibia"
    (masa
@@ -96,13 +96,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-      :scanner-:delay-mod 0.000      :scanner-delay 0.010
+      :scanner-delay-mod 0.000      :scanner-delay 0.010
       :scanner-mod-rate  7.000       :scanner-mod-spread 0.000
       :scanner-scan-rate 0.100       :scanner-crossmix 0.200
       :scanner-mix 0.200 
       :room-size 0.500               :reverb-damp 0.500
       :reverb-mix 0.200
-      :amp 0.141                     :pedal-sens 0.00))
+      :amp 0.141 ))
 
 (save-program 5 "Hallow Out" "Same as Tiba except with pedal" 
    (masa
@@ -112,13 +112,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-      :scanner-:delay-mod 0.100      :scanner-delay 0.010
+      :scanner-delay-mod 0.100      :scanner-delay 0.010
       :scanner-mod-rate  7.000       :scanner-mod-spread 0.000
       :scanner-scan-rate 0.100       :scanner-crossmix 0.200
       :scanner-mix 0.200 
       :room-size 0.500               :reverb-damp 0.500
       :reverb-mix 0.300
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.20 ))
 
 (save-program 6 "Gospel"
    (masa
@@ -128,13 +128,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-      :scanner-:delay-mod 0.100      :scanner-delay 0.010
+      :scanner-delay-mod 0.100      :scanner-delay 0.010
       :scanner-mod-rate  7.000       :scanner-mod-spread 0.000
       :scanner-scan-rate 3.500       :scanner-crossmix 0.200
       :scanner-mix 0.200 
       :room-size 0.500               :reverb-damp 0.500
       :reverb-mix 0.300
-      :amp 0.141                     :pedal-sens 0.00))
+      :amp 0.141 ))
 
 (save-program 7 "Annointed"
    (masa
@@ -144,13 +144,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-      :scanner-:delay-mod 0.200      :scanner-delay 0.010
+      :scanner-delay-mod 0.200      :scanner-delay 0.010
       :scanner-mod-rate  6.000       :scanner-mod-spread 0.000
       :scanner-scan-rate 4.000       :scanner-crossmix 0.200
       :scanner-mix 0.150 
       :room-size 0.600               :reverb-damp 0.500
       :reverb-mix 0.400
-      :amp 0.398                     :pedal-sens 0.00))
+      :amp 0.398 ))
 
 (save-program 8 "Gamba/Gadekt 8"
    (masa
@@ -160,13 +160,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-      :scanner-:delay-mod 0.200      :scanner-delay 0.010
+      :scanner-delay-mod 0.200      :scanner-delay 0.010
       :scanner-mod-rate  1.000       :scanner-mod-spread 0.000
       :scanner-scan-rate 7.000       :scanner-crossmix 0.200
       :scanner-mix 0.100 
       :room-size 0.600               :reverb-damp 0.500
       :reverb-mix 0.200
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.20 ))
 
 
 (save-program 9 "Flute 8/Aeoline"
@@ -177,13 +177,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-      :scanner-:delay-mod 0.200      :scanner-delay 0.010
+      :scanner-delay-mod 0.200      :scanner-delay 0.010
       :scanner-mod-rate  1.000       :scanner-mod-spread 0.000
       :scanner-scan-rate 7.000       :scanner-crossmix 0.200
       :scanner-mix 0.100 
       :room-size 0.600               :reverb-damp 0.500
       :reverb-mix 0.200
-      :amp 0.100                     :pedal-sens 0.00))
+      :amp 0.100 ))
 
 (save-program 10 "Bass Horn"
    (masa
@@ -193,13 +193,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-      :scanner-:delay-mod 0.200      :scanner-delay 0.010
+      :scanner-delay-mod 0.200      :scanner-delay 0.010
       :scanner-mod-rate  7.000       :scanner-mod-spread 0.000
       :scanner-scan-rate 0.100       :scanner-crossmix 0.200
       :scanner-mix 0.100 
       :room-size 0.600               :reverb-damp 0.500
       :reverb-mix 0.200
-      :amp 0.141                     :pedal-sens 0.00))
+      :amp 0.141 ))
 
 (save-program 11 "Bassoon 8/16"
    (masa
@@ -209,13 +209,13 @@
     :percussion   [    0     0     0     0     0     0     0     0     0 ]
     :decay 0.20   :sustain 0.80
     :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-    :scanner-:delay-mod 0.200      :scanner-delay 0.010
+    :scanner-delay-mod 0.200      :scanner-delay 0.010
     :scanner-mod-rate  7.000       :scanner-mod-spread 0.000
     :scanner-scan-rate 0.100       :scanner-crossmix 0.200
     :scanner-mix 0.100 
     :room-size 0.600               :reverb-damp 0.500
     :reverb-mix 0.200
-    :amp 0.30                      :pedal-sens 0.00))
+    :amp 0.30 ))
 
 (save-program 12 "Contra Celeste 16/Ocatve Celeste 4"
    (masa
@@ -225,13 +225,13 @@
     :percussion   [    0     0     0     0     0     0     0     0     0 ]
     :decay 0.20   :sustain 0.80
     :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-    :scanner-:delay-mod 0.200      :scanner-delay 0.010
+    :scanner-delay-mod 0.200      :scanner-delay 0.010
     :scanner-mod-rate  7.000       :scanner-mod-spread 0.000
     :scanner-scan-rate 0.100       :scanner-crossmix 0.200
     :scanner-mix 0.100 
     :room-size 0.600               :reverb-damp 0.500
     :reverb-mix 0.200
-    :amp 0.20                      :pedal-sens 0.00))
+    :amp 0.20 ))
 
 (save-program 13 "Clarinet 4/8"
    (masa
@@ -241,13 +241,13 @@
     :percussion   [    0     0     0     0     0     0     0     0     0 ]
     :decay 0.20   :sustain 0.80
     :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-    :scanner-:delay-mod 0.200      :scanner-delay 0.010
+    :scanner-delay-mod 0.200      :scanner-delay 0.010
     :scanner-mod-rate  7.000       :scanner-mod-spread 0.000
     :scanner-scan-rate 0.100       :scanner-crossmix 0.200
     :scanner-mix 0.100 
     :room-size 0.600               :reverb-damp 0.500
     :reverb-mix 0.200
-    :amp 0.20                      :pedal-sens 0.00))
+    :amp 0.20 ))
 
 (save-program 14 "Diapason 8/16"
    (masa
@@ -257,13 +257,13 @@
     :percussion   [    0     0     0     0     0     0     0     0     0 ]
     :decay 0.20   :sustain 0.80
     :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-    :scanner-:delay-mod 0.200      :scanner-delay 0.010
+    :scanner-delay-mod 0.200      :scanner-delay 0.010
     :scanner-mod-rate  7.000       :scanner-mod-spread 0.000
     :scanner-scan-rate 0.100       :scanner-crossmix 0.200
     :scanner-mix 0.100 
     :room-size 0.600               :reverb-damp 0.500
     :reverb-mix 0.200
-    :amp 0.20                      :pedal-sens 0.00))
+    :amp 0.20 ))
 
 (save-program 15 "English Horn 8/16"
    (masa
@@ -273,13 +273,13 @@
     :percussion   [    0     0     0     0     0     0     0     0     0 ]
     :decay 0.20   :sustain 0.80
     :vrate 7.000  :vdepth 0.000    :vsens 0.02      :vdelay 0.000
-    :scanner-:delay-mod 0.200      :scanner-delay 0.010
+    :scanner-delay-mod 0.200      :scanner-delay 0.010
     :scanner-mod-rate  7.000       :scanner-mod-spread 0.000
     :scanner-scan-rate 0.100       :scanner-crossmix 0.200
     :scanner-mix 0.100 
     :room-size 0.600               :reverb-damp 0.500
     :reverb-mix 0.200
-    :amp 0.20                      :pedal-sens 0.00))
+    :amp 0.20 ))
 
 (save-program 16  "Odd 1"
    (masa
@@ -289,13 +289,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 4.874  :vdepth 0.264    :vsens 0.006      :vdelay 7.614
-      :scanner-:delay-mod 0.253      :scanner-delay 0.010
+      :scanner-delay-mod 0.253      :scanner-delay 0.010
       :scanner-mod-rate  4.137       :scanner-mod-spread 2.800
       :scanner-scan-rate 2.292       :scanner-crossmix 0.509
       :scanner-mix 0.000 
       :room-size 0.586               :reverb-damp 0.160
       :reverb-mix 0.664
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.20 ))
 
 (save-program 17  "Harmonic Stadium"
    (masa
@@ -305,13 +305,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.865  :vdepth 0.002    :vsens 0.641      :vdelay 1.129
-      :scanner-:delay-mod 0.309      :scanner-delay 0.010
+      :scanner-delay-mod 0.309      :scanner-delay 0.010
       :scanner-mod-rate  1.969       :scanner-mod-spread 1.299
       :scanner-scan-rate 6.937       :scanner-crossmix 0.803
       :scanner-mix 0.000 
       :room-size 0.867               :reverb-damp 0.027
       :reverb-mix 0.268
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.20 ))
 
 (save-program 18  "Cathedral"
    (masa
@@ -321,13 +321,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.653  :vdepth 0.477    :vsens 0.011      :vdelay 1.201
-      :scanner-:delay-mod 0.846      :scanner-delay 0.010
+      :scanner-delay-mod 0.846      :scanner-delay 0.010
       :scanner-mod-rate  3.244       :scanner-mod-spread 3.021
       :scanner-scan-rate 0.184       :scanner-crossmix 0.761
       :scanner-mix 0.000 
       :room-size 0.719               :reverb-damp 0.270
       :reverb-mix 0.793
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.20 ))
 
 (save-program 19  "Louis Rosen"
    (masa
@@ -337,13 +337,13 @@
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
       :decay 0.20   :sustain 0.80
       :vrate 7.074  :vdepth 0.000    :vsens 0.004      :vdelay 1.207
-      :scanner-:delay-mod 0.229      :scanner-delay 0.010
+      :scanner-delay-mod 0.229      :scanner-delay 0.010
       :scanner-mod-rate  2.744       :scanner-mod-spread 2.160
       :scanner-scan-rate 0.238       :scanner-crossmix 0.054
       :scanner-mix 0.449 
       :room-size 0.744               :reverb-damp 0.407
       :reverb-mix 0.400
-      :amp 0.20                      :pedal-sens 0.00))
+      :amp 0.20 ))
 
 ;; ------------------------------------------------------------ 120 - 127 random program 
 ;;
