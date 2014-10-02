@@ -104,6 +104,16 @@
                 (.warning! parent-editor msg))
 
               (set-param! [this param value] nil) ;; ignore
+              
+              (init! [this]
+                ;(ss/config! txt-name :text "Init")
+                ;(ss/config! txt-remarks :text "")
+                (let [bank (.parent-bank parent-editor)
+                      prog (assoc (.current-program bank)
+                             :name "Init"
+                             :remarks "")]
+                  (.current-program! bank prog)
+                  (.sync-ui! this)))
 
               (sync-ui! [this]
                 (let [bank (.parent-bank parent-editor)
@@ -191,6 +201,8 @@
     [this pnum]
     "Sets the value of the store-program spinner")
   
+  (init! [this])
+
   (sync-ui!
     [this]))
 
@@ -235,6 +247,7 @@
         ;; South toolbar
         ;;    store spinner
         ;;
+        jb-init (ss/button)
         jb-store (ss/button)
         spin-program (ss/spinner 
                       :model (ss/spinner-model 0 
@@ -242,7 +255,9 @@
                                                :max max-program-number 
                                                :by 1)
                       :size [72 :by 24])
-        pan-south1 (ss/horizontal-panel :items [jb-store
+        pan-south1 (ss/horizontal-panel :items [jb-init
+                                                (Box/createHorizontalStrut 8)
+                                                jb-store
                                                 (Box/createHorizontalStrut 8)
                                                 spin-program]
                                         :border (factory/padding))
@@ -345,6 +360,12 @@
               (set-store-location! [this pnum]
                 (if (and (>= pnum 0)(<= pnum max-program-number))
                   (.setValue spin-program pnum)))
+
+              (init! [this]
+                (doseq [s @sub-editors*]
+                  (.init! s))
+                (ss/config! lab-name :text "Init")
+                (.status! this "Program initialized"))
 
               (sync-ui! [this]
                 (let [prog (.current-program bank)
@@ -456,6 +477,10 @@
                    (.sync-ui! bank-ed)
                    (.status! ied (format "Stored program %s" pnum)))))
     
+    (ss/listen jb-init :action
+               (fn [_]
+                 (.init! ied)))
+
     (if (config/enable-button-text)
       (do
         (ss/config! jb-show-parent :text "Parent")
@@ -464,7 +489,9 @@
         (ss/config! jb-open :text  "Open Program")
         (ss/config! jb-save :text  "Save Program")
         (ss/config! jb-help :text  "Help")
+        (ss/config! jb-init :text "Init")
         (ss/config! jb-store :text  "Store Program")))
+
     (if (config/enable-button-icons)
       (do
         (.setIcon jb-show-parent (lnf/read-icon :tree :up))
@@ -474,14 +501,17 @@
         (.setIcon jb-save (lnf/read-icon :general :save))
         (.setIcon jb-help (lnf/read-icon :general :help))
         (.setIcon jb-store (lnf/read-icon :general :bankstore))
+        (.setIcon jb-init (lnf/read-icon :general :reset))
         (.setSelectedIcon jb-show-parent (lnf/read-selected-icon :tree :up))
         (.setSelectedIcon jb-copy (lnf/read-selected-icon :general :copy))
         (.setSelectedIcon jb-paste (lnf/read-selected-icon :general :paste))
         (.setSelectedIcon jb-open (lnf/read-selected-icon :general :open))
         (.setSelectedIcon jb-save (lnf/read-selected-icon :general :save))
         (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))
+        (.setSelectedIcon jb-init (lnf/read-selected-icon :general :reset))
         (.setSelectedIcon jb-store (lnf/read-selected-icon :general :bankstore))))
-    (if (config/enable-tooltips)
+
+        (if (config/enable-tooltips)
       (do
         (.setToolTipText jb-show-parent "Show Parent")
         (.setToolTipText jb-copy "Copy program data to clipboard")
@@ -489,6 +519,7 @@
         (.setToolTipText jb-open "Open program file")
         (.setToolTipText jb-save "Save program file")
         (.setToolTipText jb-help "Program help")
+        (.setToolTipText jb-init "Initialize program")
         (.setToolTipText jb-store "Store program to bank")))
     (.putClientProperty jb-help :topic :program)
 

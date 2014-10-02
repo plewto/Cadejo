@@ -188,6 +188,28 @@
 
                    (set-param! [this param val]
                      (.set-param! ied param val))
+                  
+                   (init! [this]
+                     (.set-param! this :amp1 1.0)
+                     (.set-param! this :amp2 0.0)
+                     (.set-param! this :amp3 0.0)
+                     (.set-param! this :amp4 0.0)
+                     (.set-param! this :wave1 0.0)
+                     (.set-param! this :wave2 0.0)
+                     (.set-param! this :wave3 0.0)
+                     (.set-param! this :wave4 0.0)
+                     (.set-param! this :chorus 0.0)
+                     (.set-param! this :filter-type 0)
+                     (.set-param! this :filter 8.0)
+                     (.set-param! this :vibrato-freq 5.0)
+                     (.set-param! this :vibrato-sens 0.01)
+                     (.set-param! this :flanger-rate 0.25)
+                     (.set-param! this :flanger-depth 0.25)
+                     (.set-param! this :flanger-fb -0.5)
+                     (.set-param! this :flanger-mix 0.0)
+                     (.set-param! this :reverb-mix 0.0)
+                     (.set-param! this :amp 0.2)
+                     (.sync-ui! this))
 
                    (sync-ui! [this]
                      (reset! enable-param-updates* false)
@@ -263,8 +285,7 @@
                                   param :filter
                                   val (.getClientProperty tb :value)]
                               (.set-param! ied param val))))]
-    ;; (doseq [b (map second (seq filter-buttons))]
-    ;;   (ss/config! b :size [48 :by 48]))
+
     (doseq [b (map second (seq harmonic-buttons))]
       (ss/config! b :size [48 :by 48]))
     (.putClientProperty slide-a1 :param :amp1)

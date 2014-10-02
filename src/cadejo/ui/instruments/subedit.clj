@@ -24,5 +24,8 @@
   (set-param! 
     [this param value])
 
+  (init!
+    [this])
+
   (sync-ui!
     [this]))

@@ -238,10 +238,12 @@
           nil)))) 
                                
     (ss/listen jb-init :action (fn [_]
-                                 (.push-undo-state! bank-ed "Initialize Bank")
-                                 (.init-bank! bnk)
-                                 (.sync-ui! bank-ed)
-                                 (.status! bank-ed "New Bank")))
+                                 (let [ied (.instrument-editor bank-ed)]
+                                   (.push-undo-state! bank-ed "Initialize Bank")
+                                   (.init-bank! bnk)
+                                   (if ied (.init! ied))
+                                   (.sync-ui! bank-ed)
+                                   (.status! bank-ed "Initialized Bank"))))
 
     (ss/listen jb-name :action (fn [_]
                                  (let [ref-name (.bank-name bnk)
