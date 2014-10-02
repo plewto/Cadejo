@@ -185,7 +185,13 @@
                         (ss/config! (.widget this :lab-name) :text (.bank-name bnk))
                         (ss/config! plst :model (create-program-list bnk))
                         (.setSelectedIndex plst pnum)
-                        (.ensureIndexIsVisible plst pnum)
+                        ;; ISSUE: automatic scrolling causes substance 
+                        ;; UiThreadingViolationException
+                        ;; (try
+                        ;;   (.ensureIndexIsVisible plst pnum)
+                        ;;   (catch Exception ex
+                        ;;     (umsg/warning "Caught exception BankEditor.sync-ui!"
+                        ;;                   "ensureIndexIsVisible")))
                         (if @instrument-editor*
                           (.sync-ui! @instrument-editor*))
                         (reset! enable-list-selection-listener* true))))

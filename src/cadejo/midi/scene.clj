@@ -13,7 +13,6 @@
   (:require [cadejo.ui.midi.scene-editor])
   (:require [overtone.midi :as midi]))
 
-
 (def channel-count (cadejo.config/channel-count))
 
 (defprotocol SceneProtocol 
@@ -113,7 +112,6 @@
               ;; FUTURE handle non-channel events here
               )
             ))))
-      
 
     (scale-registry [this]
       sregistry)
