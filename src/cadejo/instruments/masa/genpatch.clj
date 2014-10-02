@@ -41,7 +41,7 @@
                   (rand-perc)(rand-perc)(rand-perc)
                   (rand-perc)(rand-perc)(rand-perc)]
      :amp 0.2
-     :pedal-sens 0
+     ;:pedal-sens 0
      :decay (math/coin 0.75 (rand 0.33)(rand))
      :sustain (math/coin 0.75 (+ 0.75 (rand 0.25))(rand))
      :vrate (math/rand-range 3 8)

@@ -1,5 +1,4 @@
 (ns cadejo.instruments.masa.masa-editor
-  (:use [cadejo.util.trace])
   (:require [cadejo.instruments.masa.gamut-editor])
   (:require [cadejo.instruments.masa.efx-editor])
   (:require [cadejo.util.user-message :as umsg])
@@ -7,11 +6,9 @@
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.instruments.instrument-editor :as ied])
   (:require [cadejo.ui.instruments.subedit])
-
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
            javax.swing.event.ChangeListener))
-
 
 (defn- third [col]
   (nth col 2))
@@ -51,18 +48,21 @@
                                 :snap-to-ticks? true
                                 :paint-ticks? true)
         jb-perc (ss/radio)
-        pan (ss/border-panel :north (ss/label :text (str n)
-                                              :halign :center)
-                             :center (ss/grid-panel :columns 1
-                                                    :items [(ss/border-panel :center slider-drawbar
-                                                                             :south (ss/label :text "Amp"
-                                                                                              :halign :center))
-                                                            (ss/border-panel :center slider-pedal
-                                                                             :south (ss/label :text "Pedal"
-                                                                                              :halign :center))])
-                             :south (ss/border-panel :center (ss/horizontal-panel :items [jb-perc])
-                                                     :south (ss/label :text "Perc"
-                                                                      :halign :center)))]
+        pan (ss/border-panel
+             :north (ss/label :text (str n)
+                              :halign :center)
+             :center (ss/grid-panel :columns 1
+                                    :items [(ss/border-panel
+                                             :center slider-drawbar
+                                             :south (ss/label :text "Amp"
+                                                              :halign :center))
+                                            (ss/border-panel
+                                             :center slider-pedal
+                                             :south (ss/label :text "Pedal"
+                                                              :halign :center))])
+             :south (ss/border-panel :center (ss/horizontal-panel :items [jb-perc])
+                                     :south (ss/label :text "Perc"
+                                                      :halign :center)))]
     (.putClientProperty slider-drawbar :param (keyword (format "a%d" n)))
     (.putClientProperty slider-drawbar :scale 1)
     (.putClientProperty slider-drawbar :bias 0)
@@ -108,7 +108,6 @@
                                                         :south (ss/label :text "Sustain"
                                                                          :halign :center))]
                                :border (factory/title "Percussion Envelope"))
-
         slider-vrate (ss/slider :orientation :vertical
                                 :value 0 :min 0 :max 100
                                 :minor-tick-spacing 5
@@ -137,20 +136,25 @@
                                  :snap-to-ticks? false
                                  :paint-labels? true
                                  :paint-ticks? true)
-        pan-vibrato (ss/grid-panel :rows 1
-                                   :items [(ss/border-panel :center slider-vrate
-                                                            :south (ss/label :text "Rate"
-                                                                             :halign :center))
-                                           (ss/border-panel :center slider-vsens
-                                                            :south (ss/label :text "Sensitivity"
-                                                                             :halign :center))
-                                           (ss/border-panel :center slider-vdepth
-                                                            :south (ss/label :text "Depth"
-                                                                             :halign :center))
-                                           (ss/border-panel :center slider-vdelay
-                                                            :south (ss/label :text "Delay"
-                                                                             :halign :center))]
-                                   :border (factory/title "Vibrato"))
+        pan-vibrato (ss/grid-panel
+                     :rows 1
+                     :items [(ss/border-panel
+                              :center slider-vrate
+                              :south (ss/label :text "Rate"
+                                               :halign :center))
+                             (ss/border-panel
+                              :center slider-vsens
+                              :south (ss/label :text "Sensitivity"
+                                               :halign :center))
+                             (ss/border-panel
+                              :center slider-vdepth
+                              :south (ss/label :text "Depth"
+                                               :halign :center))
+                             (ss/border-panel
+                              :center slider-vdelay
+                              :south (ss/label :text "Delay"
+                                               :halign :center))]
+                     :border (factory/title "Vibrato"))
         pan-east (ss/grid-panel :columns 1 :items [pan-env pan-vibrato])
         pan-drawbars (ss/grid-panel :rows 1
                                     :items (map fourth drawbars)
@@ -177,7 +181,43 @@
                (.warning! ied msg))
 
              (set-param! [this param val]
-               (.set-param! ied param val))
+               (.set-param! ied param (float val)))
+
+             (init! [this]
+               (.set-param! this :a1 0)
+               (.set-param! this :a2 0)
+               (.set-param! this :a3 8)
+               (.set-param! this :a4 6)
+               (.set-param! this :a5 0)
+               (.set-param! this :a6 4)
+               (.set-param! this :a7 0)
+               (.set-param! this :a8 0)
+               (.set-param! this :a9 2)
+               (.set-param! this :p1 0)
+               (.set-param! this :p2 0)
+               (.set-param! this :p3 0)
+               (.set-param! this :p4 0)
+               (.set-param! this :p5 0)
+               (.set-param! this :p6 0)
+               (.set-param! this :p7 0)
+               (.set-param! this :p8 0)
+               (.set-param! this :p9 0)
+               (.set-param! this :perc1 0)
+               (.set-param! this :perc2 0)
+               (.set-param! this :perc3 0)
+               (.set-param! this :perc4 0)
+               (.set-param! this :perc5 0)
+               (.set-param! this :perc6 0)
+               (.set-param! this :perc7 0)
+               (.set-param! this :perc8 0)
+               (.set-param! this :perc9 0)
+               (.set-param! this :decay 0.2)
+               (.set-param! this :sustain 0.7)
+               (.set-param! this :vrate 7.0)
+               (.set-param! this :vsens 0.05)
+               (.set-param! this :vdepth 0.0)
+               (.set-param! this :vdelay 0.0)
+               (.sync-ui! this))
 
              (sync-ui! [this]
                (reset! enable-change-listener* false)
@@ -215,8 +255,8 @@
                      sustain (int (* 100 (get data :sustain 0)))
                      vrate (min 100 (int (- (* 100/9 (get data :vrate 7)) 100/9)))
                      vsens (min 100 (int (* 30000 (get data :vsens 0.001))))
-                     vdepth (int (* 100 (get data :vdepth)))
-                     vdelay (int (* 25/2 (get data :vdelay)))
+                     vdepth (int (* 100 (get data :vdepth 0)))
+                     vdelay (int (* 25/2 (get data :vdelay 0)))
                      [sa1 sa2 sa3 sa4 sa5 sa6 sa7 sa8 sa9](map first drawbars)
                      [sp1 sp2 sp3 sp4 sp5 sp6 sp7 sp8 sp9](map second drawbars)
                      [jb1 jb2 jb3 jb4 jb5 jb6 jb7 jb8 jb9](map third drawbars)]

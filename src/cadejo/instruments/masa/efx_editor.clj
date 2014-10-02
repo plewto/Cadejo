@@ -86,7 +86,21 @@
                (.warning! ied msg))
 
              (set-param! [this param val]
-               (.set-param! ied param val))
+               (.set-param! ied param (float val)))
+
+             (init! [this]
+               (.set-param! this :scanner-delay 0.01)
+               (.set-param! this :scanner-delay-mod 0.5)
+               (.set-param! this :scanner-mod-rate 5.0)
+               (.set-param! this :scanner-mod-spread 0.0)
+               (.set-param! this :scanner-scan-rate 0.1)
+               (.set-param! this :scanner-crossmix 0.1)
+               (.set-param! this :scanner-mix 0.0)
+               (.set-param! this :room-size 0.7)
+               (.set-param! this :reverb-damp 0.5)
+               (.set-param! this :reverb-mix 0.0)
+               (.set-param! this :amp 0.2)
+               (.sync-ui! this))
 
              (sync-ui! [this]
                (reset! enable-change-listener* false)

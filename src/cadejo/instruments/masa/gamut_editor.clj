@@ -122,8 +122,20 @@
                (.warning! ied msg))
 
              (set-param! [this param val]
-               (.set-param! ied param val))
+               (.set-param! ied param (float val)))
                
+             (init! [this]
+               (.set-param! this :r1 0.5)
+               (.set-param! this :r2 1.5)
+               (.set-param! this :r3 1.0)
+               (.set-param! this :r4 2.0)
+               (.set-param! this :r5 3.0)
+               (.set-param! this :r6 4.0)
+               (.set-param! this :r7 5.0)
+               (.set-param! this :r8 6.0)
+               (.set-param! this :r9 8.0)
+               (.sync-ui! this))
+
              (sync-ui! [this]
                (reset! enable-change-listener* false)
                (let [data (.current-data (.bank performance))
