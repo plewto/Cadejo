@@ -16,6 +16,9 @@
 (defn- fourth [col]
   (nth col 3))
 
+(defn- fifth [col]
+  (nth col 4))
+
 
 ;; drawbar number n
 ;; --> slider 
@@ -48,9 +51,11 @@
                                 :paint-track? true
                                 :snap-to-ticks? true)
         jb-perc (ss/radio)
+        lab-freq (ss/label :text "x")
         pan (ss/border-panel
-             :north (ss/label :text (str n)
-                              :halign :center)
+             ;; :north (ss/label :text (str n)
+             ;;                  :halign :center)
+             :north lab-freq
              :center (ss/grid-panel :columns 1
                                     :items [(ss/border-panel
                                              :center slider-drawbar
@@ -62,7 +67,8 @@
                                                               :halign :center))])
              :south (ss/border-panel :center (ss/horizontal-panel :items [jb-perc])
                                      :south (ss/label :text "Perc"
-                                                      :halign :center)))]
+                                                      :halign :center))
+             :border (factory/title (str n)))]
     (.putClientProperty slider-drawbar :param (keyword (format "a%d" n)))
     (.putClientProperty slider-drawbar :scale 1)
     (.putClientProperty slider-drawbar :bias 0)
@@ -76,7 +82,7 @@
     (.putClientProperty jb-perc :param (keyword (format "perc%d" n)))
     (.setIcon jb-perc (lnf/read-icon :led1 :off))
     (.setSelectedIcon jb-perc (lnf/read-selected-icon :led1 :on))
-    [slider-drawbar slider-pedal jb-perc pan]))
+    [slider-drawbar slider-pedal jb-perc pan lab-freq]))
                                 
                                   
 (defn registration-tab [performance ied]
@@ -257,9 +263,23 @@
                      vsens (min 100 (int (* 30000 (get data :vsens 0.001))))
                      vdepth (int (* 100 (get data :vdepth 0)))
                      vdelay (int (* 25/2 (get data :vdelay 0)))
+
+                     gamut [(float (get data :r1 1))
+                            (float (get data :r2 1))
+                            (float (get data :r3 1))
+                            (float (get data :r4 1))
+                            (float (get data :r5 1))
+                            (float (get data :r6 1))
+                            (float (get data :r7 1))
+                            (float (get data :r8 1))
+                            (float (get data :r9 1))]
+                     freq-labels (map fifth drawbars)
                      [sa1 sa2 sa3 sa4 sa5 sa6 sa7 sa8 sa9](map first drawbars)
                      [sp1 sp2 sp3 sp4 sp5 sp6 sp7 sp8 sp9](map second drawbars)
                      [jb1 jb2 jb3 jb4 jb5 jb6 jb7 jb8 jb9](map third drawbars)]
+                 (dotimes [n (count gamut)]
+                   (ss/config! (nth freq-labels n)
+                               :text (format "%6.4f" (nth gamut n))))
                  (.setValue sa1 a1)
                  (.setValue sa2 a2)
                  (.setValue sa3 a3)
@@ -369,7 +389,5 @@
   (let [ied (ied/instrument-editor performance)
         rtab (registration-tab performance ied)
         gtab (cadejo.instruments.masa.gamut-editor/gamut-tab performance ied)
-        fxed (cadejo.instruments.masa.efx-editor/efx-tab performance ied)
-        ]
-    
+        fxed (cadejo.instruments.masa.efx-editor/efx-tab performance ied)]
     ied))
