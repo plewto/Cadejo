@@ -32,6 +32,14 @@
   "Ratio of single cent."
   (expt 2.0 1/1200))
 
+
+;; Transpose frequency f by n cents
+;;
+(defn transpose [f n]
+  (let [r (expt cent n)]
+    (* r f)))
+        
+
 (defn amp->db [amp]
   (* 20 (logn amp 10)))
 
@@ -176,3 +184,12 @@
    range - Set maximum deviation from mean as a ratio, default 1% = 0.01"
     ([n range] (+ n (* (coin 0.5 -1 +1)(* n range)(rand))))
     ([n](approx n 0.01)))
+
+
+(defn closest [n lst]
+  "Return element of lst wich is closest to n"
+  (let [diff (map (fn [q](abs (- q n))) lst)
+        mn (apply min diff)
+        i (.indexOf diff mn)]
+    (nth lst i)))
+        
