@@ -5,6 +5,7 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.overwrite-warning])
   (:require [cadejo.ui.util.undo-stack])
@@ -402,5 +403,6 @@
         (.setToolTipText jb-name "Edit Bank name and remarks") ))
     
     (.putClientProperty jb-help :topic :bank-editor)
+    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     (.sync-ui! bank-ed)
     bank-ed))

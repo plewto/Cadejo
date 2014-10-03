@@ -3,6 +3,7 @@
   (:require [cadejo.config :as config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [seesaw.core :as ss])
   (:require [seesaw.font :as ssfont]))
@@ -143,7 +144,8 @@
       (do 
         (.setToolTipText jb-parent "Display Parent Window")
         (.setToolTipText jb-help "Help")))
-        
+     
+    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
 
     ;; START DEBUG
     (ss/listen jb-help :action (fn [_]

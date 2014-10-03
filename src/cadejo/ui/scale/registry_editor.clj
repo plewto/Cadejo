@@ -7,6 +7,7 @@
   (:require [cadejo.ui.util.overwrite-warning])
   (:require [cadejo.ui.util.undo-stack])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.scale.eqtemp])
   (:require [cadejo.ui.scale.addscale])
@@ -304,7 +305,6 @@
                (.setEnabled pan-wrap-high flag)
                (.setEnabled pan-wrap flag)))]
 
-    (.putClientProperty jb-help :topic :scale-registry)
     (if (config/enable-button-text)
       (do
         (ss/config! jb-init :text "Reset")   
@@ -421,4 +421,8 @@
             (fn [_]
               (ss/show-card! pan-subedit :detail)
               (.warning! ed "Detail editor not implemented")))
+
+    (.putClientProperty jb-help :topic :scale-registry)
+    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
+
     ed))

@@ -7,6 +7,7 @@
   (:require [cadejo.ui.midi.properties-editor])
   (:require [cadejo.ui.util.color-utilities])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.validated-text-field :as vtf])
   (:require [clojure.string ])
@@ -134,8 +135,9 @@
     (if (cadejo.config/enable-tooltips)
       (do
         (.setToolTipText jb-help "Add Instrument Help")))
-    (.putClientProperty jb-help :topic :add-instrument-dialog)
 
+    (.putClientProperty jb-help :topic :add-instrument)
+    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
 
     (ss/listen jb-cancel :action 
                (fn [_]
@@ -333,4 +335,5 @@
                                   sid (.get-property scene :id)
                                   cid (.get-property chanobj :id)]
                               (format "Scene %s Channel %s" sid cid)))
+      (.putClientProperty (.widget basic-ed :jb-help) :topic :channel)
       ced)))

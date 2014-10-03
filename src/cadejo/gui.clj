@@ -6,6 +6,7 @@
   (:require [cadejo.midi.scene])
   (:require [cadejo.ui.util.icon])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.help])
   (:require [cadejo.util.midi])
   (:require [seesaw.core :as ss])
   (:require [overtone.core :as ot]))
@@ -225,13 +226,14 @@
     (ss/listen jb-config :action (fn [_]
                                    (status "Confing NOT IMPLEMENTED")))
 
-    (ss/listen jb-help :action (fn [_]
-                                 (status "Help NOT IMPLEMENTED")))
+    ;; (ss/listen jb-help :action (fn [_]
+    ;;                              (status "Help NOT IMPLEMENTED")))
     
     (ss/listen jb-exit :action (fn [_]
                                  (status "Exit NOT IMPLEMENTED")))
 
     (.putClientProperty jb-help :topic :cadejo)
+    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
 
     (if (ot/server-connected?)
       (do

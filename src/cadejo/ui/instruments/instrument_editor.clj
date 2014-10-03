@@ -5,6 +5,7 @@
   (:require [cadejo.util.path :as path])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.user-message :as umsg])
   (:use [cadejo.ui.util.overwrite-warning :only [overwrite-warning]])
@@ -287,7 +288,8 @@
                         :size [1050 :by 650]
                         :icon (.logo descriptor :tiny))
                                   
-        widget-map {:lab-name lab-name
+        widget-map {:jb-help jb-help
+                    :lab-name lab-name
                     :pan-main pan-main
                     :pan-tabs pan-tabs
                     :frame frame}
@@ -523,12 +525,7 @@
         (.setToolTipText jb-store "Store program to bank")))
     (.putClientProperty jb-help :topic :program)
 
-    ;; START DEBUG
-    (ss/listen jb-help :action (fn [_]
-                                 (println (ss/config frame :size))
-                                 (println)))
-    ;; END DEBUG
-
+    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     ied))
                 
                       
