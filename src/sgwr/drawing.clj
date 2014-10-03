@@ -11,16 +11,16 @@
   (:require [sgwr.rectangle])
   (:require [sgwr.text-element])
   (:require [sgwr.utilities :as util])
-  (:import javax.swing.JPanel
-           java.awt.Dimension
+  (:import java.awt.Dimension
            java.awt.geom.AffineTransform
            java.awt.image.BufferedImage
            java.awt.image.AffineTransformOp
            java.awt.Rectangle
            java.awt.event.MouseMotionListener
            java.awt.event.MouseListener
+           java.io.File
            javax.imageio.ImageIO
-           java.io.File))
+           javax.swing.JPanel))
 
 (defn read-image [fqn]
   "Read image file into BufferedImage
@@ -49,6 +49,16 @@
   (coordinate-system
     [this]
     "Return the coordinate-system")
+  
+  (coordinate-system!
+    [this cs freeze]
+    [this cs]
+    "Change coordinate system.
+     The new coordinate system should have the same 'physical' dimensions
+     as the original coordinate-system
+
+     If freeze is true drawing is frozen prior to setting the new 
+     coordinate-system. freeze is true by default")
 
   (background
     [this]
@@ -294,6 +304,15 @@
     "Returns most recent position mouse was released in terms of 
      current coordinate system.")
 
+  (export 
+    [this filename itype]
+    [this filename]
+    "Export drawing as image file
+     filename - String, the fully qualified filename
+     itype - keyword, may be either :png or :jpeg, defaults to :png
+     If image saved successfully returns image
+     If an Exception occurs print stack trace and return nil")
+
   (to-string
     [this verbose]
     [this])
@@ -323,6 +342,7 @@
 
 (defn- create-drawing [cs refresh-delay]
   (let [[width height](.canvas-bounds cs)
+        cs* (atom cs)
         mouse-dragged* (atom nil)  ;; true if mouse position results from drag
         mouse-position* (atom [0 0]) ;; as pixel [col row]
         mouse-pressed-position* (atom [0 0]) ;; as pixel [col row]
@@ -343,7 +363,14 @@
         drw (reify Drawing
               (drawing-canvas [this] @cpan*)
 
-              (coordinate-system [this] cs)
+              (coordinate-system [this] @cs*)
+
+              (coordinate-system! [this cs freeze]
+                (if freeze (.freeze! this))
+                (reset! cs* cs))
+
+              (coordinate-system! [this cs]
+                (.coordinate-system! this cs true))
 
               (background [this] background-image)
                 
@@ -376,10 +403,10 @@
                 (reset! attributes* att))
 
               (view [this]
-                (.view cs))
+                (.view @cs*))
 
               (view! [this v]
-                (.view! cs v)
+                (.view! @cs* v)
                 (.render this))
 
               (color! [this c]
@@ -453,11 +480,11 @@
                 (.clear! this false))
 
               (zoom-in! [this]
-                (.zoom! cs @zoom-ratio*)
+                (.zoom! @cs* @zoom-ratio*)
                 (.render this))
 
               (zoom-out! [this]
-                (.zoom! cs (/ 1.0 @zoom-ratio*))
+                (.zoom! @cs* (/ 1.0 @zoom-ratio*))
                 (.render this))
 
               (render [this]
@@ -472,15 +499,15 @@
                                 @selected-color*
                                 (.color e))
                             strk (.stroke e)
-                            shape (.shape e cs)]
+                            shape (.shape e @cs*)]
                         (.setColor g2d c)
                         (.setStroke g2d strk)
                         (cond 
                          ;(.is-text? e)
                          (= (.element-type e) :text)
-                         (let [fnt (.get-font e cs)
+                         (let [fnt (.get-font e @cs*)
                                tx (.text e)
-                               pos (.map-point cs(first (.construction-points e)))
+                               pos (.map-point @cs* (first (.construction-points e)))
                                [u v] pos]
                            (.setFont g2d fnt)
                            (.drawString g2d tx (int u)(int v)))
@@ -496,17 +523,17 @@
               (plot! [this points]
                 (let [rgb (.color-rgb @attributes*)]
                   (doseq [p points]
-                    (let [q (.map-point cs p)
+                    (let [q (.map-point @cs* p)
                           [u v] q]
                       (.setRGB image (int u)(int v) rgb)))
                   (.repaint @cpan*)))
               
               (plot-to! [this points]
                 (let [g2d (.createGraphics image)
-                      q0* (atom (.map-point cs (first points)))]
+                      q0* (atom (.map-point @cs* (first points)))]
                   (.setColor g2d (.color @attributes*))
                   (doseq [p (rest points)]
-                    (let [q1 (.map-point cs p)
+                    (let [q1 (.map-point @cs* p)
                           [u0 v0] @q0*
                           [u1 v1] q1]
                       (.drawLine g2d u0 v0 u1 v1)
@@ -616,27 +643,43 @@
                 (.removeMouseListener @cpan* ml))
 
               (where [this]
-                (.inv-map cs @mouse-position*))
+                (.inv-map @cs* @mouse-position*))
 
              (mouse-pressed-where [this]
-               (.inv-map cs @mouse-pressed-position*))
+               (.inv-map @cs* @mouse-pressed-position*))
 
              (mouse-released-where [this]
-               (.inv-map cs @mouse-released-position*))
+               (.inv-map @cs* @mouse-released-position*))
 
-              (to-string [this verbose]
-                (let [sb (StringBuilder.)]
-                  (.append sb "Drawing:\n")
-                  (doseq [e (.elements this)]
-                    (.append sb (str (format "\t%s" (.to-string e))
-                                     (if verbose
-                                       (format "\n\t\t%s" (.to-string (.attributes e))))
-                                     "\n")))
-                  (.toString sb)))
+             (export [this filename]
+               (.export this filename :png))
 
-              (to-string [this]
-                (.to-string this false)))]
+             (export [this filename itype]
+               (let [f (File. filename)
+                     iform (get {:png "PNG"
+                                 :jpeg "JPEG"} 
+                                itype
+                                "PNG")]
+                 (try
+                   (ImageIO/write image iform f)
+                   image
+                   (catch Exception ex
+                     (.printStackTrace ex)
+                     nil))))
 
+             (to-string [this verbose]
+               (let [sb (StringBuilder.)]
+                 (.append sb "Drawing:\n")
+                 (doseq [e (.elements this)]
+                   (.append sb (str (format "\t%s" (.to-string e))
+                                    (if verbose
+                                      (format "\n\t\t%s" (.to-string (.attributes e))))
+                                    "\n")))
+                 (.toString sb)))
+             
+             (to-string [this]
+               (.to-string this false)))]
+    
     (reset! cpan* (proxy [JPanel][true]
                     (paint [g]
                       (.drawImage g image null-transform-op 0 0)
