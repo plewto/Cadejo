@@ -35,6 +35,10 @@
       (padding pad))))
 
 (defn line 
+  ([padding color]
+     (ssb/compound-border
+      (ssb/line-border :color color)
+      (ssb/empty-border :thickness padding)))
   ([padding]
      (ssb/compound-border
       (ssb/line-border)
