@@ -13,6 +13,7 @@
   (:require [cadejo.instruments.algo.program])
   (:require [cadejo.instruments.algo.pp])
   (:require [cadejo.instruments.algo.data])
+  (:require [cadejo.instruments.algo.algo-editor])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance])
@@ -30,6 +31,7 @@
     (.add-controller! d :ccb "B" 17)
     (.add-controller! d :ccc "Echo mix" 91)
     (.add-controller! d :ccc "Reverb mix" 92)
+    (.set-editor-constructor! d cadejo.instruments.algo.algo-editor/algo-editor)
     d))
 
 (defcgen op-freq [f0 detune bias]
@@ -68,7 +70,7 @@
 (defsynth AlgoVoice [freq 440
                      note 69
                      gate 0
-                     amp 0.20
+                     ;amp 0.20
                      velocity 1
                      port-time 0.0      ; pitch
                      env1->pitch 0.00
