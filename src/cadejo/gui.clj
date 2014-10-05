@@ -9,7 +9,8 @@
   (:require [cadejo.ui.util.help])
   (:require [cadejo.util.midi])
   (:require [seesaw.core :as ss])
-  (:require [overtone.core :as ot]))
+  (:require [overtone.core :as ot])
+  (:import javax.swing.Box))
 
 (config/load-gui! true)
 
@@ -18,22 +19,23 @@
                                   :text cadejo.about/about-text))
 
 (defn- server-panel [tb-show-server tb-show-midi txt-status]
-  (let [lab-title (ss/label :text "Select Server"
-                           :halign :center
-                           :border (factory/padding 8))
+  (let [lab-title (ss/label :text "Select Server")
         selected* (atom :default)
         grp (ss/button-group)
         rb-default  (ss/radio :text "Default" :group grp :selected? true)
         rb-internal (ss/radio :text "Internal" :group grp)
         rb-external (ss/radio :text "External" :group grp)
         rb-existing (ss/radio :text "Existing" :group grp :enabled? false)
-        pan-options (ss/vertical-panel :items [rb-default rb-internal
+        pan-options (ss/vertical-panel :items [(Box/createVerticalStrut 16)
+                                               lab-title 
+                                               (Box/createVerticalStrut 16)
+                                               rb-default rb-internal
                                                rb-external rb-existing])
         jb-start-server (ss/button :text "Start Server"
                                    :enabled? true
                                    :size [400 :by 100])
         pan-server-main (ss/border-panel 
-                         :north lab-title
+                         ;:north lab-title
                          :west pan-options
                          :center (ss/vertical-panel
                                   :items [jb-start-server]
@@ -84,9 +86,7 @@
 
 
 (defn- midi-panel [txt-status]
-  (let [lab-title (ss/label :text "Select Scene MIDI device"
-                            :halign :center
-                            :border (factory/padding 8))
+  (let [lab-title (ss/label :text "Select Scene MIDI device")
         device-buttons* (atom [])
         selected-button* (atom nil)
         grp (ss/button-group)
@@ -107,9 +107,11 @@
                                 (reset! selected-button* (.getSource ev))
                                 (ss/config! jb-create-scene :enabled? true)))
         (if hw-name (swap! device-buttons* (fn [n](conj n tb)))) ))
-    (let [pan-west (ss/vertical-panel :items @device-buttons*)
+    (let [pan-west (ss/vertical-panel :items (flatten (merge [(Box/createVerticalStrut 16)
+                                                              lab-title
+                                                              (Box/createVerticalStrut 16)]
+                                                             @device-buttons*)))
           pan-midi-main (ss/border-panel
-                         :north lab-title
                          :west pan-west
                          :center (ss/vertical-panel
                                   :items [jb-create-scene]))]
