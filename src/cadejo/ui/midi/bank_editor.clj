@@ -86,15 +86,15 @@
         enable-list-selection-listener* (atom true)
         undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo")
         redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo")
-        jb-init (ss/button)
-        jb-name (ss/button)
-        jb-open (ss/button)
-        jb-save (ss/button)
+        jb-init (factory/button "Init" :general :reset "Initialize bank")
+        jb-name (factory/button "Name" :edit :text "Edit bank name & remarks")
+        jb-open (factory/button "Open" :general :open "Open bank file")
+        jb-save (factory/button "Save" :general :save "Save bank file")
         jb-undo (.get-button undo-stack)
         jb-redo (.get-button redo-stack)
-        jb-transmit (ss/button)
-        jb-edit (ss/button)
-        jb-help (ss/button)
+        jb-transmit (factory/button "Transmit" :midi :transmit "Transmit selected program data")
+        jb-edit (factory/button "Edit" :edit nil "Edit program")
+        jb-help (factory/button "Help" :general :help "Program bank help")
         tbar1 (ss/toolbar :floatable? false
                           :items [jb-init jb-name 
                                   jb-open jb-save
@@ -364,44 +364,6 @@
                          (.toFront f)))
                      (.warning! bank-ed "Editor not defined"))) ))
 
-    (if (config/enable-button-text)
-      (do 
-        (ss/config! jb-init :text "Init")
-        (ss/config! jb-name :text "Name")
-        (ss/config! jb-open :text "Open Bank")
-        (ss/config! jb-save :text "Save Bank")
-        (ss/config! jb-transmit :text "Transmit")
-        (ss/config! jb-edit :text "Edit")
-        (ss/config! jb-help :text "Help") ))
-
-    (if (config/enable-button-icons)
-      (do 
-        (.setIcon jb-init (lnf/read-icon :general :reset))
-        (.setIcon jb-open (lnf/read-icon :general :open))
-        (.setIcon jb-save (lnf/read-icon :general :save))
-        (.setIcon jb-transmit (lnf/read-icon :midi :transmit))
-        (.setIcon jb-edit (lnf/read-icon :edit nil))
-        (.setIcon jb-help (lnf/read-icon :general :help))
-        (.setIcon jb-name (lnf/read-icon :edit :text))
-
-        (.setSelectedIcon jb-init (lnf/read-selected-icon :general :reset))
-        (.setSelectedIcon jb-open (lnf/read-selected-icon :general :open))
-        (.setSelectedIcon jb-save (lnf/read-selected-icon :general :save))
-        (.setSelectedIcon jb-transmit (lnf/read-selected-icon :midi :transmit))
-        (.setSelectedIcon jb-edit (lnf/read-selected-icon :edit nil))
-        (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))
-        (.setSelectedIcon jb-name (lnf/read-selected-icon :edit :text)) ))
-
-    (if (config/enable-tooltips)
-      (do 
-        (.setToolTipText jb-init "Initialize Bank")
-        (.setToolTipText jb-open "Open Bank File")
-        (.setToolTipText jb-save "Save Bank File")
-        (.setToolTipText jb-transmit "Transmit Bank Data")
-        (.setToolTipText jb-edit "Edit Program")
-        (.setToolTipText jb-help "Help")
-        (.setToolTipText jb-name "Edit Bank name and remarks") ))
-    
     (.putClientProperty jb-help :topic :bank-editor)
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     (.sync-ui! bank-ed)

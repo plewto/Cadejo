@@ -133,17 +133,20 @@
         redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo")
         enable-change-listeners* (atom true)
         ;; North toolbar
-        jb-init (ss/button)
-        jb-open (ss/button)
-        jb-save (ss/button)
+        jb-init (factory/button "Reset" :general :reset "Initialize scale registry")
+        jb-open (factory/button "Open" :general :open "Open scale registry file")
+        jb-save (factory/button "Save" :general :save "Save scale registry file")
         jb-undo (.get-button undo-stack)
         jb-redo (.get-button redo-stack)
-        jb-help (ss/button)
-        jb-delete (ss/button)
+        jb-help (factory/button "Help" :general :help "Scale registry help")
+        jb-delete (factory/button "Delete" :general :delete "Remove table from registry")
         group (ss/button-group)
-        jtb-add (ss/radio :group group :selected? true)
-        jtb-edit (ss/radio :group group)
-        jtb-detail (ss/radio :group group)
+        jtb-add (let [b (factory/toggle "Add" :general :add "Add tables to registry" group)]
+                  (.setSelected b true)
+                  b)
+        jtb-edit (factory/toggle "Edit" :edit nil "Edit registry tables" group)
+        jtb-detail (factory/toggle "Detail" :view :detail "Detail table editor" group)
+                                  
 
         pan-toolbar (ss/toolbar :floatable? false
                                 :items [jb-init jb-open jb-save 
@@ -178,21 +181,12 @@
         pan-wrap (ss/vertical-panel :items [pan-wrap-low pan-wrap-high]
                                     :border (factory/title "Wrap"))
         pan-limits (ss/vertical-panel :items [pan-range pan-wrap])
-        ;; South toolbar
-        group (ss/button-group)
-        ;; jb-delete (ss/button)
-        ;; jtb-add (ss/toggle :group group :selected? true)
-        ;; jtb-edit (ss/toggle :group group)
-        ;; jtb-detail (ss/toggle :group group)
-        ;; pan-south (ss/toolbar :floatable? false
-        ;;                       :items [jb-delete jtb-add 
-        ;;                               jtb-edit jtb-detail])
+      
         ;; Main Panels
         pan-subedit (ss/card-panel :border (factory/line))
         pan-center (ss/border-panel :west pan-limits
                                  :center pan-subedit)
         pan-main (ss/border-panel :north pan-toolbar
-                               ;:south pan-south
                                :west pan-west
                                :center pan-center)
         ;; splice labels
@@ -304,48 +298,7 @@
                (.setEnabled pan-wrap-low flag)
                (.setEnabled pan-wrap-high flag)
                (.setEnabled pan-wrap flag)))]
-
-    (if (config/enable-button-text)
-      (do
-        (ss/config! jb-init :text "Reset")   
-        (ss/config! jb-open :text "Open")   
-        (ss/config! jb-save :text "Save")   
-        (ss/config! jb-delete :text "Delete")   
-        (ss/config! jtb-add :text "Add Tables")
-        (ss/config! jtb-edit :text "Edit")
-        (ss/config! jtb-detail :text "Detail")
-        (ss/config! jb-help :text "Help")))
-
-    (if (config/enable-button-icons)
-      (do 
-        (.setIcon jb-init (lnf/read-icon :general :reset))
-        (.setIcon jb-open (lnf/read-icon :general :open))
-        (.setIcon jb-save (lnf/read-icon :general :save))
-        (.setIcon jb-delete (lnf/read-icon :general :delete))
-        (.setIcon jtb-add (lnf/read-icon :general :add))
-        (.setIcon jtb-edit (lnf/read-icon :edit nil))
-        (.setIcon jtb-detail (lnf/read-icon :general :detail))
-        (.setIcon jb-help (lnf/read-icon :general :help))
-        (.setSelectedIcon  jb-init (lnf/read-selected-icon :general :reset))
-        (.setSelectedIcon  jb-open (lnf/read-selected-icon :general :open))
-        (.setSelectedIcon  jb-save (lnf/read-selected-icon :general :save))
-        (.setSelectedIcon  jb-delete (lnf/read-selected-icon :general :delete))
-        (.setSelectedIcon  jtb-add (lnf/read-selected-icon :general :add))
-        (.setSelectedIcon  jtb-edit (lnf/read-selected-icon :edit nil))
-        (.setSelectedIcon  jtb-detail (lnf/read-selected-icon :general :detail))
-        (.setSelectedIcon  jb-help (lnf/read-selected-icon :general :help))))
-    
-    (if (config/enable-tooltips)
-      (do
-        (.setToolTipText jb-init "Initialize scale registry")
-        (.setToolTipText jb-open "Read scale registry file")
-        (.setToolTipText jb-save "Save scale registry file")
-        (.setToolTipText jb-delete "Remove tuning-table from registry")
-        (.setToolTipText jtb-add "Add tuning-tables to registry")
-        (.setToolTipText jtb-edit "Edit tuning-table")
-        (.setToolTipText jtb-detail "Detail edito tuning-table")
-        (.setToolTipText jb-help "Scale registry help")))
-
+   
     (ss/listen jb-init :action
             (fn [_]
               (.push-undo-state! ed "Initialize Registry")

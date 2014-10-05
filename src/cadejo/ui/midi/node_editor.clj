@@ -68,8 +68,9 @@
                 :text (format " %s %s "
                               (name type-id) (.get-property @node* :id))
                 :font (ssfont/font :size id-font-size))
-        jb-parent (ss/button :id (keyword "jb-show-parent"))
-        jb-help (ss/button :id (keyword (format "jb-help-%s" type-id)))
+        jb-parent (factory/button "Parent" :tree :up "Display parent window")
+        jb-help (factory/button "Help" :general :help "Display context help")
+
         pan-tools (ss/toolbar :floatable? false
                               :items [ :separator jb-parent jb-help])
         pan-north (ss/border-panel 
@@ -130,21 +131,6 @@
 
              (warning! [this msg]
                (.status! this (format "WARNING! %s" msg))) )]
-    (if (config/enable-button-text)
-      (do
-        (ss/config! jb-parent :text "Parent")
-        (ss/config! jb-help :text "Help")))
-    (if (config/enable-button-icons)
-      (do
-        (.setIcon jb-parent (lnf/read-icon :tree :up))
-        (.setSelectedIcon jb-parent (lnf/read-selected-icon :tree :up))
-        (.setIcon jb-help (lnf/read-icon :general :help))
-        (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))))
-    (if (config/enable-tooltips)
-      (do 
-        (.setToolTipText jb-parent "Display Parent Window")
-        (.setToolTipText jb-help "Help")))
-     
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
 
     ;; START DEBUG

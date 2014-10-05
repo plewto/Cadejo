@@ -136,16 +136,18 @@
 (defn cadejo-splash []
   (let [lab-header (ss/label :icon cadejo.ui.util.icon/splash-image)
         grp-card (ss/button-group)
-        tb-show-server (ss/toggle :group grp-card
-                                  :selected? true
-                                  :enabled? true)
-        tb-show-midi (ss/toggle :group grp-card
-                                :enabled? false)
-        tb-show-about (ss/toggle :group grp-card)
-        jb-config (ss/button :enabled? true) 
-        jb-skin (ss/button)
-        jb-help (ss/button :enabled? true)
-        jb-exit (ss/button :enabled? true)
+        tb-show-server (let [b (factory/toggle "Server" :general :server "Select SuperCollider Server" grp-card)]
+                         (ss/config! b :selected? true)
+                         (ss/config! b :enabled? true)
+                         b)
+        tb-show-midi (let [b (factory/toggle "MIDI" :midi :plug "Select MIDI input device" grp-card)]
+                       (ss/config! b :enabled? false))
+        tb-show-about (factory/toggle "About" :general :info "Display version info" grp-card)
+        jb-config (factory/button "Config" :general :config "Open Cadejo config editor")
+        jb-skin (factory/button "Skin" :general :skin "Open skin selector")
+        jb-help (factory/button "Help" :general :help "Display help")
+        jb-exit (factory/button "Exit" :general :exit "Exit Cadejo/Overtone")
+        
         txt-status (ss/text 
                     :text (format "Cadejo %s" (config/cadejo-version))
                     :multi-line? false
@@ -177,40 +179,6 @@
                     :content pan-main
                     :on-close :nothing
                     :size [783 :by 551])]
-    (if (config/enable-button-icons)
-      (do 
-        (.setIcon tb-show-server (lnf/read-icon :general :server))
-        (.setSelectedIcon tb-show-server (lnf/read-selected-icon :general :server))
-        (.setIcon tb-show-midi (lnf/read-icon :midi :plug))
-        (.setSelectedIcon tb-show-midi (lnf/read-selected-icon :midi :plug))
-        (.setIcon tb-show-about (lnf/read-icon :general :info))
-        (.setSelectedIcon tb-show-about (lnf/read-selected-icon :general :info))
-        (.setIcon jb-config (lnf/read-icon :general :config))
-        (.setSelectedIcon jb-config (lnf/read-selected-icon :general :config))
-        (.setIcon jb-skin (lnf/read-icon :general :skin))
-        (.setSelectedIcon jb-skin (lnf/read-selected-icon :general :skin))
-        (.setIcon jb-help (lnf/read-icon :general :help))
-        (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))
-        (.setIcon jb-exit (lnf/read-icon :general :exit))
-        (.setSelectedIcon jb-exit (lnf/read-selected-icon :general :exit))))
-    (if (config/enable-button-text)
-      (do
-        (ss/config! tb-show-server :text "Server")
-        (ss/config! tb-show-midi :text "MIDI")
-        (ss/config! tb-show-about :text "About")
-        (ss/config! jb-config :text "Config")
-        (ss/config! jb-skin :text "Skin")
-        (ss/config! jb-help :text "Help")
-        (ss/config! jb-exit :text "Exit")))
-    (if (config/enable-tooltips)
-      (do 
-        (.setToolTipText tb-show-server "Select SupperCollider Server")
-        (.setToolTipText tb-show-midi "Selecte MIDI input device")
-        (.setToolTipText tb-show-about "About Cadejo")
-        (.setToolTipText jb-config "Config")
-        (.setToolTipText jb-skin "Select Skin")
-        (.setToolTipText jb-help "Help")
-        (.setToolTipText jb-exit "Exit Cadejo")))
 
     (ss/listen tb-show-server :action (fn [_]
                                         (ss/show-card! pan-cards :server)))
@@ -226,9 +194,6 @@
     (ss/listen jb-config :action (fn [_]
                                    (status "Confing NOT IMPLEMENTED")))
 
-    ;; (ss/listen jb-help :action (fn [_]
-    ;;                              (status "Help NOT IMPLEMENTED")))
-    
     (ss/listen jb-exit :action (fn [_]
                                  (status "Exit NOT IMPLEMENTED")))
 

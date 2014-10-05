@@ -223,6 +223,7 @@
                 (initial-skin [this] @initial-skin*)
 
                 (initial-skin! [this skin-name]
+                  (reset! current-skin* skin-name)
                   (reset! initial-skin* skin-name))
                 
                 (current-skin [this] @current-skin*)
@@ -453,12 +454,12 @@
 
 
 (load-gui! true)
-(initial-skin! "Creme")
+(initial-skin! "Business")
 (enable-pp! true)
 (maximum-undo-count! 10)
 (warn-on-file-overwrite! true)
 (warn-on-unsaved-data! true)
 (enable-tooltips! true)
 (enable-button-text! true)
-(enable-button-icons! false)
+(enable-button-icons! true)
 ;(config-path "~/.cadejo")

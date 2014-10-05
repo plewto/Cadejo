@@ -9,8 +9,7 @@
   (:import java.awt.BorderLayout))
 
 (def channel-count (cadejo.config/channel-count))
-(def frame-size [1000 :by 610])
-
+(def frame-size [1160 :by 680])
 
 (defprotocol SceneEditor
   
@@ -52,8 +51,10 @@
                           (.putClientProperty jb :channel i)
                           (swap! acc* (fn [n](conj n jb)))))
                       @acc*)
-        pan-channels (ss/grid-panel :rows 2 :items jb-channels
-                                    :border (factory/title "Channels"))
+        pan-channels (ss/toolbar :orientation :horizontal
+                                 :floatable? true
+                                 :items [(ss/grid-panel :rows 2 :items jb-channels
+                                                        :border (factory/title "Channels"))])
         reged (cadejo.ui.scale.registry-editor/registry-editor scene)
 
         txt-tree (ss/text :text " "
@@ -74,7 +75,6 @@
     (.add pan-center pan-channels BorderLayout/SOUTH)
     (.add pan-center pan-tab BorderLayout/CENTER)
 
-    ;(.setEnabled (.widget basic-ed :jb-parent) false)
     (.info-text! basic-ed (format "MIDI device %s" (.get-property scene :id)))
     (let [sed (reify SceneEditor 
                 

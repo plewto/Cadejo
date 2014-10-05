@@ -4,7 +4,8 @@
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [seesaw.core :as ss])
   (:require [seesaw.border :as ssb])
-  (:import javax.swing.BorderFactory))
+  (:import javax.swing.BorderFactory
+           javax.swing.SwingConstants))
 
 ;; Returns empty border
 ;;
@@ -50,26 +51,57 @@
 ;; Buttons
 ;;
 
-;; (defn button-size [n]
-;;   (get {0 [48 :by 48]
-;;        }
-;;        n [48 :by 48]))
+(defn config-button [b txt icon-main icon-sub tooltip bgroup]
+  (if bgroup (ss/config! b :group bgroup))
+  (if (and tooltip (config/enable-tooltips))
+    (.setToolTipText b (str tooltip)))
+  (if (config/enable-button-text)
+    (ss/config! b :text (str txt)))
+  (if (and icon-main (config/enable-button-icons))
+    (let [i1 (lnf/read-icon icon-main icon-sub)
+          i2 (lnf/read-selected-icon icon-main icon-sub)]
+      (.setIcon b i1)
+      (.setSelectedIcon b i2)))
+  (if (and (config/enable-button-text)
+           (config/enable-button-icons))
+    (do
+      (.setVerticalTextPosition b SwingConstants/BOTTOM)
+      (.setHorizontalTextPosition b SwingConstants/CENTER)))
+  b)
 
-;; Return JToggleButton with 2-icons
-;;
-(defn toggle [i-unselected i-selected]
-  (let [b (ss/toggle)]
-    (.setIcon b i-unselected)
-    (.setSelectedIcon b i-selected)
-    b))
+(defn radio 
+  ([txt icon-main icon-sub tooltip bgroup]
+     (let [b (ss/radio)]
+       (config-button b txt icon-main icon-sub tooltip bgroup)))
+  ([txt icon-main icon-sub tooltip]
+     (radio txt icon-main icon-sub tooltip nil))
+  ([txt icon-main icon-sub]
+     (radio txt icon-main icon-sub nil))
+  ([txt]
+     (radio txt nil nil)))
 
-;; Return JRadioButton with 2-icons
-;;
-(defn radio [i-unselected i-selected]
-  (let [b (ss/radio)]
-    (.setIcon b i-unselected)
-    (.setSelectedIcon b i-selected)
-    b))
+(defn toggle
+  ([txt icon-main icon-sub tooltip bgroup]
+     (let [b (if (config/enable-button-icons)
+               (ss/radio)
+               (ss/toggle))]
+       (config-button b txt icon-main icon-sub tooltip bgroup)))
+  ([txt icon-main icon-sub tooltip]
+     (toggle txt icon-main icon-sub tooltip nil))
+  ([txt icon-main icon-sub]
+     (toggle txt icon-main icon-sub nil))
+  ([txt]
+     (toggle txt nil nil)))                 
+
+(defn button
+  ([txt icon-main icon-sub tooltip]
+     (let [b (ss/button)]
+       (config-button b txt icon-main icon-sub tooltip nil)))
+  ([txt icon-main icon-sub]
+     (button txt icon-main icon-sub nil))
+  ([txt]
+     (button txt nil nil)))                 
+
 
 
 ;; Return filter selection button
@@ -80,11 +112,13 @@
         sub (ftype {:bp :band, :br :notch, :lp :low, :hp :high, :bypass :none})
         i1 (lnf/read-icon :filter sub)
         i2 (lnf/read-selected-icon :filter sub)
-        b (radio i1 i2)]
+        b (ss/radio)]
     (if (config/enable-tooltips)
       (.setToolTipText b (cond (= ftype :bypass) "Filter bypass"
                                (= ftype :br) "Notch filter"
                                :default (format "%s-pass filter" (name sub)))))
+    (.setIcon b i1)
+    (.setSelectedIcon b i2)
     (ss/config! b :size size)
     b))
 

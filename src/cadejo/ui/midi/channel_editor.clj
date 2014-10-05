@@ -15,6 +15,8 @@
   (:import java.awt.BorderLayout
            java.awt.event.WindowListener))
 
+(def frame-size [1281 :by 661])
+
 ;; Generate unique performance name 
 ;;
 (defn- gen-performance-name [chanobj iname]
@@ -39,7 +41,7 @@
         about (.about descriptor)
         lab-logo (ss/label :icon logo)
         lab-name (ss/label :text (format "  %s   %s" iname about))
-        jb-help (ss/button)
+        jb-help (factory/button "Help" :general :help "Help") ; (ss/button)
         pan-head (ss/border-panel :west lab-logo
                                   :center lab-name
                                   :east jb-help
@@ -111,8 +113,8 @@
         vtf-instrument-id (vtf/validated-text-field :validator pname-test
                                                     :value (gen-performance-name chanobj iname)
                                                     :border "Instrument ID")
-        jb-add (ss/button :text "Add Instrument")
-        jb-cancel (ss/button :text "Cancel")
+        jb-add (factory/button "Add Instrument") ; (ss/button :text "Add Instrument")
+        jb-cancel (factory/button "Cancel")  ; (ss/button :text "Cancel")
         pan-main (ss/border-panel :north pan-north
                                   :center pan-controllers
                                   :south (.widget vtf-instrument-id :pan-main))
@@ -124,17 +126,17 @@
                        :default-option jb-add
                        :modal? true
                        :on-close :dispose
-                       :size [300 :by 500])]
-    (if (cadejo.config/enable-button-text)
-      (do
-        (ss/config! jb-help :text "Help")))
-    (if (cadejo.config/enable-button-icons)
-      (do
-        (.setIcon jb-help (lnf/read-icon :general :help))
-        (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))))
-    (if (cadejo.config/enable-tooltips)
-      (do
-        (.setToolTipText jb-help "Add Instrument Help")))
+                       :size [400 :by 500])]
+    ;; (if (cadejo.config/enable-button-text)
+    ;;   (do
+    ;;     (ss/config! jb-help :text "Help")))
+    ;; (if (cadejo.config/enable-button-icons)
+    ;;   (do
+    ;;     (.setIcon jb-help (lnf/read-icon :general :help))
+    ;;     (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))))
+    ;; (if (cadejo.config/enable-tooltips)
+    ;;   (do
+    ;;     (.setToolTipText jb-help "Add Instrument Help")))
 
     (.putClientProperty jb-help :topic :add-instrument)
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
@@ -320,7 +322,7 @@
       (.set-parent-editor! properties-editor ced)
       (.add pan-center pan-tabs BorderLayout/CENTER)
       (.add pan-center tbar-performance BorderLayout/SOUTH)
-      (ss/config! (.frame ced) :size [1281 :by 568])
+      (ss/config! (.frame ced) :size frame-size)
       (.addWindowListener (.widget ced :frame)
                           (proxy [WindowListener][]
                             (windowClosed [_] nil)

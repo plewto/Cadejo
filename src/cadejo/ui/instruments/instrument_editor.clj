@@ -67,8 +67,6 @@
       (dissoc rec :file-type :data-format)
       nil)))
 
-
-
 (defn- program-name-editor [parent-editor]
   (let [txt-name (ss/text 
                   :text "<name>"
@@ -107,8 +105,6 @@
               (set-param! [this param value] nil) ;; ignore
               
               (init! [this]
-                ;(ss/config! txt-name :text "Init")
-                ;(ss/config! txt-remarks :text "")
                 (let [bank (.parent-bank parent-editor)
                       prog (assoc (.current-program bank)
                              :name "Init"
@@ -226,17 +222,16 @@
         sub-editors* (atom [])
 
         ;; North toolbar
-        ;;   lab-id show-parent open save copy paste help
         ;;
         lab-id (ss/label :text (name id)
                          :font (ssfont/font :size id-font-size)
                          :border (factory/bevel))
-        jb-show-parent (ss/button)
-        jb-copy (ss/button)
-        jb-paste (ss/button :enabled? false)
-        jb-open (ss/button)
-        jb-save (ss/button)
-        jb-help (ss/button)
+        jb-show-parent (factory/button "Parent" :tree :up "Show parent program-bank")
+        jb-copy (factory/button "Copy" :general :copy "Copy program data to clipboard")
+        jb-paste (factory/button "Paste" :general :paste "Paste clipboard data to program")
+        jb-open (factory/button "Open" :general :open "Open program file")
+        jb-save (factory/button "Save" :general :save "Save program file")
+        jb-help (factory/button "Help" :general :help "Program editor help")
         pan-north (ss/toolbar :floatable? false
                               :items [lab-id 
                                       :separator jb-show-parent
@@ -246,10 +241,9 @@
                               :border (factory/padding))
 
         ;; South toolbar
-        ;;    store spinner
         ;;
-        jb-init (ss/button)
-        jb-store (ss/button)
+        jb-init (factory/button "Init" :general :reset "Initialize program data") 
+        jb-store (factory/button "Store" :general :bankstore "Store program data to selected bank slot")
         spin-program (ss/spinner 
                       :model (ss/spinner-model 0 
                                                :min 0 
@@ -378,7 +372,6 @@
 
         name-editor (program-name-editor ied)]
 
-    ;(.add-sub-editor! ied "Common" name-editor)
     (.add-sub-editor! ied 
                       (if (config/enable-button-text) "Common" "")
                       (if (config/enable-button-icons)(lnf/read-icon :edit :text) nil)
@@ -483,48 +476,7 @@
                (fn [_]
                  (.init! ied)))
 
-    (if (config/enable-button-text)
-      (do
-        (ss/config! jb-show-parent :text "Parent")
-        (ss/config! jb-copy :text  "Copy Program")
-        (ss/config! jb-paste :text  "Paste Program")
-        (ss/config! jb-open :text  "Open Program")
-        (ss/config! jb-save :text  "Save Program")
-        (ss/config! jb-help :text  "Help")
-        (ss/config! jb-init :text "Init")
-        (ss/config! jb-store :text  "Store Program")))
-
-    (if (config/enable-button-icons)
-      (do
-        (.setIcon jb-show-parent (lnf/read-icon :tree :up))
-        (.setIcon jb-copy (lnf/read-icon :general :copy))
-        (.setIcon jb-paste (lnf/read-icon :general :paste))
-        (.setIcon jb-open (lnf/read-icon :general :open))
-        (.setIcon jb-save (lnf/read-icon :general :save))
-        (.setIcon jb-help (lnf/read-icon :general :help))
-        (.setIcon jb-store (lnf/read-icon :general :bankstore))
-        (.setIcon jb-init (lnf/read-icon :general :reset))
-        (.setSelectedIcon jb-show-parent (lnf/read-selected-icon :tree :up))
-        (.setSelectedIcon jb-copy (lnf/read-selected-icon :general :copy))
-        (.setSelectedIcon jb-paste (lnf/read-selected-icon :general :paste))
-        (.setSelectedIcon jb-open (lnf/read-selected-icon :general :open))
-        (.setSelectedIcon jb-save (lnf/read-selected-icon :general :save))
-        (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))
-        (.setSelectedIcon jb-init (lnf/read-selected-icon :general :reset))
-        (.setSelectedIcon jb-store (lnf/read-selected-icon :general :bankstore))))
-
-        (if (config/enable-tooltips)
-      (do
-        (.setToolTipText jb-show-parent "Show Parent")
-        (.setToolTipText jb-copy "Copy program data to clipboard")
-        (.setToolTipText jb-paste "Paste clipboard to program")
-        (.setToolTipText jb-open "Open program file")
-        (.setToolTipText jb-save "Save program file")
-        (.setToolTipText jb-help "Program help")
-        (.setToolTipText jb-init "Initialize program")
-        (.setToolTipText jb-store "Store program to bank")))
     (.putClientProperty jb-help :topic :program)
-
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     ied))
                 

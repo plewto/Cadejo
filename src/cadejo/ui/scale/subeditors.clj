@@ -11,41 +11,24 @@
 (def msg-2 "Some parameters are invalid")
 
 (defn linear-editor [sced]
-  (let [jb-reset (ss/button)
-        vtf-f1 (vtf/numeric-text-field :min 0 :max 20000 :value 0
+  (let [vtf-f1 (vtf/numeric-text-field :min 0 :max 20000 :value 0
                                        :border "F1")
         vtf-f2 (vtf/numeric-text-field :min 0 :max 20000 :value 20000
                                        :border "F2")
-        jb-linear (ss/button)
-        jb-invert (ss/button)
-        pan-center (ss/grid-panel :columns 1
-                               :items [(.widget vtf-f1 :pan-main)
-                                       (.widget vtf-f2 :pan-main)
-                                       (ss/vertical-panel)])
-        pan-linear (ss/border-panel :north jb-reset
-                                 :center pan-center
-                                 :south jb-linear
-                                 :border (factory/title "Linear"))
-        pan-main (ss/border-panel :center pan-linear
-                               :south jb-invert)]
-    (if (config/enable-button-text)
-      (do
-        (ss/config! jb-reset :text "Reset")
-        (ss/config! jb-linear :text "Linear")
-        (ss/config! jb-invert :text "Invert")))
-    (if (config/enable-button-icons)
-      (do
-        (.setIcon jb-reset (lnf/read-icon :general :reset))
-        (.setIcon jb-linear (lnf/read-icon :general :linear))
-        (.setIcon jb-invert (lnf/read-icon :general :invert))
-        (.setSelectedIcon jb-reset (lnf/read-selected-icon :general :reset))
-        (.setSelectedIcon jb-linear (lnf/read-selected-icon :general :linear))
-        (.setSelectedIcon jb-invert (lnf/read-selected-icon :general :invert))))
-    (if (config/enable-tooltips)
-      (do
-        (.setToolTipText jb-reset "Reset linear range")
-        (.setToolTipText jb-linear "Set linear table range")
-        (.setToolTipText jb-invert "Invert table range")))
+        jb-reset (factory/button "Reset" :general :reset "Reset linear parameters")
+        jb-linear (factory/button "Linear" :general :linear "Set linear table values")
+        jb-invert (factory/button "Invert" :general :invert "Invert table range")
+        ;; pan-north (ss/toolbar :orientation :horizontal
+        ;;                       :floatable? false
+        ;;                       :items [jb-reset jb-linear jb-invert])
+
+        pan-north (ss/horizontal-panel :items [jb-reset jb-linear jb-invert])
+        
+        pan-center (ss/vertical-panel :items [(.widget vtf-f1 :pan-main)
+                                                (.widget vtf-f2 :pan-main)])
+        pan-main (ss/border-panel :north pan-north
+                                  :center pan-center
+                                  :border (factory/title "Linear"))]
     (ss/listen jb-linear
                :action
                (fn [_]
@@ -90,25 +73,25 @@
 (defn transpose-editor [sced]
   (let [krange (.keyrange sced)
         wrap (.wraprange sced)
-        jb-reset (ss/button)
-        jb-transpose (ss/button)
-        spin-steps (ss/spinner :model (ss/spinner-model 0 :min -24 :max 24 :step 1))
-        spin-cents (ss/spinner :model (ss/spinner-model 0 :min -99 :max 99 :step 1))
-        spin-bias (ss/spinner :model (ss/spinner-model 0 :min -100 :max 100 :step 1))
+        jb-reset (factory/button "Reset" :general :reset "Reset transpose parameters")
+        jb-transpose (factory/button "Transpose" :general :transpose "Transpose table range")
+        spin-steps (ss/spinner :model (ss/spinner-model 0 :min -24 :max 24 :step 1 :size [114 :by 24]))
+        spin-cents (ss/spinner :model (ss/spinner-model 0 :min -99 :max 99 :step 1 :size [114 :by 24]))
+        spin-bias (ss/spinner :model (ss/spinner-model 0 :min -100 :max 100 :step 1 :size [114 :by 24]))
         pan-steps (ss/vertical-panel :items [spin-steps]
-                                  :border (factory/title "Steps"))
+                                     :size [114 :by 36]
+                                     :border (factory/title "Steps"))
         pan-cents (ss/vertical-panel :items [spin-cents]
-                                  :border (factory/title "Cents"))
+                                     :size [114 :by 36]
+                                     :border (factory/title "Cents"))
         pan-bias (ss/vertical-panel :items [spin-bias]
-                                 :border (factory/title "Bias"))
-        pan-center (ss/grid-panel :columns 1 
-                               :items [pan-steps pan-cents 
-                                       pan-bias 
-                                       (ss/vertical-panel)])
-        pan-main (ss/border-panel :north jb-reset
-                               :center pan-center
-                               :south jb-transpose
-                               :border (factory/title "Transpose"))]
+                                    :size [114 :by 36]
+                                    :border (factory/title "Bias"))
+        pan-north (ss/horizontal-panel :items [jb-reset jb-transpose])
+        pan-center (ss/grid-panel :columns 1 :items [pan-steps pan-cents pan-bias])
+        pan-main (ss/border-panel :north pan-north
+                                  :center pan-center
+                                  :border (factory/title "Transpose"))]
     (ss/listen jb-reset :action (fn [_]
                                (.setValue spin-steps 0)
                                (.setValue spin-cents 0)
@@ -135,20 +118,6 @@
                                                :wrap wrap
                                                :bias b)
                         (.status! sced "Transposed key range"))))))
-    (if (config/enable-button-text)
-      (do
-        (ss/config! jb-reset :text "Reset")
-        (ss/config! jb-transpose :text "Transpose")))
-    (if (config/enable-button-icons)
-      (do
-        (.setIcon jb-reset (lnf/read-icon :general :reset))
-        (.setIcon jb-transpose (lnf/read-icon :general :transpose))
-        (.setSelectedIcon jb-reset (lnf/read-selected-icon :general :reset))
-        (.setSelectedIcon jb-transpose (lnf/read-selected-icon :general :transpose))))
-    (if (config/enable-tooltips)
-      (do
-        (.setToolTipText jb-reset "Reset transpose")
-        (.setToolTipText jb-transpose "Transpose table range")))
     pan-main))
         
         
@@ -156,19 +125,19 @@
   (let [jb-clear (ss/button :text "X")
         jb-swap (ss/button :text "<->")
         jb-dup (ss/button :text "=")
+        jb-splice (factory/button "Splice" :general :splice "Splce selected tables")
         pan-north (ss/grid-panel :rows 1
-                              :items [jb-clear jb-swap jb-dup])
+                              :items [jb-clear jb-swap jb-dup jb-splice])
         spin-location (ss/spinner :model (ss/spinner-model 0 :min 0 :max 127 :by 1))
         pan-location (ss/vertical-panel :items [spin-location]
                                      :border (factory/title "Location"))
-        jb-splice (ss/button)
+        
         pan-scales (ss/grid-panel :columns 1 :items [lab-src
                                                   lab-dst
                                                   pan-location
                                                   (ss/vertical-panel)])
         pan-main (ss/border-panel :north pan-north
                                :center pan-scales
-                               :south jb-splice
                                :border (factory/title "Splice"))]
     (ss/listen jb-clear :action (fn [_]
                                (ss/config! lab-src :text " ")
@@ -202,16 +171,16 @@
                                           (.push-undo-state! sced "Splice")
                                           (scale-util/splice! stt krange dtt location)
                                           (.status! sced "Scales spliced"))))))
-    (if (config/enable-button-text)
-      (do
-        (ss/config! jb-splice :text "Splice")))
-    (if (config/enable-button-icons)
-      (do
-        (.setIcon jb-splice (lnf/read-icon :general :splice))
-        (.setSelectedIcon jb-splice (lnf/read-selected-icon :general :splice))))
+    ;; (if (config/enable-button-text)
+    ;;   (do
+    ;;     (ss/config! jb-splice :text "Splice")))
+    ;; (if (config/enable-button-icons)
+    ;;   (do
+    ;;     (.setIcon jb-splice (lnf/read-icon :general :splice))
+    ;;     (.setSelectedIcon jb-splice (lnf/read-selected-icon :general :splice))))
     (if (config/enable-tooltips)
       (do
-        (.setToolTipText jb-clear "Clear splice tables")
+        (.setToolTipText jb-clear "Clear splice parameters")
         (.setToolTipText jb-swap "Exchange splice source and destination tables")
         (.setToolTipText jb-dup "Set splice source and destination to same table")))
     pan-main))

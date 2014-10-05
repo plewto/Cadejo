@@ -11,6 +11,8 @@
   (:import java.awt.BorderLayout
            java.awt.event.WindowListener))
 
+(def frame-size [1280 :by 587])
+
 (defprotocol PerformanceEditor
 
    (widgets 
@@ -98,7 +100,7 @@
       (doseq [cced @cc-panels*]
         (.set-parent-editor! cced ped))
       (.add pan-center pan-tabs BorderLayout/CENTER)
-      (ss/config! (.frame ped) :size [1082 :by 540])
+      (ss/config! (.frame ped) :size frame-size)
       (ss/listen (.widget ped :jb-parent)
                  :action (fn [_]
                            (let [chanobj (.parent performance)

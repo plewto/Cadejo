@@ -3,7 +3,8 @@
   (:require [seesaw.core :as ss])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.lnf :as lnf])
-  (:require [cadejo.config]))
+  (:require [cadejo.config])
+  (:import javax.swing.SwingConstants))
 
 
 (defprotocol UndoStack
@@ -88,6 +89,8 @@
                   (.setSelectedIcon jb (lnf/read-selected-icon :general :redo))))
               (if (cadejo.config/enable-tooltips)
                 (.setToolTipText jb "Redo"))))
+          (.setVerticalTextPosition jb SwingConstants/BOTTOM)
+          (.setHorizontalTextPosition jb SwingConstants/CENTER)
           jb)))))
                 
      

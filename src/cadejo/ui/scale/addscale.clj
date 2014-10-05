@@ -27,7 +27,7 @@
     (keyword s)))
 
 (defn- add-blank [sced vtf-id]
-  (let [jb-blank (ss/button)
+  (let [jb-blank (factory/button "Blank" :keyboard :blank "Add empty table") 
         pan-blank (ss/border-panel :south jb-blank
                                    :border (factory/title "Blank"))]
     (ss/listen jb-blank :action
@@ -42,20 +42,12 @@
                     (.sync-ui! sced)
                     (.status! sced (format "Added blank tuning table %s" id)))
                   (.warning! sced msg-1)))))
-    
-    (if (config/enable-button-text)
-      (ss/config! jb-blank :text "Add Empty Table"))
-    (if (config/enable-button-icons)
-      (do
-        (.setIcon jb-blank (lnf/read-icon :keyboard :blank))
-        (.setSelectedIcon jb-blank (lnf/read-selected-icon :keyboard :blank))))
-    (if (config/enable-tooltips)
-      (.setToolTipText jb-blank "Add empty tuning-table"))
+ 
     pan-blank))
                     
 (defn- add-just [sced vtf-id vtf-tune]
   (let [lst-scales (ss/listbox :model (cadejo.scale.just/just-tables))
-        jb-just (ss/button)
+        jb-just (factory/button "Just" :keyboard :just "Add table with just scale")
         pan-center (ss/vertical-panel :items [(ss/scrollable lst-scales)]
                                       :border (factory/padding))
         pan-just (ss/border-panel :center pan-center
@@ -90,14 +82,14 @@
                          (.add-table! (.registry sced) (keyword id) tt)
                          (.sync-ui! sced)
                          (.status! sced (format "Added just scale %s" id)))))))
-     (if (config/enable-button-text)
-       (ss/config! jb-just :text "Add Just Scale"))
-     (if (config/enable-button-icons)
-       (do
-         (.setIcon jb-just (lnf/read-icon :keyboard :just))
-         (.setSelectedIcon jb-just (lnf/read-selected-icon :keyboard :just))))
-     (if (config/enable-tooltips)
-       (.setToolTipText jb-just "Add tuning table with just scale"))
+     ;; (if (config/enable-button-text)
+     ;;   (ss/config! jb-just :text "Add Just Scale"))
+     ;; (if (config/enable-button-icons)
+     ;;   (do
+     ;;     (.setIcon jb-just (lnf/read-icon :keyboard :just))
+     ;;     (.setSelectedIcon jb-just (lnf/read-selected-icon :keyboard :just))))
+     ;; (if (config/enable-tooltips)
+     ;;   (.setToolTipText jb-just "Add tuning table with just scale"))
      pan-just))
 
 
@@ -107,7 +99,7 @@
         txt-npo (.widget vtf-npo :text-field)
         vtf-octave (vtf/numeric-text-field :min 1.5 :max 3.0 :value 2.0
                                            :border "Octave Size")
-        jb-eq (ss/button)
+        jb-eq (factory/button "Eq Temp" :keyboard :eqtemp "Add table with equal tempered scale") ; (ss/button)
         pan-north (ss/grid-panel :columns 1
                               :items [(.widget vtf-npo :pan-main)
                                       (.widget vtf-octave :pan-main)])
@@ -142,14 +134,14 @@
                         (.add-table! (.registry sced)(keyword id) tt)
                         (.sync-ui! sced)
                         (.status! sced (format "Added equal temp scale %s" id)))))))
-    (if (config/enable-button-text)
-      (ss/config! jb-eq :text "Add Eq Temp Scale"))
-    (if (config/enable-button-icons)
-      (do
-        (.setIcon jb-eq (lnf/read-icon :keyboard :eqtemp))
-        (.setSelectedIcon jb-eq (lnf/read-selected-icon :keyboard :eqtemp))))
-    (if (config/enable-tooltips)
-      (.setToolTipText jb-eq "Add tuning table with equal tempered scale"))
+    ;; (if (config/enable-button-text)
+    ;;   (ss/config! jb-eq :text "Add Eq Temp Scale"))
+    ;; (if (config/enable-button-icons)
+    ;;   (do
+    ;;     (.setIcon jb-eq (lnf/read-icon :keyboard :eqtemp))
+    ;;     (.setSelectedIcon jb-eq (lnf/read-selected-icon :keyboard :eqtemp))))
+    ;; (if (config/enable-tooltips)
+    ;;   (.setToolTipText jb-eq "Add tuning table with equal tempered scale"))
     pan-eq))
 
 
