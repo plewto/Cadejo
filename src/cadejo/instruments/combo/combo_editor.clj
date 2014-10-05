@@ -187,6 +187,7 @@
                      (.warning! ied msg))
 
                    (set-param! [this param val]
+                     (.status! this (format "[%s] --> %s" param val))
                      (.set-param! ied param val))
                   
                    (init! [this]
@@ -268,6 +269,7 @@
                                     bias (or (.getClientProperty slider :bias) 0)
                                     pos (int (ss/config slider :value))
                                     val (float (+ bias (* scale pos)))]
+                                (.status! ied (format "[%s] --> %s" param val))
                                 (.set-param! ied param val)))))
         
         filter-action (proxy [ActionListener][]
@@ -277,6 +279,7 @@
                                 val (.getClientProperty tb :value)]
                             (doseq [hb (map second (seq harmonic-buttons))]
                               (.setEnabled hb (not (= val bypass-filter))))
+                            (.status! ied (format "[%s] --> %s" param val))
                             (.set-param! ied param val))))
         
         harmonic-action (proxy [ActionListener][]
@@ -284,6 +287,7 @@
                             (let [tb (.getSource ev)
                                   param :filter
                                   val (.getClientProperty tb :value)]
+                              (.status! ied (format "[%s] --> %s" param val))
                               (.set-param! ied param val))))]
 
     (doseq [b (map second (seq harmonic-buttons))]
