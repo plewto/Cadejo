@@ -82,8 +82,6 @@
                    (ss/config! tb-show-midi :enabled? true)
                    (.doClick tb-show-midi))))
   pan-server-main))
-                                  
-
 
 (defn- midi-panel [txt-status]
   (let [lab-title (ss/label :text "Select Scene MIDI device")
@@ -92,7 +90,7 @@
         grp (ss/button-group)
         jb-create-scene (ss/button :text "Create Scene"
                                    :enabled? false
-                                   :size [400 :by 100]) ]
+                                   :size [400 :by 100])]
     (doseq [t (cadejo.util.midi/transmitters)]
       (let [[flag dev] t
             info (.getDeviceInfo dev)
@@ -114,7 +112,8 @@
           pan-midi-main (ss/border-panel
                          :west pan-west
                          :center (ss/vertical-panel
-                                  :items [jb-create-scene]))]
+                                  :items [jb-create-scene]
+                                  :border (factory/padding 16)))]
       (ss/listen jb-create-scene
                  :action 
                  (fn [_]
