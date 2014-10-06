@@ -13,10 +13,9 @@
            java.awt.event.MouseMotionListener
            javax.swing.SwingConstants))
 
-(def w 400)
-(def h 150)
-(def sustain-time 2.0) ;; constant
-
+(def ^:private w 400)
+(def ^:private h 150)
+(def ^:private sustain-time 2.0)
 (def ^:private clipboard* (atom nil))
 
 (defn- button [txt igroup isubgrp tttext]
@@ -48,7 +47,16 @@
     b))
 
 
-(defn envelope-editor [performance ied prefix]
+;; Provides editor for algo envelope
+;; prefix - keyword indicating spcific envelope 
+;;          prefix must be one of :env1 :op1 :op2 :op3 :op4 
+;;                                :op5 :op6 :op7 or :op8
+;; performance - the parent performance
+;; ied - the parent instrument editor
+;; 
+;; returns instance of InstrumentSubEdit
+;;
+(defn envelope-editor [prefix performance ied]
   (let [undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo")
         kw-attack (keyword (format "%s-attack" (name prefix)))
         kw-decay1 (keyword (format "%s-decay1" (name prefix)))
@@ -103,6 +111,7 @@
               (.line! d [-1 0][100 0]) ;; x-axis
               (reset! zero-line* (.line! d [0 -1][0 2]))
               (.color! d point-color)
+              (.style! d 0)
               (swap! elements* (fn [n](assoc n :p0 (.point! d [0 0.0]))))
               (swap! elements* (fn [n](assoc n :p1 (.point! d [1 1.0]))))
               (swap! elements* (fn [n](assoc n :p2 (.point! d [2 0.7]))))
@@ -110,7 +119,6 @@
               (swap! elements* (fn [n](assoc n :p4 (.point! d [5 0.8]))))
               (swap! elements* (fn [n](assoc n :p5 (.point! d [6 0.0]))))
               (.color! d foreground)
-              (.style! d 0)
               (swap! elements* (fn [n](assoc n :s1 (.line! d [0 0.0][1 1.0]))))
               (swap! elements* (fn [n](assoc n :s2 (.line! d [1 1.0][2 0.7]))))
               (swap! elements* (fn [n](assoc n :s3 (.line! d [2 0.7][3 0.8]))))
@@ -463,79 +471,3 @@
                    (reset! zero-line* (.line! drw [0 0][0 2]))
                    (.render drw))))    
     enved))
-    
-
-
-
-;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST 
-;;
-;; (defprotocol MockBank 
-;;   (current-data [this]))
-;;
-;; (defn mock-bank []
-;;   (reify MockBank
-;;     (current-data [this]
-;;       {:op1-attack 1.0
-;;        :op1-decay1 1.0
-;;        :op1-decay2 1.0
-;;        :op1-release 1.0
-;;        :op1-breakpoint 0.6
-;;        :op1-sustain 1.0
-;;       
-;;        :op2-attack 1.0
-;;        :op2-decay1 1.0
-;;        :op2-decay2 1.0
-;;        :op2-release 2.0
-;;        :op2-breakpoint 0.3
-;;        :op2-sustain 0.8
-;;        :op2-env-bias 0.0 
-;;        :op2-env-scale 1.0
-;;       
-;;        :op3-attack 0.12
-;;        :op3-decay1 1.0
-;;        :op3-decay2 1.0
-;;        :op3-release 4.0
-;;        :op3-breakpoint 0.6
-;;        :op3-sustain 1.0
-;;        :op3-env-bias 1.0
-;;        :op3-env-scale -1.0})))
-;;
-;; (defprotocol MockPerformance
-;;   (bank [this]))
-;;
-;; (defn mock-performance []
-;;   (reify MockPerformance
-;;     (bank [this](mock-bank))))
-;;
-;; (defprotocol MockEditor
-;;   (status! [this txt])
-;;   (warning! [this txt])
-;;   (set-param! [this param val]))
-;;
-;; (defn mock-editor []
-;;   (reify MockEditor
-;;     (status! [this txt]
-;;       ;(println (format "status '%s'" txt))
-;;       )
-;;     (warning! [this txt]
-;;       (println (format "warning: %s" txt))
-;;       )
-;;     (set-param! [this param val]
-;;       (println (format "set-param %-12s --> %s" param val))
-;;       )))
-;;
-;; (let [ed1 (envelope-editor (mock-performance) (mock-editor) :op1)
-;;       ed2 (envelope-editor (mock-performance) (mock-editor) :op2)
-;;       ed3 (envelope-editor (mock-performance) (mock-editor) :op3)
-;;       f (ss/frame :title "test"
-;;                     :content (ss/grid-panel :columns 1
-;;                                             :items [(.widget ed3 :pan-main)
-;;                                                     (.widget ed2 :pan-main)
-;;                                                     (.widget ed1 :pan-main)])
-;;                     :on-close :dispose
-;;                     :size [(+ w 50) :by (+ h 750)])]
-;;          (.sync-ui! ed1)
-;;       (.sync-ui! ed2)
-;;       (.sync-ui! ed3)
-;;   (ss/show! f))
-
