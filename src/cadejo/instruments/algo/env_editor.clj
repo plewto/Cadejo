@@ -48,13 +48,22 @@
 
 
 ;; Provides editor for algo envelope
-;; prefix - keyword indicating spcific envelope 
+;; prefix - keyword indicating specific envelope 
 ;;          prefix must be one of :env1 :op1 :op2 :op3 :op4 
 ;;                                :op5 :op6 :op7 or :op8
 ;; performance - the parent performance
 ;; ied - the parent instrument editor
 ;; 
-;; returns instance of InstrumentSubEdit
+;; returns map with following keys
+;; :pan-main - swing panel holding components
+;; :synfn - function used to update components
+;; :mutefn function (fn flag) disables components if flag is true
+;;
+;; Implementation note:
+;; Originally envelope-editor returned an instance of InstrumentSubEditor
+;; which was inconsistent with subsequent code. A simple hack basically wraps
+;; aspects of the InstrumentEditor into the returned map. This results
+;; in some redundancy such as having both sync-ui! and syncfn functions etc.
 ;;
 (defn envelope-editor [prefix performance ied]
   (let [undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo")
@@ -247,7 +256,7 @@
 
                 (parent [this] ied)
 
-                (parent! [this _]) ;; igonre
+                (parent! [this _]) ;; ignore
 
                 (status! [this txt]
                   (.status! ied txt))
@@ -308,7 +317,13 @@
                      (do
                        (.set-param! ied kw-bias @bias*)
                        (.set-param! ied kw-scale @scale*)))
-                   (.sync-ui! enved))))]
+                   (.sync-ui! enved))))
+        syncfn (fn [](.sync-ui! enved))
+        mutefn (fn [flag]
+                  (let [f (not flag)]
+                    (doseq [obj [jb-init jb-copy jb-paste jb-zoom-in jb-zoom-out jb-zoom-reset]]
+                      (.setEnabled obj f))
+                    ))]
 
     (.add-mouse-listener! drw (proxy [MouseListener][]
                                 (mouseEntered [_])
@@ -470,4 +485,6 @@
                    (.style! drw 0)
                    (reset! zero-line* (.line! drw [0 0][0 2]))
                    (.render drw))))    
-    enved))
+    {:pan-main pan-main
+     :syncfn syncfn
+     :mutefn mutefn}))

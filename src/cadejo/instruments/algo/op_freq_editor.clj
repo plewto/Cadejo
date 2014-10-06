@@ -37,8 +37,9 @@
 ;; 
 ;; returns two element map with keys
 ;; :pan-main - the swing panel which contains the editor
-;; :sync-ui - a function which updates the editor controls.
-;;
+;; :syncfn - a function which updates the editor controls.
+;; :mutefn - a function (fn flag) if flag is true disable all components
+;; 
 (defn op-freq-editor [op performance ied]
   (let [param-freq (keyword (format "op%d-detune" op))
         param-bias (keyword (format "op%d-bias" op))
@@ -109,19 +110,23 @@
                                                           val (float (.getValue src))]
                                                       (.set-param! ied param-bias val))))))
                         s)
+        lab-octave (ss/label :text "Octave" :halign :center)
+        lab-tune (ss/label :text "Tune" :halign :center)
+        lab-finetune (ss/label :text "Fine" :halign :center)
+        lab-bias (ss/label :text "  Bias ")
         pan-octaves (ss/border-panel :center (ss/grid-panel :columns 1 :items octaves)
-                                     :south (ss/label :text "Octave" :halign :center))
+                                     :south lab-octave)
         pan-tune (ss/border-panel :center slide-tune
-                                  :south (ss/label :text "Tune" :halign :center))
+                                  :south lab-tune)
         pan-finetune (ss/border-panel :center slide-finetune
-                                      :south (ss/label :text "Fine" :halign :center))
-        pan-bias (ss/border-panel :west "  Bias "
+                                      :south lab-finetune)
+        pan-bias (ss/border-panel :west lab-bias
                                   :center spin-bias)
         pan-south (ss/horizontal-panel :items [lab-freq pan-bias])
         pan-main (ss/border-panel :center (ss/horizontal-panel 
                                            :items [pan-octaves pan-tune pan-finetune])
                                   :south pan-south)
-        sync-ui! (fn []
+        sync-ui (fn []
                   (reset! enable-change-listener* false)
                   (let [data (.current-data (.bank performance))
                         bias (get data param-bias 0.0)
@@ -149,6 +154,14 @@
                         (.setEnabled slide-tune false)
                         (.setEnabled slide-finetune false)
                         (ss/config! lab-freq :text (format "%7.4f" (float freq))))))
-                  (reset! enable-change-listener* true))]
+                  (reset! enable-change-listener* true))
+        mute (fn [flag]
+               (let [f (not flag)]
+                 (doseq [obj [slide-tune slide-finetune spin-bias
+                              lab-octave lab-tune lab-finetune lab-bias lab-freq]]
+                   (.setEnabled obj f))
+                 (doseq [obj octaves]
+                   (.setEnabled obj f))))]
     {:pan-main pan-main
-     :sync-ui sync-ui!}))
+     :syncfn sync-ui
+     :mutefn mute}))
