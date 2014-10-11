@@ -5,8 +5,25 @@
            javax.swing.Box
            javax.swing.event.ChangeListener))
 
+
+(def slider-width 50)
+(def slider-height 100)
+
+(defn- slider []
+  (let [s (ss/slider :orientation :vertical
+                     :value 0 :min 0 :max 100
+                     :snap-to-ticks? false
+                     :paint-labels? true
+                     :minor-tick-spacing 5
+                     :major-tick-spacing 25
+                     :size [slider-width :by slider-height])]
+    s))
+
 (defn- third [col](nth col 2))
+
 (defn- fourth [col](nth col 3))
+
+
 
 ;; Provides editor controls related to operator amplitude
 ;; including overall amplitude, velocity, pressure, cca, ccb
@@ -35,17 +52,13 @@
         param-left-scale (keyword (format "op%d-left-scale" op))
         param-right-scale (keyword (format "op%d-right-scale" op))
         enable-change-listener* (atom true)
+        is-carrier (or (= op 1)(= op 4)(= op 7))
         amp* (atom 0.0)
-        amp-scale* (atom 4.0)
+        amp-scale* (atom (if is-carrier 1.0 4.0))
         update-synths (fn [param val] 
                         (.set-param! ied param val))
         ;; Primary amplitude slider with 4-scale buttons
-        slide-amp (let [s (ss/slider :orientation :vertical
-                                     :value 0 :min 0 :max 100
-                                     :snap-to-ticks? false
-                                     :paint-labels? true
-                                     :minor-tick-spacing 5
-                                     :major-tick-spacing 25)]
+        slide-amp (let [s (slider)]
                     (.addChangeListener s (proxy [ChangeListener][]
                                             (stateChanged [ev]
                                               (if @enable-change-listener*
@@ -56,12 +69,14 @@
                     s)
         ampscale-buttons (let [acc* (atom [])
                                grp (ss/button-group)]
-                           (doseq [s [4 8 16 100]]
+                           (doseq [s [0 1 4 16 64 128]]
                              (let [tb (ss/toggle :text (format "x%d" s)
                                                  :group grp
-                                                 :selected? (= s 4))]
+                                                 :selected? (= s 4)
+                                                 :size [slider-width :by (* 1/3 slider-height)])]
                                (swap! acc* (fn [n](conj n tb)))
                                (.putClientProperty tb :value s)
+                               (.setEnabled tb (not is-carrier))
                                (ss/listen tb :action (fn [ev]
                                                        (let [src (.getSource ev)
                                                              val (float (.getClientProperty src :value))]
@@ -69,19 +84,14 @@
                                                          (update-synths param-amp (* val @amp*)))))))
                            @acc*)
         lab-amp (ss/label :text "Amp" :halign :center)
-        pan-amp (ss/border-panel :center (ss/border-panel :center slide-amp
-                                                          :west (ss/grid-panel :columns 1
-                                                                               :items ampscale-buttons
-                                                                               :border (factory/padding)))
-                                 :south lab-amp)
+        ;; pan-amp (ss/border-panel :center (ss/border-panel :center slide-amp
+        ;;                                                   :west (ss/grid-panel :rows 3 :columns 2
+        ;;                                                                        :items ampscale-buttons
+        ;;                                                                        :border (factory/padding)))
+        ;;                          :south lab-amp)
         ;; Velocity 
         lab-velocity (ss/label :text "Vel" :halign :center)
-        slide-velocity (let [s (ss/slider :orientation :vertical
-                                          :value 0 :min 0 :max 100
-                                          :snap-to-ticks? false
-                                          :paint-labels? true
-                                          :minor-tick-spacing 5
-                                          :major-tick-spacing 25)]
+        slide-velocity (let [s (slider)]
                          (.addChangeListener s (proxy [ChangeListener][]
                                                  (stateChanged [ev]
                                                    (if @enable-change-listener*
@@ -94,12 +104,7 @@
 
         ;; Pressure 
         lab-pressure (ss/label :text "Press" :halign :center)
-        slide-pressure (let [s (ss/slider :orientation :vertical
-                                          :value 0 :min 0 :max 100
-                                          :snap-to-ticks? false
-                                          :paint-labels? true
-                                          :minor-tick-spacing 5
-                                          :major-tick-spacing 25)]
+        slide-pressure (let [s (slider)]
                          (.addChangeListener s (proxy [ChangeListener][]
                                                  (stateChanged [ev]
                                                    (if @enable-change-listener*
@@ -112,12 +117,7 @@
 
         ;; CCA
         lab-cca (ss/label :text "CCA" :halign :center)
-        slide-cca (let [s (ss/slider :orientation :vertical
-                                     :value 0 :min 0 :max 100
-                                     :snap-to-ticks? false
-                                     :paint-labels? true
-                                     :minor-tick-spacing 5
-                                     :major-tick-spacing 25)]
+        slide-cca (let [s (slider)]
                     (.addChangeListener s (proxy [ChangeListener][]
                                             (stateChanged [ev]
                                               (if @enable-change-listener*
@@ -130,12 +130,7 @@
 
         ;; CCB
         lab-ccb (ss/label :text "CCB" :halign :center)
-        slide-ccb (let [s (ss/slider :orientation :vertical
-                                     :value 0 :min 0 :max 100
-                                     :snap-to-ticks? false
-                                     :paint-labels? true
-                                     :minor-tick-spacing 5
-                                     :major-tick-spacing 25)]
+        slide-ccb (let [s (slider)]
                     (.addChangeListener s (proxy [ChangeListener][]
                                             (stateChanged [ev]
                                               (if @enable-change-listener*
@@ -148,13 +143,8 @@
 
         ;; LFO1
         lab-lfo1 (ss/label :text "LFO1" :halign :center)
-        slide-lfo1 (let [s (ss/slider :orientation :vertical
-                                     :value 0 :min 0 :max 100
-                                     :snap-to-ticks? false
-                                     :paint-labels? true
-                                     :minor-tick-spacing 5
-                                     :major-tick-spacing 25)]
-                    (.addChangeListener s (proxy [ChangeListener][]
+        slide-lfo1 (let [s (slider)]
+                     (.addChangeListener s (proxy [ChangeListener][]
                                             (stateChanged [ev]
                                               (if @enable-change-listener*
                                                 (let [pos (.getValue s)
@@ -166,29 +156,22 @@
         
         ;; LFO2
         lab-lfo2 (ss/label :text "LFO2" :halign :center)
-        slide-lfo2 (let [s (ss/slider :orientation :vertical
-                                     :value 0 :min 0 :max 100
-                                     :snap-to-ticks? false
-                                     :paint-labels? true
-                                     :minor-tick-spacing 5
-                                     :major-tick-spacing 25)]
-                    (.addChangeListener s (proxy [ChangeListener][]
-                                            (stateChanged [ev]
-                                              (if @enable-change-listener*
-                                                (let [pos (.getValue s)
-                                                      val (float (* 1/100 pos))]
-                                                  (update-synths param-lfo2 val))))))
-                    s)
+        slide-lfo2 (let [s (slider)]
+                     (.addChangeListener s (proxy [ChangeListener][]
+                                             (stateChanged [ev]
+                                               (if @enable-change-listener*
+                                                 (let [pos (.getValue s)
+                                                       val (float (* 1/100 pos))]
+                                                   (update-synths param-lfo2 val))))))
+                     s)
         pan-lfo2 (ss/border-panel :center slide-lfo2
                                   :south lab-lfo2)
 
         ;; keyscale
         lab-lkn (ss/label :text "Keynum" :halign :center)
         lab-lks (ss/label :text "Scale" :halign :center)
-
         lab-rkn (ss/label :text "Keynum" :halign :center)
         lab-rks (ss/label :text "Scale" :halign :center)
-
         keyscale-listener (proxy [ChangeListener] []
                             (stateChanged [ev]
                               (if @enable-change-listener*
@@ -212,25 +195,42 @@
                               (.putClientProperty s :param param-right-scale)
                               (.addChangeListener s keyscale-listener)
                               s)
-        pan-left-keyscale (ss/vertical-panel :items [spin-left-keynum 
-                                                     lab-lkn
-                                                     (Box/createVerticalStrut 12)
-                                                     spin-left-keyscale
-                                                     lab-lks]
-                                             :border (factory/title "Left"))
-        pan-right-keyscale (ss/vertical-panel :items [spin-right-keynum 
-                                                     lab-rkn
-                                                     (Box/createVerticalStrut 12)
-                                                     spin-right-keyscale
-                                                     lab-rks]
-                                             :border (factory/title "Right"))
+        pan-left-keyscale (ss/horizontal-panel :items [spin-left-keynum 
+                                                       lab-lkn
+                                                       ;(Box/createVerticalStrut 12)
+                                                       spin-left-keyscale
+                                                       lab-lks]
+                                               :border (factory/title "Left"))
+        pan-right-keyscale (ss/horizontal-panel :items [spin-right-keynum 
+                                                        lab-rkn
+                                                        ;(Box/createVerticalStrut 12)
+                                                        spin-right-keyscale
+                                                        lab-rks]
+                                                :border (factory/title "Right"))
 
         pan-keyscale (ss/vertical-panel :items [pan-left-keyscale pan-right-keyscale])
-                     pan-main (ss/horizontal-panel :items [pan-amp
-                                              (ss/grid-panel :rows 1 :items [pan-velocity pan-pressure 
-                                                                             pan-cca pan-ccb 
-                                                                             pan-lfo1 pan-lfo2
-                                                                             pan-keyscale])])                          
+        ;; pan-main (ss/horizontal-panel :items [pan-amp
+        ;;                                       (ss/grid-panel :rows 1 :items [pan-velocity 
+        ;;                                                                      pan-pressure 
+        ;;                                                                      pan-cca
+        ;;                                                                      pan-ccb 
+        ;;                                                                      pan-lfo1
+        ;;                                                                      pan-lfo2
+        ;;                                                                      ;pan-keyscale
+        ;;                                                                      ])]
+        ;;                               :border (factory/title "Amplitude"))
+        pan-main (ss/horizontal-panel :items [(ss/grid-panel :rows 3 :columns 2
+                                                             :items ampscale-buttons)
+                                              (ss/border-panel :center slide-amp :south lab-amp)
+                                              pan-velocity
+                                              pan-pressure
+                                              pan-cca
+                                              pan-ccb
+                                              pan-lfo1
+                                              pan-lfo2
+                                              pan-keyscale]
+                                      :border (factory/title "Amplitude"))
+        
         sync-ui (fn []
                   (reset! enable-change-listener* false)
                   (let [data (.current-data (.bank performance))
@@ -278,8 +278,17 @@
                               lab-amp lab-velocity lab-pressure lab-cca lab-ccb
                               lab-lfo1 lab-lfo2 lab-lkn lab-lks lab-rkn lab-rks]]
                    (.setEnabled obj f))
-                 (doseq [obj ampscale-buttons]
-                   (.setEnabled obj f))))]
+                 (if (not is-carrier)
+                   (doseq [obj ampscale-buttons]
+                     (.setEnabled obj f)))
+                 (if flag 
+                   (do 
+                     (.set-param! ied param-amp 0.0)
+                     (.status! ied (format "OP %d muted" op)))
+                   (do 
+                     (.set-param! ied param-amp @amp*)
+                     (.status! ied (format "OP %d unmuted" op))))))]
+       
     {:pan-main pan-main
      :syncfn sync-ui
      :mutefn mute}))

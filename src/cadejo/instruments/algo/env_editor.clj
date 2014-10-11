@@ -13,8 +13,8 @@
            java.awt.event.MouseMotionListener
            javax.swing.SwingConstants))
 
-(def ^:private w 400)
-(def ^:private h 150)
+(def ^:private w 500)
+(def ^:private h 192)
 (def ^:private sustain-time 2.0)
 (def ^:private clipboard* (atom nil))
 

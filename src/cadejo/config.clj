@@ -454,7 +454,7 @@
 
 
 (load-gui! true)
-(initial-skin! "Business")
+(initial-skin! "Moderate")
 (enable-pp! true)
 (maximum-undo-count! 10)
 (warn-on-file-overwrite! true)

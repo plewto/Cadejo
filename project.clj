@@ -8,5 +8,9 @@
                  [seesaw "1.4.4"]
                  [com.github.insubstantial/substance "7.1"]
                  [overtone "0.9.1"]]
-  ;:main cadejo.ui.util.lnf)
-  :main cadejo.gui)
+  ;:main cadejo.instruments.algo.op-amp-editor
+  ;:main cadejo.instruments.algo.mute-editor
+  :main cadejo.gui
+  ;:main sgwr.seven-segment-display
+  ;:main sgwr.utilities
+)
