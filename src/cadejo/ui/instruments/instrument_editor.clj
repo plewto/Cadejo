@@ -328,6 +328,7 @@
                     (.warning! this "Clipboard empty"))))
 
               (set-param! [this param value]
+                (.status! this (format "[%-16s] --> %s" param value))
                 (.set-param! bank param value))
 
               (widgets [this] widget-map)
