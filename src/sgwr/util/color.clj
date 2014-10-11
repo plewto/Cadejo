@@ -1,10 +1,16 @@
-(println "WARNING: sgwr.color-utilities DEPRECIATED")
-
-(ns sgwr.color-utilities
+(ns sgwr.util.color
   "Provides functions for color manipulation"
   (:require [sgwr.utilities :as util])
   (:require [seesaw.color :as ssc])
   (:import java.awt.Color))
+
+;; As with seesaw.color/color except that if the first argument 
+;; is an instance of java.awt.Color it becomes the return color.
+;;
+(defn color [& args]
+  (cond (= (type (first args)) Color) (first args)
+        (keyword? (first args))(ssc/color (first args))
+        :default (apply ssc/color args)))
 
 (defn crossmix [a b mix]
   "Return color mixture

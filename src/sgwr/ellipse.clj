@@ -2,7 +2,6 @@
   "Defines ellipse element in terms of bounding rectangle"
   (:require [sgwr.attributes])
   (:require [sgwr.element])
-  (:require [sgwr.utilities :as util])
   (:require [seesaw.graphics :as ssg]))
 
 (defn ellipse

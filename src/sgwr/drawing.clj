@@ -10,7 +10,7 @@
   (:require [sgwr.point])
   (:require [sgwr.rectangle])
   (:require [sgwr.text-element])
-  (:require [sgwr.utilities :as util])
+  (:require [sgwr.util.math :as math])
   (:import java.awt.Dimension
            java.awt.geom.AffineTransform
            java.awt.image.BufferedImage
@@ -430,7 +430,7 @@
                   (doseq [e @elements*]
                     (if (filter e)
                       (doseq [cp (.construction-points e)]
-                        (let [d (util/distance p cp)]
+                        (let [d (math/distance p cp)]
                           (if (< d @mindist*)
                             (do
                               (reset! mindist* d)

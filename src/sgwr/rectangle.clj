@@ -2,7 +2,7 @@
   "Defines rectangle and rounded-rectangle elements"
   (:require [sgwr.attributes])
   (:require [sgwr.element])
-  (:require [sgwr.utilities :as util])
+  ;(:require [sgwr.utilities :as util])
   (:require [seesaw.graphics :as ssg]))
 
 

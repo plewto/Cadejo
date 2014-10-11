@@ -1,3 +1,7 @@
+;; DEPRECIATED
+;;
+
+(println "WARNING: sgwr.utilities is DEPRECIATED")
 (ns sgwr.utilities
   (:require [seesaw.color :as ssc])
   (:import java.awt.geom.Path2D

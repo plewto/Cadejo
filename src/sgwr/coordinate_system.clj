@@ -1,6 +1,6 @@
 (ns sgwr.coordinate-system
   "Defines various mapping schemes between 'real' points and pixel coordinates"
-  (:require [sgwr.utilities :as util]))
+  (:require [sgwr.util.math :as math]))
 
 
 (defprotocol CoordinateSystem
@@ -79,11 +79,11 @@
 
       (clip [this q]
         (let [[u v] q]
-          [(util/clamp u 0 w)
-           (util/clamp v 0 h)]))
+          [(math/clamp u 0 w)
+           (math/clamp v 0 h)]))
 
       (distance [this p1 p2]
-        (util/distance p1 p2))
+        (math/distance p1 p2))
 
       (zoom! [this _] nil)  ;; ignore
 
@@ -144,11 +144,11 @@
 
              (clip [this q]
                (let [[u v] q]
-                 [(util/clamp u 0 w)
-                  (util/clamp v 0 h)]))
+                 [(math/clamp u 0 w)
+                  (math/clamp v 0 h)]))
              
              (distance [this p1 p2]
-               (util/distance p1 p2))
+               (math/distance p1 p2))
 
              (zoom! [this ratio]
                (let [[p0 p1] @view*
@@ -202,11 +202,11 @@
                        :radius (float r)
                        :scale (float 0.0)})
         unit-hook (cond (= units :deg)
-                        util/deg->rad
+                        math/deg->rad
                         :default
                         identity)
         inv-unit-hook (cond (= units :deg)
-                            util/rad->deg
+                            math/rad->deg
                             :default
                             identity)
         zoom-ratio* (atom 1.0)
@@ -250,8 +250,8 @@
 
              (clip [this q]
                (let [[u v] q]
-                 [(util/clamp u 0 (:width @params*))
-                  (util/clamp v 0 (:height @params*))]))
+                 [(math/clamp u 0 (:width @params*))
+                  (math/clamp v 0 (:height @params*))]))
 
              (distance [this p1 p2]
                (let [[r1 phi1] p1

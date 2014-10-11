@@ -4,7 +4,8 @@
    See attributes/point-styles"
   (:require [sgwr.attributes])
   (:require [sgwr.element])
-  (:require [sgwr.utilities :as util])
+  ;(:require [sgwr.utilities :as util])
+  (:require [sgwr.util.shape :as sutil])
   (:import java.awt.geom.Line2D
            java.awt.geom.Rectangle2D
            java.awt.geom.Ellipse2D
@@ -51,12 +52,12 @@
 (defn- cross [x y]
   (let [s1 (dash x y)
         s2 (bar x y)]
-    (util/combine-shapes s1 s2)))
+    (sutil/combine-shapes s1 s2)))
 
 (defn- x-point [x y]
   (let [s1 (diag x y)
         s2 (diag2 x y)]
-    (util/combine-shapes s1 s2)))
+    (sutil/combine-shapes s1 s2)))
 
 
 (defn- triangle [x y]
@@ -64,7 +65,7 @@
         base (line (- x half) y-base (+ x half) y-base)
         s1 (line (- x half) y-base x (- y half))
         s2 (line (+ x half) y-base x (- y half))]
-    (util/combine-shapes base (util/combine-shapes s1 s2))))
+    (sutil/combine-shapes base (sutil/combine-shapes s1 s2))))
 
 
 (def ^:private shape-functions [dot pixel dash bar diag diag2 

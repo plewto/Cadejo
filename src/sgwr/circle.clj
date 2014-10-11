@@ -5,7 +5,8 @@
    rectangle"
   (:require [sgwr.attributes])
   (:require [sgwr.element])
-  (:require [sgwr.utilities :as util])
+  ;(:require [sgwr.utilities :as util])
+  (:require [sgwr.util.math :as math])
   (:require [seesaw.graphics :as ssg]))
 
 (defn circle 
@@ -37,7 +38,7 @@
                    (let [[pc pr] @position*
                          qc (.map-point cs pc)
                          qr (.map-point cs pr)
-                         radius (util/distance qc qr)]
+                         radius (math/distance qc qr)]
                      (ssg/circle (first qc)(second qc) radius)))
                  
                  (color [this]
@@ -65,6 +66,6 @@
                  
                  (to-string [this]
                    (let [[pc pr] @position*
-                         radius (util/distance pc pr)]
+                         radius (math/distance pc pr)]
                      (format "Circle center %s radius %s" pc radius)))) ]
        obj)))
