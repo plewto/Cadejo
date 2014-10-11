@@ -113,8 +113,10 @@
         vtf-instrument-id (vtf/validated-text-field :validator pname-test
                                                     :value (gen-performance-name chanobj iname)
                                                     :border "Instrument ID")
-        jb-add (factory/button "Add Instrument") ; (ss/button :text "Add Instrument")
-        jb-cancel (factory/button "Cancel")  ; (ss/button :text "Cancel")
+        ;; jb-add (factory/button "Add Instrument")
+        ;; jb-cancel (factory/button "Cancel")
+        jb-add (ss/button :text "Add Instrument")
+        jb-cancel (ss/button :text "Cancel")
         pan-main (ss/border-panel :north pan-north
                                   :center pan-controllers
                                   :south (.widget vtf-instrument-id :pan-main))
