@@ -1,5 +1,8 @@
 (ns sgwr.utilities
-  (:import java.awt.geom.Path2D))
+  (:require [seesaw.color :as ssc])
+  (:import java.awt.geom.Path2D
+           java.awt.Color))
+
 
 ; ---------------------------------------------------------------------- 
 ;                                   Math
@@ -42,6 +45,59 @@
      (* b (- 1.0 w))))
 
 
+(defprotocol ShiftRegister
+
+  (clear! [this]
+    "Reset register to 0")
+
+  (shift! [this n]
+    "Shift register left then insert n at end
+     Return register value")
+
+  (shift-right! [this n]
+    "Shift register right, insert n")
+
+  (value [this]
+    "Return current value of register")
+
+  (dump [this])
+  )
+
+
+(defn shift-register [cell-count scale]
+  (let [data* (atom (into [] (repeat cell-count 0)))]
+    (reify ShiftRegister
+
+      (clear! [this]
+        (reset! data* (into [] (repeat cell-count 0)))
+        0.0)
+      
+      (shift! [this n]
+        (let [acc* (atom [])]
+          (doseq [i (range (- cell-count 2) -1 -1)]
+            (swap! acc* (fn [q](conj q (nth @data* i)))))
+          (swap! acc* (fn [q](conj q n)))
+          (reset! data* (reverse @acc*))
+          (.value this)))
+      
+      (shift-right! [this n]
+        (let [acc* (atom [])]
+          (doseq [i (range 1 cell-count)]
+            (swap! acc* (fn [q](conj q (nth @data* i)))))
+          (swap! acc* (fn [q](conj q n)))
+          (reset! data* @acc*)
+          (.value this)))
+
+      (dump [this]
+        (println (format "Register %s  value %s" @data* (.value this))))
+
+      (value [this]
+        (let [acc* (atom 0)]
+          (dotimes [i cell-count]
+            (let [dec (Math/pow 10 i)]
+              (swap! acc* (fn [q](+ q (* dec (nth @data* i)))))))
+          (* scale @acc*))))))
+
 ; ---------------------------------------------------------------------- 
 ;                                  Shapes
 
@@ -54,3 +110,14 @@
   ([s1 s2]
      (combine-shapes s1 s2 false)))
 
+
+; ---------------------------------------------------------------------- 
+;                                   Color
+
+;; As with seesaw.color/color except that if the first argument 
+;; is an instance of java.awt.Color it becomes the return color.
+;;
+(defn color [& args]
+  (cond (= (type (first args)) Color) (first args)
+        (keyword? (first args))(ssc/color (first args))
+        :default (apply ssc/color args)))
