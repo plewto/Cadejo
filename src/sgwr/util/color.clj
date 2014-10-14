@@ -1,6 +1,6 @@
 (ns sgwr.util.color
   "Provides functions for color manipulation"
-  (:require [sgwr.utilities :as util])
+  (:require [sgwr.util.math :as math])
   (:require [seesaw.color :as ssc])
   (:import java.awt.Color))
 
@@ -10,6 +10,8 @@
 (defn color [& args]
   (cond (= (type (first args)) Color) (first args)
         (keyword? (first args))(ssc/color (first args))
+        (or (list? (first args))(vector? (first args)))
+        (apply ssc/color (first args))
         :default (apply ssc/color args)))
 
 (defn crossmix [a b mix]
@@ -19,16 +21,16 @@
    mix - float, 0.0 <= mix <= 1.0, relative amounts of a and b in result
          mix = 0 --> return b
          mix = 1 --> return b"
-  (let [w (float (util/clamp mix 0 1))
+  (let [w (float (math/clamp mix 0 1))
         ar (.getRed a)
         ag (.getGreen a)
         ab (.getBlue a)
         br (.getRed b)
         bg (.getGreen b)
         bb (.getBlue b)
-        cr (int (util/interpolate ar br w))
-        cg (int (util/interpolate ag bg w))
-        cb (int (util/interpolate ab bb w))]
+        cr (int (math/interpolate ar br w))
+        cg (int (math/interpolate ag bg w))
+        cb (int (math/interpolate ab bb w))]
     (ssc/color cr cg cb)))
 
 (defn inversion [c]
@@ -68,8 +70,8 @@
    b - float, brightness scale, default 1.0"
   (let [[h1 s1 b1](hsb c)
         h2 (+ h h1)
-        s2 (util/clamp (* s s1) 0 1)
-        b2 (util/clamp (* b b1) 0 1)]
+        s2 (math/clamp (* s s1) 0 1)
+        b2 (math/clamp (* b b1) 0 1)]
     (Color/getHSBColor h2 s2 b2)))
 
 (defn complement [c]
@@ -108,7 +110,7 @@
    breakpoint - float, 0.0 <= breakpoint <= 1.0, relative position of 
                 gradient crossover
    count - int, total number of colors"
-  (let [bp (float (util/clamp breakpoint 0 1))
+  (let [bp (float (math/clamp breakpoint 0 1))
         b-count (int (* count bp))
         a-count (- count b-count)
         acc* (atom (gradient-list a1 a2 a-count))]

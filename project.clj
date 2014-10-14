@@ -10,7 +10,7 @@
                  [overtone "0.9.1"]]
   ;:main cadejo.instruments.algo.op-amp-editor
   ;:main cadejo.instruments.algo.mute-editor
-  :main cadejo.gui
-  ;:main sgwr.seven-segment-display
-  ;:main sgwr.utilities
+  ;:main cadejo.gui
+  :main sgwr.util.shift-register
+
 )
