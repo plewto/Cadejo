@@ -221,6 +221,10 @@
     "Like plot! but connects points with straight lines instead of discrete 
      pixels")
 
+  (suspend-render!
+    [this flag]
+    "If flag true objects are not immediatly rendered as they are added.")
+
   (point!
     [this p]
     [this]
@@ -350,6 +354,7 @@
         physical-bounds (Dimension. width height)
         position* (atom [0.0 0.0])
         attributes* (atom (sgwr.attributes/attributes))
+        suspend-render* (atom false)
         elements* (atom [])
         background-image (BufferedImage. (.getWidth physical-bounds)
                                          (.getHeight physical-bounds)
@@ -377,7 +382,7 @@
               (background! [this image]
                 (let [g2d (.createGraphics background-image)]
                   (.drawImage g2d image null-transform-op 0 0)
-                  (.render this)
+                  (if (not @suspend-render*)(.render this))
                   true))
               
               (read-background! [this fqn]
@@ -540,12 +545,15 @@
                       (reset! q0* q1)))
                   (.repaint @cpan*)))
 
+              (suspend-render! [this flag]
+                (reset! suspend-render* flag))
+
               (point! [this p]
                 (let [obj (sgwr.point/point p)]
                   (.attributes! obj (.clone @attributes*))
                   (reset! position* p)
                   (swap! elements* (fn [n](conj n obj)))
-                  (.render this)
+                  (if (not @suspend-render*)(.render this))
                   obj))
 
               (point! [this]
@@ -556,7 +564,7 @@
                   (.attributes! obj (.clone @attributes*))
                   (reset! position* p1)
                   (swap! elements* (fn [n](conj n obj)))
-                  (.render this)
+                  (if (not @suspend-render*)(.render this))
                   obj))
 
               (line! [this p1]
@@ -567,7 +575,7 @@
                   (.attributes! obj (.clone @attributes*))
                   (reset! position* p1)
                   (swap! elements* (fn [n](conj n obj)))
-                  (.render this)
+                  (if (not @suspend-render*)(.render this))
                   obj))
 
               (ellipse! [this p1]
@@ -578,7 +586,7 @@
                   (.attributes! obj (.clone @attributes*))
                   (reset! position* pc)
                   (swap! elements* (fn [n](conj n obj)))
-                  (.render this)
+                  (if (not @suspend-render*)(.render this))
                   obj))
             
               (two-point-circle! [this pr]
@@ -596,7 +604,7 @@
                   (.attributes! obj (.clone @attributes*))
                   (reset! position* p1)
                   (swap! elements* (fn [n](conj n obj)))
-                  (.render this)
+                  (if (not @suspend-render*)(.render this))
                   obj))
               
               (rectangle! [this p1]
@@ -607,7 +615,7 @@
                   (.attributes! obj (.clone @attributes*))
                   (reset! position* p1)
                   (swap! elements* (fn [n](conj n obj)))
-                  (.render this)
+                  (if (not @suspend-render*)(.render this))
                   obj))
 
               (rounded-rectangle! [this p1]
@@ -618,7 +626,7 @@
                   (.attributes! obj (.clone @attributes*))
                   (reset! position* p)
                   (swap! elements* (fn [n](conj n obj)))
-                  (.render this)
+                  (if (not @suspend-render*)(.render this))
                   obj))
 
               (text! [this txt]
