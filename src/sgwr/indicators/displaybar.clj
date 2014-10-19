@@ -14,6 +14,11 @@
     "Sets display colors
      See sgwr.util.color/color")
 
+  (colors
+    [this]
+    "Returns vector of display colors
+     [background inactive active]")
+
   (cell 
     [this n]
     "Returns instance of ComplexDisplay, the nth display cell.")
@@ -179,6 +184,9 @@
                       (.colors! c @inactive* @active*))
                     [@background* @inactive* @active*])
                   
+                  (colors [this]
+                    [@background* @inactive* @active*])
+
                   (cell [this n]
                     (nth cells n))
                   
@@ -341,6 +349,9 @@
                       (.colors! c @inactive* @active*))
                     [@background* @inactive* @active*])
                   
+                  (colors [this]
+                    [@background* @inactive* @active*])
+
                   (cell [this n]
                     (nth cells n))
                   
