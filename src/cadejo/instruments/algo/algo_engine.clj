@@ -13,7 +13,7 @@
   (:require [cadejo.instruments.algo.program])
   (:require [cadejo.instruments.algo.pp])
   (:require [cadejo.instruments.algo.data])
-  (:require [cadejo.instruments.algo.algo-editor])
+  (:require [cadejo.instruments.algo.editor.algo-editor :as algoed])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance])
@@ -24,21 +24,23 @@
 (def clipboard* (atom nil))
 
 (def algo-descriptor 
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :algo "FM Synth" clipboard*)]
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor 
+           :algo "FM Synth" clipboard*)]
     (.add-controller! d :cc1 "Vibrato" 1)
     (.add-controller! d :cc7 "Volume" 7)
     (.add-controller! d :cca "A" 16)
     (.add-controller! d :ccb "B" 17)
     (.add-controller! d :ccc "Echo mix" 91)
     (.add-controller! d :ccc "Reverb mix" 92)
-    (.set-editor-constructor! d cadejo.instruments.algo.algo-editor/algo-editor)
+    (.set-editor-constructor! d algoed/algo-editor)
     d))
 
 (defcgen op-freq [f0 detune bias]
   (:kr 
    (+ bias (* detune f0))))
 
-(defcgen op-amp [amp
+(defcgen op-amp [mute
+                 amp
                  note 
                  left-key left-scale
                  right-key right-scale
@@ -49,7 +51,7 @@
                  lfo1 lfo1-depth
                  lfo2 lfo2-depth]
   (:kr
-   (* amp
+   (* mute amp
       (qu/amp-modulator-depth velocity velocity-depth)
       (qu/amp-modulator-depth pressure pressure-depth)
       (qu/amp-modulator-depth cca cca-depth)
@@ -295,6 +297,16 @@
                      op8-cca->feedback      0.00
                      op8-ccb->feedback      0.00
 
+                     op1-mute 1         ; Operator mute flags
+                     op2-mute 1         ; = 0 -> mute operator
+                     op3-mute 1         ; = 1 -> unmute operator
+                     op4-mute 1
+                     op5-mute 1
+                     op6-mute 1
+                     op7-mute 1
+                     op8-mute 1
+
+
                      bend-bus 0         ; control buses
                      pressure-bus 0
                      vibrato-depth-bus 0
@@ -350,7 +362,8 @@
         op6-freq (+ op6-bias (* op6-detune f0))
         op7-freq (+ op7-bias (* op7-detune f0))
         op8-freq (+ op8-bias (* op8-detune f0))
-        op1-amp (op-amp op1-amp
+        op1-amp (op-amp op1-mute
+                        op1-amp
                         note
                         op1-left-key op1-left-scale
                         op1-right-key op1-right-scale
@@ -360,7 +373,8 @@
                         ccb op1-ccb
                         lfo1 op1-lfo1
                         lfo2 op1-lfo2)
-        op2-amp (op-amp op2-amp
+        op2-amp (op-amp op2-mute
+                        op2-amp
                         note
                         op2-left-key op2-left-scale
                         op2-right-key op2-right-scale
@@ -370,7 +384,8 @@
                         ccb op2-ccb
                         lfo1 op2-lfo1
                         lfo2 op2-lfo2)
-        op3-amp (op-amp op3-amp
+        op3-amp (op-amp op3-mute
+                        op3-amp
                         note
                         op3-left-key op3-left-scale
                         op3-right-key op3-right-scale
@@ -380,7 +395,8 @@
                         ccb op3-ccb
                         lfo1 op3-lfo1
                         lfo2 op3-lfo2)
-        op4-amp (op-amp op4-amp
+        op4-amp (op-amp op4-mute
+                        op4-amp
                         note
                         op4-left-key op4-left-scale
                         op4-right-key op4-right-scale
@@ -390,7 +406,8 @@
                         ccb op4-ccb
                         lfo1 op4-lfo1
                         lfo2 op4-lfo2)
-        op5-amp (op-amp op5-amp
+        op5-amp (op-amp op5-mute
+                        op5-amp
                         note
                         op5-left-key op5-left-scale
                         op5-right-key op5-right-scale
@@ -400,7 +417,8 @@
                         ccb op5-ccb
                         lfo1 op5-lfo1
                         lfo2 op5-lfo2)
-        op6-amp (op-amp op6-amp
+        op6-amp (op-amp op6-mute
+                        op6-amp
                         note
                         op6-left-key op6-left-scale
                         op6-right-key op6-right-scale
@@ -410,7 +428,8 @@
                         ccb op6-ccb
                         lfo1 op6-lfo1
                         lfo2 op6-lfo2)
-        op7-amp (op-amp op7-amp
+        op7-amp (op-amp op7-mute
+                        op7-amp
                         note
                         op7-left-key op7-left-scale
                         op7-right-key op7-right-scale
@@ -420,7 +439,8 @@
                         ccb op7-ccb
                         lfo1 op7-lfo1
                         lfo2 op7-lfo2)
-        op8-amp (op-amp op8-amp
+        op8-amp (op-amp op8-mute
+                        op8-amp
                         note
                         op8-left-key op8-left-scale
                         op8-right-key op8-right-scale
