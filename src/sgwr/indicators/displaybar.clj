@@ -4,6 +4,7 @@
   (:require [sgwr.drawing])
   (:require [sgwr.coordinate-system])
   (:require [sgwr.util.color :as uc])
+  (:require [seesaw.core :as ss]) ;; DEBUG ONLY
   (:require [sgwr.indicators.shift-register])
 )
 
@@ -269,6 +270,168 @@
        dbar)))
 
 
+
+; ---------------------------------------------------------------------- 
+;                            Numeric Display Bar
+;
+; Similar to DisplayBar but specifically for numbers.
+; 
+
+(def ^:private digits [0 1 2 3 4 5 6 7 8 9
+                       \0 \1 \2 \3 \4 \5 \6 \7 \8 \9
+                       "0" "1" "2" "3" "4" "5" "6" "7" "8" "9"
+                       '0 '1 '2 '3 '4 '5 '6 '7 '8 '9
+                       :0 :1 :2 :3 :4 :5 :6 :7 :8 :9])
+
+(defn- digit? [obj] 
+  (some (fn [n](= n obj)) digits))
+
+(defn numeric-bar [digit-count]
+  "Creates numeric DisplayBar
+   Returns map with following keys
+       :displaybar :drawing :drawing-canvas
+       :valuefn :setfn :insertfn na d :modified?
+
+   where
+   
+   :displaybar, :drawing and :drawing-canvas map to instances of
+   DisplayBar Drawing and JPanel respectifly
+
+   :valuefn 
+     maps to a function which returns the currently displayed value
+     (valuefn) --> float
+
+   :setfn 
+     maps to a function used to set the displayed value
+     (setfn n) 
+
+   :insertfn 
+     maps to a function used to modify the current value
+     (insertfn c) 
+     where c = :sign --> toggle value sign
+           c = :point --> insert decimal point
+           c = :back --> delete left-most digit
+           c = :clear --> clear display, set value to 0
+           c = :enter --> clear the value modified symbol
+           c is digit --> insert c
+
+    :modified?
+     maps to a function which indicates if the value has been modified.
+     A small triangle in the upper left hand corrner indicates the
+     displayed value has been modified. Inserting either :clear or
+     :enter turns the modified symbol off. Inserting any other character
+     turns the modified symbol on."
+
+  (let [border 6
+        cell-width 25
+        cell-height 38
+        drawing-width (+ (* 2 border)(* (+ 4 digit-count) cell-width))
+        drawing-height (+ (* 2 border) cell-height)
+        value* (atom "")
+        has-point* (atom false)
+        pos-sign* (atom true)
+        modified* (atom false)
+        drw (sgwr.drawing/native-drawing drawing-width drawing-height )
+        dbar (sgwr.indicators.displaybar/displaybar drw digit-count 7 cell-width 0)
+        [pos-sign neg-sign modified](let [[bg inactive active] (.colors dbar)
+                                          x0 (* 1/4 cell-width)
+                                          x1 (* 1/2 cell-width)
+                                          x2 (* 3/4 cell-width)
+                                          yc (+ 4 (* 1/2 cell-height))
+                                          y0 (- yc 6)
+                                          y1 (+ yc 6) ]
+                                      (.color! drw inactive)
+                                      (.style! drw 0)
+                                      (.width! drw 1)
+                                      [(.line! drw [x1 y0][x1 y1])
+                                       (.line! drw [x0 yc][x2 yc])
+                                       (do (.style! drw 9)
+                                           (.point! drw [x1 8]))])
+        sync-display (fn []
+                       (let [[bg inactive active](.colors dbar)]
+                         (.color! (.attributes neg-sign) active)
+                         (.color! (.attributes pos-sign)(if @pos-sign* active inactive))
+                         (.color! (.attributes modified)(if @modified* active inactive))
+                         (.display! dbar @value*)))
+        valuefn (fn []
+                  (if (pos? (count @value*))
+                    (let [s (if @pos-sign* 1 -1)
+                          mag (Float/parseFloat (cond (.startsWith @value* ".")
+                                                      (str "0" @value*)
+                                                      (.endsWith @value* ".")
+                                                      (str @value* "0")
+                                                      :default 
+                                                      @value*))]
+                      (* s mag))
+                    0.0))
+
+        set-valuefn (fn [v]
+                    (let [mag (Math/abs v)]
+                      (reset! value* (str mag))
+                      (reset! pos-sign* (pos? v))
+                      (reset! has-point* (pos? (.indexOf @value* ".")))
+                      (reset! modified* false)
+                      (sync-display)))
+
+        insert (fn [c]
+                 (reset! modified* true)
+                 (cond (= c :sign)
+                       (swap! pos-sign* not)
+        
+                       (or (= c :point)(= c ".")(= c \.))
+                       (if (not @has-point*)
+                         (do (reset! value* (str @value* \.))
+                             (reset! has-point* true)))
+        
+                       (= c :enter)
+                       (reset! modified* false)
+        
+                       (= c :back)
+                       (let [vcount (count @value*)]
+                         (if (pos? vcount)
+                           (do
+                             (reset! value* (subs @value* 0 (dec vcount)))
+                             (reset! has-point* (pos? (.indexOf @value* ".")))
+                             (reset! modified* true))))
+
+                       (= c :clear)
+                       (do 
+                         (reset! value* "")
+                         (reset! has-point* false)
+                         (reset! pos-sign* true)
+                         (reset! modified* false))
+                         
+                       :default
+                       (if (and (not (.overflow? (.shift-register dbar)))(digit? c))
+                         (do
+                           (reset! value* (str @value* c))
+                           (reset! modified* true))))
+                 (sync-display)
+                 (valuefn))]
+    (.block-on-overflow! (.shift-register dbar) true)
+    {:displaybar dbar
+     :drawing drw
+     :drawing-canvas (.drawing-canvas drw)
+     :valuefn valuefn
+     :setfn set-valuefn
+     :insertfn insert 
+     :modified? (fn []@modified*) }))
+                         
+                         
+;;; START DEBUG
+(def dbar (numeric-bar 10))
+(def vfn (:valuefn dbar))
+(def sfn (:setfn dbar))
+(def i (:insertfn dbar))
+(def f (ss/frame :content (:drawing-canvas dbar)
+                 :on-close :dispose
+                 :size [700 :by 250]))
+(ss/show! f)
+;;; end debug
+
+
+
+
 ; ---------------------------------------------------------------------- 
 ;                          Rectangular Display Area
 
@@ -279,7 +442,7 @@
 
    rows     - int, character row count
    columns  - int, character column count    
-   drw      - sgwr Drawing containg display, if not specified a drawing 
+   drw      - sgwr Drawing containing display, if not specified a drawing 
               object is created. Note that the drawing must have a 
               'native' coordinate-system. 
    x-offset - int, horizontal position of displaybar in drawing, default 0
