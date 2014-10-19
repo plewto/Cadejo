@@ -4,7 +4,6 @@
   (:require [sgwr.drawing])
   (:require [sgwr.coordinate-system])
   (:require [sgwr.util.color :as uc])
-  (:require [seesaw.core :as ss]) ;; DEBUG ONLY
   (:require [sgwr.indicators.shift-register])
 )
 

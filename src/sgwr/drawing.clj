@@ -60,6 +60,10 @@
      If freeze is true drawing is frozen prior to setting the new 
      coordinate-system. freeze is true by default")
 
+  (bounds 
+    [this]
+    "Convenience method returns the 'physical' drawing bounds in pixels [w h]")
+
   (background
     [this]
     "Return background image")
@@ -376,6 +380,9 @@
 
               (coordinate-system! [this cs]
                 (.coordinate-system! this cs true))
+
+              (bounds [this]
+                physical-bounds)
 
               (background [this] background-image)
                 
