@@ -290,12 +290,12 @@
   "Creates numeric DisplayBar
    Returns map with following keys
        :displaybar :drawing :drawing-canvas
-       :valuefn :setfn :insertfn na d :modified?
+       :valuefn :setfn :insertfn and :modified?
 
    where
    
    :displaybar, :drawing and :drawing-canvas map to instances of
-   DisplayBar Drawing and JPanel respectifly
+   DisplayBar Drawing and JPanel respectively
 
    :valuefn 
      maps to a function which returns the currently displayed value
@@ -317,7 +317,7 @@
 
     :modified?
      maps to a function which indicates if the value has been modified.
-     A small triangle in the upper left hand corrner indicates the
+     A small triangle in the upper left hand corner indicates the
      displayed value has been modified. Inserting either :clear or
      :enter turns the modified symbol off. Inserting any other character
      turns the modified symbol on."
@@ -416,21 +416,6 @@
      :setfn set-valuefn
      :insertfn insert 
      :modified? (fn []@modified*) }))
-                         
-                         
-;;; START DEBUG
-(def dbar (numeric-bar 10))
-(def vfn (:valuefn dbar))
-(def sfn (:setfn dbar))
-(def i (:insertfn dbar))
-(def f (ss/frame :content (:drawing-canvas dbar)
-                 :on-close :dispose
-                 :size [700 :by 250]))
-(ss/show! f)
-;;; end debug
-
-
-
 
 ; ---------------------------------------------------------------------- 
 ;                          Rectangular Display Area
