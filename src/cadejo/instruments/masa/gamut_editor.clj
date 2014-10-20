@@ -168,7 +168,7 @@
                                     freq (math/transpose harmonic detune)
                                     sfreq (format freq-format freq)]
                                 (ss/config! lab-freq :text sfreq)
-                                (.status! ed (format "[%s] --> val %s" param sfreq))
+                                ;(.status! ed (format "[%s] --> val %s" param sfreq))
                                 (.set-param! ied param freq)))))]
     (doseq [q drawbars]
       (.addChangeListener (first q) change-listener)

@@ -123,7 +123,7 @@
                                     bias (.getClientProperty src :bias) 
                                     pos (.getValue src)
                                     value (float (+ bias (* scale pos)))]
-                                (.status! ed (format "[%-12s] --> val %s" param value))
+                                ;(.status! ed (format "[%-12s] --> val %s" param value))
                                 (.set-param! ied param value))))) ]
 
     (doseq [s sliders]

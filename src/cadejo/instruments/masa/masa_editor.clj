@@ -324,15 +324,14 @@
                                     bias (.getClientProperty slider :bias)
                                     pos (int (ss/config slider :value))
                                     val (float (+ bias (* scale pos)))]
-                                (.set-param! ied param val)
-                                (.status! ied (format "[%-5s %3d] --> val %6.3f" param pos (float val)))))))
+                                (.set-param! ied param val)))))
 
         perc-action (proxy [ActionListener][]
                       (actionPerformed [ev]
                         (let [b (.getSource ev)
                               param (.getClientProperty b :param)
                               val (if (.isSelected b) 1.0 0.0)]
-                          (.status! ied (format "[%s] --> %s" param (if (zero? val) "off" "on ")))
+                          ;(.status! ied (format "[%s] --> %s" param (if (zero? val) "off" "on ")))
                           (.set-param! ied param val))))]
              
     (.putClientProperty slider-decay :param :decay) ;; [0.0 ... 1.0]
