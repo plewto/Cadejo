@@ -1,5 +1,5 @@
 (ns cadejo.instruments.algo.pp
-  (:require [cadejo.instruments.algo.program :as program])
+  ;(:require [cadejo.instruments.algo.program :as program])
   (:require [cadejo.util.col]))
 
 (def pad1 "    ")
@@ -9,44 +9,52 @@
   (printf ";; ---------------------------------------------------- %03d %s"
           pnum pname)
   (println "\n;;")
-  (printf ";; [op1 %5.4f%+3.0f  %4.2f]"
+  (printf ";; [op1 %5.4f%+3.0f  %4.2f %s]"
           (get dmap :op1-detune) 
           (get dmap :op1-bias)
-          (get dmap :op1-amp))
-  (printf "<--[op2 %5.4f%+3.0f  %4.2f]"
+          (get dmap :op1-amp)
+          (if (zero? (get dmap :op1-mute)) "MUTE" ""))
+  (printf "<--[op2 %5.4f%+3.0f  %4.2f %s]"
           (get dmap :op2-detune) 
           (get dmap :op2-bias)
-          (get dmap :op2-amp))
-  (printf "<--[op3 %5.4f%+3.0f  %4.2f]\n"
+          (get dmap :op2-amp)
+          (if (zero? (get dmap :op2-mute)) "MUTE" ""))
+  (printf "<--[op3 %5.4f%+3.0f  %4.2f %s]\n"
           (get dmap :op3-detune) 
           (get dmap :op3-bias)
-          (get dmap :op3-amp))
-  (printf ";; [op4 %5.4f%+3.0f  %4.2f]"
+          (get dmap :op3-amp)
+          (if (zero? (get dmap :op3-mute)) "MUTE" ""))
+  (printf ";; [op4 %5.4f%+3.0f  %4.2f %s]"
           (get dmap :op4-detune) 
           (get dmap :op4-bias)
-          (get dmap :op4-amp))
-  (printf "<--[op5 %5.4f%+3.0f  %4.2f]\n"
+          (get dmap :op4-amp)
+          (if (zero? (get dmap :op4-mute)) "MUTE" ""))
+  (printf "<--[op5 %5.4f%+3.0f  %4.2f %s]\n"
           (get dmap :op5-detune) 
           (get dmap :op5-bias)
-          (get dmap :op5-amp))
+          (get dmap :op5-amp)
+          (if (zero? (get dmap :op5-mute)) "MUTE" ""))
   (print ";;                      ")
-  (printf "<--[op6 %5.4f%+3.0f  %4.2f :fb %4.2f]\n"
+  (printf "<--[op6 %5.4f%+3.0f  %4.2f :fb %4.2f %s]\n"
           (get dmap :op6-detune) 
           (get dmap :op6-bias)
           (get dmap :op6-amp)
-          (get dmap :op6-feedback))
-  (printf ";; [op7 %5.4f%+3.0f  %4.2f]"
+          (get dmap :op6-feedback)
+          (if (zero? (get dmap :op6-mute)) "MUTE" ""))
+  (printf ";; [op7 %5.4f%+3.0f  %4.2f %s]"
           (get dmap :op7-detune) 
           (get dmap :op7-bias)
-          (get dmap :op7-amp))
-  (printf "<--[op8 %5.4f%+3.0f  %4.2f :fb %4.2f]\n"
+          (get dmap :op7-amp)
+          (if (zero? (get dmap :op7-mute)) "MUTE" ""))
+  (printf "<--[op8 %5.4f%+3.0f  %4.2f :fb %4.2f %s]\n"
           (get dmap :op8-detune) 
           (get dmap :op8-bias)
           (get dmap :op8-amp)
-          (get dmap :op8-feedback))
+          (get dmap :op8-feedback)
+          (if (zero? (get dmap :op8-mute)) "MUTE" ""))
   (println))
 
-(defn- dump-program [data]
+(defn dump-program [data]
   (let [dmap (cadejo.util.col/alist->map data)]
     (println)
     (doseq [k (sort (keys dmap))]
@@ -287,9 +295,15 @@
 (defn pp-algo 
   ([pnum pname data remarks]
      (with-out-str 
-       (let [dmap (cadejo.util.col/alist->map data)]
+       (let [dmap (cadejo.util.col/alist->map data)
+             mutefn (fn [op]
+                      (let [param (keyword (format "op%d-mute" op))
+                            val (get dmap param 1.0)]
+                        (if (zero? val) "0" "1")))]
          (summery pnum pname dmap)
-         (println "(let [enable '[1 1 1   1 1 1   1 1]]")
+         (println (format "(let [enable %s %s %s   %s %s %s   %s %s]"
+                          (mutefn 1)(mutefn 2)(mutefn 3)(mutefn 4)
+                          (mutefn 5)(mutefn 6)(mutefn 7)(mutefn 8)))
          (printf "  (save-program %3s   \"%s\" \"%s\"\n"
                  pnum pname remarks)
          (print (format "%s(algo " pad1))

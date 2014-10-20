@@ -14,7 +14,7 @@
 
 ;; ------------------------------------------------------------0 FmRhodes
 ;;
-(let [enable '[1 1 1   1 1 1   1 1]]
+(let [enable '[1 1 1   1 1 1   0 0]]    ;; DEBUG reset last 2 mute flags to 1
   (save-program 0 "FmRhodes" "These are remarks"
     (algo (common  :amp 0.399
                    :lp 10000
@@ -95,6 +95,8 @@
           (echo    :delay-1 0.250    :fb 0.50
                    :delay-2 1.000    :damp 0.00   :mix 0.00)
           (reverb  :size 0.50        :mix  0.20))))
+
+
 
 ;; ------------------------------------------------------------ 1 Celesta
 ;;

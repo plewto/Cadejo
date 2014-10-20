@@ -39,8 +39,7 @@
   (:kr 
    (+ bias (* detune f0))))
 
-(defcgen op-amp [mute
-                 amp
+(defcgen op-amp [amp
                  note 
                  left-key left-scale
                  right-key right-scale
@@ -51,7 +50,7 @@
                  lfo1 lfo1-depth
                  lfo2 lfo2-depth]
   (:kr
-   (* mute amp
+   (* amp
       (qu/amp-modulator-depth velocity velocity-depth)
       (qu/amp-modulator-depth pressure pressure-depth)
       (qu/amp-modulator-depth cca cca-depth)
@@ -132,6 +131,7 @@
                      op1-ccb      0.00
                      op1-lfo1     0.00
                      op1-lfo2     0.00
+
                      op2-detune    1.000 ; op2 --> op1
                      op2-bias      0.000
                      op2-amp       0.000
@@ -297,14 +297,14 @@
                      op8-cca->feedback      0.00
                      op8-ccb->feedback      0.00
 
-                     op1-mute 1         ; Operator mute flags
-                     op2-mute 1         ; = 0 -> mute operator
-                     op3-mute 1         ; = 1 -> unmute operator
-                     op4-mute 1
-                     op5-mute 1
-                     op6-mute 1
-                     op7-mute 1
-                     op8-mute 1
+                     op1-mute 1.0         ; Operator mute flags
+                     op2-mute 1.0         ; = 0 -> mute operator
+                     op3-mute 1.0         ; = 1 -> unmute operator
+                     op4-mute 1.0
+                     op5-mute 1.0
+                     op6-mute 1.0
+                     op7-mute 1.0
+                     op8-mute 1.0
 
 
                      bend-bus 0         ; control buses
@@ -362,94 +362,94 @@
         op6-freq (+ op6-bias (* op6-detune f0))
         op7-freq (+ op7-bias (* op7-detune f0))
         op8-freq (+ op8-bias (* op8-detune f0))
-        op1-amp (op-amp op1-mute
-                        op1-amp
-                        note
-                        op1-left-key op1-left-scale
-                        op1-right-key op1-right-scale
-                        velocity op1-velocity
-                        pressure op1-pressure
-                        cca op1-cca
-                        ccb op1-ccb
-                        lfo1 op1-lfo1
-                        lfo2 op1-lfo2)
-        op2-amp (op-amp op2-mute
-                        op2-amp
-                        note
-                        op2-left-key op2-left-scale
-                        op2-right-key op2-right-scale
-                        velocity op2-velocity
-                        pressure op2-pressure
-                        cca op2-cca
-                        ccb op2-ccb
-                        lfo1 op2-lfo1
-                        lfo2 op2-lfo2)
-        op3-amp (op-amp op3-mute
-                        op3-amp
-                        note
-                        op3-left-key op3-left-scale
-                        op3-right-key op3-right-scale
-                        velocity op3-velocity
-                        pressure op3-pressure
-                        cca op3-cca
-                        ccb op3-ccb
-                        lfo1 op3-lfo1
-                        lfo2 op3-lfo2)
-        op4-amp (op-amp op4-mute
-                        op4-amp
-                        note
-                        op4-left-key op4-left-scale
-                        op4-right-key op4-right-scale
-                        velocity op4-velocity
-                        pressure op4-pressure
-                        cca op4-cca
-                        ccb op4-ccb
-                        lfo1 op4-lfo1
-                        lfo2 op4-lfo2)
-        op5-amp (op-amp op5-mute
-                        op5-amp
-                        note
-                        op5-left-key op5-left-scale
-                        op5-right-key op5-right-scale
-                        velocity op5-velocity
-                        pressure op5-pressure
-                        cca op5-cca
-                        ccb op5-ccb
-                        lfo1 op5-lfo1
-                        lfo2 op5-lfo2)
-        op6-amp (op-amp op6-mute
-                        op6-amp
-                        note
-                        op6-left-key op6-left-scale
-                        op6-right-key op6-right-scale
-                        velocity op6-velocity
-                        pressure op6-pressure
-                        cca op6-cca
-                        ccb op6-ccb
-                        lfo1 op6-lfo1
-                        lfo2 op6-lfo2)
-        op7-amp (op-amp op7-mute
-                        op7-amp
-                        note
-                        op7-left-key op7-left-scale
-                        op7-right-key op7-right-scale
-                        velocity op7-velocity
-                        pressure op7-pressure
-                        cca op7-cca
-                        ccb op7-ccb
-                        lfo1 op7-lfo1
-                        lfo2 op7-lfo2)
-        op8-amp (op-amp op8-mute
-                        op8-amp
-                        note
-                        op8-left-key op8-left-scale
-                        op8-right-key op8-right-scale
-                        velocity op8-velocity
-                        pressure op8-pressure
-                        cca op8-cca
-                        ccb op8-ccb
-                        lfo1 op8-lfo1
-                        lfo2 op8-lfo2)
+        op1-ampl (* op1-mute (op-amp 
+                              op1-amp
+                              note
+                              op1-left-key op1-left-scale
+                              op1-right-key op1-right-scale
+                              velocity op1-velocity
+                              pressure op1-pressure
+                              cca op1-cca
+                              ccb op1-ccb
+                              lfo1 op1-lfo1
+                              lfo2 op1-lfo2))
+        op2-ampl (* op2-mute (op-amp 
+                              op2-amp
+                              note
+                              op2-left-key op2-left-scale
+                              op2-right-key op2-right-scale
+                              velocity op2-velocity
+                              pressure op2-pressure
+                              cca op2-cca
+                              ccb op2-ccb
+                              lfo1 op2-lfo1
+                              lfo2 op2-lfo2))
+        op3-ampl (* op3-mute (op-amp 
+                              op3-amp
+                              note
+                              op3-left-key op3-left-scale
+                              op3-right-key op3-right-scale
+                              velocity op3-velocity
+                              pressure op3-pressure
+                              cca op3-cca
+                              ccb op3-ccb
+                              lfo1 op3-lfo1
+                              lfo2 op3-lfo2))
+        op4-ampl (* op4-mute (op-amp 
+                              op4-amp
+                              note
+                              op4-left-key op4-left-scale
+                              op4-right-key op4-right-scale
+                              velocity op4-velocity
+                              pressure op4-pressure
+                              cca op4-cca
+                              ccb op4-ccb
+                              lfo1 op4-lfo1
+                              lfo2 op4-lfo2))
+        op5-ampl (* op5-mute (op-amp 
+                              op5-amp
+                              note
+                              op5-left-key op5-left-scale
+                              op5-right-key op5-right-scale
+                              velocity op5-velocity
+                              pressure op5-pressure
+                              cca op5-cca
+                              ccb op5-ccb
+                              lfo1 op5-lfo1
+                              lfo2 op5-lfo2))
+        op6-ampl (* op6-mute (op-amp 
+                              op6-amp
+                              note
+                              op6-left-key op6-left-scale
+                              op6-right-key op6-right-scale
+                              velocity op6-velocity
+                              pressure op6-pressure
+                              cca op6-cca
+                              ccb op6-ccb
+                              lfo1 op6-lfo1
+                              lfo2 op6-lfo2))
+        op7-ampl (* op7-mute (op-amp 
+                              op7-amp
+                              note
+                              op7-left-key op7-left-scale
+                              op7-right-key op7-right-scale
+                              velocity op7-velocity
+                              pressure op7-pressure
+                              cca op7-cca
+                              ccb op7-ccb
+                              lfo1 op7-lfo1
+                              lfo2 op7-lfo2))
+        op8-ampl (* op8-mute (op-amp 
+                              op8-amp
+                              note
+                              op8-left-key op8-left-scale
+                              op8-right-key op8-right-scale
+                              velocity op8-velocity
+                              pressure op8-pressure
+                              cca op8-cca
+                              ccb op8-ccb
+                              lfo1 op8-lfo1
+                              lfo2 op8-lfo2))
         op1-env (carrier-env op1-attack op1-decay1 op1-decay2 op1-release
                              op1-breakpoint op1-sustain gate)
 
@@ -475,9 +475,9 @@
         
         ;; [3]-->[2]-->[hp]-->[1]-->
         ;;
-        op3 (* op3-amp op3-env op3-env (sin-osc:ar op3-freq))
-        op2 (hpf (* op2-amp op2-env op2-env (sin-osc:ar (* op2-freq (+ 1 op3)))) op2-hp)
-        op1 (* op1-amp op1-env op1-env (sin-osc:ar (* op1-freq (+ 1 op2))))
+        op3 (* op3-ampl op3-env op3-env (sin-osc:ar op3-freq))
+        op2 (hpf (* op2-ampl op2-env op2-env (sin-osc:ar (* op2-freq (+ 1 op3)))) op2-hp)
+        op1 (* op1-ampl op1-env op1-env (sin-osc:ar (* op1-freq (+ 1 op2))))
         
         ;; fb-->[6]-->[hp]--+-->[4]--+-->[env]--> out
         ;;            [5]---+        +--> fb
@@ -490,12 +490,12 @@
                          (* op6-cca->feedback cca)
                          (* op6-ccb->feedback ccb))
         op6-fb-sig (* op6-fb-depth op6-fb-scale (local-in:ar 1))
-        op6 (hpf (* op6-amp op6-env op6-env 
+        op6 (hpf (* op6-ampl op6-env op6-env 
                     (sin-osc:ar (* op6-freq (+ 1 op6-fb-sig))))
                  op6-hp)
-        op5 (* op5-amp op5-env op5-env (sin-osc:ar op5-freq))
+        op5 (* op5-ampl op5-env op5-env (sin-osc:ar op5-freq))
         op4-fb-send (sin-osc:ar (* op4-freq (+ 1 op5 op6)))
-        op4 (* op4-amp op4-env op4-env op4-fb-send)
+        op4 (* op4-ampl op4-env op4-env op4-fb-send)
 
         ;; fb-->[8]--[hp]-->[7]-->
         ;;
@@ -505,8 +505,8 @@
                 (* op8-pressure->feedback pressure)
                 (* op8-cca->feedback cca)
                 (* op8-ccb->feedback ccb))
-        op8 (hpf (* op8-amp op8-env op8-env (sin-osc-fb op8-freq fb-8)) op8-hp)
-        op7 (* op7-amp op7-env op7-env (sin-osc:ar (* op7-freq (+ 1 op8))))
+        op8 (hpf (* op8-ampl op8-env op8-env (sin-osc-fb op8-freq fb-8)) op8-hp)
+        op7 (* op7-ampl op7-env op7-env (sin-osc:ar (* op7-freq (+ 1 op8))))
         mixed-sig (+ op1 op4 op7)]
     (local-out:ar op4-fb-send)
     (out:ar out-bus mixed-sig)))

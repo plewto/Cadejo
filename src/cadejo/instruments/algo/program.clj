@@ -66,7 +66,9 @@
     :op7-left-key :op7-left-scale :op7-right-key :op7-right-scale
     :op8-left-key :op8-left-scale :op8-right-key :op8-right-scale
     :cca->lfo1-amp :ccb->lfo1-amp :cca->lfo1-freq :ccb->lfo1-freq
-    :cca->lfo2-amp :ccb->lfo2-amp :cca->lfo2-freq :ccb->lfo2-freq])
+    :cca->lfo2-amp :ccb->lfo2-amp :cca->lfo2-freq :ccb->lfo2-freq
+    :op1-mute :op2-mute :op3-mute :op4-mute 
+    :op5-mute :op6-mute :op7-mute :op8-mute])
 
 ;; Predicate returns true iff param is a valid algo parameter
 ;;
@@ -199,20 +201,14 @@
         :amp (float amp)
         :cc-volume-depth cc-volume-depth))
 
-(defn- mute-op? [flag]
-  (cond (= flag :mute) 0
-        (= flag 0) 0
-        (not flag) 0
-        :default 1))
-
 (defn- carrier [op enable detune bias amp 
                left-key left-scale right-key right-scale
                velocity pressure addsr cca ccb lfo1 lfo2]
-  (let [mute-amp (mute-op? enable)]
     (list 
+     (format-op op "mute")(float (if (or (= enable 0)(not enable)) 0 1))
      (format-op op "detune")(float detune)
      (format-op op "bias")(float bias)
-     (format-op op "amp")(float (* mute-amp amp))
+     (format-op op "amp")(float amp)
      (format-op op "left-key")(int left-key)
      (format-op op "left-scale")(float left-scale)
      (format-op op "right-key")(int right-key)
@@ -228,7 +224,7 @@
      (format-op op "cca")(float cca)
      (format-op op "ccb")(float ccb)
      (format-op op "lfo1")(float lfo1)
-     (format-op op "lfo2")(float lfo2))))
+     (format-op op "lfo2")(float lfo2)))
   
 (defn op1 [enable & {:keys [detune bias amp 
                             left-key left-scale
@@ -305,31 +301,31 @@
                         right-key right-scale
                         addsr env-bias env-scale
                         velocity pressure cca ccb lfo1 lfo2 hp]
-  (let [mute-amp (mute-op? enable)
-        rs (list (format-op op "detune")(float detune)
-                 (format-op op "bias")(float bias)
-                 (format-op op "amp")(float (* mute-amp amp))
-                 (format-op op "left-key")(int left-key)
-                 (format-op op "left-scale")(float left-scale)
-                 (format-op op "right-key")(int right-key)
-                 (format-op op "right-scale")(float right-scale)
-                 (format-op op "attack")(float (first addsr))
-                 (format-op op "decay1")(float (second addsr))
-                 (format-op op "decay2")(float (third addsr))
-                 (format-op op "release")(float (fourth addsr))
-                 (format-op op "breakpoint")(float (fifth addsr))
-                 (format-op op "sustain")(float (sixth addsr))
-                 (format-op op "env-bias")(float env-bias)
-                 (format-op op "env-scale")(float env-scale)
-                 (format-op op "velocity")(float velocity)
-                 (format-op op "pressure")(float pressure)
-                 (format-op op "cca")(float cca)
-                 (format-op op "ccb")(float ccb)
-                 (format-op op "lfo1")(float lfo1)
-                 (format-op op "lfo2")(float lfo2))]
-    (if (or (= op 2)(= op 6)(= op 8))
-      (concat rs (list (format-op op "hp")(int hp)))
-      rs)))
+        (let [rs (list (format-op op "mute")(float (if (or (= enable 0)(not enable)) 0 1))
+                       (format-op op "detune")(float detune)
+                       (format-op op "bias")(float bias)
+                       (format-op op "amp") (float amp)
+                       (format-op op "left-key")(int left-key)
+                       (format-op op "left-scale")(float left-scale)
+                       (format-op op "right-key")(int right-key)
+                       (format-op op "right-scale")(float right-scale)
+                       (format-op op "attack")(float (first addsr))
+                       (format-op op "decay1")(float (second addsr))
+                       (format-op op "decay2")(float (third addsr))
+                       (format-op op "release")(float (fourth addsr))
+                       (format-op op "breakpoint")(float (fifth addsr))
+                       (format-op op "sustain")(float (sixth addsr))
+                       (format-op op "env-bias")(float env-bias)
+                       (format-op op "env-scale")(float env-scale)
+                       (format-op op "velocity")(float velocity)
+                       (format-op op "pressure")(float pressure)
+                       (format-op op "cca")(float cca)
+                       (format-op op "ccb")(float ccb)
+                       (format-op op "lfo1")(float lfo1)
+                       (format-op op "lfo2")(float lfo2))]
+          (if (or (= op 2)(= op 6)(= op 8))
+            (concat rs (list (format-op op "hp")(int hp)))
+            rs)))
 
 (defn op2 [enable & {:keys [detune bias amp
                             left-key left-scale
