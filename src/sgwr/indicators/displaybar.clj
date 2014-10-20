@@ -84,6 +84,11 @@
     "Cause display to blink
      n - integer, number of blinks, default 1
      period - blink duration in milliseconds, default 100")
+  
+  (off! 
+    [this flag c]
+    [this flag]
+    "If flag true set display to charcater c (default 292)")
 
   (drawing 
     [this]
@@ -144,6 +149,7 @@
            background* (atom (uc/color :black))
            inactive* (atom (uc/color [38 10 38]))
            active* (atom (uc/color :red))
+           off* (atom nil)
            cells (let [acc* (atom [])]
                    (.suspend-render! drw true)
                    (.paper! drw @background*)
@@ -201,8 +207,22 @@
                     (.clear! register)
                     (sync-display true))
                   
+                  (off! [this flag c]
+                    (if flag
+                      (do 
+                        (reset! off* true)
+                        (doseq [q cells]
+                          (.set-character! q c))
+                        (.render drw))
+                      (do
+                        (reset! off* false)
+                        (sync-display true))))
+
+                  (off! [this flag]
+                    (.off! this flag 292))
+
                   (insert! [this c render]
-                    (if (not (.overflow? register))
+                    (if (and (not @off*)(not (.overflow? register)))
                       (do 
                         (.shift! register c)
                         (sync-display render))))
@@ -211,35 +231,45 @@
                     (.insert! this c true))
                   
                   (backspace! [this]
-                    (.backspace! register)
-                    (sync-display true))
+                    (if (not @off*)
+                      (do 
+                        (.backspace! register)
+                        (sync-display true))))
                   
                   (display! [this text]
-                    (.parse! register text)
-                    (sync-display true)
-                    (.overflow? register))
+                    (if (not @off*)
+                      (do 
+                        (.parse! register text)
+                        (sync-display true)
+                        (.overflow? register))))
                   
                   (load! [this data delay]
-                    (doseq [d data]
-                      (.shift! register d)
-                      (sync-display true)
-                      (Thread/sleep delay)))
+                    (if (not @off*)
+                      (doseq [d data]
+                        (.shift! register d)
+                        (sync-display true)
+                        (Thread/sleep delay))))
                   
                   (load! [this data]
-                    (doseq [d data]
-                      (.shift! register d))
-                    (sync-display true))
+                    (if (not @off*)
+                      (do 
+                        (doseq [d data]
+                          (.shift! register d))
+                        (sync-display true))))
                   
                   (pad! [this c delay]
-                    (while (not (.overflow? register))
-                      (.shift! register c)
-                      (sync-display true)
-                      (Thread/sleep delay)))
+                    (if (not @off*)
+                      (while (not (.overflow? register))
+                        (.shift! register c)
+                        (sync-display true)
+                        (Thread/sleep delay))))
                   
                   (pad! [this c]
-                    (while (not (.overflow? register))
-                      (.shift! register c))
-                    (sync-display true))
+                    (if (not @off*)
+                      (do 
+                        (while (not (.overflow? register))
+                          (.shift! register c))
+                        (sync-display true))))
                   
                   (pad! [this]
                     (.pad! this \space))
@@ -253,12 +283,13 @@
                       (Thread/sleep 100)))
                   
                   (blink [this period]
-                    (let [temp (.to-string this)]
-                      (doseq [c cells]
-                        (.set-character! c \space))
-                      (.render drw)
-                      (Thread/sleep period)
-                      (.display! this temp)))
+                    (if (not @off*)
+                      (let [temp (.to-string this)]
+                        (doseq [c cells]
+                          (.set-character! c \space))
+                        (.render drw)
+                        (Thread/sleep period)
+                        (.display! this temp))))
                   
                   (blink [this]
                     (.blink this 500))
@@ -319,7 +350,12 @@
      A small triangle in the upper left hand corner indicates the
      displayed value has been modified. Inserting either :clear or
      :enter turns the modified symbol off. Inserting any other character
-     turns the modified symbol on."
+     turns the modified symbol on.
+
+    :offfn
+      Returns function to turn display on and off
+      (offfn flag)"
+
 
   (let [border 6
         cell-width 25
@@ -331,7 +367,8 @@
         pos-sign* (atom true)
         modified* (atom false)
         drw (sgwr.drawing/native-drawing drawing-width drawing-height )
-        dbar (sgwr.indicators.displaybar/displaybar drw digit-count 7 cell-width 0)
+        ;dbar (sgwr.indicators.displaybar/displaybar drw digit-count :matrix cell-width 0)
+        dbar (displaybar drw digit-count :matrix cell-width 0)
         [pos-sign neg-sign modified](let [[bg inactive active] (.colors dbar)
                                           x0 (* 1/4 cell-width)
                                           x1 (* 1/2 cell-width)
@@ -352,6 +389,10 @@
                          (.color! (.attributes pos-sign)(if @pos-sign* active inactive))
                          (.color! (.attributes modified)(if @modified* active inactive))
                          (.display! dbar @value*)))
+
+        offfn (fn [flag]
+                (.off! dbar flag))
+
         valuefn (fn []
                   (if (pos? (count @value*))
                     (let [s (if @pos-sign* 1 -1)
@@ -414,6 +455,7 @@
      :valuefn valuefn
      :setfn set-valuefn
      :insertfn insert 
+     :offfn offfn
      :modified? (fn []@modified*) }))
 
 ; ---------------------------------------------------------------------- 
@@ -556,6 +598,12 @@
                   (pad! [this]
                     (.pad! this \space))
                   
+                  (off! [this flag c]   ; off! not fully functional
+                    (all-off))
+
+                  (off! [this flag]
+                    (all-off))
+
                   (to-string [this]
                     (.to-string register))
                   
