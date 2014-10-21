@@ -1,6 +1,7 @@
 (ns sgwr.indicators.displaybar
   "Provides aggregate sets of complex display elements"
   (:require [sgwr.indicators.complex-display :as display])
+  (:require [seesaw.core :as ss]) ;; DEBUG ONLY
   (:require [sgwr.drawing])
   (:require [sgwr.coordinate-system])
   (:require [sgwr.util.color :as uc])
@@ -35,6 +36,13 @@
     [this]
     "Boolean returns true if maximum number of elements are displayed.")
 
+  (filter! 
+    [this ffn]
+    "The filter is a predicate which takes the proposed value for the
+    display and returns true iff the value is valid. If the filter returns
+    false the display update is blocked. The default filter is constantly
+    true")
+
   (clear!
     [this]
     "Clear this display to all spaces")
@@ -44,15 +52,18 @@
     [this c]
     "Insert character c into display 
      If it is not possible to display c, display a space.
-     If render flag is true immedialty update the sgwr drawing.")
+     If render flag is true immedialty update the sgwr drawing.
+     Display updates are blocked if the filter function returns false")
 
   (backspace!
     [this]
-    "Delete the last character.")
+    "Delete the last character.
+     Display updates are blocked if the filter returns false")
 
   (display! 
     [this text]
     "Display contents of text string.
+     Display updates are blocked if the filter returns false
      See also load!")
 
   (load! 
@@ -62,14 +73,16 @@
      Using load! graphics characters may be included which are not possible 
      with display!
      The delay argument causes the display to scroll with delay interval 
-     (in milliseconds) between each character insertion.")
+     (in milliseconds) between each character insertion.
+     Display updates are blocked if the filter returns false.")
 
   (pad! 
     [this c delay]
     [this c]
     [this]
     "Fill display with pad character c (default space) until it is full.
-     delay argument (in milliseconds) causes the display to scroll.")
+     delay argument (in milliseconds) causes the display to scroll.
+     Display updates are blocked if the filter returns false.")
 
   (to-string
     [this]
@@ -88,7 +101,7 @@
   (off! 
     [this flag c]
     [this flag]
-    "If flag true set display to charcater c (default 292)")
+    "If flag true set display to character c (default 292)")
 
   (drawing 
     [this]
@@ -149,6 +162,7 @@
            background* (atom (uc/color :black))
            inactive* (atom (uc/color [38 10 38]))
            active* (atom (uc/color :red))
+           filter* (atom (constantly true))
            off* (atom nil)
            cells (let [acc* (atom [])]
                    (.suspend-render! drw true)
@@ -170,11 +184,10 @@
                      (doseq [c cells]
                        (.set-character! c \space)))
            
-           sync-display (fn [render]
+           sync-display (fn [text render]
                           (all-off)
-                          (let [pos* (atom 0)
-                                text (reverse (.to-string register))]
-                            (doseq [c text]
+                          (let [pos* (atom 0)]
+                            (doseq [c (reverse text)]
                               (let [d (nth cells @pos*)]
                                 (.set-character! d c)
                                 (swap! pos* inc))))
@@ -203,9 +216,12 @@
                   (overflow? [this]
                     (.overflow? register))
                   
+                  (filter! [this ffn]
+                    (reset! filter* ffn))
+
                   (clear! [this]
                     (.clear! register)
-                    (sync-display true))
+                    (sync-display (.to-string register) true))
                   
                   (off! [this flag c]
                     (if flag
@@ -214,62 +230,139 @@
                         (doseq [q cells]
                           (.set-character! q c))
                         (.render drw))
-                      (do
+                      (let [text (.to-string register)]
                         (reset! off* false)
-                        (sync-display true))))
+                        (sync-display text true))))
 
                   (off! [this flag]
                     (.off! this flag 292))
 
                   (insert! [this c render]
                     (if (and (not @off*)(not (.overflow? register)))
-                      (do 
+                      (let [temp (.cells register)]
                         (.shift! register c)
-                        (sync-display render))))
+                        (let [val (.to-string register)]
+                          (if (@filter* val)
+                            (sync-display val render)
+                            (.load! register temp))))))
                   
                   (insert! [this c]
                     (.insert! this c true))
                   
+                  ;; (backspace! [this]
+                  ;;   (if (not @off*)
+                  ;;     (do 
+                  ;;       (.backspace! register)
+                  ;;       (sync-display true))))
+
                   (backspace! [this]
                     (if (not @off*)
-                      (do 
-                        (.backspace! register)
-                        (sync-display true))))
+                        (let [temp (.cells register)]
+                          (.backspace! register)
+                          (let [val (.to-string register)]
+                            (if (@filter* val)
+                              (sync-display val true)
+                              (.load! register temp))))))
                   
+                  ;; (display! [this text]
+                  ;;   (if (not @off*)
+                  ;;     (do 
+                  ;;       (.parse! register text)
+                  ;;       (sync-display true)
+                  ;;       (.overflow? register))))
+
                   (display! [this text]
                     (if (not @off*)
-                      (do 
+                      (let [temp (.cells register)]
                         (.parse! register text)
-                        (sync-display true)
-                        (.overflow? register))))
+                        (let [val (.to-string register)]
+                          (if (@filter* val)
+                            (do 
+                              (sync-display val true)
+                              (.overflow? register))
+                            (.load! register temp))))))
+                  
+                  ;; (load! [this data delay]
+                  ;;   (if (not @off*)
+                  ;;     (doseq [d data]
+                  ;;       (.shift! register d)
+                  ;;       (sync-display true)
+                  ;;       (Thread/sleep delay))))
                   
                   (load! [this data delay]
                     (if (not @off*)
+                      (let [temp (.cells register)
+                            flag* (atom false)]
                       (doseq [d data]
                         (.shift! register d)
-                        (sync-display true)
-                        (Thread/sleep delay))))
+                        (let [val (.to-string register)]
+                          (if (@filter* val)
+                            (do 
+                              (sync-display val true)
+                              (Thread/sleep delay))
+                            (reset! flag* true))))
+                      (if @flag*
+                        (do (.load! register temp)
+                            (sync-display (.to-string register) true))))))
                   
-                  (load! [this data]
+                  ;; (load! [this data]
+                  ;;   (if (not @off*)
+                  ;;     (do 
+                  ;;       (doseq [d data]
+                  ;;         (.shift! register d))
+                  ;;       (sync-display true))))
+
+                   (load! [this data]
                     (if (not @off*)
-                      (do 
+                      (let [temp (.cells register)]
                         (doseq [d data]
                           (.shift! register d))
-                        (sync-display true))))
+                        (let [val (.to-string register)]
+                          (if (@filter* val)
+                            (sync-display val true)
+                            (.load! register temp))))))
+
                   
-                  (pad! [this c delay]
+                  ;; (pad! [this c delay]
+                  ;;   (if (not @off*)
+                  ;;     (while (not (.overflow? register))
+                  ;;       (.shift! register c)
+                  ;;       (sync-display true)
+                  ;;       (Thread/sleep delay))))
+
+                   (pad! [this c delay]
                     (if (not @off*)
-                      (while (not (.overflow? register))
-                        (.shift! register c)
-                        (sync-display true)
-                        (Thread/sleep delay))))
-                  
-                  (pad! [this c]
-                    (if (not @off*)
-                      (do 
+                      (let [temp (.cells register)
+                            flag* (atom false)]
                         (while (not (.overflow? register))
-                          (.shift! register c))
-                        (sync-display true))))
+                          (.shift! register c)
+                          (let [val (.to-string register)]
+                            (if (@filter* val)
+                              (do 
+                                (sync-display val true)
+                                (Thread/sleep delay))
+                              (reset! flag* true))))
+                        (if @flag*
+                          (do
+                            (.load! register temp)
+                            (sync-display (.to-string register) true))))))
+                  
+                  ;; (pad! [this c]
+                  ;;   (if (not @off*)
+                  ;;     (do 
+                  ;;       (while (not (.overflow? register))
+                  ;;         (.shift! register c))
+                  ;;       (sync-display true))))
+
+                   (pad! [this c]
+                     (if (not @off*)
+                       (let [temp (.cells register)]
+                         (while (not (.overflow? register))
+                           (.shift! register c))
+                         (let [val (.to-string register)]
+                           (if (@filter* val)
+                             (sync-display val true)
+                             (.load! register temp))))))
                   
                   (pad! [this]
                     (.pad! this \space))
@@ -627,3 +720,23 @@
                   
                   (drawing-canvas [this] (.drawing-canvas drw)) )]
       dgrid)))
+
+;;;; TEST TEST TEST TEST TREST 
+
+(def bar (displaybar 4))
+(def drw (.drawing bar))
+(def f (ss/frame :content (.drawing-canvas drw)
+                 :on-close :dispose
+                 :size [400 :by 200]))
+(ss/show! f)
+
+
+(defn rl [](use 'sgwr.indicators.displaybar :reload))
+
+(defn ffn [args]
+  (println "filter args = %s" args)
+  (let [flag (= -1 (.indexOf args "DOG"))]
+    (println (format "filter args = '%s' --> %s" args flag))
+    flag))
+
+(.filter! bar ffn)
