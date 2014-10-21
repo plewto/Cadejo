@@ -35,6 +35,58 @@
 
 
 ; ---------------------------------------------------------------------- 
+;                               Sign Display
+;      |
+;    --+--  
+;      |
+
+(defn sign-display 
+  ([drw x y]
+     (sign-display drw x y 25 35))
+  ([drw x y w h]
+     (.style! drw 0)
+     (.width! drw 1)
+     (.color! drw (uc/color [32 32 32]))
+     (let [inactive* (atom (uc/color [32 32 32]))
+           active* (atom (uc/color :red))
+           x0 (int (+ x (* 1/3 w)))
+           x1 (int (+ x (* 2/3 w)))
+           xc (int (* 1/2 (+ x0 x1)))
+           y0 (int (+ y (* 1/3 h)))
+           y1 (int (+ y (* 2/3 h)))
+           yc (int (* 1/2 (+ y0 y1)))
+           neg (.line! drw [x0 yc][x1 yc])
+           pos (.line! drw [xc y0][xc y1])
+           char-map {\space []
+                     \+ [neg pos]
+                     \- [neg]}
+           all-off (fn []
+                     (doseq [e [neg pos]]
+                       (.color! (.attributes e) @inactive*)))
+           sed (reify ComplexDisplay
+
+                 (width [this] w)
+
+                 (height [this] h)
+
+                 (colors! [this inactive active]
+                   (reset! inactive* (uc/color inactive))
+                   (reset! active* (uc/color active))
+                   [@inactive* @active*])
+
+                 (elements [this]
+                   {:pos pos :neg neg})
+
+                 (supported-characters [this]
+                   (keys char-map))
+
+                 (set-character! [this c]
+                   (all-off)
+                   (doseq [e (get char-map c [])]
+                     (.color! (.attributes e) @active*))))])
+     ssd))
+
+; ---------------------------------------------------------------------- 
 ;                             7 Segment Display
 ;
 ;         .....
@@ -43,7 +95,7 @@
 ;         .....
 ;         .   .
 ;         .   .
-;         .....
+;         ..o..
 
 (defn seven-segment-display 
   "Create 7-segment display and place on sgwr drawing
@@ -175,7 +227,7 @@
 ;    ...x...
 ;    . /.\ .
 ;    ./ . \.
-;    .......
+;    ...o...
 
 (def ^:private sixteen-charmap 
   (let [acc* (atom {\space []
