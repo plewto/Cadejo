@@ -63,7 +63,7 @@
            all-off (fn []
                      (doseq [e [neg pos]]
                        (.color! (.attributes e) @inactive*)))
-           sed (reify ComplexDisplay
+           sd (reify ComplexDisplay
 
                  (width [this] w)
 
@@ -83,8 +83,8 @@
                  (set-character! [this c]
                    (all-off)
                    (doseq [e (get char-map c [])]
-                     (.color! (.attributes e) @active*))))])
-     ssd))
+                     (.color! (.attributes e) @active*))))]
+       sd)))
 
 ; ---------------------------------------------------------------------- 
 ;                             7 Segment Display
