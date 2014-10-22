@@ -357,8 +357,6 @@
     (if (and skin-name (not skin))
       (umsg/warning (format "config initial-skin value '%s' is invalid" skin-name)))))
   
-      
-  
 (defn skin-test []
 
   (let [grp (ss/button-group)

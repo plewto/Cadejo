@@ -27,12 +27,18 @@
                 :large  256})
 
 (defn logo-file [iname size]
-  (let [fqn (path/join logo-path 
-                       (format "%s_%s.%s" 
-                               (.toLowerCase (name iname))
-                               (get logo-size size 64)
-                               logo-extension))]
-    (File. fqn)))
+  (if size
+    (let [fqn (path/join logo-path 
+                         (format "%s_%s.%s" 
+                                 (.toLowerCase (name iname))
+                                 (get logo-size size 64)
+                                 logo-extension))]
+    (File. fqn))
+    (let [fqn (path/join logo-path
+                         (format "%s.%s"
+                                 (.toLowerCase (name iname))
+                                 logo-extension))]
+      (File. fqn))))
 
 (defn logo 
   ([iname]
