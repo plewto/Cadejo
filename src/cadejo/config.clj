@@ -79,11 +79,16 @@
     [this skin-name]
     "Used internally")
 
+  (displaybar-colors!
+    [this bg inactive active])
+  
+  (displaybar-colors
+    [this])
+
   (enable-pp
     [this]
     "Return flag, if true pretty-printer hook is executed on MIDI program 
      change")
-     
 
   (enable-pp!
     [this flag]
@@ -144,7 +149,6 @@
     [this path]
     "Change path to configuration directory.")
 
-
   (add-instrument! 
     [this descriptor]
     "Adds InstrumentDescriptor to the list of available instruments.")
@@ -161,7 +165,6 @@
   (create-instrument 
     [this iname mode args]
     "Create instance of instrument and link it into a Cadejo process tree.")
-
   )
 
 
@@ -183,6 +186,9 @@
         
         config-path* (atom nil)
         instruments* (atom nil)
+        displaybar-colors* (atom [[  5  32   2]
+                                  [ 77  58  83]
+                                  [245 244 207]])
         cnfig (reify CadejoConfig
 
                 (version [this] +VERSION+)
@@ -230,6 +236,12 @@
 
                 (current-skin! [this skin-name]
                   (reset! current-skin* skin-name))
+
+                (displaybar-colors! [this bg inactive active]
+                  (reset! displaybar-colors* [bg inactive active]))
+
+                (displaybar-colors [this]
+                  @displaybar-colors*)
 
                 (enable-pp [this] @enable-pp*)
 
@@ -358,6 +370,12 @@
 (defn current-skin! [skin-name]
   (.current-skin! @current-config* skin-name))
 
+(defn displaybar-colors! [bg inactive active]
+  (.displaybar-colors! @current-config* bg inactive active))
+
+(defn displaybar-colors []
+  (.displaybar-colors @current-config*))
+
 (defn enable-pp []
   (.enable-pp @current-config*))
 
@@ -454,12 +472,13 @@
 
 
 (load-gui! true)
-(initial-skin! "Moderate")
+(initial-skin! "Twilight")
 (enable-pp! true)
 (maximum-undo-count! 10)
 (warn-on-file-overwrite! true)
 (warn-on-unsaved-data! true)
 (enable-tooltips! true)
-(enable-button-text! true)
+(enable-button-text! false)
 (enable-button-icons! true)
+(displaybar-colors! [5 32 2][77 58 83][245 244 207])
 ;(config-path "~/.cadejo")
