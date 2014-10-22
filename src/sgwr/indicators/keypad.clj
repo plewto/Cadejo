@@ -3,8 +3,7 @@
   The numeric display associated with a keypad is switchable.
   This allows a single keypad object to service multible displaybars."
   (:require [seesaw.core :as ss])
-  (:require [sgwr.indicators.displaybar]))
-
+  (:require [sgwr.indicators.numberbar]))
 
 (defprotocol NumericKeypad
 
@@ -60,7 +59,7 @@
    allow-sign - Boolean, if true enable sign button"
 
   ([digit-count allow-point allow-sign]
-     (let [numbar (sgwr.indicators.displaybar/numeric-bar digit-count)
+     (let [numbar (sgwr.indicators.numberbar/numberbar digit-count)
            kpad (numeric-keypad allow-point allow-sign)]
        (.displaybar! kpad numbar true)
        kpad))
@@ -86,7 +85,7 @@
                     (let [src (.getSource ev)
                           val (.getClientProperty src :value)]
                       (if @numberbar*
-                        ((:insertfn @numberbar*) val))))
+                        (.insert! @numberbar* val))))
            
            enter-action* (atom nil)
            
@@ -137,12 +136,12 @@
 
 (comment -------------------------------------------- DEMO
 (def kp (numeric-keypad 10 true false))
-(def bar1 (let [nbar (sgwr.indicators.displaybar/numeric-bar 5)
+(def bar1 (let [nbar (sgwr.indicators.numberbar/numberbar 5)
                 dbar (:displaybar nbar)]
             (.colors! dbar :black [67 32 32] :yellow)
             nbar))
 
-(def bar2 (let [nbar (sgwr.indicators.displaybar/numeric-bar 6)]
+(def bar2 (let [nbar (sgwr.indicators.numberbar/numberbar 6)]
             nbar))
 
 (def grp (ss/button-group))

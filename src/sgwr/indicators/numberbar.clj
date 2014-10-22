@@ -20,6 +20,7 @@
 (def ^:private cell-width 25)
 (def ^:private cell-height 35)
 (def ^:private border 6)
+(def ^:private gap 4)
 
 (def ^:private digits [0 1 2 3 4 5 6 7 8 9
                        \0 \1 \2 \3 \4 \5 \6 \7 \8 \9
@@ -39,7 +40,7 @@
        (numberbar digit-count mn mx)))
 
   ([digit-count min-val max-val] 
-     (let [drawing-width (+ (* 2 border)(* (+ 1 digit-count) cell-width))
+     (let [drawing-width (+ (* 2 border)(* (+ 1 digit-count) (+ gap cell-width)))
            drawing-height (+ (* 2 border) cell-height)
            value* (atom "") ;; string representation of absolute value
            negative* (atom false) ;; flag true if value is negative
@@ -60,7 +61,7 @@
                    (.style! drw 0)
                    (.width! drw 1)
                    (doseq [i (range digit-count)]
-                     (let [x (+ border (* (inc i) cell-width))
+                     (let [x (+ border (* (inc i) (+ gap cell-width)))
                            e (display/dot-matrix-display drw x y)]
                        (.colors! e @inactive* @active*)
                        (swap! acc* (fn [q](conj q e)))))
@@ -184,11 +185,14 @@
                          (println (format "numberpad.insert! '%s' ???" c)) )
                         (if render (sync-display))))
                     (.value this))
-                              
-                    (backspace! [this]
-                      (.insert this :back))
-                   
-                    (display! [this n]
+                          
+                  (insert! [this c]
+                    (.insert! this c true))
+    
+                  (backspace! [this]
+                    (.insert this :back))
+                  
+                  (display! [this n]
                       (.clear! this)
                       (doseq [c (str n)]
                         (.insert! this c true))
@@ -249,7 +253,7 @@
                           (.render drw))
                         (do
                           (reset! off* false)
-                          (sync-display @value* true))))
+                          (sync-display))))
                     
                     (off! [this flag]
                       (.off! this flag 292)) 
