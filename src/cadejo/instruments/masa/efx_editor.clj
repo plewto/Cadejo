@@ -120,7 +120,7 @@
                               (let [src (.getSource ev)
                                     param (.getClientProperty src :param)
                                     scale (.getClientProperty src :scale)
-                                    bias (.getClientProperty src :bias) 
+                                    bias (.getClientProperty src :bias)
                                     pos (.getValue src)
                                     value (float (+ bias (* scale pos)))]
                                 ;(.status! ed (format "[%-12s] --> val %s" param value))
