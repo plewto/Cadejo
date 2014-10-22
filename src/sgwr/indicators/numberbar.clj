@@ -63,14 +63,14 @@
                    (.width! drw 1)
                    (doseq [i (range digit-count)]
                      (let [x (+ border (* (inc i) (+ gap cell-width)))
-                           e (display/dot-matrix-display drw x y)]
+                           e (display/sixteen-segment-display drw x y)]
                        (.colors! e @inactive* @active*)
                        (swap! acc* (fn [q](conj q e)))))
                    (.suspend-render! drw false)
                    (into [] (reverse @acc*)))
 
            all-off (fn []
-                     (doseq [c cells]
+                     (doseq [c (conj cells sign-cell)]
                        (.set-character! c \space))
                      (.set-character! sign-cell \space))
           
@@ -78,7 +78,7 @@
                           (all-off)
                           (if @negative*
                             (.set-character! sign-cell \-)
-                            (.set-character! sign-cell \+))
+                            (.set-character! sign-cell \space))
                           (if (not @off*)
                             (let [pos* (atom 0)]
                               (doseq [c (reverse @value*)]
@@ -86,17 +86,14 @@
                                   (.set-character! d c)
                                   (swap! pos* inc)))
                               (.render drw))))
-                            
-
 
            dbar (reify sgwr.indicators.displaybar/Displaybar
-                  
                   
                   (colors! [this background inactive active]
                     (reset! background* (uc/color background))
                     (reset! inactive* (uc/color inactive))
                     (reset! active* (uc/color active))
-                    (doseq [c cells]
+                    (doseq [c (conj cells sign-cell)]
                       (.colors! c @inactive* @active*))
                     [@background* @inactive* @active*])
                   
@@ -252,7 +249,7 @@
                       (if flag
                         (do
                           (reset! off* true)
-                          (doseq [q cells]
+                          (doseq [q (conj cells sign-cell)]
                             (.set-character! q c))
                           (.render drw))
                         (do
