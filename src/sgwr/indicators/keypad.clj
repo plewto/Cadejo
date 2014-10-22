@@ -102,9 +102,12 @@
                   (and @numberbar* ((:setfn @numberbar*)(float n))))
                 
                 (enter-action! [this afn]
-                  (.removeAtcionListener @enter-action*)
+                  (try
+                    (.removeAtcionListener @enter-action*)
+                    (catch NullPointerException ex
+                      nil))
                   (reset! enter-action* afn)
-                  (.addActionListener jb-enter afn))
+                  (ss/listen jb-enter :action afn))
                 
                 (widgets [this]
                   (assoc widget-map :displaybar @numberbar*))
@@ -115,7 +118,7 @@
                 (displaybar! [this dbar add-to-panel]
                   (reset! numberbar* dbar)
                   (if add-to-panel
-                    (let [drw (:drawing dbar)
+                    (let [drw (.drawing dbar)
                           canvas (.drawing-canvas drw)
                           [w h](let [dim (.bounds drw)]
                                  [(.getWidth dim)(.getHeight dim)])]

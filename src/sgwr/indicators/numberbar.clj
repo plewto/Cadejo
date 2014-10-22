@@ -7,7 +7,8 @@
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.indicators.shift-register])
   (:import java.lang.Long
-           java.lang.Float))
+           java.lang.Float
+           java.lang.NumberFormatException))
 
 
 
@@ -172,7 +173,10 @@
                          ; clear
                          (= c :clear)
                          (.clear! this)
-                              
+
+                         (= c :enter)
+                         nil
+
                          ; insert digit
                          (digit? c)
                          (if (not (.overflow? this))
@@ -224,12 +228,12 @@
                     (to-string [this]
                       (str (if @negative* "-" "")
                            @value*))
-
+                    
                     (value [this]
-                      (if (pos? (count @value*))
-                        (* (if @negative* -1 1)
-                           (Float/valueOf @value*))
-                        0.0))
+                      (try
+                        (Float/valueOf @value*)
+                        (catch NumberFormatException ex
+                          0.0)))
                     
                     (blink [this n period]
                       (dotimes [i n]
