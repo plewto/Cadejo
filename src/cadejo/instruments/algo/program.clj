@@ -67,8 +67,8 @@
     :op8-left-key :op8-left-scale :op8-right-key :op8-right-scale
     :cca->lfo1-amp :ccb->lfo1-amp :cca->lfo1-freq :ccb->lfo1-freq
     :cca->lfo2-amp :ccb->lfo2-amp :cca->lfo2-freq :ccb->lfo2-freq
-    :op1-mute :op2-mute :op3-mute :op4-mute 
-    :op5-mute :op6-mute :op7-mute :op8-mute])
+    :op1-enable :op2-enable :op3-enable :op4-enable 
+    :op5-enable :op6-enable :op7-enable :op8-enable])
 
 ;; Predicate returns true iff param is a valid algo parameter
 ;;
@@ -205,7 +205,7 @@
                left-key left-scale right-key right-scale
                velocity pressure addsr cca ccb lfo1 lfo2]
     (list 
-     (format-op op "mute")(float (if (or (= enable 0)(not enable)) 0 1))
+     (format-op op "enable")(float (if (or (= enable 0)(not enable)) 0 1))
      (format-op op "detune")(float detune)
      (format-op op "bias")(float bias)
      (format-op op "amp")(float amp)
@@ -301,7 +301,7 @@
                         right-key right-scale
                         addsr env-bias env-scale
                         velocity pressure cca ccb lfo1 lfo2 hp]
-        (let [rs (list (format-op op "mute")(float (if (or (= enable 0)(not enable)) 0 1))
+        (let [rs (list (format-op op "enable")(float (if (or (= enable 0)(not enable)) 0 1))
                        (format-op op "detune")(float detune)
                        (format-op op "bias")(float bias)
                        (format-op op "amp") (float amp)

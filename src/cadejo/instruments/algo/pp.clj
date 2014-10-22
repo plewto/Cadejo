@@ -13,45 +13,45 @@
           (get dmap :op1-detune) 
           (get dmap :op1-bias)
           (get dmap :op1-amp)
-          (if (zero? (get dmap :op1-mute)) "MUTE" ""))
+          (if (zero? (get dmap :op1-enable)) "MUTE" ""))
   (printf "<--[op2 %5.4f%+3.0f  %4.2f %s]"
           (get dmap :op2-detune) 
           (get dmap :op2-bias)
           (get dmap :op2-amp)
-          (if (zero? (get dmap :op2-mute)) "MUTE" ""))
+          (if (zero? (get dmap :op2-enable)) "MUTE" ""))
   (printf "<--[op3 %5.4f%+3.0f  %4.2f %s]\n"
           (get dmap :op3-detune) 
           (get dmap :op3-bias)
           (get dmap :op3-amp)
-          (if (zero? (get dmap :op3-mute)) "MUTE" ""))
+          (if (zero? (get dmap :op3-enable)) "MUTE" ""))
   (printf ";; [op4 %5.4f%+3.0f  %4.2f %s]"
           (get dmap :op4-detune) 
           (get dmap :op4-bias)
           (get dmap :op4-amp)
-          (if (zero? (get dmap :op4-mute)) "MUTE" ""))
+          (if (zero? (get dmap :op4-enable)) "MUTE" ""))
   (printf "<--[op5 %5.4f%+3.0f  %4.2f %s]\n"
           (get dmap :op5-detune) 
           (get dmap :op5-bias)
           (get dmap :op5-amp)
-          (if (zero? (get dmap :op5-mute)) "MUTE" ""))
+          (if (zero? (get dmap :op5-enable)) "MUTE" ""))
   (print ";;                      ")
   (printf "<--[op6 %5.4f%+3.0f  %4.2f :fb %4.2f %s]\n"
           (get dmap :op6-detune) 
           (get dmap :op6-bias)
           (get dmap :op6-amp)
           (get dmap :op6-feedback)
-          (if (zero? (get dmap :op6-mute)) "MUTE" ""))
+          (if (zero? (get dmap :op6-enable)) "MUTE" ""))
   (printf ";; [op7 %5.4f%+3.0f  %4.2f %s]"
           (get dmap :op7-detune) 
           (get dmap :op7-bias)
           (get dmap :op7-amp)
-          (if (zero? (get dmap :op7-mute)) "MUTE" ""))
+          (if (zero? (get dmap :op7-enable)) "MUTE" ""))
   (printf "<--[op8 %5.4f%+3.0f  %4.2f :fb %4.2f %s]\n"
           (get dmap :op8-detune) 
           (get dmap :op8-bias)
           (get dmap :op8-amp)
           (get dmap :op8-feedback)
-          (if (zero? (get dmap :op8-mute)) "MUTE" ""))
+          (if (zero? (get dmap :op8-enable)) "MUTE" ""))
   (println))
 
 (defn dump-program [data]
@@ -297,7 +297,7 @@
      (with-out-str 
        (let [dmap (cadejo.util.col/alist->map data)
              mutefn (fn [op]
-                      (let [param (keyword (format "op%d-mute" op))
+                      (let [param (keyword (format "op%d-enable" op))
                             val (get dmap param 1.0)]
                         (if (zero? val) "0" "1")))]
          (summery pnum pname dmap)

@@ -297,14 +297,14 @@
                      op8-cca->feedback      0.00
                      op8-ccb->feedback      0.00
 
-                     op1-mute 1.0         ; Operator mute flags
-                     op2-mute 1.0         ; = 0 -> mute operator
-                     op3-mute 1.0         ; = 1 -> unmute operator
-                     op4-mute 1.0
-                     op5-mute 1.0
-                     op6-mute 1.0
-                     op7-mute 1.0
-                     op8-mute 1.0
+                     op1-enable 1.0         ; Operator mute flags
+                     op2-enable 1.0         ; = 0 -> mute operator
+                     op3-enable 1.0         ; = 1 -> unmute operator
+                     op4-enable 1.0
+                     op5-enable 1.0
+                     op6-enable 1.0
+                     op7-enable 1.0
+                     op8-enable 1.0
 
 
                      bend-bus 0         ; control buses
@@ -362,7 +362,7 @@
         op6-freq (+ op6-bias (* op6-detune f0))
         op7-freq (+ op7-bias (* op7-detune f0))
         op8-freq (+ op8-bias (* op8-detune f0))
-        op1-ampl (* op1-mute (op-amp 
+        op1-ampl (* op1-enable (op-amp 
                               op1-amp
                               note
                               op1-left-key op1-left-scale
@@ -373,7 +373,7 @@
                               ccb op1-ccb
                               lfo1 op1-lfo1
                               lfo2 op1-lfo2))
-        op2-ampl (* op2-mute (op-amp 
+        op2-ampl (* op2-enable (op-amp 
                               op2-amp
                               note
                               op2-left-key op2-left-scale
@@ -384,7 +384,7 @@
                               ccb op2-ccb
                               lfo1 op2-lfo1
                               lfo2 op2-lfo2))
-        op3-ampl (* op3-mute (op-amp 
+        op3-ampl (* op3-enable (op-amp 
                               op3-amp
                               note
                               op3-left-key op3-left-scale
@@ -395,7 +395,7 @@
                               ccb op3-ccb
                               lfo1 op3-lfo1
                               lfo2 op3-lfo2))
-        op4-ampl (* op4-mute (op-amp 
+        op4-ampl (* op4-enable (op-amp 
                               op4-amp
                               note
                               op4-left-key op4-left-scale
@@ -406,7 +406,7 @@
                               ccb op4-ccb
                               lfo1 op4-lfo1
                               lfo2 op4-lfo2))
-        op5-ampl (* op5-mute (op-amp 
+        op5-ampl (* op5-enable (op-amp 
                               op5-amp
                               note
                               op5-left-key op5-left-scale
@@ -417,7 +417,7 @@
                               ccb op5-ccb
                               lfo1 op5-lfo1
                               lfo2 op5-lfo2))
-        op6-ampl (* op6-mute (op-amp 
+        op6-ampl (* op6-enable (op-amp 
                               op6-amp
                               note
                               op6-left-key op6-left-scale
@@ -428,7 +428,7 @@
                               ccb op6-ccb
                               lfo1 op6-lfo1
                               lfo2 op6-lfo2))
-        op7-ampl (* op7-mute (op-amp 
+        op7-ampl (* op7-enable (op-amp 
                               op7-amp
                               note
                               op7-left-key op7-left-scale
@@ -439,7 +439,7 @@
                               ccb op7-ccb
                               lfo1 op7-lfo1
                               lfo2 op7-lfo2))
-        op8-ampl (* op8-mute (op-amp 
+        op8-ampl (* op8-enable (op-amp 
                               op8-amp
                               note
                               op8-left-key op8-left-scale

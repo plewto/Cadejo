@@ -14,7 +14,7 @@
 
 ;; ------------------------------------------------------------0 FmRhodes
 ;;
-(let [enable '[1 1 1   1 1 1   0 0]]    ;; DEBUG reset last 2 mute flags to 1
+(let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 0 "FmRhodes" "These are remarks"
     (algo (common  :amp 0.399
                    :lp 10000
