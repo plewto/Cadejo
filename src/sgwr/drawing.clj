@@ -11,6 +11,7 @@
   (:require [sgwr.rectangle])
   (:require [sgwr.text-element])
   (:require [sgwr.util.math :as math])
+  (:require [sgwr.util.color :as cutil])
   (:import java.awt.Dimension
            java.awt.geom.AffineTransform
            java.awt.image.BufferedImage
@@ -63,6 +64,12 @@
   (bounds 
     [this]
     "Convenience method returns the 'physical' drawing bounds in pixels [w h]")
+
+  (occlude! 
+    [this flag])
+
+  (occluded?
+    [this])
 
   (background
     [this]
@@ -351,6 +358,8 @@
 (defn- create-drawing [cs refresh-delay]
   (let [[width height](.canvas-bounds cs)
         cs* (atom cs)
+        occluded* (atom false)
+        paper* (atom (cutil/color :black))
         mouse-dragged* (atom nil)  ;; true if mouse position results from drag
         mouse-position* (atom [0 0]) ;; as pixel [col row]
         mouse-pressed-position* (atom [0 0]) ;; as pixel [col row]
@@ -384,6 +393,13 @@
               (bounds [this]
                 physical-bounds)
 
+              (occlude! [this flag]
+                (reset! occluded* flag)
+                (.render this))
+                  
+              (occluded? [this]
+                @occluded*)
+
               (background [this] background-image)
                 
               (background! [this image]
@@ -399,8 +415,9 @@
                     false)))
 
               (paper! [this c]
+                (reset! paper* (cutil/color c))
                 (let [g2d (.createGraphics background-image)]
-                  (.setColor g2d (sgwr.attributes/create-color c))
+                  (.setColor g2d @paper*) ; (sgwr.attributes/create-color c))
                   (.fillRect g2d 0 0 width height)))
 
               (freeze! [this]
@@ -503,33 +520,36 @@
                 (let [g2d (.createGraphics image)
                       w (.getWidth physical-bounds)
                       h (.getHeight physical-bounds)]
+                  (.setColor g2d @paper*)
                   (.fillRect g2d 0 0 w h)
-                  (.drawImage g2d background-image null-transform-op 0 0)
-                  (doseq [e @elements*]
-                    (if (not (.hidden? e))
-                      (let [c (if (.selected? e)
-                                @selected-color*
-                                (.color e))
-                            strk (.stroke e)
-                            shape (.shape e @cs*)]
-                        (.setColor g2d c)
-                        (.setStroke g2d strk)
-                        (cond 
-                         ;(.is-text? e)
-                         (= (.element-type e) :text)
-                         (let [fnt (.get-font e @cs*)
-                               tx (.text e)
-                               pos (.map-point @cs* (first (.construction-points e)))
-                               [u v] pos]
-                           (.setFont g2d fnt)
-                           (.drawString g2d tx (int u)(int v)))
-                         
-                         (.filled? e)
-                         (.fill g2d shape)
-                         
-                         :default
-                         (.draw g2d shape))))))
-                (.repaint @cpan*))
+                  (if (not @occluded*)
+                    (do 
+                      (.drawImage g2d background-image null-transform-op 0 0)
+                      (doseq [e @elements*]
+                        (if (not (.hidden? e))
+                          (let [c (if (.selected? e)
+                                    @selected-color*
+                                    (.color e))
+                                strk (.stroke e)
+                                shape (.shape e @cs*)]
+                            (.setColor g2d c)
+                            (.setStroke g2d strk)
+                            (cond 
+                                        ;(.is-text? e)
+                             (= (.element-type e) :text)
+                             (let [fnt (.get-font e @cs*)
+                                   tx (.text e)
+                                   pos (.map-point @cs* (first (.construction-points e)))
+                                   [u v] pos]
+                               (.setFont g2d fnt)
+                               (.drawString g2d tx (int u)(int v)))
+                             
+                             (.filled? e)
+                             (.fill g2d shape)
+                             
+                             :default
+                             (.draw g2d shape)))))))
+                    (.repaint @cpan*)))
 
               ;;; plot is ephemeral  - graph will be wiped out on next repaint.
               (plot! [this points]
