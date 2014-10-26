@@ -1,10 +1,21 @@
 (ns cadejo.ui.util.color-utilities
   "Functions for color manipulation"
   (:require [cadejo.util.math :as math])
+  (:require [seesaw.color :as ssc])
   (:import java.awt.Color))
 
 (defn- third [col]
   (nth col 2))
+
+;; As with seesaw.color/color except that if the first argument 
+;; is an instance of java.awt.Color it becomes the return color.
+;;
+(defn color [& args]
+  (cond (= (type (first args)) Color) (first args)
+        (keyword? (first args))(ssc/color (first args))
+        (or (list? (first args))(vector? (first args)))
+        (apply ssc/color (first args))
+        :default (apply ssc/color args)))
 
 (defn hsb 
   ([h s b]
