@@ -101,13 +101,6 @@
                                          (math/coin 0.80 (inc (rand 6))(rand 2))))))))
     @acc*))
   
-
-;; (defn adsr-env [max-time]
-;;   (list (rand max-time)
-;;           (rand max-time)
-;;           (+ 0.20 (rand 0.80))
-;;           (rand max-time)))
-
 (defn addsr-env [max-time]
   (list (rand max-time)
         (rand max-time)
@@ -124,22 +117,11 @@
           (rand max-time)
           s s)))
 
-;; (defn asr-env [max-time]
-;;   (list (rand max-time)
-;;           0 1.0
-;;           (rand max-time)))
-
 (defn asr-env [max-time]
   (list (rand max-time)
         0 0 
         (rand max-time)
         1 1))
-
-;; (defn percussive-env [max-time]
-;;   (list 0 
-;;           (rand max-time)
-;;           (math/coin 0.5 0 (rand 0.20))
-;;           (rand max-time)))
 
 (defn percussive-env [max-time]
   (list 0
@@ -148,7 +130,6 @@
         (rand max-time)
         (+ 0.5 (rand 0.5))
         (math/coin 0.75 0 (rand 0.2))))
-
 
 (defn mostly-adsr-env [max-time]
   (math/coin 0.80 
@@ -184,13 +165,8 @@
             env-args*  (atom (cond (= hint :adsr)(mostly-adsr-env max-time)
                                    (= hint :asr)(mostly-asr-env max-time)
                                    :default (mostly-percussive-env max-time)))]
-        ;; (if (is-modulator? op)
-        ;;   (swap! env-args* (fn [n](concat n (math/coin 0.05 ; prob of inverted mod env.
-        ;;                                                '(:bias 1.0 :scale -1.0)
-        ;;                                                '(:bias 0.0 :scale +1.0))))))
         (swap! acc* (fn [n](conj n @env-args*)))))
     @acc*))
-
  
 (defn pick-op-velocities []
   (let [acc* (atom [])]
@@ -249,8 +225,6 @@
             :pressure (math/coin 0.05 (rand 10) 0 )
             :cca (math/coin 0.01 (rand) 0)
             :ccb (math/coin 0.01 (rand) 0)})))
-
-
     
 (defn random-algo-program [& args]
   (let [op-frequencies (pick-op-frequencies)
@@ -287,14 +261,12 @@
                           (* delay1 (rand-nth '[0.5 0.667 0.75 
                                                 1.50 2 2.5 3 4 5]))
                           (+ 0.25 (rand 3)))
-        use-echo (math/coin 0.33 true false)
-
-]
+        use-echo (math/coin 0.33 true false)]
     (println (format ";; time base %5.3f" time-base))
     (let [rs (algo 
               (op1 true :detune (nth op-frequencies 0) 
                    :bias (nth op-biases 0)
-                   :adsr (nth op-envs 0) 
+                   :addsr (nth op-envs 0) 
                    :amp (nth op-amps 0)
                    :velocity (nth op-velocities 0) 
                    :pressure 0
@@ -303,28 +275,28 @@
                    :lfo1 (nth op-lfo1-depths 0) 
                    :lfo2 (nth op-lfo2-depths 0))
               (op2 true :detune (nth op-frequencies 1) :bias (nth op-biases 1)
-                   :adsr (nth op-envs 1) :amp (nth op-amps 1)
+                   :addsr (nth op-envs 1) :amp (nth op-amps 1)
                    :velocity (nth op-velocities 1) :pressure 0
                    :cca (nth op-cca-depths 1) :ccb (nth op-ccb-depths 1)
                    :lfo1 (nth op-lfo1-depths 1) :lfo2 (nth op-lfo2-depths 1)
                    :hp 50)
               (op3 true :detune (nth op-frequencies 2) :bias (nth op-biases 2)
-                   :adsr (nth op-envs 2) :amp (nth op-amps 2)
+                   :addsr (nth op-envs 2) :amp (nth op-amps 2)
                    :velocity (nth op-velocities 2) :pressure 0
                    :cca (nth op-cca-depths 2) :ccb (nth op-ccb-depths 2)
                    :lfo1 (nth op-lfo1-depths 2) :lfo2 (nth op-lfo2-depths 2))
               (op4 true :detune (nth op-frequencies 3) :bias (nth op-biases 3)
-                   :adsr (nth op-envs 3) :amp (nth op-amps 3)
+                   :addsr (nth op-envs 3) :amp (nth op-amps 3)
                    :velocity (nth op-velocities 3) :pressure 0
                    :cca (nth op-cca-depths 3) :ccb (nth op-ccb-depths 3)
                    :lfo1 (nth op-lfo1-depths 3) :lfo2 (nth op-lfo2-depths 3))
               (op5 true :detune (nth op-frequencies 4) :bias (nth op-biases 4)
-                   :adsr (nth op-envs 4) :amp (nth op-amps 4)
+                   :addsr (nth op-envs 4) :amp (nth op-amps 4)
                    :velocity (nth op-velocities 4) :pressure 0
                    :cca (nth op-cca-depths 4) :ccb (nth op-ccb-depths 4)
                    :lfo1 (nth op-lfo1-depths 4) :lfo2 (nth op-lfo2-depths 4))
               (op6 true :detune (nth op-frequencies 5) :bias (nth op-biases 5)
-                   :adsr (nth op-envs 5) :amp (nth op-amps 5)
+                   :addsr (nth op-envs 5) :amp (nth op-amps 5)
                    :velocity (nth op-velocities 5) :pressure 0
                    :cca (nth op-cca-depths 5) :ccb (nth op-ccb-depths 5)
                    :lfo1 (nth op-lfo1-depths 5) :lfo2 (nth op-lfo2-depths 5)
@@ -336,12 +308,12 @@
                    :cca->fb (get op6-feedback :cca)
                    :ccb->fb (get op6-feedback :ccb))
               (op7 true :detune (nth op-frequencies 6) :bias (nth op-biases 6)
-                   :adsr (nth op-envs 6) :amp (nth op-amps 6)
+                   :addsr (nth op-envs 6) :amp (nth op-amps 6)
                    :velocity (nth op-velocities 6) :pressure 0
                    :cca (nth op-cca-depths 6) :ccb (nth op-ccb-depths 6)
                    :lfo1 (nth op-lfo1-depths 6) :lfo2 (nth op-lfo2-depths 6))
               (op8 true :detune (nth op-frequencies 7) :bias (nth op-biases 7)
-                   :adsr (nth op-envs 7) :amp (nth op-amps 7)
+                   :addsr (nth op-envs 7) :amp (nth op-amps 7)
                    :velocity (nth op-velocities 7) :pressure 0
                    :cca (nth op-cca-depths 7) :ccb (nth op-ccb-depths 7)
                    :lfo1 (nth op-lfo1-depths 7) :lfo2 (nth op-lfo2-depths 7)
