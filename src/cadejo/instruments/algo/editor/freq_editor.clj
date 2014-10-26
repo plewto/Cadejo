@@ -1,18 +1,24 @@
-(ns cadejo.instruments.algo.editor.freqamp-editor
+(ns cadejo.instruments.algo.editor.freq-editor
   (:require [cadejo.config :as config])
   (:require [cadejo.instruments.algo.editor.overview :as overview])
   (:require [cadejo.ui.instruments.subedit :as subedit])
+  (:require [cadejo.ui.util.color-utilities :as cutil])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.icon :as icon])
-  (:require [sgwr.indicators.numberbar :as numberbar])
   (:require [sgwr.indicators.keypad :as keypad])
+  (:require [sgwr.indicators.numberbar :as numberbar])
   (:require [seesaw.core :as ss]))
 
-(defn freqamp-editor [performance ied]
+(defn freq-editor [performance ied]
   (let [op-count 8
         is-carrier (fn [op](or (= op 1)(= op 4)(= op 7)))
         oed (overview/overview-editor performance ied)
-        [bg inactive active](config/displaybar-colors) 
+        [bg inactive active](let [[cbg cna cav](config/displaybar-colors) 
+                                  skin (config/current-skin)]
+                              [(cutil/color (or cbg (lnf/get-color skin :text-fg)))
+                               (cutil/color (or cna (lnf/get-color skin :text-bg)))
+                               (cutil/color (or cav (lnf/get-color skin :text-bg-selected)))])
         [freq-bars bias-bars amp-bars] (let [fcc* (atom [])
                                              bcc* (atom [])
                                              acc* (atom [])]
@@ -50,9 +56,9 @@
                         (let [src (.getSource ev)
                               numbar (.getClientProperty src :display)]
                           (.displaybar! kpad numbar false)
-                          (reset! selected-button* src)))
-                        
-                          
+                          (reset! selected-button* src))
+                        (.sync-ui! ied))
+
         bgroup (ss/button-group)
         selection-buttons (let [acc* (atom [])]
                             (dotimes [i op-count]
@@ -100,7 +106,7 @@
                      pan)) 
         pan-stack-a (ss/vertical-panel :items [(op-panel 2)(op-panel 1)(op-panel 0)])
         pan-stack-b (ss/vertical-panel :items [(op-panel 5)(op-panel 4)(op-panel 3)])
-        pan-stack-c (ss/vertical-panel :items [(op-panel 7)(op-panel 6)(.widget kpad :pan-main)])
+        pan-stack-c (ss/vertical-panel :items [(.widget kpad :pan-main)(op-panel 7)(op-panel 6)])
         pan-logo (ss/grid-panel :columns 1 
                                 :items [(ss/label :icon (icon/logo "algo_graph" nil))]
                                 :border (factory/padding 16))
@@ -109,7 +115,7 @@
         
         pan-main (ss/border-panel :center pan-center
                                   :south (.widget oed :pan-main))
-        widget-map {:pan-main pan-main}  
+        widget-map {:pan-main (ss/scrollable pan-main)}
         ed (reify subedit/InstrumentSubEditor
              
              (widgets [this] widget-map)
@@ -185,5 +191,6 @@
                                  param (.getClientProperty src :param)
                                  numbar (.getClientProperty src :display)
                                  val (.value numbar)]
-                             (set-param param val))))
+                             (set-param param val)
+                             (.sync-ui! ied))))
     ed)) 

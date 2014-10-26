@@ -353,7 +353,7 @@
                    :cca->fb (get op8-feedback :cca)
                    :ccb->fb (get op8-feedback :ccb))
               (common :port-time (math/coin 0.01 (rand) 0)
-                      :lp 10000
+                      :lp 16000
                       :env1->pitch (* (math/coin 0.5 -1 +1)(math/coin 0.01 (rand) 0))
                       :lfo1->pitch (math/coin 0.01 (rand) 0)
                       :lfo2->pitch (math/coin 0.01 (rand) 0))
