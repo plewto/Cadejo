@@ -85,6 +85,12 @@
   (displaybar-colors
     [this])
 
+  (envelope-colors!
+    [this bg fg])
+
+  (envelope-colors
+    [this])
+
   (enable-pp
     [this]
     "Return flag, if true pretty-printer hook is executed on MIDI program 
@@ -189,6 +195,7 @@
         displaybar-colors* (atom [[  5  32   2]
                                   [ 77  58  83]
                                   [245 244 207]])
+        envelope-colors* (atom [nil nil])
         cnfig (reify CadejoConfig
 
                 (version [this] +VERSION+)
@@ -242,6 +249,12 @@
 
                 (displaybar-colors [this]
                   @displaybar-colors*)
+
+                (envelope-colors! [this bg fg]
+                  (reset! envelope-colors* [bg fg]))
+
+                (envelope-colors [this]
+                  @envelope-colors*)
 
                 (enable-pp [this] @enable-pp*)
 
@@ -376,6 +389,12 @@
 (defn displaybar-colors []
   (.displaybar-colors @current-config*))
 
+(defn envelope-colors! [bg fg]
+  (.envelope-colors! @current-config* bg fg))
+
+(defn envelope-colors []
+  (.envelope-colors @current-config*))
+
 (defn enable-pp []
   (.enable-pp @current-config*))
 
@@ -480,5 +499,8 @@
 (enable-tooltips! true)
 (enable-button-text! false)
 (enable-button-icons! true)
+
+;; nil colors --> use LNF
 (displaybar-colors! [5 32 2][77 58 83][245 244 207])
+(envelope-colors! [5 32 2][245 244 207])
 ;(config-path "~/.cadejo")
