@@ -1,3 +1,5 @@
+;; DEPRECIATED
+;;
 ;; A ProgramBank is a map between MIDI program numbers and "program"
 ;; objects where a program is a simple map as returned by the
 ;; create-program function. Each program has the following fields: 
@@ -24,6 +26,8 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [overtone.core :as ot])
   (:import java.io.FileNotFoundException) )
+
+(umsg/warning "Using cadjo.midi.program-bank is depreciated")
 
 (def program-count 128)
 (def reserved-slots 8)  ;; Number of program slots reserved for 
