@@ -492,7 +492,7 @@
 
 (load-gui! true)
 (initial-skin! "Twilight")
-(enable-pp! true)
+(enable-pp! false)
 (maximum-undo-count! 10)
 (warn-on-file-overwrite! true)
 (warn-on-unsaved-data! true)

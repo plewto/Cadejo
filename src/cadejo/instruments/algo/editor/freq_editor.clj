@@ -42,7 +42,8 @@
 
         set-param (fn [param val]
                     (.set-param! ied param (float val))
-                    (.sync-ui! oed))
+                    (let [data (.current-data (.bank performance))]
+                      ((:syncfn oed) data)))
 
         selected-button* (atom nil)
         button-action (fn [ev]
@@ -114,7 +115,7 @@
        
         
         pan-main (ss/border-panel :center pan-center
-                                  :south (.widget oed :pan-main))
+                                  :south (:pan-main oed))
         widget-map {:pan-main (ss/scrollable pan-main)}
         ed (reify subedit/InstrumentSubEditor
              
@@ -137,7 +138,6 @@
                (ss/config! (first selection-buttons) :selected? true))
 
              (sync-ui! [this]
-               (.sync-ui! oed)
                (let [data (.current-data (.bank performance))
                      freqlst [(:op1-detune data)(:op2-detune data)
                               (:op3-detune data)(:op4-detune data)
@@ -155,6 +155,8 @@
                                 (:op3-enable data)(:op4-enable data)
                                 (:op5-enable data)(:op6-enable data)
                                 (:op7-enable data)(:op8-enable data)]]
+                 (println (format "DEBUG freq-editor data-count is %s" (count data)))
+                 ((:syncfn oed) data)
                  (dotimes [i op-count]
                    (let [f (nth freqlst i)
                          b (nth biaslst i)

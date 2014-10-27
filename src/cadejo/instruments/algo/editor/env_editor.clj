@@ -528,7 +528,7 @@
                                                 pan-stack-b
                                                 pan-stack-c])
         pan-main (ss/border-panel :center pan-center
-                                  :south (.widget oed :pan-main))
+                                  :south (:pan-main oed))
         widget-map {:pan-main (ss/scrollable pan-main)}
         ed (reify subedit/InstrumentSubEditor
 
@@ -561,6 +561,7 @@
                      m6 (zero? (:op6-enable data))
                      m7 (zero? (:op7-enable data))
                      m8 (zero? (:op8-enable data))]
+                 (println (format "DEBUG env-editor data count is %s" (count data)))
                  ((:mutefn op1) m1)
                  ((:mutefn op2) m2)
                  ((:mutefn op3) m3)
@@ -578,6 +579,6 @@
                  ((:syncfn op7))
                  ((:syncfn op8))
                  ((:syncfn env1))
-                 (.sync-ui! oed))))]
+                 ((:syncfn oed) data))))]
     ed))
 

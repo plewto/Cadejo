@@ -201,7 +201,7 @@
         stack-c (ss/grid-panel :columns 1 :items [(ss/vertical-panel)(:pan-main ed8)(:pan-main ed7)])
         pan-center (ss/grid-panel :rows 1 :items [stack-a stack-b stack-c])
         pan-main (ss/scrollable (ss/border-panel :center pan-center
-                                                 :south (.widget oed :pan-main)))
+                                                 :south (:pan-main oed)))
         widget-map {:pan-main pan-main}
         ed (reify subedit/InstrumentSubEditor
 
@@ -228,8 +228,9 @@
                nil)
 
              (sync-ui! [this]
-               (.sync-ui! oed)
                (let [data (.current-data (.bank performance))]
+                 (println (format "DEBUG amp-editor data count is %s" (count data)))
+                 ((:syncfn oed) data)
                  ((:syncfn ed1) data)
                  ((:syncfn ed2) data)
                  ((:syncfn ed3) data)
