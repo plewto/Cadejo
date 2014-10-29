@@ -1,5 +1,7 @@
 (ns cadejo.instruments.descriptor
   (:use [cadejo.util.trace])
+  (:require [cadejo.midi.program])
+  (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.icon]))
 
@@ -87,17 +89,23 @@
 
   (initial-program!
     [this pdata]
-    "Sets initial program patch data")
+    "Sets initial program data")
 
   (initial-program 
     [this]
-    "Returns map for initial instrument program")
+    "Returns instance of cadejo.midi.Program")
 
-  ;; (clipboard-data!
-  ;;   [this data])
+  (program-generator!
+    [this pfn]
+    "Sets random patch generator function")
 
-  ;; (clipboard-data
-  ;;   [this])
+  (program-generator
+    [this]
+    "Returns random patch generator function or nil")
+
+  (random-program
+    [this]
+    "Return random program or nil")
 
   (clipboard
     [this])
@@ -110,10 +118,9 @@
   (let [controllers* (atom (sorted-map))
         constructors* (atom (sorted-map))
         editor-constructor* (atom nil)
-        iprogram* (atom {:function-id nil
-                         :name "Init"
-                         :remarks "Initial program"
-                         :args []})
+        iprogram* (atom (cadejo.midi.program/program 
+                         "Init" "" {}))
+        patchgen* (atom nil)
         dobj (reify InstrumentDescriptor
 
                (instrument-name [this] 
@@ -165,20 +172,23 @@
                      (cfn performance)
                      (umsg/warning (format "%s editor is not defined" iname)))))
 
-               (initial-program! [this pdata]
-                 (swap! iprogram* (fn [n](assoc n :args pdata))))
+               (initial-program! [this data]
+                 (.data! @iprogram* data))
 
                (initial-program [this]
                  @iprogram*)
 
-               ;; (clipboard-data! [this data]
-               ;;   (reset! clipboard* data))
+               (clipboard [this] program-clipboard*) 
 
-               ;; (clipboard-data [this]
-               ;;   @clipboard*)
-
-               (clipboard [this] program-clipboard*)
-
-               )]
+               (program-generator! [this pfn]
+                 (reset! patchgen* pfn))
+               
+               (program-generator [this]
+                 @patchgen*)
+               
+               (random-program [this]
+                 (if @patchgen*
+                   (let [data (ucol/alist->map (@patchgen*))]
+                     (cadejo.midi.program/program "Random" "Randomly generated" data)))) )]
     dobj))
 

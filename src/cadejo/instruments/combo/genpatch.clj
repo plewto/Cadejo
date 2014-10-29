@@ -3,17 +3,12 @@
   (:require [cadejo.util.math :as math])
   (:require [cadejo.instruments.combo.program :as program]))
 
-;; (def bypass program/bypass)
-;; (def low program/low)
-;; (def high program/high)
-;; (def band program/band)
-;; (def notch program/notch)
 
-(def filter-types [bypass-filter bypass-filter bypass-filter bypass-filter
-                   lp-filter lp-filter lp-filter lp-filter
-                   hp-filter
-                   bp-filter 
-                   br-filter br-filter])
+(def ^:private filter-types [bypass-filter bypass-filter bypass-filter bypass-filter
+                             lp-filter lp-filter lp-filter lp-filter
+                             hp-filter
+                             bp-filter 
+                             br-filter br-filter])
 
 (defn random-combo-program [& args]
   (let [main-tone (rand-nth '[1 2 3 4])

@@ -6,6 +6,7 @@
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.modules.qugen :as qu])
   (:require [cadejo.instruments.descriptor])
+  (:require [cadejo.instruments.combo.genpatch])
   (:require [cadejo.instruments.combo.program])
   (:require [cadejo.instruments.combo.pp])
   (:require [cadejo.instruments.combo.data])
@@ -26,6 +27,7 @@
                           :chorus 0.0 :filter 8.0 :filter-type 0 :amp 0.2
                           :flanger-depth 0.0 :flanger-rate 0.1 :flanger-fb 0.5
                           :flanger-mix 0.0 :reverb-mix 0.0})
+    (.program-generator! d cadejo.instruments.combo.genpatch/random-combo-program)
     d))
 
 (defsynth LFO [vibrato-freq 5.00

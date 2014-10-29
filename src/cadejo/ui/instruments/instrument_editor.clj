@@ -197,8 +197,13 @@
     [this pnum]
     "Sets the value of the store-program spinner")
   
-  (init! [this]
+  (init!
+    [this]
     "Initialize current program")
+
+  (random-program!
+    [this]
+    "Generate random program")
 
   (sync-ui!
     [this]))
@@ -242,7 +247,8 @@
 
         ;; South toolbar
         ;;
-        jb-init (factory/button "Init" :general :reset "Initialize program data") 
+        jb-init (factory/button "Init" :general :reset "Initialize program data")
+        jb-dice (factory/button "Random" :general :dice "Generate random patch")
         jb-store (factory/button "Store" :general :bankstore "Store program data to selected bank slot")
         spin-program (ss/spinner 
                       :model (ss/spinner-model 0 
@@ -251,6 +257,7 @@
                                                :by 1)
                       :size [72 :by 24])
         pan-south1 (ss/horizontal-panel :items [jb-init
+                                                jb-dice
                                                 (Box/createHorizontalStrut 8)
                                                 jb-store
                                                 (Box/createHorizontalStrut 8)
@@ -358,17 +365,24 @@
                 (if (and (>= pnum 0)(<= pnum max-program-number))
                   (.setValue spin-program pnum)))
 
-              ;; (init! [this]
-              ;;   (doseq [s @sub-editors*]
-              ;;     (.init! s))
-              ;;   (ss/config! lab-name :text "Init")
-              ;;   (.status! this "Program initialized"))
-
               (init! [this]
                 (let [prog (.clone (.initial-program descriptor))
                       bank (.parent-bank this)]
                   (.current-program! bank prog)
-                  (.sync-ui! (.editor bank))))
+                  (.sync-ui! this)))
+
+              (random-program! [this]
+                (let [prog (.random-program descriptor)
+                      bank (.parent-bank this)
+                      pp (.pp-hook bank)]
+                  (if prog
+                    (do
+                      (println "DEBUG (.data prog) --> " (.data prog))
+                      (.current-program! bank prog)
+                      (if (and pp (config/enable-pp))
+                        (println (pp -1 "Random" (.data prog) "")))
+                      (.sync-ui! this)
+                      (.status! this "Random Program")))))
 
               (sync-ui! [this]
                 (let [prog (.current-program bank)
@@ -474,10 +488,14 @@
                    (.sync-ui! bank-ed)
                    (.status! ied (format "Stored program %s" slot)))))
                        
+    (ss/listen jb-dice :action
+               (fn [_]
+                 (.random-program! ied)))
 
     (ss/listen jb-init :action
                (fn [_]
                  (.init! ied)))
+
 
     (.putClientProperty jb-help :topic :program)
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
