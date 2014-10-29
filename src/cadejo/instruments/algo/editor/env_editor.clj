@@ -561,7 +561,6 @@
                      m6 (zero? (:op6-enable data))
                      m7 (zero? (:op7-enable data))
                      m8 (zero? (:op8-enable data))]
-                 (println (format "DEBUG env-editor data count is %s" (count data)))
                  ((:mutefn op1) m1)
                  ((:mutefn op2) m2)
                  ((:mutefn op3) m3)

@@ -229,7 +229,6 @@
 
              (sync-ui! [this]
                (let [data (.current-data (.bank performance))]
-                 (println (format "DEBUG amp-editor data count is %s" (count data)))
                  ((:syncfn oed) data)
                  ((:syncfn ed1) data)
                  ((:syncfn ed2) data)

@@ -222,22 +222,15 @@
 
           @enable-list-selection-listener* ;; program-change
           (let [slot (.getSelectedIndex lst-programs)]
-            (trace-enter "BankEditor ListSelectionListener valueChanged")
             (.recall bnk slot)
-            (trace-mark (format "slot = %s" slot))
-            (trace-mark (format "instrument-editor* = %s" @instrument-editor*))
             (if @instrument-editor*
               (let [ied @instrument-editor*
                     prog (.current-program bnk)]
-                (trace-mark (format "prog --> " prog))
                 (if prog
                   (do 
                     (.set-store-location! ied slot)
                     (.sync-ui! ied)
-                    ))
-                ))
-            (trace-exit)
-            )
+                    )) )))
 
           :default                      ; do nothing
           nil)))) 

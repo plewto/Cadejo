@@ -659,7 +659,6 @@
 
              (sync-ui! [this]
                (let [data (.current-data (.bank performance))]
-                 (println (format "DEBUG fx-editor data count is %s" (count data)))
                  ((:syncfn fb6) data)
                  ((:syncfn fb8) data)
                  ((:syncfn vibed) data)

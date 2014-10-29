@@ -25,7 +25,7 @@
         amped (amped/amp-editor performance ied)
         fxed (fxed/fx-editor performance ied)]
     (.add-sub-editor! ied "FM" fm-icon faed)
-    (.add-sub-editor! ied "Env" env-icon enved)
     (.add-sub-editor! ied "AM" am-icon amped)
+    (.add-sub-editor! ied "Env" env-icon enved)
     (.add-sub-editor! ied "Fx" fx-icon fxed)
     ied))

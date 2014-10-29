@@ -10,6 +10,7 @@
 (ns cadejo.instruments.algo.algo-engine
   (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.algo.efx])
+  (:require [cadejo.instruments.algo.genpatch])
   (:require [cadejo.instruments.algo.program])
   (:require [cadejo.instruments.algo.pp])
   (:require [cadejo.instruments.algo.data])
@@ -33,6 +34,88 @@
     (.add-controller! d :ccc "Echo mix" 91)
     (.add-controller! d :ccc "Reverb mix" 92)
     (.set-editor-constructor! d algoed/algo-editor)
+    (.initial-program! d {:port-time 0.0 :env1->pitch 0.0 :lfo1->pitch 0.0 
+                          :lfo2->pitch 0.0 
+                          :env1-attack 0.0 :env1-decay1 0.0 :env1-decay2 0.0 
+                          :env1-breakpoint 1.0 :env1-sustain 1.0 
+                          :env1-release 0.0 :env1-bias 0.0 :env1-scale 1.0
+                          :vfreq 7.0 :vsens 0.03 :vdepth 0.00 :vdelay 0.00
+                          :lfo1-freq 1.0 :lfo1-skew 0.5 :env1->lfo1-skew 0.0
+                          :env1->lfo1-amp 0.0 :pressure->lfo1-amp 0.0
+                          :cca->lfo1-freq 0.0 :cca->lfo1-amp 0.0
+                          :ccb->lfo1-freq 0.0 :ccb->lfo1-amp 0.0
+                          :lfo2-freq 2.0 :lfo2-skew 0.5 :lfo1->lfo2-skew 0.0
+                          :lfo1->lfo2-amp 0.0 :pressure->lfo2-amp 0.0
+                          :cca->lfo2-freq 0.0 :cca->lfo2-amp 0.0
+                          :ccb->lfo2-freq 0.0 :ccb->lfo2-amp 0.0
+                          :op1-detune 1.000 :op1-bias  0.000 :op1-amp  1.000
+                          :op1-left-key 60 :op1-left-scale 0 :op1-right-key 60
+                          :op1-right-scale 0 :op1-attack 0.001
+                          :op1-decay1 0.100 :op1-decay2 0.000
+                          :op1-breakpoint 1.00 :op1-sustain 1.000
+                          :op1-release 0.001 :op1-velocity 0.00
+                          :op1-pressure 0.00 :op1-cca  0.00 :op1-ccb  0.00
+                          :op1-lfo1  0.00 :op1-lfo2  0.00
+                          :op2-detune 1.000 :op2-bias 0.000 :op2-amp 0.000
+			  :op2-left-key 60 :op2-left-scale 0 :op2-right-key 60 :op2-right-scale 0
+			  :op2-attack 0.001 :op2-decay1 0.100 :op2-decay2 0.000
+			  :op2-breakpoint 1.00 :op2-sustain 1.000 :op2-release 0.001
+			  :op2-env-bias 0.001 :op2-env-scale 1.000 :op2-velocity 0.00
+			  :op2-pressure 0.00 :op2-cca  0.00 :op2-ccb  0.00 :op2-lfo1 0.00
+			  :op2-lfo2 0.00 :op2-hp  50.0
+                          :op3-detune 1.000 :op3-bias 0.000 :op3-amp  0.000
+			  :op3-left-key 60 :op3-left-scale 0 :op3-right-key 60 :op3-right-scale 0
+			  :op3-attack 0.001 :op3-decay1 0.100 :op3-decay2 0.000
+			  :op3-breakpoint 1.00 :op3-sustain 1.000 :op3-release 0.001
+			  :op3-env-bias 0.001 :op3-env-scale 1.000 :op3-velocity 0.00
+			  :op3-pressure 0.00 :op3-cca  0.00 :op3-ccb  0.00 :op3-lfo1 0.00
+			  :op3-lfo2 0.00
+                          :op4-detune 1.000 :op4-bias  0.000 :op4-amp 1.000
+			  :op4-left-key 60 :op4-left-scale 0 :op4-right-key 60 :op4-right-scale 0
+			  :op4-attack 0.001 :op4-decay1 0.100 :op4-decay2 0.000
+			  :op4-breakpoint 1.00 :op4-sustain 1.000 :op4-release 0.001
+			  :op4-velocity 0.00  :op4-pressure 0.00 :op4-cca 0.00 :op4-ccb 0.00
+			  :op4-lfo1  0.00 :op4-lfo2  0.00
+                          :op5-detune 1.000 :op5-bias 0.000 :op5-amp 0.000
+			  :op5-left-key 60 :op5-left-scale 0 :op5-right-key 60 :op5-right-scale 0
+			  :op5-attack 0.001 :op5-decay1 0.100 :op5-decay2 0.000
+			  :op5-breakpoint 1.00 :op5-sustain 1.000 :op5-release 0.001
+			  :op5-env-bias 0.001 :op5-env-scale 1.000 :op5-velocity 0.00
+			  :op5-pressure 0.00 :op5-cca 0.00 :op5-ccb 0.00 :op5-lfo1 0.00
+			  :op5-lfo2 0.00
+                          :op6-detune 1.000 :op6-bias 0.000 :op6-amp 0.000
+			  :op6-left-key 60 :op6-left-scale 0 :op6-right-key 60 :op6-right-scale 0
+			  :op6-attack 0.001 :op6-decay1 0.100 :op6-decay2 0.000
+			  :op6-breakpoint 1.00 :op6-sustain 1.000 :op6-release 0.001
+			  :op6-env-bias 0.001 :op6-env-scale 1.000 :op6-velocity 0.00
+			  :op6-pressure 0.00 :op6-cca 0.00 :op6-ccb 0.00 :op6-lfo1 0.00
+			  :op6-lfo2 0.00 :op6-hp 50 :op6-feedback 0.00 :op6-env->feedback 0.00
+			  :op6-lfo1->feedback 0.00 :op6-pressure->feedback 0.00
+			  :op6-cca->feedback 0.00 :op6-ccb->feedback 0.00
+                          :op7-detune 1.000 :op7-bias 0.000 :op7-amp 1.000
+			  :op7-left-key 60 :op7-left-scale 0 :op7-right-key 60 :op7-right-scale 0
+			  :op7-attack 0.001 :op7-decay1 0.100 :op7-decay2 0.000
+			  :op7-breakpoint 1.00 :op7-sustain 1.000 :op7-release 0.001
+			  :op7-velocity 0.00  :op7-pressure 0.00 :op7-cca 0.00 :op7-ccb 0.00
+			  :op7-lfo1 0.00 :op7-lfo2 0.00
+                          :op8-detune 1.000 :op8-bias 0.000 :op8-amp 0.000
+			  :op8-left-key 60 :op8-left-scale 0 :op8-right-key 60 :op8-right-scale 0
+			  :op8-attack 0.001 :op8-decay1 0.100 :op8-decay2 0.000
+			  :op8-breakpoint 1.00 :op8-sustain 1.000 :op8-release 0.001
+			  :op8-env-bias 0.001 :op8-env-scale 1.000 :op8-velocity 0.00
+			  :op8-pressure 0.00 :op8-cca 0.00 :op8-ccb 0.00 :op8-lfo1 0.00
+			  :op8-lfo2 0.00 :op8-hp 50 :op8-feedback 0.00 :op8-env->feedback 0.00
+			  :op8-lfo2->feedback 0.00 :op8-pressure->feedback 0.00
+			  :op8-cca->feedback 0.00 :op8-ccb->feedback 0.00
+                          :op1-enable 1.0 :op2-enable 1.0 :op3-enable 1.0
+                          :op4-enable 1.0 :op5-enable 1.0 :op6-enable 1.0 
+                          :op7-enable 1.0 :op8-enable 1.0
+                          :lp 10000 :echo-delay-1 0.25 :echo-delay-2 0.50
+			  :echo-fb 0.5 :echo-hf-damp 0 :echo-mix 0.0
+			  :room-size 0.5 :reverb-mix 0.5 :amp 0.20
+			  :cc-volume-depth 0.00})
+    (.program-generator! d cadejo.instruments.algo.genpatch/random-algo-program)
+    (.help-topic! d :algo)
     d))
 
 (defcgen op-freq [f0 detune bias]
@@ -77,7 +160,6 @@
                      env1->pitch 0.00
                      lfo1->pitch 0.00
                      lfo2->pitch 0.00
-
                      env1-attack 0.0    ; ENV1
                      env1-decay1 0.0
                      env1-decay2 0.0
@@ -86,12 +168,10 @@
                      env1-release 0.0
                      env1-bias 0.0
                      env1-scale 1.0
-
                      vfreq 7.00         ; dedicated vibrato osc
                      vsens 0.03
                      vdepth 0.00
                      vdelay 0.00
-
                      lfo1-freq 1.00     ; LFO1
                      lfo1-skew 0.50
                      env1->lfo1-skew 0.00
@@ -101,8 +181,7 @@
                      cca->lfo1-amp  0
                      ccb->lfo1-freq 0
                      ccb->lfo1-amp  0
-
-                     lfo2-freq 2.50     ; LFO2
+                     lfo2-freq 2.00     ; LFO2
                      lfo2-skew 0.50
                      lfo1->lfo2-skew 0.00
                      lfo1->lfo2-amp 0.00
@@ -111,7 +190,6 @@
                      cca->lfo2-amp  0
                      ccb->lfo2-freq 0
                      ccb->lfo2-amp  0
-                      
                      op1-detune   1.000 ; op1 carrier
                      op1-bias     0.000
                      op1-amp      1.000
@@ -131,7 +209,6 @@
                      op1-ccb      0.00
                      op1-lfo1     0.00
                      op1-lfo2     0.00
-
                      op2-detune    1.000 ; op2 --> op1
                      op2-bias      0.000
                      op2-amp       0.000
@@ -154,7 +231,6 @@
                      op2-lfo1      0.00
                      op2-lfo2      0.00
                      op2-hp        50.0
-
                      op3-detune    1.000 ; op3 --> op2
                      op3-bias      0.000
                      op3-amp       0.000
@@ -176,7 +252,6 @@
                      op3-ccb       0.00
                      op3-lfo1      0.00
                      op3-lfo2      0.00
-                     
                      op4-detune   1.000 ; op4 carrier
                      op4-bias     0.000
                      op4-amp      1.000
@@ -196,7 +271,6 @@
                      op4-ccb      0.00
                      op4-lfo1     0.00
                      op4-lfo2     0.00
-
                      op5-detune    1.000 ; op5 --> op4
                      op5-bias      0.000
                      op5-amp       0.000
@@ -218,7 +292,6 @@
                      op5-ccb       0.00
                      op5-lfo1      0.00
                      op5-lfo2      0.00
-
                      op6-detune    1.000 ; op6 --> op4
                      op6-bias      0.000
                      op6-amp       0.000
@@ -247,7 +320,6 @@
                      op6-pressure->feedback 0.00
                      op6-cca->feedback      0.00
                      op6-ccb->feedback      0.00
-
                      op7-detune   1.000 ; op7 carrier
                      op7-bias     0.000
                      op7-amp      1.000
@@ -267,7 +339,6 @@
                      op7-ccb      0.00
                      op7-lfo1     0.00
                      op7-lfo2     0.00
-
                      op8-detune    1.000 ; op8 --> op7
                      op8-bias      0.000
                      op8-amp       0.000
@@ -296,17 +367,14 @@
                      op8-pressure->feedback 0.00
                      op8-cca->feedback      0.00
                      op8-ccb->feedback      0.00
-
                      op1-enable 1.0         ; Operator mute flags
                      op2-enable 1.0         ; = 0 -> mute operator
-                     op3-enable 1.0         ; = 1 -> unmute operator
+                     op3-enable 1.0         ; = 1 -> enable operator
                      op4-enable 1.0
                      op5-enable 1.0
                      op6-enable 1.0
                      op7-enable 1.0
                      op8-enable 1.0
-
-
                      bend-bus 0         ; control buses
                      pressure-bus 0
                      vibrato-depth-bus 0
@@ -524,7 +592,6 @@
                                                          [:ccc cc-echo-mix   :linear 0.0]
                                                          [:ccd cc-reverb-mix :linear 0.0])]
     (.put-property! performance :instrument-type :algo)
-    (.parent! bank performance)
     (.set-bank! performance bank)
     (let [bend-bus (.control-bus performance :bend)
           pressure-bus (.control-bus performance :pressure)

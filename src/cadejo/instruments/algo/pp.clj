@@ -295,32 +295,31 @@
 (defn pp-algo 
   ([pnum pname data remarks]
      (with-out-str 
-       (let [dmap (cadejo.util.col/alist->map data)
-             mutefn (fn [op]
+       (let [mutefn (fn [op]
                       (let [param (keyword (format "op%d-enable" op))
-                            val (get dmap param 1.0)]
+                            val (get data param 1.0)]
                         (if (zero? val) "0" "1")))]
-         (summery pnum pname dmap)
+         (summery pnum pname data)
          (println (format "(let [enable %s %s %s   %s %s %s   %s %s]"
                           (mutefn 1)(mutefn 2)(mutefn 3)(mutefn 4)
                           (mutefn 5)(mutefn 6)(mutefn 7)(mutefn 8)))
          (printf "  (save-program %3s   \"%s\" \"%s\"\n"
                  pnum pname remarks)
          (print (format "%s(algo " pad1))
-         (println (str-common dmap))
-         (println (str-env 1 dmap))
-         (println (str-vibrato dmap))
-         (println (str-lfo1 dmap))
-         (println (str-lfo2 dmap))
-         (println (str-carrier 1 dmap))
-         (println (str-modulator 2 dmap))
-         (println (str-modulator 3 dmap))
+         (println (str-common data))
+         (println (str-env 1 data))
+         (println (str-vibrato data))
+         (println (str-lfo1 data))
+         (println (str-lfo2 data))
+         (println (str-carrier 1 data))
+         (println (str-modulator 2 data))
+         (println (str-modulator 3 data))
          (println)
-         (println (str-carrier 4 dmap))
-         (println (str-modulator 5 dmap))
-         (println (str-modulator 6 dmap))
+         (println (str-carrier 4 data))
+         (println (str-modulator 5 data))
+         (println (str-modulator 6 data))
          (println)
-         (println (str-carrier 7 dmap))
-         (println (str-modulator 8 dmap))
-         (print (str-efx dmap))
+         (println (str-carrier 7 data))
+         (println (str-modulator 8 data))
+         (print (str-efx data))
          (println ")))")))))

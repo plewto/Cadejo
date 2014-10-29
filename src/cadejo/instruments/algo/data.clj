@@ -3,14 +3,7 @@
          :only [algo common env1 vibrato lfo1 lfo2
                 op1 op2 op3 op4 op5 op6 op7 op8
                 echo reverb
-                save-program bank]])
-  (:use [cadejo.midi.program-bank
-         :only [program-count start-reserved]])
-  (:require [cadejo.instruments.algo.genpatch]))
-
-(.register-function! bank 
-                     :random 
-                     cadejo.instruments.algo.genpatch/random-algo-program)
+                save-program bank]]))
 
 ;; ------------------------------------------------------------0 FmRhodes
 ;;
@@ -2565,12 +2558,3 @@
           (echo    :delay-1 0.250    :fb 0.50
                    :delay-2 1.000    :damp 0.00   :mix 0.00)
           (reverb  :size 0.50        :mix  0.00))))
-
-;; ------------------------------------------------------------ 120 - 127 random program 
-;;
-
-(let [count* (atom 0)]
-  (doseq [r (range start-reserved program-count)]
-  (let [name (format "Random %d" @count*)]
-    (save-program r :random name "Generate random patch" nil)
-    (swap! count* inc))))

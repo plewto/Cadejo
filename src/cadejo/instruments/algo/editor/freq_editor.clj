@@ -155,7 +155,6 @@
                                 (:op3-enable data)(:op4-enable data)
                                 (:op5-enable data)(:op6-enable data)
                                 (:op7-enable data)(:op8-enable data)]]
-                 (println (format "DEBUG freq-editor data-count is %s" (count data)))
                  ((:syncfn oed) data)
                  (dotimes [i op-count]
                    (let [f (nth freqlst i)

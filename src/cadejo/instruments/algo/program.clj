@@ -1,17 +1,26 @@
 (ns cadejo.instruments.algo.program
-  (:require [cadejo.midi.program-bank])
-  (:require [cadejo.util.col :as ucol])
+  (:require [cadejo.midi.pbank])
+  (:require [cadejo.midi.program])
+  (:require [cadejo.util.col :as col])
   (:require [cadejo.util.user-message :as umsg]))
 
-(defonce bank (cadejo.midi.program-bank/program-bank :ALGO))
+(defonce bank (cadejo.midi.pbank/pbank :algo))
+
+;; (defn save-program 
+;;   ([pnum function-id pname remarks data]
+;;      (.store-program! bank pnum function-id pname remarks data))
+;;   ([pnum pname remarks data]
+;;      (save-program pnum nil pname remarks data))
+;;   ([pnum pname data]
+;;      (save-program pnum pname "" data)))
+
 
 (defn save-program 
-  ([pnum function-id pname remarks data]
-     (.store-program! bank pnum function-id pname remarks data))
-  ([pnum pname remarks data]
-     (save-program pnum nil pname remarks data))
-  ([pnum pname data]
-     (save-program pnum pname "" data)))
+  ([slot pname premarks data]
+     (let [prog (cadejo.midi.program/program pname premarks (col/alist->map data))]
+       (.store! bank slot prog)))
+  ([slot pname data]
+     (save-program slot pname "" data)))
 
 (defn third [col]
   (nth col 2))
@@ -28,7 +37,7 @@
 (def algo-parameters 
   '[:port-time :env1->pitch :lfo1->pitch :lfo2->pitch :lp
     :env1-attack :env1-breakpoint :env1-decay1 :env1-decay2 :env1-sustain :env1-release :env1-bias
-    :env1-scale    :vfreq :vsens :vdepth :vdelay :lfo1-freq
+    :env1-scale :vfreq :vsens :vdepth :vdelay :lfo1-freq
     :lfo1-skew :env1->lfo1-skew :env1->lfo1-amp :pressure->lfo1-amp
     :lfo2-freq :lfo2-skew :lfo1->lfo2-skew    :lfo1->lfo2-amp :pressure->lfo2-amp  
     :op1-detune :op1-bias :op1-amp
@@ -73,14 +82,14 @@
 ;; Predicate returns true iff param is a valid algo parameter
 ;;
 (defn- valid-parameter? [param]
-  (ucol/member? param algo-parameters))
+  (col/member? param algo-parameters))
 
 ;; Returns list of missing parameters from data (alist)
 ;;
 (defn- missing-parameters [data]
   (let [acc* (atom [])]
     (doseq [p algo-parameters]
-      (if (ucol/not-member? p data)
+      (if (col/not-member? p data)
         (swap! acc* (fn [n](conj n p)))))
     @acc*))
 
@@ -517,12 +526,12 @@
 
 (defn algo [& args]
   (let [data (flatten args)
-        params (keys (ucol/alist->map data))]
+        params (keys (col/alist->map data))]
     (doseq [p params]
-      (if (ucol/not-member? p algo-parameters)
+      (if (col/not-member? p algo-parameters)
         (umsg/warning (format "Invalid ALGO parameter %s" p))))
     (doseq [p algo-parameters]
-      (if (ucol/not-member? p params)
+      (if (col/not-member? p params)
         (umsg/warning (format "Missing ALGO parameter %s" p))))
     data))
 
