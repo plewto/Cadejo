@@ -377,7 +377,6 @@
                       pp (.pp-hook bank)]
                   (if prog
                     (do
-                      (println "DEBUG (.data prog) --> " (.data prog))
                       (.current-program! bank prog)
                       (if (and pp (config/enable-pp))
                         (println (pp -1 "Random" (.data prog) "")))
@@ -497,7 +496,7 @@
                  (.init! ied)))
 
 
-    (.putClientProperty jb-help :topic :program)
+    (.putClientProperty jb-help :topic (.help-topic descriptor))
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     ied))
                 
