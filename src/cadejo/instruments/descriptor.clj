@@ -107,6 +107,12 @@
     [this]
     "Return random program or nil")
 
+  (help-topic!
+    [this topic])
+
+  (help-topic
+    [this])
+
   (clipboard
     [this])
 
@@ -121,6 +127,7 @@
         iprogram* (atom (cadejo.midi.program/program 
                          "Init" "" {}))
         patchgen* (atom nil)
+        help-topic* (atom nil)
         dobj (reify InstrumentDescriptor
 
                (instrument-name [this] 
@@ -186,6 +193,12 @@
                (program-generator [this]
                  @patchgen*)
                
+               (help-topic! [this topic]
+                 (reset! help-topic* topic))
+
+               (help-topic [this] 
+                 @help-topic*)
+
                (random-program [this]
                  (if @patchgen*
                    (let [data (ucol/alist->map (@patchgen*))]
