@@ -6,6 +6,7 @@
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance])
   (:require [cadejo.instruments.descriptor])
+  (:require [cadejo.instruments.masa.genpatch])
   (:require [cadejo.instruments.masa.program])
   (:require [cadejo.instruments.masa.pp])
   (:require [cadejo.instruments.masa.data])
@@ -23,6 +24,23 @@
     (.add-controller! d :cca "Scanner Mix" 92)
     (.add-controller! d :ccb "Reverb Mix" 93)
     (.set-editor-constructor! d cadejo.instruments.masa.masa-editor/masa-editor)
+    (.initial-program! d {:r1 0.5 :r2 1.5 :r3 1.0 :r4 2.0 :r5 3.0 
+                          :r6 4.0 :r7 5.0 :r8 6.0 :r9 8.0
+                          :a1 0 :a2 0 :a3 8 :a4 0 :a5 0 
+                          :a6 0 :a7 0 :a8 0 :a9 0
+                          :p1 0.0 :p2 0.0 :p3 0.0 :p4 0.0
+                          :p5 0.0 :p6 0.0 :p7 0.0 :p8 0.0 :p9 0.0 
+                          :perc1 0 :perc2 0 :perc3 0 :perc4 0 :perc5 0
+                          :perc6 0 :perc7 0 :perc8 0 :perc9 0 
+                          :decay 0.2 :sustain 0.7
+                          :scanner-delay 0.01 :scanner-delay-mod 0.5
+                          :scanner-mod-rate 5.0 :scanner-mod-spread 0.0
+                          :scanner-scan-rate 0.1 :scanner-mix 0.0
+                          :room-size 0.7 :reverb-damp 0.5 :reverb-mix 0.0
+                          :vrate 7.0 :vsens 0.05 :vdepth 0.05 :vdelay 0.0 
+                          :amp 0.2})
+    (.program-generator! d cadejo.instruments.masa.genpatch/random-masa-program)
+    (.help-topic! d :masa)
     d))
 
 (defsynth VibratoBlock [vibrato-depth-bus 0
@@ -109,8 +127,7 @@
                      perc8 0
                      perc9 0
                      decay 0.2          ;only for percussive env
-                     sustain 0.7        ;only for percussive env
-                     ]
+                     sustain 0.7]        
   (let [vib-sig (+ 1 (in:kr vibrato-bus))
         pedal-position (in:kr pedal-bus)
         perc-sus-attenuation (- 1 sustain)
@@ -179,7 +196,6 @@
                                                          [:cca cc-scanner :linear 0.0]
                                                          [:ccb cc-reverb  :linear 0.0])]
     (.put-property! performance :instrument-type :masa)
-    (.parent! bank performance)
     (.set-bank! performance bank)
     (let [bend-bus (.control-bus performance :bend)
           cc-vibrato-bus (.control-bus performance cc-vibrato)

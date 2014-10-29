@@ -253,7 +253,7 @@
                   (not @unsaved-data*))
                 
                 (programs [this] @programs*)
-                
+
                 (recall [this slot]
                   (if (assert-midi-program-number slot)
                     (let [p (get @programs* slot)]
@@ -268,9 +268,11 @@
                                   premarks (.program-remarks p)]
                               (println (@pp-hook* slot pname data premarks))))
                           data)
-                        nil))
-                    nil))
-                
+                        (do ;; p false
+                          nil)))
+                    (do ;; invalid slot
+                      nil)))
+
                 (recall [this]
                   (let [s @current-slot*]
                     (if s 

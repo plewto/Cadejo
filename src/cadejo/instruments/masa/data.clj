@@ -1,12 +1,6 @@
 (ns cadejo.instruments.masa.data
-  (:use [cadejo.instruments.masa.program :only [save-program masa bank]])
-  (:use [cadejo.midi.program-bank
-         :only [program-count start-reserved]])
-  (:use [cadejo.instruments.masa.genpatch]))
-
-(.register-function! bank
-                     :random
-                     cadejo.instruments.masa.genpatch/random-masa-program)
+  (:use [cadejo.instruments.masa.program 
+         :only [save-program masa bank]]))
 
 (save-program 0 "Barrows"
   (masa :harmonics    [0.500 1.500 1.000 2.000 3.000 4.000 5.000 6.000 8.000]
@@ -344,15 +338,3 @@
       :room-size 0.744               :reverb-damp 0.407
       :reverb-mix 0.400
       :amp 0.20 ))
-
-;; ------------------------------------------------------------ 120 - 127 random program 
-;;
-
-(save-program 120 :random "Random-enhramonic" "Random patch with enharmonic gamut" '[:gamut :enharmonic])
-(save-program 121 :random "Random-semi-harmonic" "Random patch with semi-harmonic gamut" '[:gamut :semi-enharmonic])
-(save-program 122 :random "Random-prime" "Random pitch with prime harmonics" '[:gamut :prime])
-(save-program 123 :random "Random-harmonic" "Random patch with harmonic gamut" '[:gamut :harmonic])
-(save-program 124 :random "Random-odd" "Random patch with odd harmonics" '[:gamut :odd])
-(save-program 125 :random "Random-B3" "Random patch with B3 gamut" '[:gamut :b3])
-(save-program 126 :random "Random" "Generate random patch" nil)
-(save-program 127 :random "Random" "Generate random patch" nil)

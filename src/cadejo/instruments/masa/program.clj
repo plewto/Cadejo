@@ -1,13 +1,8 @@
 (ns cadejo.instruments.masa.program
   (:use [cadejo.instruments.masa.masa-constants])
-  (:require [cadejo.midi.program-bank]))
-
-;; Common harmonic gamuts
-;; ;; move to constants
-;; (def b3 (map float [1/2 3/2 1 2 3 4 5 6 8]))
-;; (def harmonic (map float [1 2 3 4 5 6 7 8 9]))
-;; (def odd (map float [1/2 3/2 5/2 7/2 9/2 11/2 13/2 15/2 17/2]))
-;; (def prime (map float [1/2 3/2 5/2 7/2 11/2 13/2 17/2 19/2 23/2]))
+  (:require [cadejo.midi.pbank])
+  (:require [cadejo.midi.program])
+  (:require [cadejo.util.col :as col]))
 
 ;; Return "flat" assoc list of masa parameter/value pairs
 ;;
@@ -125,12 +120,13 @@
         :reverb-damp 0.5
         :reverb-mix  0.5))
 
-(def bank (cadejo.midi.program-bank/program-bank :MASA))
+(def bank (cadejo.midi.pbank/pbank :masa))
 
 (defn save-program 
-  ([pnum function-id pname remarks data]
-     (.store-program! bank pnum function-id pname remarks data))
-  ([pnum pname remarks data]
-     (save-program pnum nil pname remarks data))
-  ([pnum pname data]
-     (save-program pnum pname "" data)))
+  ([slot pname premarks data]
+     (let [prog (cadejo.midi.program/program pname premarks 
+                                             (col/alist->map data))]
+       (.store! bank slot prog)))
+  ([slot pname data]
+     (save-program slot pname "" data)))
+       
