@@ -1,4 +1,6 @@
+(println "combo-editor")
 (ns cadejo.instruments.combo.combo-editor
+  (:use [cadejo.util.trace])
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
@@ -356,5 +358,4 @@
     (.addActionListener tb-filter-6 harmonic-action)
     (.addActionListener tb-filter-8 harmonic-action)
     (.add-sub-editor! ied "Combo" combo-ed)
-    ;(ss/config! (.widget ied :frame) :size [888 :by 634])
     ied))

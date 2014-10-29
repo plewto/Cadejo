@@ -1,21 +1,32 @@
 (ns cadejo.instruments.combo.program
   (:use [cadejo.instruments.combo.constants])
-  (:require [cadejo.midi.program-bank])
+  ;(:require [cadejo.midi.program-bank])
+  (:require [cadejo.midi.program])
+  (:require [cadejo.midi.pbank])
   (:require [cadejo.util.col :as col])
   (:require [cadejo.util.user-message :as umsg]))
 
-(defonce bank (cadejo.midi.program-bank/program-bank :combo))
+;(defonce bank (cadejo.midi.program-bank/program-bank :combo))
+(defonce bank (cadejo.midi.pbank/pbank :combo))
 
 
 (.bank-remarks! bank "These are bank level remarks")
 
+;; (defn save-program 
+;;   ([pnum function-id pname remarks data]
+;;      (.store-program! bank pnum function-id pname remarks data))
+;;   ([pnum pname remarks data]
+;;      (save-program pnum nil pname remarks data))
+;;   ([pnum pname data]
+;;      (save-program pnum pname "" data)))
+
 (defn save-program 
-  ([pnum function-id pname remarks data]
-     (.store-program! bank pnum function-id pname remarks data))
-  ([pnum pname remarks data]
-     (save-program pnum nil pname remarks data))
-  ([pnum pname data]
-     (save-program pnum pname "" data)))
+  ([slot pname premarks data]
+     ;(.store-program! bank pnum function-id pname remarks data))
+     (let [prog (cadejo.midi.program/program pname premarks (col/alist->map data))]
+       (.store! bank slot prog)))
+  ([slot pname data]
+     (save-program slot pname "" data)))
 
 (def combo-parameters 
   '[:vibrato-freq :vibrato-sens :amp1 :wave1 :amp2 :wave2 :amp3 :wave3

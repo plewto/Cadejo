@@ -21,6 +21,11 @@
     (.add-controller! d :cc1 "Vibrato" 1)
     (.initial-program! d (cadejo.instruments.combo.program/combo))
     (.set-editor-constructor! d cadejo.instruments.combo.combo-editor/combo-editor)
+    (.initial-program! d {:amp1 1.0 :amp2 0.0 :amp3 0.0 :amp4 0.0
+                          :wave1 0.0 :wave2 0.0 :wave3 0.0 :wave4 0.0
+                          :chorus 0.0 :filter 8.0 :filter-type 0 :amp 0.2
+                          :flanger-depth 0.0 :flanger-rate 0.1 :flanger-fb 0.5
+                          :flanger-mix 0.0 :reverb-mix 0.0})
     d))
 
 (defsynth LFO [vibrato-freq 5.00
@@ -141,7 +146,6 @@
                                                          bank combo-descriptor
                                                          [:cc1 cc1 :linear 0.0])]
     (.put-property! performance :instrument-type :combo)
-    (.parent! bank performance)
     (.set-bank! performance bank)
     (let [vibrato-bus (control-bus)
           tone-bus (audio-bus)]

@@ -1,15 +1,16 @@
 (ns cadejo.instruments.combo.pp
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.instruments.combo.program :as program])
-  (:require [cadejo.util.col :as col]))
+  ;(:require [cadejo.util.col :as col])
+)
      
 (defn pp-combo [pnum pname data remarks]
   (let [pad1 "    "
         pad2 (str pad1 "       ")
         sb (StringBuilder.)
-        dmap (col/alist->map data)
+        ;dmap (col/alist->map data)
         fget (fn [p]
-               (float (get dmap p)))
+               (float (get data p)))
         iget (fn [p] 
                (int (fget p)))
         app (fn [frmt & args]

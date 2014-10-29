@@ -1,15 +1,15 @@
 (ns cadejo.instruments.combo.data
   (:use [cadejo.instruments.combo.program 
          :only [bank combo save-program bypass low high band notch]])
-  (:use [cadejo.midi.program-bank
-         :only [program-count start-reserved]])
+  ;; (:use [cadejo.midi.program-bank
+  ;;        :only [program-count start-reserved]])
   (:require [cadejo.instruments.combo.genpatch]))
 
-(.register-function! bank
-                     :random
-                     cadejo.instruments.combo.genpatch/random-combo-program)
+;; (.register-function! bank
+;;                      :random
+;;                      cadejo.instruments.combo.genpatch/random-combo-program)
 
-(save-program 0  "Alpha" "Remarks for program 0"
+(save-program 0 "Alpha" "Remarks for program 0"
     (combo :a1      1.000  :w1 0.000 
            :a2      0.000  :w2 0.000
            :a3      0.000  :w3 0.000
@@ -64,7 +64,7 @@
            :flanger [:rate 0.294 :depth 0.319 :fb -0.04 :mix 0.746]
            :reverb  0.000  :amp 0.200))
 
-(save-program   5 "Zeta"
+(save-program 5 "Zeta"
     (combo :a1      0.755  :w1 0.381
            :a2      0.904  :w2 0.406
            :a3      0.122  :w3 0.005
@@ -75,7 +75,7 @@
            :flanger [:rate 0.094 :depth 0.239 :fb +0.69 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program   6 "Eta" 
+(save-program 6 "Eta" 
     (combo :a1      0.143  :w1 0.413
            :a2      1.000  :w2 0.567
            :a3      0.624  :w3 0.765
@@ -86,7 +86,7 @@
            :flanger [:rate 0.935 :depth 0.101 :fb -0.96 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program   7 "Theta"
+(save-program 7 "Theta"
     (combo :a1      1.000  :w1 0.370
            :a2      0.864  :w2 0.537
            :a3      0.100  :w3 0.324
@@ -108,7 +108,7 @@
            :flanger [:rate 0.077 :depth 0.173 :fb -0.59 :mix 0.275]
            :reverb  0.834  :amp 0.200))
 
-(save-program   9 "Kappa"
+(save-program 9 "Kappa"
     (combo :a1      0.907  :w1 0.381
            :a2      1.000  :w2 0.258
            :a3      0.761  :w3 0.502
@@ -119,7 +119,7 @@
            :flanger [:rate 0.499 :depth 0.139 :fb +0.63 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program 10  "Lambda"
+(save-program 10 "Lambda"
     (combo :a1      0.000  :w1 0.386
            :a2      0.000  :w2 0.905
            :a3      1.000  :w3 0.300
@@ -130,7 +130,7 @@
            :flanger [:rate 0.393 :depth 0.735 :fb +0.14 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program 11  "Mu"
+(save-program 11 "Mu"
     (combo :a1      0.200  :w1  0.621
            :a2      1.000  :w2 0.576
            :a3      0.220  :w3 0.362
@@ -141,7 +141,7 @@
            :flanger [:rate 0.074 :depth 0.937 :fb +0.62 :mix 0.100]
            :reverb  1.000  :amp 0.400))
 
-(save-program  12 "Nu"
+(save-program 12 "Nu"
     (combo :a1      1.000  :w1 0.911
            :a2      0.513  :w2 0.697
            :a3      0.434  :w3 0.189
@@ -152,7 +152,7 @@
            :flanger [:rate 0.403 :depth 0.226 :fb +0.27 :mix 0.915]
            :reverb  0.000  :amp 0.200))
 
-(save-program  13 "Xi" ""
+(save-program 13 "Xi" ""
     (combo :a1      0.551  :w1 0.322
            :a2      0.494  :w2 0.184
            :a3      1.000  :w3 0.180
@@ -163,7 +163,7 @@
            :flanger [:rate 0.483 :depth 0.500 :fb -0.78 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
-(save-program  14 "Omicron" ""
+(save-program 14 "Omicron" ""
     (combo :a1      1.000  :w1 0.000
            :a2      0.000  :w2 0.740
            :a3      0.000  :w3 0.900
@@ -177,8 +177,8 @@
 ;; ------------------------------------------------------------ 120 - 127 random program 
 ;;
 
-(let [count* (atom 0)]
-  (doseq [r (range start-reserved program-count)]
-  (let [name (format "Random %d" @count*)]
-    (save-program r :random name "Generate random patch" nil)
-    (swap! count* inc))))
+;; (let [count* (atom 0)]
+;;   (doseq [r (range start-reserved program-count)]
+;;   (let [name (format "Random %d" @count*)]
+;;     (save-program r :random name "Generate random patch" nil)
+;;     (swap! count* inc))))
