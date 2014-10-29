@@ -1,14 +1,6 @@
 (ns cadejo.instruments.alias.data
-  (:use [cadejo.instruments.alias.program])
-  (:require [cadejo.instruments.alias.genpatch])
-  (:use [cadejo.midi.program-bank
-         :only [program-count start-reserved]]))
-            
-
-(.register-function! bank
-                     :random
-                     cadejo.instruments.alias.genpatch/random-alias-program)
-
+  (:use [cadejo.instruments.alias.program]))
+ 
 ;; --------------------------------------------------------------------------- 0 A Sour God
 ;;
 (save-program 0 "A Sour God" 
@@ -1847,12 +1839,3 @@
   (flanger  -99 :lfo [0.275 0.293] :mod [:h      0.738] :fb +0.16 :xmix 0.25)
   (echo1    -99 :delay [1.000 :off    0.000] :fb -0.41 :damp 0.73 :gate [:d      0.11] :pan -0.50)
   (echo2    -99 :delay [1.200 :e      0.000] :fb -0.45 :damp 0.14 :gate [:f      0.46] :pan +0.50)))
-
-;; ------------------------------------------------------------ 120 - 127 random program 
-;;
-
-(let [count* (atom 0)]
-  (doseq [r (range start-reserved program-count)]
-  (let [name (format "Random %d" @count*)]
-    (save-program r :random name "Generate random patch" nil)
-    (swap! count* inc))))

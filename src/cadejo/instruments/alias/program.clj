@@ -1,18 +1,26 @@
 (ns cadejo.instruments.alias.program
-  (:require [cadejo.midi.program-bank])
+  (:require [cadejo.midi.pbank])
+  (:require [cadejo.midi.program])
   (:require [cadejo.instruments.alias.constants :as constants :reload true])
-  (:require [cadejo.util.col :as ucol])
+  (:require [cadejo.util.col :as col])
   (:require [cadejo.util.user-message :as umsg]))
 
-(defonce bank (cadejo.midi.program-bank/program-bank :Alias))
+(defonce bank (cadejo.midi.pbank/pbank :alias))
   
-(defn save-program 
-  ([pnum function-id pname remarks data]
-     (.store-program! bank pnum function-id pname remarks data))
-  ([pnum pname remarks data]
-     (save-program pnum nil pname remarks data))
-  ([pnum pname data]
-     (save-program pnum pname "" data)))
+;; (defn save-program 
+;;   ([pnum function-id pname remarks data]
+;;      (.store-program! bank pnum function-id pname remarks data))
+;;   ([pnum pname remarks data]
+;;      (save-program pnum nil pname remarks data))
+;;   ([pnum pname data]
+;;      (save-program pnum pname "" data)))
+
+(defn save-program
+  ([slot pname premarks data]
+     (let [prog (cadejo.midi.program/program pname premarks (col/alist->map data))]
+       (.store! bank slot prog)))
+  ([slot pname data]
+     (save-program slot pname "" data)))
 
 (defn- third [col]
   (nth col 2))
@@ -20,19 +28,19 @@
 (defn- continuity-test [dkeys]
   (let [rs* (atom ())]
     (doseq [p constants/alias-parameters]
-      (if (ucol/not-member? p dkeys)
+      (if (col/not-member? p dkeys)
         (swap! rs* (fn [n](cons p n)))))
     @rs*))
 
 (defn- spurious-key-test [dkeys]
   (let [rs* (atom ())]
     (doseq [k dkeys]
-      (if (ucol/not-member? k constants/alias-parameters)
+      (if (col/not-member? k constants/alias-parameters)
         (swap! rs* (fn [n](cons k n)))))
     @rs*))
 
 (defn- validity-test [data]
-  (let [dkeys (ucol/alist->keys data)
+  (let [dkeys (col/alist->keys data)
         missing (continuity-test dkeys)
         extra (spurious-key-test dkeys)]
     (if (> (count missing) 0)
