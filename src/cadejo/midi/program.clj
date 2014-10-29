@@ -10,6 +10,14 @@
      - remarks, string
      - data, map"
 
+  (to-map 
+    [this]
+    "Return contents of thie as map")
+
+  (from-map! 
+    [this map]
+    "Convert map contents to Program fields")
+
   (program-name!
     [this text]
     "Sets program name, returns text")
@@ -48,6 +56,8 @@
     [this]))
 
 (defn program 
+  ([]
+     (program "" {}))
   ([name data]
      (program name "" data))
   ([name remarks data]
@@ -55,6 +65,17 @@
            remarks* (atom (str remarks))
            data* (atom data)]
        (reify Program
+
+         (to-map [this]
+           {:name @name*
+            :reamrks @remarks*
+            :data @data*})
+
+         (from-map! [this map]
+           (.program-name! this (get map :name "?"))
+           (.program-remarks! this (get map :remarks "?"))
+           (reset! data* (get map :data {}))
+           this)
 
          (program-name! [this text]
            (reset! name* (str text)))

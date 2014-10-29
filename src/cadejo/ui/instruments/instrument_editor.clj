@@ -1,6 +1,6 @@
 (ns cadejo.ui.instruments.instrument-editor
+  (:use [cadejo.util.trace])
   (:require [cadejo.config :as config])
-  (:require [cadejo.midi.program-bank])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.ui.instruments.subedit])
@@ -21,8 +21,7 @@
    javax.swing.JFileChooser))
 
 
-(def ^:private max-program-number
-  (dec cadejo.midi.program-bank/start-reserved))
+(def ^:private max-program-number 128)
 
 (defn- third [col](nth col 2))
 
@@ -104,31 +103,32 @@
 
               (set-param! [this param value] nil) ;; ignore
               
-              (init! [this]
-                (let [bank (.parent-bank parent-editor)
-                      prog (assoc (.current-program bank)
-                             :name "Init"
-                             :remarks "")]
-                  (.current-program! bank prog)
-                  (.sync-ui! this)))
+              ;; (init! [this]
+              ;;   (let [bank (.parent-bank parent-editor)
+              ;;         prog (assoc (.current-program bank)
+              ;;                :name "Init"
+              ;;                :remarks "")]
+              ;;     (.current-program! bank prog)
+              ;;     (.sync-ui! this)))
+              
+              (init! [this] )
 
               (sync-ui! [this]
                 (let [bank (.parent-bank parent-editor)
                       prog (.current-program bank)
-                      name (str (:name prog))
-                      remarks (str (:remarks prog))]
+                      name (.program-name prog)
+                      remarks (.program-remarks prog)]
                   (ss/config! txt-name :text name)
-                  (ss/config! txt-remarks :text remarks))))]
+                  (ss/config! txt-remarks :text remarks))) )]
     
     (.addFocusListener txt-name 
                        (proxy [FocusListener][]
                          (focusGained [_])
                          (focusLost [_]
                            (let [bank (.parent-bank parent-editor)
-                                 pname (ss/config txt-name :text)
-                                 prog (assoc (.current-program bank)
-                                        :name pname)]
-                             (.current-program! bank prog)
+                                 pname (ss/config txt-name :text)]
+                             (.program-name! (.current-program bank) (str pname))
+                             ;(.current-program! bank prog)
                              (ss/config! (.widget parent-editor :lab-name)
                                          :text pname)
                              (.status! parent-editor 
@@ -138,10 +138,9 @@
                          (focusGained [_])
                          (focusLost [_]
                            (let [bank (.parent-bank parent-editor)
-                                 remarks (ss/config txt-remarks :text)
-                                 prog (assoc (.current-program bank)
-                                        :remarks remarks)]
-                             (.current-program! bank prog)
+                                 remarks (ss/config txt-remarks :text)]
+                             (.program-remarks! (.current-program bank)(str remarks))
+                             ;(.current-program! bank prog)
                              (.status! parent-editor
                                        "Program remarks changed")))))
     pne))
@@ -157,7 +156,7 @@
 
   (add-sub-editor!
     [this label subed]
-    [this lable icon subed])
+    [this label icon subed])
 
   (current-program 
     [this]
@@ -198,7 +197,8 @@
     [this pnum]
     "Sets the value of the store-program spinner")
   
-  (init! [this])
+  (init! [this]
+    "Initialize current program")
 
   (sync-ui!
     [this]))
@@ -358,18 +358,27 @@
                 (if (and (>= pnum 0)(<= pnum max-program-number))
                   (.setValue spin-program pnum)))
 
+              ;; (init! [this]
+              ;;   (doseq [s @sub-editors*]
+              ;;     (.init! s))
+              ;;   (ss/config! lab-name :text "Init")
+              ;;   (.status! this "Program initialized"))
+
               (init! [this]
-                (doseq [s @sub-editors*]
-                  (.init! s))
-                (ss/config! lab-name :text "Init")
-                (.status! this "Program initialized"))
+                (let [prog (.clone (.initial-program descriptor))
+                      bank (.parent-bank this)]
+                  (.current-program! bank prog)
+                  (.sync-ui! (.editor bank))))
 
               (sync-ui! [this]
                 (let [prog (.current-program bank)
-                      data (.current-data bank)]
-                  (ss/config! lab-name :text (str (:name prog))))
-                (doseq [s @sub-editors*]
-                  (.sync-ui! s))) )
+                      data (and prog (.data prog))]
+                  (if data
+                    (do
+                      (ss/config! lab-name :text (.program-name prog))
+                      (doseq [s @sub-editors*]
+                        (.sync-ui! s))))))
+              ) ;; end ied
 
         name-editor (program-name-editor ied)]
 
@@ -458,21 +467,14 @@
                (fn [_]
                  (let [bank-ed (.editor bank)
                        prog (.current-program bank)
-                       pnum (int (max 0 (min max-program-number (.getValue spin-program))))
-                       name (str (:name prog))
-                       remarks (str (:remarks prog))]
-                   (.push-undo-state! bank-ed
-                                      (format "Store program %s" pnum))
-                   (.store-program! bank pnum
-                                    (assoc prog 
-                                      :name name
-                                      :remarks remarks
-                                      :function-id nil
-                                      :args (ucol/map->alist
-                                             (.current-data bank))))
+                       slot (int (max 0 (min max-program-number (.getValue spin-program))))]
+                   (.push-undo-state! bank-ed 
+                                      (format "Store program %s" slot))
+                   (.store! bank slot (.clone prog))
                    (.sync-ui! bank-ed)
-                   (.status! ied (format "Stored program %s" pnum)))))
-    
+                   (.status! ied (format "Stored program %s" slot)))))
+                       
+
     (ss/listen jb-init :action
                (fn [_]
                  (.init! ied)))

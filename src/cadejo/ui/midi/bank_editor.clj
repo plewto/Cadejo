@@ -1,6 +1,6 @@
 (ns cadejo.ui.midi.bank-editor
+  (:use [cadejo.util.trace])
   (:require [cadejo.config :as config])
-  (:require [cadejo.midi.program-bank])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.path :as path])
@@ -15,8 +15,7 @@
            javax.swing.event.CaretListener
            java.io.File))
 
-(def program-count cadejo.midi.program-bank/program-count)
-(def start-reserved (- program-count cadejo.midi.program-bank/reserved-slots))
+(def program-count 128) 
 
 (defprotocol BankEditor
 
@@ -64,19 +63,17 @@
     [this]
     "Return instrument editor or nil")
 )
-  
 
-(defn- format-program-cell [pnum bank]
-  (let [prog (.program bank pnum false)
-        fid (:function-id prog)
-        name (:name prog)]
-    (format "[%03d] %s %s"
-            pnum (if fid (format "(%s)" fid) "") name)))
+(defn- format-program-cell [pnum programs]
+  (let [prog (get programs pnum)
+        name (if prog (.program-name prog) "")]
+    (format "[%03d] %s" pnum name)))
 
 (defn- create-program-list [bank]
-  (let [acc* (atom [])]
+  (let [acc* (atom [])
+        programs (.programs bank)]
     (dotimes [p program-count]
-      (swap! acc* (fn [n](conj n (format-program-cell p bank)))))
+      (swap! acc* (fn [n](conj n (format-program-cell p programs)))))
     @acc*))
 
 (defn bank-editor [bnk]
@@ -181,7 +178,7 @@
                   (sync-ui! [this]
                     (if @enabled*
                       (let [plst (.widget this :list-programs)
-                            pnum (or (.current-program-number bnk) 0)]
+                            pnum (or (.current-slot bnk) 0)]
                         (reset! enable-list-selection-listener* false)
                         (ss/config! (.widget this :lab-name) :text (.bank-name bnk))
                         (ss/config! plst :model (create-program-list bnk))
@@ -211,11 +208,10 @@
                                                    itype (.get-property performance :instrument-type)
                                                    descriptor (.get-property performance :descriptor)
                                                    ied (.create-editor descriptor performance)]
-                                               (if (not ied)
-                                                 (do 
-                                                   (.warning! bank-ed "No editor defined")
-                                                   nil)
-                                                 (reset! instrument-editor* ied)))) ]
+                                               (if ied
+                                                 (reset! instrument-editor* ied)
+                                                 (.warning! bank-ed "No editor defined"))))]
+
     (.addListSelectionListener 
      lst-programs
      (proxy [ListSelectionListener][]
@@ -223,16 +219,16 @@
          (cond
           (.getValueIsAdjusting lst-programs) ; do nothing
           nil
-          
-          @enable-list-selection-listener* ; program change
-          (let [pnum (.getSelectedIndex lst-programs)]
-            (.program-change bnk pnum) 
+
+          @enable-list-selection-listener* ;; program-change
+          (let [slot (.getSelectedIndex lst-programs)]
+            (.recall bnk slot)
             (if @instrument-editor*
               (let [ied @instrument-editor*
                     prog (.current-program bnk)]
-                (if prog 
-                  (do
-                    (.set-store-location! ied pnum)
+                (if prog
+                  (do 
+                    (.set-store-location! ied slot)
                     (.sync-ui! ied))))))
 
           :default                      ; do nothing
@@ -241,7 +237,7 @@
     (ss/listen jb-init :action (fn [_]
                                  (let [ied (.instrument-editor bank-ed)]
                                    (.push-undo-state! bank-ed "Initialize Bank")
-                                   (.init-bank! bnk)
+                                   (.init! bnk)
                                    (if ied (.init! ied))
                                    (.sync-ui! bank-ed)
                                    (.status! bank-ed "Initialized Bank"))))
@@ -340,13 +336,22 @@
 
     (ss/listen jb-redo :action (fn [_](.redo! bank-ed)))
 
-    (ss/listen jb-transmit :action
+    ;; (ss/listen jb-transmit :action
+    ;;            (fn [_]
+    ;;              (let [pnum (.getSelectedIndex lst-programs)]
+    ;;                (if pnum 
+    ;;                  (do 
+    ;;                    (reset! enable-list-selection-listener* false)
+    ;;                    (.program-change bnk pnum)
+    ;;                    (reset! enable-list-selection-listener* true))))))
+    
+ (ss/listen jb-transmit :action
                (fn [_]
-                 (let [pnum (.getSelectedIndex lst-programs)]
-                   (if pnum 
+                 (let [slot (.current-slot bnk)]
+                   (if slot
                      (do 
                        (reset! enable-list-selection-listener* false)
-                       (.program-change bnk pnum)
+                       (.program-change bnk {:data1 slot})
                        (reset! enable-list-selection-listener* true))))))
 
     (ss/listen jb-edit :action
@@ -358,7 +363,7 @@
                    (if ied
                      (do 
                        (let [f (.widget ied :frame)]
-                         (.set-store-location! ied (.current-program-number bnk))
+                         (.set-store-location! ied (.current-slot bnk))
                          (.sync-ui! ied)
                          (ss/show! f)
                          (.toFront f)))

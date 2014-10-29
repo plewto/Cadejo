@@ -113,8 +113,6 @@
         vtf-instrument-id (vtf/validated-text-field :validator pname-test
                                                     :value (gen-performance-name chanobj iname)
                                                     :border "Instrument ID")
-        ;; jb-add (factory/button "Add Instrument")
-        ;; jb-cancel (factory/button "Cancel")
         jb-add (ss/button :text "Add Instrument")
         jb-cancel (ss/button :text "Cancel")
         pan-main (ss/border-panel :north pan-north
@@ -129,17 +127,6 @@
                        :modal? true
                        :on-close :dispose
                        :size [400 :by 500])]
-    ;; (if (cadejo.config/enable-button-text)
-    ;;   (do
-    ;;     (ss/config! jb-help :text "Help")))
-    ;; (if (cadejo.config/enable-button-icons)
-    ;;   (do
-    ;;     (.setIcon jb-help (lnf/read-icon :general :help))
-    ;;     (.setSelectedIcon jb-help (lnf/read-selected-icon :general :help))))
-    ;; (if (cadejo.config/enable-tooltips)
-    ;;   (do
-    ;;     (.setToolTipText jb-help "Add Instrument Help")))
-
     (.putClientProperty jb-help :topic :add-instrument)
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
 

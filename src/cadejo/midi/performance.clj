@@ -7,7 +7,7 @@
   (:require [cadejo.midi.bend-handler])
   (:require [cadejo.midi.pressure-handler])
   (:require [cadejo.midi.cc.controller-suite])
-  (:require [cadejo.midi.program-bank])
+  ;(:require [cadejo.midi.program-bank])
   (:require [cadejo.midi.node])
   (:require [cadejo.util.col])
   (:require [cadejo.util.user-message :as umsg])
@@ -303,7 +303,7 @@
 
     (set-bank! [this bnk]
       (.parent! bnk this)
-      (swap! bank* (fn [n] bnk)))
+      (reset! bank* bnk))
 
     (bank [this] @bank*)
 
@@ -448,15 +448,16 @@
               (= cmd :control-change)
               (.handle-event controller-suite event)
 
+              ;; (= cmd :program-change)
+              ;; (.handle-event @bank* event)
               (= cmd :program-change)
-              (.handle-event @bank* event)
+              (.program-change @bank* event)
 
               :default
               ;; Should never see this!
               (umsg/error "Performance.handle-event cond default"
                           (format "channel = %s  command = %s"
                                   (:channel event) cmd)))) )
-      
      
     (buses? [this]
       (println "Performance control bus state")
