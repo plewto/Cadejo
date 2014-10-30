@@ -14,6 +14,8 @@
 
 (config/load-gui! true)
 
+(def scenes* (atom [])) ;; global list of scenes
+
 (def ^:private txt-about (ss/text :multi-line? true
                                   :editable? false
                                   :text cadejo.about/about-text))
@@ -123,6 +125,7 @@
                          s (cadejo.midi.scene/scene dev)
                          sed (.get-editor s)
                          sframe (.frame sed)]
+                     (swap! scenes* (fn [q](conj q s)))
                      (.put-property! s :midi-device-name name)
                      (.setEnabled rb false)
                      (.setEnabled jb-create-scene false)
@@ -212,3 +215,5 @@
 
 (cadejo-splash)
 (lnf/set-initial-skin)
+
+

@@ -5,6 +5,7 @@
   (:require [cadejo.util.path :as path])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.util.color-utilities :as cutil])
   (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.user-message :as umsg])
@@ -13,13 +14,13 @@
   (:require [seesaw.core :as ss])
   (:require [seesaw.chooser :as ssc])
   (:require [seesaw.font :as ssfont])
+  (:require [sgwr.indicators.numberbar :as numberbar])
   (:import 
    java.awt.event.FocusListener
    java.io.File
    java.io.FileNotFoundException
    javax.swing.Box
    javax.swing.JFileChooser))
-
 
 (def ^:private max-program-number 128)
 
@@ -103,14 +104,6 @@
 
               (set-param! [this param value] nil) ;; ignore
               
-              ;; (init! [this]
-              ;;   (let [bank (.parent-bank parent-editor)
-              ;;         prog (assoc (.current-program bank)
-              ;;                :name "Init"
-              ;;                :remarks "")]
-              ;;     (.current-program! bank prog)
-              ;;     (.sync-ui! this)))
-              
               (init! [this] )
 
               (sync-ui! [this]
@@ -128,7 +121,6 @@
                            (let [bank (.parent-bank parent-editor)
                                  pname (ss/config txt-name :text)]
                              (.program-name! (.current-program bank) (str pname))
-                             ;(.current-program! bank prog)
                              (ss/config! (.widget parent-editor :lab-name)
                                          :text pname)
                              (.status! parent-editor 
@@ -140,7 +132,6 @@
                            (let [bank (.parent-bank parent-editor)
                                  remarks (ss/config txt-remarks :text)]
                              (.program-remarks! (.current-program bank)(str remarks))
-                             ;(.current-program! bank prog)
                              (.status! parent-editor
                                        "Program remarks changed")))))
     pne))
@@ -247,22 +238,35 @@
 
         ;; South toolbar
         ;;
+        nbar-store (let [[cbg cna cav](config/displaybar-colors)
+                         skin(config/current-skin)
+                         bg (cutil/color (or cbg (lnf/get-color skin :text-fg)))
+                         na (cutil/color (or cna (lnf/get-color skin :text-bg)))
+                         av (cutil/color (or cav (lnf/get-color skin :text-bg-selected)))
+                         nbar (numberbar/numberbar 3 0 127)]
+                     (ss/config! (.drawing-canvas nbar) :size [128 :by 48])
+                     (.colors! nbar bg na av)
+                     (.display! nbar "0")
+                     nbar)
+        
         jb-init (factory/button "Init" :general :reset "Initialize program data")
         jb-dice (factory/button "Random" :general :dice "Generate random patch")
         jb-store (factory/button "Store" :general :bankstore "Store program data to selected bank slot")
-        spin-program (ss/spinner 
-                      :model (ss/spinner-model 0 
-                                               :min 0 
-                                               :max max-program-number 
-                                               :by 1)
-                      :size [72 :by 24])
-        pan-south1 (ss/horizontal-panel :items [jb-init
-                                                jb-dice
-                                                (Box/createHorizontalStrut 8)
-                                                jb-store
-                                                (Box/createHorizontalStrut 8)
-                                                spin-program]
-                                        :border (factory/padding))
+        jb-store-inc1 (ss/button :icon (lnf/read-icon :mini :up1) :size [18 :by 18])
+        jb-store-inc8 (ss/button :icon (lnf/read-icon :mini :up2) :size [18 :by 18])
+        jb-store-dec1 (ss/button :icon (lnf/read-icon :mini :down1) :size [18 :by 18])
+        jb-store-dec8 (ss/button :icon (lnf/read-icon :mini :down2) :size [18 :by 18])
+        pan-store-inc1 (ss/grid-panel :columns 1 :items [jb-store-inc1 jb-store-dec1])
+        pan-store-inc8 (ss/grid-panel :columns 1 :items [jb-store-inc8 jb-store-dec8])
+       
+        pan-store (ss/horizontal-panel :items [(.drawing-canvas nbar-store)
+                                                pan-store-inc1
+                                                pan-store-inc8
+                                                jb-store])
+       
+        pan-south1 (ss/border-panel :center (ss/horizontal-panel :items [jb-init jb-dice])
+                                    :east pan-store
+                                    :border (factory/padding))
 
         lab-status (ss/label :text " ")
         lab-name (ss/label :text " ")
@@ -355,15 +359,15 @@
                   (if (and prog (config/enable-pp))
                     (let [pname (:name prog)
                           rem (:remarks prog)
-                          pnum (int (max 0 (min max-program-number (.getValue spin-program))))
+                          pnum (.value nbar-store)
                           d (ucol/map->alist (.current-data this))
                           ppf (.pp-hook bank)]
                       (if ppf
                         (println (ppf pnum pname d rem)))))))
-
-              (set-store-location! [this pnum]
-                (if (and (>= pnum 0)(<= pnum max-program-number))
-                  (.setValue spin-program pnum)))
+           
+              (set-store-location! [this slot]
+                (if (and (>= slot 0)(<= slot max-program-number))
+                  (.display! nbar-store (str (int slot)))))
 
               (init! [this]
                 (let [prog (.clone (.initial-program descriptor))
@@ -480,13 +484,33 @@
                (fn [_]
                  (let [bank-ed (.editor bank)
                        prog (.current-program bank)
-                       slot (int (max 0 (min max-program-number (.getValue spin-program))))]
+                       slot (int (max 0 (min max-program-number (.value nbar-store))))]
                    (.push-undo-state! bank-ed 
                                       (format "Store program %s" slot))
                    (.store! bank slot (.clone prog))
                    (.sync-ui! bank-ed)
                    (.status! ied (format "Stored program %s" slot)))))
                        
+    (ss/listen jb-store-inc1 :action 
+               (fn [_]
+                 (let [v (int (min 127 (inc (.value nbar-store))))]
+                   (.display! nbar-store (str v)))))
+
+    (ss/listen jb-store-inc8 :action 
+               (fn [_]
+                 (let [v (int (min 127 (+ 8 (.value nbar-store))))]
+                   (.display! nbar-store (str v)))))
+    
+    (ss/listen jb-store-dec1 :action 
+               (fn [_]
+                 (let [v (int (max 0 (dec (.value nbar-store))))]
+                   (.display! nbar-store (str v)))))
+
+    (ss/listen jb-store-dec8 :action 
+               (fn [_]
+                 (let [v (int (max 0 (- (.value nbar-store) 8)))]
+                   (.display! nbar-store (str v)))))
+
     (ss/listen jb-dice :action
                (fn [_]
                  (.random-program! ied)))
@@ -494,8 +518,13 @@
     (ss/listen jb-init :action
                (fn [_]
                  (.init! ied)))
-
-
+    
+    (if (config/enable-tooltips)
+      (do (.setToolTipText jb-store-inc1 "Increment program store location")
+          (.setToolTipText jb-store-dec1 "Decrement program store location")
+          (.setToolTipText jb-store-inc8 "Increase program store location by 8")
+          (.setToolTipText jb-store-dec8 "Decrease program store location by 8")
+          (.setToolTipText (.drawing-canvas nbar-store) "Program store location")))
     (.putClientProperty jb-help :topic (.help-topic descriptor))
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     ied))
