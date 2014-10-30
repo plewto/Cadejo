@@ -233,7 +233,7 @@
   (let [acc* (atom {\space []
                     \. [:dp]
                     \0 [:a :b :c :d :e :f :g :h :k :o]
-                    \1 [:c :d :k]
+                    \1 [:j :n] ; [:c :d :k]
                     \2 [:a :b :c :l :p :g :f :e]
                     \3 [:a :b :c :d :e :f :l]
                     \4 [:h :p :l :c :d]
