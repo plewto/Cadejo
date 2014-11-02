@@ -1,4 +1,4 @@
-(ns cadejo.instruments.alias.head
+(ns cadejo.instruments.alias.head       ;
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu]))
 
@@ -191,7 +191,7 @@
         osc3 (sin-osc-fb freq-3 wave-3)
         ;; NOISE 
         noise-parameter (qu/clamp (+ 1.3 (* 0.7 noise-param)) 1 2)
-        noise-gain (dbamp 12)
+        noise-gain (dbamp 36) ; 12
         amp-noise (* noise-gain
                      (amproc sources noise-amp
                              noise-amp1-src noise-amp1-depth noise-amp1-lag
