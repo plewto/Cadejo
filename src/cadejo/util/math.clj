@@ -84,6 +84,27 @@
         :default
         f))
 
+(defn octave [freq]
+  "Return int, log 2 of freq,
+   freq = 0 --> nil
+   freq < 0 --> (octave (abs freq))"
+    (if (zero? freq)
+      nil
+      (int (log2 (abs freq)))))
+
+(defn detune 
+  "Returns tuple [octave ratio] required to convert frequeny f1 to f2
+   f2 = (2^octave)*ratio"
+  ([f2](detune 1.0 f2))
+  ([f1 f2]
+     (if (= f1 f2)
+       [0 1.0]
+       (let [ratio (/ (float f2) f1)
+             oct (octave ratio)
+             base (expt 2.0 oct)
+             dt (/ f2 base)]
+         [oct dt]))))
+
 (defn divides? [a b]
   "Predicate returns true if b is a multiple of a, or conversely a evenly 
    divides b.
