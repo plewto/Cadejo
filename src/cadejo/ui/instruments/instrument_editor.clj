@@ -228,12 +228,13 @@
         jb-open (factory/button "Open" :general :open "Open program file")
         jb-save (factory/button "Save" :general :save "Save program file")
         jb-help (factory/button "Help" :general :help "Program editor help")
+        jb-sync (ss/button :text "Sync") ;; DEBUG
         pan-north (ss/toolbar :floatable? false
                               :items [lab-id 
                                       :separator jb-show-parent
                                       :separator jb-open jb-save
                                       :separator jb-copy jb-paste
-                                      :separator jb-help]
+                                      :separator jb-help jb-sync]
                               :border (factory/padding))
 
         ;; South toolbar
@@ -519,6 +520,10 @@
                (fn [_]
                  (.init! ied)))
     
+    (ss/listen jb-sync :action
+               (fn [_]
+                 (.sync-ui! ied)))
+
     (if (config/enable-tooltips)
       (do (.setToolTipText jb-store-inc1 "Increment program store location")
           (.setToolTipText jb-store-dec1 "Decrement program store location")
