@@ -12,7 +12,8 @@
   (:require [cadejo.instruments.alias.control])
   (:require [cadejo.instruments.alias.head])
   (:require [cadejo.instruments.alias.tone])
-  (:require [cadejo.instruments.alias.efx]))
+  (:require [cadejo.instruments.alias.efx])
+  (:require [cadejo.instruments.alias.editor.alias-editor :as aliased]))
 
 
 (def clipboard* (atom nil))
@@ -24,6 +25,7 @@
     (.add-controller! d :ccb "B" 16)
     (.add-controller! d :ccc "C" 17)
     (.add-controller! d :ccd "d"  4)
+    (.set-editor-constructor! d aliased/alias-editor)
     (.initial-program! d {:port-time 0.00 :osc1-detune 1.00 :osc1-bias 0.0
 			  :osc1-fm1-source 0 :osc1-fm1-depth 0 :osc1-fm1-lag 0 :osc1-fm2-source 0
 			  :osc1-fm2-depth 0 :osc1-fm2-lag 0 :osc1-wave 0.00 :osc1-wave1-source 0

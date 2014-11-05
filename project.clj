@@ -8,5 +8,7 @@
                  [seesaw "1.4.4"]
                  [com.github.insubstantial/substance "7.1"]
                  [overtone "0.9.1"]]
-  :main cadejo.gui)
+  :main cadejo.gui
+  ;:main cadejo.instruments.alias.editor.divider-editor
+  )
 
