@@ -151,7 +151,9 @@
                                  :size [w :by 34])
         
         pan-main (ss/vertical-panel
-                  :items [pan-center pan-south]
+                  :items [pan-center pan-south
+                          (ss/label :text "Invert button Not Connected")  ;; DEBUG
+                          ]
                   :border (factory/title (format "Envelope %d" prefix)))
         syncfn (fn [data]
                  (reset! attack* (param-attack data))

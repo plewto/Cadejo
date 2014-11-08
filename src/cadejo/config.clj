@@ -491,7 +491,7 @@
 
 
 (load-gui! true)
-(initial-skin! "Sahara")
+(initial-skin! "Twilight")
 (enable-pp! false)
 (maximum-undo-count! 10)
 (warn-on-file-overwrite! true)

@@ -64,8 +64,6 @@
     :stepper2-min :stepper2-reset :stepper2-reset-value :stepper2-scale
     :stepper2-step :stepper2-trigger :dry-mix])
 
-
-
 (def control-bus-map
   {:con 0, 
    :env1 1, :env2 2, :env3 3, :lfo1 4, :lfo2 5, :lfo3 6,
@@ -99,3 +97,302 @@
 
 (def filter-modes
   {:lp 0.0 :lp*hp 0.25 :hp 0.50 :band 0.75 :bypass 1.0})
+
+
+(def initial-program {:osc1-detune 1.00
+                       :osc1-bias 0.0
+                       :osc1-fm1-source 1
+                       :osc1-fm1-depth 0.1
+                       :osc1-fm1-lag 0
+                       :osc1-fm2-source 0
+                       :osc1-fm2-depth 0
+                       :osc1-fm2-lag 0
+                       :osc1-wave 0.00
+                       :osc1-wave1-source 3
+                       :osc1-wave1-depth 0
+                       :osc1-wave2-source 0
+                       :osc1-wave2-depth 0
+                       :osc1-amp 0
+                       :osc1-amp1-src 0
+                       :osc1-amp1-depth 0
+                       :osc1-amp1-lag 0
+                       :osc1-amp2-src 0
+                       :osc1-amp2-depth 0
+                       :osc1-amp2-lag 0
+                       :osc1-pan 0.0
+                       
+                       :osc2-detune 1.00
+                       :osc2-bias 0.0
+                       :osc2-fm1-source 1
+                       :osc2-fm1-depth 0.1
+                       :osc2-fm1-lag 0
+                       :osc2-fm2-source 0
+                       :osc2-fm2-depth 0
+                       :osc2-fm2-lag 0
+                       :osc2-wave 0.50
+                       :osc2-wave1-source 3
+                       :osc2-wave1-depth 0
+                       :osc2-wave2-source 0
+                       :osc2-wave2-depth 0
+                       :osc2-amp 0
+                       :osc2-amp1-src 0
+                       :osc2-amp1-depth 0
+                       :osc2-amp1-lag 0
+                       :osc2-amp2-src 0
+                       :osc2-amp2-depth 0
+                       :osc2-amp2-lag 0
+                       :osc2-pan 0.0
+                       
+                       :osc3-detune 1.00
+                       :osc3-bias 0.0
+                       :osc3-fm1-source 1
+                       :osc3-fm1-depth 0.1
+                       :osc3-fm1-lag 0
+                       :osc3-fm2-source 0
+                       :osc3-fm2-depth 0
+                       :osc3-fm2-lag 0
+                       :osc3-wave 0.00
+                       :osc3-wave1-source 3
+                       :osc3-wave1-depth 0
+                       :osc3-wave2-source 0
+                       :osc3-wave2-depth 0
+                       :osc3-amp 0
+                       :osc3-amp1-src 0
+                       :osc3-amp1-depth 0
+                       :osc3-amp1-lag 0
+                       :osc3-amp2-src 0
+                       :osc3-amp2-depth 0
+                       :osc3-amp2-lag 0
+                       :osc3-pan 0.0
+                       
+                       :noise-param 0.0
+                       :noise-lp 10000
+                       :noise-hp 10
+                       :noise-amp -99
+                       :noise-amp1-src 0
+                       :noise-amp1-depth 0
+                       :noise-amp1-lag 0
+                       :noise-amp2-src 0
+                       :noise-amp2-depth 0
+                       :noise-amp2-lag 0
+                       :noise-pan 0.5
+                       
+                       :ringmod-carrier -1.0
+                       :ringmod-modulator -1.0
+                       :ringmod-amp -99
+                       :ringmod-amp1-src 0
+                       :ringmod-amp1-depth 0
+                       :ringmod-amp1-lag 0
+                       :ringmod-amp2-src 0
+                       :ringmod-amp2-depth 0
+                       :ringmod-amp2-lag 0
+                       :ringmod-pan 0.5
+                       
+                       :distortion1-pregain 1.00
+                       :distortion1-param 0
+                       :distortion1-param-source 3
+                       :distortion1-param-depth 0
+                       :distortion1-mix 0.00
+                       
+                       :filter1-res 0.0
+                       :filter1-res-source 4
+                       :filter1-res-depth 0
+                       :filter1-freq 10000
+                       :filter1-freq1-source 0
+                       :filter1-freq1-depth 0
+                       :filter1-freq2-source 0
+                       :filter1-freq2-depth 0
+                       :filter1-pan -0.75
+                       :filter1-pan-source 0
+                       :filter1-pan-depth 0
+                       :filter1-mode 0
+                       :filter1-postgain 1.00
+                       
+                       :distortion2-pregain 1.00
+                       :distortion2-param 0
+                       :distortion2-param-source 3
+                       :distortion2-param-depth 0
+                       :distortion2-mix 0.00
+                       
+                       :filter2-res 0.0
+                       :filter2-res-source 0
+                       :filter2-res-depth 0
+                       :filter2-freq 10000
+                       :filter2-freq1-source 4
+                       :filter2-freq1-depth 0
+                       :filter2-freq2-source 0
+                       :filter2-freq2-depth 0
+                       :filter2-pan -0.75
+                       :filter2-pan-source 0
+                       :filter2-pan-depth 0
+                       :filter2-postgain 1.00
+                       
+                       :pitchshift-ratio 1.00
+                       :pitchshift-ratio-source 0
+                       :pitchshift-ratio-depth 0
+                       :pitchshift-pitch-dispersion 0
+                       :pitchshift-time-dispersion 0
+                       :pitchshift-mix -99
+                       
+                       :flanger-mod-source 0
+                       :flanger-mod-depth 0
+                       :flanger-lfo-amp 0.1
+                       :flanger-lfo-rate 1.0
+                       :flanger-feedback 0.5
+                       :flanger-mix -99
+                       :flanger-crossmix 0.0
+                       
+                       :echo1-delay 0.25
+                       :echo1-delay-source 0
+                       :echo1-delay-depth 0
+                       :echo1-feedback 0
+                       :echo1-damp 0.0
+                       :echo1-pan -0.25
+                       :echo1-amp-source 0
+                       :echo1-amp-depth 0
+                       :echo1-mix -99
+                       
+                       :echo2-delay 0.125
+                       :echo2-delay-source 0
+                       :echo2-delay-depth 0
+                       :echo2-feedback 0.5
+                       :echo2-damp 0.0
+                       :echo2-mix -99
+                       :echo2-amp-source 0
+                       :echo2-amp-depth 0
+                       :echo2-pan -0.25
+                       
+                       :env1-attack 0.000
+                       :env1-decay1 0.500
+                       :env1-decay2 0.500
+                       :env1-release 0.001
+                       :env1-peak 1.000
+                       :env1-breakpoint 1.000
+                       :env1-sustain 1.000
+                       :env1-invert 0
+                       
+                       :env2-attack 0.000
+                       :env2-decay1 0.500
+                       :env2-decay2 0.500
+                       :env2-release 0.001
+                       :env2-peak 1.000
+                       :env2-breakpoint 1.000
+                       :env2-sustain 1.000
+                       :env2-invert 0
+                       
+                       :env3-attack 0.000
+                       :env3-decay1 0.500
+                       :env3-decay2 0.500
+                       :env3-release 0.001
+                       :env3-peak 1.000
+                       :env3-breakpoint 1.000
+                       :env3-sustain 1.000
+                       
+                       :lfo1-freq1-source 0
+                       :lfo1-freq1-depth  7
+                       :lfo1-freq2-source 0
+                       :lfo1-freq2-depth  0
+                       :lfo1-wave1-source 0
+                       :lfo1-wave1-depth  0.5
+                       :lfo1-wave2-source 0
+                       :lfo1-wave2-depth  0
+                       
+                       :lfo2-freq1-source 0
+                       :lfo2-freq1-depth  3.5
+                       :lfo2-freq2-source 0
+                       :lfo2-freq2-depth  0
+                       :lfo2-wave1-source 0
+                       :lfo2-wave1-depth  0.5
+                       :lfo2-wave2-source 0
+                       :lfo2-wave2-depth  0
+                       
+                       :lfo3-freq1-source 0
+                       :lfo3-freq1-depth  1.75
+                       :lfo3-freq2-source 0
+                       :lfo3-freq2-depth  0
+                       :lfo3-wave1-source 0
+                       :lfo3-wave1-depth  0.5
+                       :lfo3-wave2-source 0
+                       :lfo3-wave2-depth  0
+                       
+                       :stepper1-trigger 4
+                       :stepper1-reset 32
+                       :stepper1-min -10
+                       :stepper1-max 10
+                       :stepper1-step 1
+                       :stepper1-reset-value -10
+                       :stepper1-bias 0
+                       :stepper1-scale 1/10
+                       
+                       :stepper2-trigger 5
+                       :stepper2-reset 32
+                       :stepper2-min -10
+                       :stepper2-max 10
+                       :stepper2-step 1
+                       :stepper2-reset-value -10
+                       :stepper2-bias 0
+                       :stepper2-scale 1/10
+                       
+                       :divider1-pw 0.5
+                       :divider1-p1 0.000
+                       :divider1-p3 0.000
+                       :divider1-p5 0.000
+                       :divider1-p7 1.000
+                       :divider1-bias 0.000
+                       :divider1-scale-source 0
+                       :divider1-scale-depth 1.0
+                       
+                       :divider2-pw 0.5
+                       :divider2-p2 0.000
+                       :divider2-p4 0.000
+                       :divider2-p6 0.000
+                       :divider2-p8 1.000
+                       :divider2-bias 0
+                       :divider2-scale-source 0
+                       :divider2-scale-depth 1.0
+                       
+                       :lfnoise-freq-source 0
+                       :lfnoise-freq-depth 1.0
+                       
+                       :sh-source 12
+                       :sh-rate 7
+                       :sh-bias 0
+                       :sh-scale 1
+                       
+                       :a-source1  4 ; LFO 1
+                       :a-depth1   1
+                       :a-source2 19 ; MIDI CC A
+                       :a-depth2   1
+                       :b-source1  5 ; LFO 2
+                       :b-depth1   1
+                       :b-source2  0
+                       :b-depth2   1
+                       :c-source1  1 ; ENV 1
+                       :c-depth1   1
+                       :c-source2  0
+                       :c-depth2   1
+                       :d-source1  2 ; ENV 2
+                       :d-depth1   1
+                       :d-source2  0
+                       :d-depth2   1
+                       :e-source1  7 ; Stepper 1
+                       :e-depth1   1
+                       :e-source2  0
+                       :e-depth2   1
+                       :f-source1 13 ; sample and Hold
+                       :f-depth1   0
+                       :f-source2  0
+                       :f-depth2   1
+                       :g-source1 20 ; MIDI CC B
+                       :g-depth1   0
+                       :g-source2  0
+                       :g-depth2   1
+                       :h-source1 18 ; Velocity
+                       :h-depth1   0
+                       :h-source2  0
+                       :h-depth2   1
+                       
+                       :dry-mix 0
+                       :port-time 0.00
+                       :amp 0.20
+                       :cc7->volume 0})

@@ -11,7 +11,7 @@
 
 (defn- noise [ied]
   (let [enable-change-listener* (atom true)
-        param-quality :noise-param
+        param-crackel :noise-param
         param-lp :noise-lp
         param-hp :noise-hp
         param-amp :noise-amp
@@ -22,18 +22,17 @@
         param-depth2 :noise-amp2-depth
         param-lag1 :noise-amp1-lag
         param-lag2 :noise-amp2-lag
-        slide-crackle (factory/slider param-quality 0.0 1.0 nil)
-        slide-lp (factory/slider param-lp 10.0 10000.0 nil)
-        slide-hp (factory/slider param-hp 10.0 10000.0 nil)
+        slide-crackle (factory/unit-slider param-crackel false)
+        slide-lp (factory/slider param-lp 10.0 10000.0 
+                                 (factory/slider-label-map "" "2.5k" "5k" "7.5k" "10.k"))
+        slide-hp (factory/slider param-hp 10.0 10000.0 
+                                 (factory/slider-label-map "" "2.5k" "5k" "7.5k" "10.k"))
         slide-amp (factory/mix-slider param-amp)
-        slide-pan (factory/slider param-pan -1.0 1.0 
-                                  (factory/pan-label-map))
-        slide-depth1 (factory/slider param-depth1 -1.0 1.0
-                                     (factory/signed-unit-label-map))
-        slide-depth2 (factory/slider param-depth2 -1.0 1.0
-                                     (factory/signed-unit-label-map))
-        slide-lag1 (factory/slider param-lag1 0.0 1.0 nil)
-        slide-lag2 (factory/slider param-lag2 0.0 1.0 nil)
+        slide-pan (factory/panner-slider param-pan)
+        slide-depth1 (factory/unit-slider param-depth1 true)
+        slide-depth2 (factory/unit-slider param-depth2 true)
+        slide-lag1 (factory/unit-slider param-lag1 false)
+        slide-lag2 (factory/unit-slider param-lag2 false)
         buspan1 (factory/matrix-outbus-panel ied param-src1)
         buspan2 (factory/matrix-outbus-panel ied param-src2)
         sliders [slide-crackle slide-lp slide-hp slide-amp slide-pan
@@ -66,7 +65,7 @@
                    (factory/sync-slider s data))
                  (reset! enable-change-listener* true))
         resetfn (fn []
-                  (let [data {param-quality 0.0, 
+                  (let [data {param-crackel 0.0, 
                               param-lp 10000.0
                               param-hp 1.0
                               param-amp 0.0
@@ -108,14 +107,11 @@
         slide-modulator (factory/slider param-modulator -1.0 1.0
                                         (factory/slider-label-map "Osc3" "" "" "" "Noise"))
         slide-amp (factory/mix-slider param-amp)
-        slide-pan (factory/slider param-pan -1.0 1.0 
-                                  (factory/pan-label-map))
-        slide-depth1 (factory/slider param-depth1 -1.0 1.0
-                                     (factory/signed-unit-label-map))
-        slide-depth2 (factory/slider param-depth2 -1.0 1.0
-                                     (factory/signed-unit-label-map))
-        slide-lag1 (factory/slider param-lag1 0.0 1.0 nil)
-        slide-lag2 (factory/slider param-lag2 0.0 1.0 nil)
+        slide-pan (factory/panner-slider param-pan)
+        slide-depth1 (factory/unit-slider param-depth1 true)
+        slide-depth2 (factory/unit-slider param-depth2 true)
+        slide-lag1 (factory/unit-slider param-lag1 false)
+        slide-lag2 (factory/unit-slider param-lag2 false)
         sliders [slide-carrier slide-modulator slide-amp slide-pan 
                  slide-depth1 slide-depth2 slide-lag1 slide-lag2]
         buspan1 (factory/matrix-outbus-panel ied param-src1)

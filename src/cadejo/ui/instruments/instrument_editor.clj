@@ -374,7 +374,8 @@
                 (let [prog (.clone (.initial-program descriptor))
                       bank (.parent-bank this)]
                   (.current-program! bank prog)
-                  (.sync-ui! this)))
+                  (.sync-ui! this)
+                  (.status! this "Initialized program")))
 
               (random-program! [this]
                 (let [prog (.random-program descriptor)
@@ -531,6 +532,7 @@
           (.setToolTipText jb-store-dec8 "Decrease program store location by 8")
           (.setToolTipText (.drawing-canvas nbar-store) "Program store location")))
     (.putClientProperty jb-help :topic (.help-topic descriptor))
+    (ss/listen jb-help :action (fn [_](println (ss/config pan-main :size)))) ;; DEBUG
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     ied))
                 

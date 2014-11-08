@@ -13,7 +13,6 @@
 (def ^:private icon-inc2 (lnf/read-icon :mini :up2))
 (def ^:private icon-dec1 (lnf/read-icon :mini :down1))
 (def ^:private icon-dec2 (lnf/read-icon :mini :down2))
-(def ^:private aux-panel-size [450 :by 465]) 
 
 (def bus-con (:con constants/general-bus-map))
 (def bus-a (:a constants/general-bus-map))
@@ -23,14 +22,7 @@
         param-detune (keyword (format "osc%d-detune" prefix))
         param-bias (keyword (format "osc%d-bias" prefix))
         spinner-size [100 :by 36]
-        spin-detune (let [model (ss/spinner-model 1.0 
-                                                  :from 0.0
-                                                  :to 32.000
-                                                  :by 0.001)
-                          s (ss/spinner :model model
-                                        :size spinner-size)]
-                      (.putClientProperty s :param param-detune)
-                      s)
+        spin-detune (factory/spinner param-detune 1.0 0.0 32.0 0.01)
         spin-bias (let [model (ss/spinner-model 0.0
                                                  :from -4000.0
                                                  :to 4000.0
@@ -43,43 +35,41 @@
                   (ss/listen b :action
                              (fn [_]
                                (let [v (.getValue spin-detune)]
-                                 (.setValue spin-detune (min 32 (inc v))))))
+                                 (.setValue spin-detune (double (min 32 (inc v)))))))
                   b)
         jb-inc2 (let [b (ss/button :icon icon-inc2 :size [18 :by 18])]
                   (ss/listen b :action (fn [_]
                                          (let [v1 (.getValue spin-detune)
                                                v2 (min 32 (* 2 v1))]
                                            (if (= v2 (* 2 v1))
-                                             (.setValue spin-detune v2)))))
+                                             (.setValue spin-detune (double v2))))))
                   b)
         jb-dec1 (let [b (ss/button :icon icon-dec1 :size [18 :by 18])]
                   (ss/listen b :action
                              (fn [_]
                                (let [v (.getValue spin-detune)]
-                                 (.setValue spin-detune (max 0 (dec v))))))
+                                 (.setValue spin-detune (double (max 0 (dec v)))))))
                   b)
         jb-dec2 (let [b (ss/button :icon icon-dec2 :size [18 :by 18])]
                   (ss/listen b :action
                              (fn [_]
                                (let [v1 (.getValue spin-detune)
                                      v2 (/ v1 2.0)]
-                                 (.setValue spin-detune v2))))
+                                 (.setValue spin-detune (double v2)))))
                   b)
         pan-inc1 (ss/vertical-panel :items [jb-inc1 jb-dec1])   ;; linear +-1
         pan-inc2 (ss/vertical-panel :items [jb-inc2 jb-dec2])   ;; By octaves
-        pan-detune (ss/horizontal-panel :items [spin-detune
-                                                pan-inc1 pan-inc2]
-                                        :border (factory/title "Detune"))
-        pan-bias (ss/horizontal-panel :items [spin-bias]
-                                      :border (factory/title "Bias"))
+        pan-detune (ss/border-panel :center spin-detune
+                                    :east (ss/horizontal-panel :items [pan-inc1 pan-inc2])
+                                    :south (ss/label :text "Detune" :halign :center))
+        pan-bias (factory/spinner-panel spin-bias "Bias")
         pan-main (ss/horizontal-panel :items [pan-detune pan-bias])
+        spinners [spin-detune spin-bias]
         syncfn (fn [data]
                  (reset! enable-change-listener* false)
-                 (let [dt (double (get data param-detune 1.0))
-                       bias (double (get data param-bias 0.0))]
-                 (.setValue spin-detune dt)
-                 (.setValue spin-bias bias)
-                 (reset! enable-change-listener* true)))
+                 (doseq [s spinners]
+                   (factory/sync-spinner s data))
+                 (reset! enable-change-listener* true))
         resetfn (fn []
                   (.setValue spin-detune 1.0)
                   (.setValue spin-bias 0.0))
@@ -90,12 +80,12 @@
                                     val (float (.getValue src))
                                     param (.getClientProperty src :param)]
                                 (.set-param! ied param val)))))]
-    (.addChangeListener spin-detune change-listener)
-    (.addChangeListener spin-bias change-listener)
-    {:pan-main pan-main
-     :syncfn syncfn
-     :resetfn resetfn
-     :id :detune-editor}))
+  (doseq [s spinners]
+    (.addChangeListener s change-listener))
+  {:pan-main pan-main
+   :syncfn syncfn
+   :resetfn resetfn
+   :id :detune-editor}))
 
 
 (defn- fm-editor [prefix ied jb-reset]
@@ -108,9 +98,8 @@
         param-fm2-lag (keyword (format "osc%d-fm2-lag" prefix))
         ;; FM1 panel
         buspanel-fm1 (factory/matrix-outbus-panel ied param-fm1-source)
-        slide-fm1-depth (factory/slider param-fm1-depth -1.0 1.0
-                                         (factory/signed-unit-label-map))
-        slide-fm1-lag (factory/slider param-fm1-lag 0.0 1.0 nil)
+        slide-fm1-depth (factory/unit-slider param-fm1-depth true)
+        slide-fm1-lag (factory/unit-slider param-fm1-lag false)
         pan-fm1 (ss/border-panel
                  :center (ss/horizontal-panel
                           :items [(factory/slider-panel slide-fm1-depth "Depth")
@@ -119,9 +108,8 @@
                  :border (factory/title "FM 1"))
         ;; FM2 panel
         buspanel-fm2 (factory/matrix-outbus-panel ied param-fm2-source)
-        slide-fm2-depth (factory/slider param-fm2-depth -1.0 1.0
-                                         (factory/signed-unit-label-map))
-        slide-fm2-lag (factory/slider param-fm2-lag 0.0 1.0 nil)
+        slide-fm2-depth (factory/unit-slider param-fm2-depth true)
+        slide-fm2-lag (factory/unit-slider param-fm2-lag false)
         pan-fm2 (ss/border-panel
                  :center (ss/horizontal-panel
                           :items [(factory/slider-panel slide-fm2-depth "Depth")
@@ -191,11 +179,9 @@
                                              p0 p25 p50 p75 p100))]
                      s)
         buspanel-wave1 (factory/matrix-outbus-panel ied param-wave1-source)
-        slide-wave1-depth (factory/slider param-wave1-depth -1.0 1.0
-                                           (factory/signed-unit-label-map))
+        slide-wave1-depth (factory/unit-slider param-wave1-depth true)
         buspanel-wave2 (factory/matrix-outbus-panel ied param-wave2-source)
-        slide-wave2-depth (factory/slider param-wave2-depth -1.0 1.0
-                                           (factory/signed-unit-label-map))
+        slide-wave2-depth (factory/unit-slider param-wave2-depth true)
         pan-w1 (ss/border-panel
                 :center (factory/slider-panel slide-wave1-depth "Depth")
                 :west (:panel buspanel-wave1)
@@ -211,13 +197,13 @@
         pan-wave (ss/border-panel
                   :west pan-wave-west
                   :center (ss/horizontal-panel :items [pan-w1 pan-w2]))
+        sliders [slide-wave slide-wave1-depth slide-wave2-depth]
         syncfn (fn [data]
                  (reset! enable-change-listener* false)
                  ((:syncfn buspanel-wave1) data)
                  ((:syncfn buspanel-wave2) data)
-                 (factory/sync-slider slide-wave data)
-                 (factory/sync-slider slide-wave1-depth data)
-                 (factory/sync-slider slide-wave2-depth data)
+                 (doseq [s sliders]
+                   (factory/sync-slider s data))
                  (reset! enable-change-listener* true))
         resetfn (fn []
                   (let [data {param-wave (get {1 0.0, 2 0.5, 3 0.5} prefix),
@@ -237,9 +223,8 @@
                                     pos (.getValue src)
                                     val (float (+ bias (* scale pos)))]
                                 (.set-param! ied param val)))))]
-    (.addChangeListener slide-wave change-listener)
-    (.addChangeListener slide-wave1-depth change-listener)
-    (.addChangeListener slide-wave2-depth change-listener)
+    (doseq [s sliders]
+      (.addChangeListener s change-listener))
     {:pan-main pan-wave
      :resetfn resetfn
      :syncfn syncfn}))
@@ -256,15 +241,13 @@
         param-amp2-lag (keyword (format "osc%d-amp2-lag" prefix))
         param-pan (keyword (format "osc%d-pan" prefix))
         slide-amp (factory/mix-slider param-amp)
-        slide-pan (factory/slider param-pan -1.0 1.0 (factory/pan-label-map))
+        slide-pan (factory/panner-slider param-pan)
         buspanel-amp1 (factory/matrix-outbus-panel ied param-amp1-source)
-        slide-amp1-depth (factory/slider param-amp1-depth -1.0 1.0
-                                          (factory/signed-unit-label-map))
-        slide-amp1-lag (factory/slider param-amp1-lag 0.0 1.0 nil)
+        slide-amp1-depth (factory/unit-slider param-amp1-depth true)
+        slide-amp1-lag (factory/unit-slider param-amp1-lag false)
         buspanel-amp2 (factory/matrix-outbus-panel ied param-amp2-source)
-        slide-amp2-depth (factory/slider param-amp2-depth -1.0 1.0
-                                          (factory/signed-unit-label-map))
-        slide-amp2-lag (factory/slider param-amp2-lag 0.0 1.0 nil)
+        slide-amp2-depth (factory/unit-slider param-amp2-depth true)
+        slide-amp2-lag (factory/unit-slider param-amp2-lag false)
         pan-a1 (ss/border-panel
                 :center (ss/horizontal-panel
                          :items [(factory/slider-panel slide-amp1-depth "Depth")
@@ -339,7 +322,7 @@
                                                              (:pan-main waveed)
                                                              (:pan-main amped)])
                                             :border (factory/title (format "OSC %s" prefix)))
-                           (Box/createHorizontalStrut 250)]))
+                           (Box/createHorizontalStrut 490)]))
         syncfn (fn [data]
                  (doseq [se [dted fmed waveed amped]]
                    (let [sfn (:sync-fn se)]

@@ -49,10 +49,10 @@
                          (factory/slider-panel slide-p4 "Noise")
                          (factory/slider-panel slide-p5 "Ring mod")]
                  :border (factory/title "Pan"))
-        pan-main (ss/scrollable
-                  (ss/grid-panel :columns 1
-                                 :items [pan-amp pan-pan]
-                                 :border (factory/title "Filter Input")))
+
+        pan-main (ss/grid-panel :columns 1
+                                :items [pan-amp pan-pan]
+                                :border (factory/title "Filter Input"))
         syncfn (fn [data]
                  (reset! enable-change-listener* false)
                  (doseq [s sliders]
@@ -227,7 +227,8 @@
                                        :border (factory/title "Mixer"))
         pan-south (ss/horizontal-panel :items [(:pan-main com)]
                                        :border (factory/title "Common"))
-        pan-main (ss/vertical-panel :items [pan-north pan-south])
+        pan-main (ss/scrollable 
+                  (ss/vertical-panel :items [pan-north pan-south]))
         widge-map {:pan-main pan-main}]
     (reify subedit/InstrumentSubEditor
       (widgets [this] {:pan-main pan-main})

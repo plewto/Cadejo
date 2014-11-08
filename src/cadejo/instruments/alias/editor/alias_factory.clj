@@ -3,7 +3,9 @@
   (:require [seesaw.core :as ss])
   (:require [cadejo.ui.util.factory])
   (:require [cadejo.ui.util.lnf :as lnf])
-  (:import java.util.Hashtable
+  (:import java.awt.Dimension
+   java.util.Hashtable
+           javax.swing.Box
            javax.swing.event.ChangeListener
            javax.swing.event.ListSelectionListener
            ))
@@ -91,14 +93,17 @@
                   (doseq [[sym val][[:A  1][:B  2][:C  3] 
                                     [:D  4][:E  5][:F  6] 
                                     [:G  7][:H  8][:CON 0]]]
-                    (let [b (ss/toggle :text (name sym) :group grp)]
+                    (let [b (ss/toggle :text (name sym) 
+                                       :group grp
+                                       :size [48 :by 48])]
                       (.putClientProperty b :param param)
                       (.putClientProperty b :bus-number val)
                       (.putClientProperty b :bus-name sym)
                       (ss/listen b :action action)
                       (swap! acc* (fn [q](assoc q val b)))))
                   @acc*)
-        panel (ss/grid-panel :rows 3 :columns 3 :items (vals buttons))
+        panel (ss/grid-panel :rows 3 :columns 3 :items (vals buttons)
+                             :size [145 :by 177])
         syncfn (fn [data]
                  (let [busnum (get data param)
                        b (get buttons busnum)]
@@ -124,7 +129,7 @@
 ;                                 Spinners
 
 (defn spinner [param ival minval maxval step]
-  (let [m (ss/spinner-model ival :from minval :to maxval :step step)
+  (let [m (ss/spinner-model ival :from minval :to maxval :by step)
         s (ss/spinner :model m)]
     (.putClientProperty s :param param)
     (.putClientProperty s :scale 1.0)
@@ -176,8 +181,11 @@
 (defn pan-label-map []
   (slider-label-map "F2" "" "" "" "F1"))
 
-(def ^:private slider-width 50)
-(def ^:private slider-height 100)
+(def slider-size [64 :by 175])
+
+(defn blank-slider []
+  (Box/createRigidArea (Dimension. (first slider-size)
+                                    (last slider-size))))
 
 ;; Returns vertical JSlider with 100 positions.
 ;; param - keyword parameter thias slider controls
@@ -203,8 +211,7 @@
                      :snap-to-ticks? false
                      :paint-labels? labmap
                      :minor-tick-spacing 5
-                     :major-tick-spacing 25
-                     :size [slider-width :by slider-height])]
+                     :major-tick-spacing 25)]
     (if (= (type labmap) Hashtable)
       (.setLabelTable s labmap))
     (.putClientProperty s :param param)
@@ -214,14 +221,15 @@
     (.putClientProperty s :rvs-bias rvs-bias)
     s))
 
+;; Creates amplitude slider with DB units.
+;;
 (defn mix-slider [param]
   (let [s (ss/slider :orientation :vertical
                      :value 0 :min -99 :max 0 
                      :snap-to-ticks? false
                      :paint-labels? true
                      :minor-tick-spacing 6
-                     :major-tick-spacing 24
-                     :size [slider-width :by slider-height])]
+                     :major-tick-spacing 24)]
     (.putClientProperty s :param param)
     (.putClientProperty s :scale 1.0)
     (.putClientProperty s :bias 0.0)
@@ -229,13 +237,26 @@
     (.putClientProperty s :rvs-bias 0.0)
     s))
 
+(defn unit-slider [param signed]
+  (if signed
+    (slider param -1.0 1.0 (signed-unit-label-map))
+    (slider param 0.0 1.0 (unsigned-unit-label-map))))
+
+(defn panner-slider 
+  ([param lab-map]
+     (slider param -1.0 1.0 lab-map))
+  ([param]
+     (panner-slider param (pan-label-map))))
+
+
 ;; Returns border panel holding slider and label
 ;;
 (defn slider-panel 
   ([slider text]
      (ss/border-panel :center slider
                       :south (ss/label :text (str text)
-                                       :halign :center)))
+                                       :halign :center)
+                      :size slider-size))
   ([slider text size]
      (let [p (slider-panel slider text)]
        (ss/config! p :size size)

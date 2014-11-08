@@ -2,7 +2,8 @@
   (:require [cadejo.instruments.alias.editor.alias-factory :as factory])
   (:require [cadejo.ui.instruments.subedit :as subedit])
   (:require [seesaw.core :as ss])
-  (:import javax.swing.event.ChangeListener))
+  (:import javax.swing.Box
+           javax.swing.event.ChangeListener))
 
 (defn- steped [prefix ied]
   (let [enable-change-listener* (atom true)
@@ -65,8 +66,12 @@
 (defn step-counter-editor [performance ied]
   (let [s1 (steped 1 ied)
         s2 (steped 2 ied)
-        pan-main (ss/vertical-panel :items [(:pan-main s1)
-                                            (:pan-main s2)])]
+        pan-main (ss/scrollable (ss/horizontal-panel 
+                                 :items [(ss/vertical-panel :items [(:pan-main s1)
+                                                                    (Box/createVerticalStrut 32)
+                                                                    (:pan-main s2)
+                                                                    (Box/createVerticalStrut 200)])
+                                         (Box/createHorizontalStrut 512)]))]
     (reify subedit/InstrumentSubEditor
       (widgets [this] {:pan-main pan-main})
       (widget [this key](get (.widgets this) key))

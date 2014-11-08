@@ -2,7 +2,8 @@
   (:require [cadejo.instruments.alias.editor.alias-factory :as factory])
   (:require [cadejo.ui.instruments.subedit :as subedit])
   (:require [seesaw.core :as ss])
-  (:import javax.swing.event.ChangeListener))
+  (:import javax.swing.Box
+           javax.swing.event.ChangeListener))
 
 
 (defn- snh [ied]
@@ -60,7 +61,7 @@
                             spin-depth]) 
          pan-main (ss/border-panel :north pan-north
                                    :center pan-center
-                                   :border (factory/title "Low Frequency Red"))
+                                   :border (factory/title "Low Frequency Noise"))
          syncfn (fn [data]
                   (reset! enable-change-listener* false)
                   (.setValue spin-depth (double (get data param-depth 1.0)))
@@ -84,8 +85,9 @@
 (defn sample-and-hold [performance ied]
   (let [s (snh ied)
         nse (lfnoise ied)
-        pan-main (ss/horizontal-panel :items [(:pan-main s)
-                                              (:pan-main nse)])
+        pan-main (ss/scrollable (ss/horizontal-panel :items [(:pan-main s)
+                                                             (:pan-main nse)
+                                                             (Box/createVerticalStrut 200)]))
         widget-map {:pan-main pan-main}]
     (reify subedit/InstrumentSubEditor
       (widgets [this] {:pan-main pan-main})

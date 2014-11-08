@@ -22,24 +22,22 @@
         param-depth (keyword (format "distortion%d-depth" prefix))
         param-mix (keyword (format "distortion%d-mix" prefix))
         buspan (factory/matrix-outbus-panel ied param-source)
-        slide-pregain (factory/slider param-pregain 1.0 16.0 true)
-        slide-clip (factory/slider param-clip 0.0 1.0 true)
-        slide-depth (factory/slider param-depth -1.0 1.0 
-                                    (factory/signed-unit-label-map))
+        slide-pregain (factory/slider param-pregain 1.0 16.0
+                                      (factory/slider-label-map "1" "4" "8" "12" "16"))
+        slide-clip (factory/unit-slider param-clip false)
+        slide-depth (factory/unit-slider param-depth true)
         slide-mix (factory/slider param-mix -1.0 1.0
                                   (factory/slider-label-map "Dry" "" "1/2" "" "Wet"))
         sliders [slide-pregain slide-clip slide-depth slide-mix]
         pan-west (ss/horizontal-panel 
                   :items [(factory/slider-panel slide-pregain "Pregain")
-                          (factory/slider-panel slide-clip "Clip")]
-                  :size [130 :by 200])
+                          (factory/slider-panel slide-clip "Clip")])
         pan-center (ss/horizontal-panel 
                     :items [(:panel buspan)
                             (factory/slider-panel slide-depth "Depth")
-                            (factory/slider-panel slide-mix "Mix")]
-                    :size [130 :by 200])
-        pan-main (ss/border-panel :west pan-west
-                                  :center pan-center
+                            (factory/slider-panel slide-mix "Mix")])
+        pan-main (ss/border-panel :north (Box/createVerticalStrut 52)
+                                  :center (ss/horizontal-panel :items [pan-west pan-center])
                                   :border (factory/title "Distortion"))
         syncfn (fn [data]
                  (reset! enable-change-listener* false)
@@ -71,56 +69,32 @@
      :syncfn syncfn
      :resetfn resetfn}))
 
-;; (defn- mode-editor [ied]
-;;   (let [enable-change-listener* (atom true)
-;;         param-mode :filter1-mode
-;;         slide-mode (factory/slider param-mode 0.0 1.0
-;;                                    (factory/slider-label-map 
-;;                                     "Low" "Low*High" "High" "Band" "Bypass"))
-;;         pan-main (factory/slider-panel slide-mode "Mode")
-;;         syncfn (fn [data]
-;;                  (reset! enable-change-listener* false)
-;;                  (factory/sync-slider slide-mode data)
-;;                  (reset! enable-change-listener* true))
-;;         resetfn (fn []
-;;                   (doseq [[p v]{param-mode 0.0}]
-;;                     (.set-param! ied p v)))
-;;         change-listener (proxy [ChangeListener][]
-;;                           (stateChanged [ev]
-;;                             (if @enable-change-listener*
-;;                               (let [src (.getSource ev)
-;;                                     param (.getClientProperty src :param)
-;;                                     scale (.getClientProperty src :scale)
-;;                                     bias (.getClientProperty src :bias)
-;;                                     pos (.getValue src)
-;;                                     val (float (+ bias (* scale pos)))]
-;;                                 (.set-param! ied param val)))))]
-;;     (.addChangeListener slide-mode change-listener)
-;;     {:pan-main pan-main
-;;      :syncfn syncfn
-;;      :resetfn resetfn}))
-
 (defn- mode-editor [ied]
-  (let [param-mode :filter1-mode
-        grp (ss/button-group)
-        jb-low (factory/toggle "Lowpass" :filter :low "Lowpass" grp)
-        jb-notch (factory/toggle "Low/High" :filter :notch "Ringmod low and high pass filters" grp)
-        jb-high (factory/toggle "Highpass" :filter :high "Highpass" grp)
-        jb-band (factory/toggle "Bandpass" :filter :band "Bandpass"grp)
-        jb-bypass (factory/toggle "Bypass" :filter :none "Bypass" grp)
-        pan-main (ss/grid-panel 
-                  :columns 1
-                  :items [jb-bypass jb-band jb-high jb-notch jb-low])
-
+  (let [enable-change-listener* (atom true)
+        param-mode :filter1-mode
+        slide-mode (factory/slider param-mode 0.0 1.0 
+                                   (factory/slider-label-map 
+                                    "Low" "L*H" "High" "Band" "Off"))
+        pan-main (factory/slider-panel slide-mode "Mode")
         syncfn (fn [data]
-                 (println "ISSUE: filter mode-editor.syncfn not implemented")
-                 )
+                 (reset! enable-change-listener* false)
+                 (factory/sync-slider slide-mode data)
+                 (reset! enable-change-listener* true))
+        change-listener (proxy [ChangeListener][]
+                          (stateChanged [_]
+                            (if @enable-change-listener*
+                              (let [scale (.getClientProperty slide-mode :scale)
+                                    bias (.getClientProperty slide-mode :bias)
+                                    pos (.getValue slide-mode)
+                                    value (float (+ bias (* scale pos)))]
+                                (.set-param! ied param-mode value)))))
         resetfn (fn []
-                  )
-        ]
+                   (.setValue slide-mode 0))]
+    (.addChangeListener slide-mode change-listener)
     {:pan-main pan-main
      :syncfn syncfn
      :resetfn resetfn}))
+
 
 (defn- freq-editor [prefix ied]
   (let [enable-change-listener* (atom true)
@@ -129,20 +103,9 @@
         param-source2 (keyword (format "filter%d-freq2-source" prefix))
         param-depth1 (keyword (format "filter%d-freq1-depth" prefix))
         param-depth2 (keyword (format "filter%d-freq2-depth" prefix))
-        spinner-size [100 :by 36]
-        spin-freq (let [model (ss/spinner-model 1000.0 :from 10.0 :to 10000.0 :by 100.0)
-                        s (ss/spinner :model model
-                                      :size spinner-size)]
-                    (.putClientProperty s :param param-freq)
-                    (.putClientProperty s :scale 1.0)
-                    (.putClientProperty s :rvs-scale 1.0)
-                    (.putClientProperty s :bias 0.0)
-                    (.putClientProperty s :rvs-bias 0.0)
-                    s)
-        slide-depth1 (factory/slider param-depth1 -1.0 1.0 
-                                     (factory/signed-unit-label-map))
-        slide-depth2 (factory/slider param-depth2 -1.0 1.0 
-                                     (factory/signed-unit-label-map))
+        spin-freq (factory/spinner param-freq 1000.0 10.0 10000.0 100.0)
+        slide-depth1 (factory/unit-slider param-depth1 true)
+        slide-depth2 (factory/unit-slider param-depth2 true)
         buspan1 (factory/matrix-outbus-panel ied param-source1)
         buspan2 (factory/matrix-outbus-panel ied param-source2)
         pan-1 (ss/horizontal-panel :items [(:panel buspan1)
@@ -195,14 +158,14 @@
         param-source (keyword (format "filter%d-res-source" prefix))
         param-depth (keyword (format "filter%d-res-depth" prefix))
         buspan (factory/matrix-outbus-panel ied param-source)
-        slide-res (factory/slider param-res 0.0 1.0 
-                                  (factory/unsigned-unit-label-map))
-        slide-depth (factory/slider param-depth -1.0 1.0 
-                                    (factory/signed-unit-label-map))
+        slide-res (factory/unit-slider param-res false)
+        slide-depth (factory/unit-slider param-depth true)
         pan-main (ss/horizontal-panel
-                  :items [(factory/slider-panel slide-res "Res")
+                  :items [(factory/blank-slider)
+                          (factory/slider-panel slide-res "Res")
                           (:panel buspan)
-                          (factory/slider-panel slide-depth "Depth")]
+                          (factory/slider-panel slide-depth "Depth")
+                          (factory/blank-slider)]
                   :border (factory/title "Resonance"))
         sliders [slide-res slide-depth]
         syncfn (fn [data]
@@ -240,12 +203,9 @@
         param-depth (keyword (format "filter%d-pan-depth" prefix))
         param-gain (keyword (format "filter%d-postgain" prefix))
         buspan (factory/matrix-outbus-panel ied param-source)
-        slide-pan (factory/slider param-pan -1.0 1.0 
-                                  (factory/signed-unit-label-map))
-        slide-depth (factory/slider param-depth -1.0 1.0 
-                                    (factory/signed-unit-label-map))
-        slide-gain (factory/slider param-gain 0.0 1.0
-                                   (factory/unsigned-unit-label-map))
+        slide-pan (factory/unit-slider param-pan true)
+        slide-depth (factory/unit-slider param-depth true)
+        slide-gain (factory/unit-slider param-gain false)
         pan-main (ss/horizontal-panel
                   :items [(factory/slider-panel slide-pan "Pan")
                           (:panel buspan)
@@ -292,13 +252,17 @@
         out (pan-editor prefix ied)
         pan-north (ss/horizontal-panel 
                    :items [(:pan-main dst)
+                           (:pan-main freq)
                            (if mode (:pan-main mode)(Box/createHorizontalStrut 8))
-                           (:pan-main freq)])
+                           (Box/createHorizontalStrut 315)])
         pan-south (ss/horizontal-panel
                    :items [(:pan-main res)
-                           (:pan-main out)])
+                           (:pan-main out)
+                           (Box/createHorizontalStrut 189)])
         pan-main (ss/vertical-panel
-                  :items [pan-north pan-south]
+                  :items [pan-north
+                          pan-south
+                          (Box/createVerticalStrut 120)]
                   :border (factory/title (format "Filter %d" prefix)))
         widget-map {:pan-main pan-main}]
     (reify subedit/InstrumentSubEditor
