@@ -1,4 +1,5 @@
-(ns sgwr.util.math)
+(ns sgwr.util.math
+  (:require [clojure.math.numeric-tower]))
 
 (def ^:private k-rad (/ Math/PI 180))
 (def ^:private k-deg (/ 1 k-rad))
@@ -10,6 +11,10 @@
 (defn rad->deg [r]
   "Convert radians to degrees"
   (* r k-deg))
+
+(def expt 
+  "(expt x e) --> x^e  Returns x raised to the power e"
+  clojure.math.numeric-tower/expt)
 
 (defn abs [n]
   (Math/abs n))

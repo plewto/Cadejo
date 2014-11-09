@@ -86,6 +86,78 @@
                      (.color! (.attributes e) @active*))))]
        sd)))
 
+
+;; (defn mini-digit [drw x y]
+;;   (let [w 18
+;;         h 28
+;;         inactive* (atom (uc/color [32 32 32]))
+;;         active* (atom (uc/color :red))
+;;         x0 x
+;;         x1 (+ x w)
+;;         xc (* 1/2 (+ x0 x1))
+;;         y0 y
+;;         y1 (+ y h)
+;;         yc (* 1/2 (+ y0 y1))]
+;;     (.style! drw 0)
+;;     (.width! drw 1)
+;;     (.color! drw @inactive*)
+;;     (.fill! drw true)
+;;     (let [dp (.circle! drw [xc yc] 3)
+;;           a (.line! drw [x0 y0][x1 y0])
+;;           b (.line! drw [x1 yc])
+;;           c (.line! drw [x1 y1])
+;;           d (.line! drw [x0 y1])
+;;           e (.line! drw [x0 yc])
+;;           f (.line! drw [x0 y0])
+;;           g (.line! drw [x0 yc][x1 yc])
+;;           char-map {\space []
+;;                      0 [a b c d e f]
+;;                      1 [b c]
+;;                      2 [a b g e d]
+;;                      3 [a b c d g]
+;;                      4 [f g b c]
+;;                      5 [a f g c d]
+;;                      6 [a f g e d c]
+;;                      7 [a b c]
+;;                      8 [a b c d e f g]
+;;                      9 [a b g f c d]
+;;                      \. [dp]
+;;                      \0 [a b c d e f]
+;;                      \1 [b c]
+;;                      \2 [a b g e d]
+;;                      \3 [a b c d g]
+;;                      \4 [f g b c]
+;;                      \5 [a f g c d]
+;;                      \6 [a f g e d c]
+;;                      \7 [a b c]
+;;                      \8 [a b c d e f g]
+;;                      \9 [a b g f c d]}
+;;           all-off (fn []
+;;                     (doseq [q [a b c d e f g dp]]
+;;                       (.color! (.attributes q) @inactive*)))
+;;           md (reify ComplexDisplay
+;;                (width [this] w)
+;; 
+;;                (height [this] h)
+;; 
+;;                (colors! [this inactive active]
+;;                  (reset! inactive* (uc/color inactive))
+;;                  (reset! active* (uc/color active))
+;;                  [@inactive* @active*])
+;; 
+;;                (elements [this]
+;;                  {:a a :b b :c c :d d :e e :f f :g g :dp dp})
+;; 
+;;                (supported-characters [this]
+;;                  (keys char-map))
+;; 
+;;                (set-character! [this c]
+;;                  (all-off)
+;;                  (doseq [e (get char-map c [])]
+;;                    (.color! (.attributes e) @active*))))]
+;;       md)))
+;; 
+
 ; ---------------------------------------------------------------------- 
 ;                             7 Segment Display
 ;
@@ -139,6 +211,16 @@
              f (.line! drw [x1 y1][x2 y0])
              g (.line! drw [x1 y1][x4 y1])
              char-map {\space []
+                       0 [a b c d e f]
+                       1 [b c]
+                       2 [a b g e d]
+                       3 [a b c d g]
+                       4 [f g b c]
+                       5 [a f g c d]
+                       6 [a f g e d c]
+                       7 [a b c]
+                       8 [a b c d e f g]
+                       9 [a b g f c d]
                        \. [dp]
                        \0 [a b c d e f]
                        \1 [b c]
