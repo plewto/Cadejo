@@ -1,6 +1,7 @@
 (ns cadejo.instruments.alias.editor.alias-factory
   (:require [cadejo.instruments.alias.constants :as constants])
   (:require [seesaw.core :as ss])
+  (:require [seesaw.font :as ssf])
   (:require [cadejo.ui.util.factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:import java.awt.Dimension
@@ -17,6 +18,32 @@
 (def button cadejo.ui.util.factory/button)
 (def toggle cadejo.ui.util.factory/toggle)
 (def radio cadejo.ui.util.factory/radio)
+
+(def default-font (ssf/font :size 9 :name :serif))
+
+;; (def micro-font (ssf/font :size 7 :name :serif))
+;; (defn mini-button 
+;;   ([text subgroup]
+;;      (let [i (lnf/read-icon :mini subgroup)]
+;;        (ss/button :text text
+;;                   :font micro-font
+;;                   :icon i
+;;                   :size [36 :by 36])))
+;;   ([text]
+;;      (ss/button :text text
+;;                 :font micro-font
+;;                 :size [36 :by 36])))
+  
+  
+(def micro-button-size [18 :by 18])
+
+(defn micro-button [icon-subgroup tooltip-text]
+  (let [i (lnf/read-icon :mini icon-subgroup)
+        b (ss/button :icon i
+                     :size micro-button-size)]
+    (.setToolTipText b (str (or tooltip-text (name icon-subgroup))))
+    b))
+  
 
 
 (def ^:private control-bus-names ["CONSTANT" "ENV 1" "ENV 2" "ENV 3" "LFO 1"
@@ -74,14 +101,16 @@
     {:panel pan
      :syncfn syncfn}))
 
+;; **** DEPRECIATED use matrix-toolbar instead *******
 ;; Creates limited matrix output bus selection panel
 ;; Selection limited to buses A...G 
 ;; Returns map
 ;;  :panel - JPanel 
 ;;  :syncfn - (fn [data]) called on data to syn buttons to data
 ;;  :valuefn (fn), returns currently selected bus number or nil
-;;
+;; 
 (defn matrix-outbus-panel [ied param]
+  (println "DEPRECIATED *** alias-factory/matrix-outbus-panel ***")
   (let [grp (ss/button-group)
         selected* (atom nil)
         action (fn [ev]
@@ -125,6 +154,54 @@
      :resetfn resetfn
      :valuefn valuefn}))
 
+
+(defn matrix-toolbar [param ied]
+  (let [grp (ss/button-group)
+        selected* (atom nil)
+        action (fn [ev]
+                 (let [src (.getSource ev)
+                       bus-number (.getClientProperty src :bus-number)]
+                   (.set-param! ied param bus-number)))
+        buttons (let [acc* (atom (sorted-map))]
+                  (doseq [[sym val][[:A  1][:B  2][:C  3] 
+                                    [:D  4][:E  5][:F  6] 
+                                    [:G  7][:H  8][:CON 0]]]
+                    (let [lab (if (= sym :CON) "1" (name sym))
+                          b (ss/toggle :text lab
+                                       :group grp
+                                       :font default-font
+                                       :size [48 :by 48])]
+                      (.putClientProperty b :param param)
+                      (.putClientProperty b :bus-number val)
+                      (.putClientProperty b :bus-name sym)
+                      (ss/listen b :action action)
+                      (swap! acc* (fn [q](assoc q val b)))))
+                  @acc*)
+        panel (ss/grid-panel :rows 3 :columns 3 :items (vals buttons))
+
+        syncfn (fn [data]
+                 (let [busnum (get data param)
+                       b (get buttons busnum)]
+                   (.clearSelection grp)
+                   (reset! selected* nil)
+                   (if b 
+                     (do 
+                       (.setSelected b true)
+                       (reset! selected* b)))))
+        resetfn (fn []
+                  (.doClick (get buttons 23)))
+        valuefn (fn []
+                  (let [b @selected*]
+                    (if b 
+                      (.getClientProperty b :bus-number)
+                      nil)))]
+    {:panel panel
+     :buttons buttons
+     :syncfn syncfn
+     :resetfn resetfn
+     :valuefn valuefn}))
+
+
 ; ---------------------------------------------------------------------- 
 ;                                 Spinners
 
@@ -165,23 +242,24 @@
 ;;
 (defn slider-label-map [p0 p25 p50 p75 p100]
   (let [ht (Hashtable. 5)]
-    (.put ht (int 0)(ss/label :text (str p0)))
-    (.put ht (int 25)(ss/label :text (str p25)))
-    (.put ht (int 50)(ss/label :text (str p50)))
-    (.put ht (int 75)(ss/label :text (str p75)))
-    (.put ht (int 100)(ss/label :text (str p100)))
+    (.put ht (int 0)(ss/label :text (str p0) :font default-font))
+    (.put ht (int 25)(ss/label :text (str p25) :font default-font))
+    (.put ht (int 50)(ss/label :text (str p50) :font default-font))
+    (.put ht (int 75)(ss/label :text (str p75) :font default-font))
+    (.put ht (int 100)(ss/label :text (str p100) :font default-font))
     ht))
 
 (defn signed-unit-label-map []
-  (slider-label-map "-1.0" "-0.5" " 0.0" "+0.5" "+1.0"))
+  (slider-label-map "-1.0" "" " 0.0" "" "+1.0"))
 
 (defn unsigned-unit-label-map []
-  (slider-label-map "0.00" "0.25" "0.50" "0.75" "1.00"))
+  (slider-label-map "0.00" "" "0.50" "" "1.00"))
 
 (defn pan-label-map []
   (slider-label-map "F2" "" "" "" "F1"))
 
-(def slider-size [64 :by 175])
+(def slider-size [56 :by 175])
+(def half-slider-size [56 :by 87])
 
 (defn blank-slider []
   (Box/createRigidArea (Dimension. (first slider-size)
@@ -225,9 +303,10 @@
 ;;
 (defn mix-slider [param]
   (let [s (ss/slider :orientation :vertical
-                     :value 0 :min -99 :max 0 
+                     :value 0 :min -48 :max 0 
                      :snap-to-ticks? false
                      :paint-labels? true
+                     :font default-font
                      :minor-tick-spacing 6
                      :major-tick-spacing 24)]
     (.putClientProperty s :param param)
@@ -237,10 +316,13 @@
     (.putClientProperty s :rvs-bias 0.0)
     s))
 
-(defn unit-slider [param signed]
-  (if signed
-    (slider param -1.0 1.0 (signed-unit-label-map))
-    (slider param 0.0 1.0 (unsigned-unit-label-map))))
+(defn unit-slider 
+  ([param signed]
+     (if signed
+       (slider param -1.0 1.0 (signed-unit-label-map))
+       (slider param 0.0 1.0 (unsigned-unit-label-map))))
+  ([param]
+     (unit-slider param false)))
 
 (defn panner-slider 
   ([param lab-map]
@@ -255,13 +337,17 @@
   ([slider text]
      (ss/border-panel :center slider
                       :south (ss/label :text (str text)
+                                       :font default-font
                                        :halign :center)
                       :size slider-size))
   ([slider text size]
      (let [p (slider-panel slider text)]
        (ss/config! p :size size)
        p)))
-                                       
+  
+(defn half-slider-panel [slider text]
+  (slider-panel slider text half-slider-size))
+                                     
   
 ;; Returns slider value. 
 ;; Note this is mapped 'real' value as required by program data
