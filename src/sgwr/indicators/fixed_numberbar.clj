@@ -1,4 +1,4 @@
-(ns sgwr.indiciators.fixed-numberbar
+(ns sgwr.indicators.fixed-numberbar
   "Defines GUI component for fixed-point numeric display
 where each digit has integral increment and decrement buttons."
   (:require [sgwr.drawing])
@@ -142,7 +142,7 @@ where each digit has integral increment and decrement buttons."
 
 (defn sign-character  [drw x-offset y-offset]
   "Place sign character with integrated buttons on drawing.
-  Returns map, see digit-character")
+  Returns map, see digit-character"
   (.width! drw 1)
   (.fill! drw false)
   (let [x0 (+ 4 x-offset pad)
@@ -253,7 +253,7 @@ where each digit has integral increment and decrement buttons."
                      (swap! acc* (fn [q](conj q d)))))
                  @acc*)
         pd (if (and decimal-point (pos? decimal-point))
-             (let [x (- w pad (* decimal-point horizontal-digit-offset))
+             (let [x (+ x-offset (- w (* 2 pad) (* decimal-point horizontal-digit-offset)))
                    y (+ y-offset pad (* 2 segment-height))]
                (.color! drw (uc/color :red))
                (.style! drw 1)
@@ -276,7 +276,8 @@ where each digit has integral increment and decrement buttons."
                     (let [n (int (/ value @probe*))]
                       ((:setfn d) (rem n 10))
                       (swap! probe* (fn [q](* 1/10 q)))))
-                  ((:setfn sign-char) n)))
+                  ((:setfn sign-char) n)
+                  (.render drw)))
         valuefn (fn []
                   (let [acc* (atom 0)]
                     (doseq [d digits]
@@ -306,6 +307,7 @@ where each digit has integral increment and decrement buttons."
                                                (.select! (.attributes b) flag)))
                                            (.render drw)))))
     {:drawing drw
+     :drawing-canvas (.drawing-canvas drw)
      :setfn setfn
      :valuefn valuefn
      :set-hook (fn [hf](reset! hook* hf))
