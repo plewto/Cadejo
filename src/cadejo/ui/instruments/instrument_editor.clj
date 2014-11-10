@@ -22,6 +22,7 @@
    javax.swing.Box
    javax.swing.JFileChooser))
 
+
 (def ^:private max-program-number 128)
 
 (defn- third [col](nth col 2))
@@ -112,7 +113,7 @@
                       name (.program-name prog)
                       remarks (.program-remarks prog)]
                   (ss/config! txt-name :text name)
-                  (ss/config! txt-remarks :text remarks))) )]
+                  (ss/config! txt-remarks :text remarks))))]
     
     (.addFocusListener txt-name 
                        (proxy [FocusListener][]
@@ -179,6 +180,11 @@
 
   (warning! 
     [this msg])
+
+  ;; If flag true place progress bar into 'indeterminate' mode
+  ;; if flag false restore progress bar to default state
+  (working
+    [this flag])
 
   (pp
     [this]
@@ -264,10 +270,12 @@
                                                 pan-store-inc1
                                                 pan-store-inc8
                                                 jb-store])
-       
-        pan-south1 (ss/border-panel :center (ss/horizontal-panel :items [jb-init jb-dice])
-                                    :east pan-store
-                                    :border (factory/padding))
+        progress-bar (ss/progress-bar :indeterminate? false)
+        pan-south1 (ss/border-panel 
+                    :west progress-bar
+                    :center (ss/horizontal-panel :items [jb-init jb-dice])
+                    :east pan-store
+                    :border (factory/padding))
 
         lab-status (ss/label :text " ")
         lab-name (ss/label :text " ")
@@ -287,19 +295,16 @@
         pan-main (ss/border-panel :north pan-north
                                   :center pan-tabs
                                   :south pan-south)
-                                 
         frame (ss/frame :title (format "%s Editor" (name id))
                         :content pan-main
                         :on-close :hide
                         :size [1050 :by 650]
                         :icon (.logo descriptor :tiny))
-                                  
         widget-map {:jb-help jb-help
                     :lab-name lab-name
                     :pan-main pan-main
                     :pan-tabs pan-tabs
                     :frame frame}
-        
         ied (reify InstrumentEditor
               
               (parent-performance [this] performance)
@@ -314,8 +319,17 @@
 
               (add-sub-editor! [this label icon subed]
                 (swap! sub-editors* (fn [n](conj n subed)))
-                (.addTab pan-tabs label icon (.widget subed :pan-main))
-                (.parent! subed this))
+                (let [pan-main (.widget subed :pan-main)]
+                  (cond (and (config/enable-button-text)
+                             (config/enable-button-icons))
+                        (.addTab pan-tabs label icon pan-main)
+
+                        (config/enable-button-icons)
+                        (.addTab pan-tabs "" icon pan-main)
+
+                        :default
+                        (.addTab pan-tabs label))
+                  (.parent! subed this)))
 
               (current-program [this]
                 (.current-program bank))
@@ -354,6 +368,9 @@
 
               (warning! [this msg]
                 (ss/config! lab-status :text (format "WARNING: %s" msg)))
+
+              (working [this flag]
+                (ss/config! progress-bar :indeterminate? flag))
 
               (pp [this]
                 (let [prog (.current-program this)]
