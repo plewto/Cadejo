@@ -3,7 +3,7 @@
   (:require [cadejo.ui.instruments.subedit :as subedit])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.instruments.alias.editor.osc-editor :as osced])
-  ;; (:require [cadejo.instruments.alias.editor.noise-editor :as noiseed])
+  (:require [cadejo.instruments.alias.editor.noise-editor :as noiseed])
   ;; (:require [cadejo.instruments.alias.editor.filter-editor :as filter])
   ;; (:require [cadejo.instruments.alias.editor.efx-editor :as efxed])
   ;; (:require [cadejo.instruments.alias.editor.mixer-editor :as mixer])
@@ -22,7 +22,7 @@
 (defn alias-editor [performance]
   (let [ied (ied/instrument-editor performance)
         osc (osced/osc-editor performance ied)
-        ;; noise (noiseed/noise-editor performance ied)
+        noise (noiseed/noise-editor performance ied)
         ;; f1 (filter/filter-editor 1 performance ied)
         ;; f2 (filter/filter-editor 2 performance ied)
         ;; efx (efxed/efx-editor performance ied)
@@ -39,8 +39,7 @@
         ;; mated (matrix/matrix-editor performance ied)
         ]
     (.add-sub-editor! ied "OSC" osc)
-   
-    ;; (.add-sub-editor! ied "Noise" noise)
+    (.add-sub-editor! ied "Noise" noise)
     ;; (.add-sub-editor! ied "Filter 1" f1)
     ;; (.add-sub-editor! ied "Filter 2" f2)
     ;; (.add-sub-editor! ied "EFX" efx)
