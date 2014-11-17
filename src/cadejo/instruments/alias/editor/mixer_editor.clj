@@ -1,9 +1,35 @@
 (ns cadejo.instruments.alias.editor.mixer-editor
+  (:require [cadejo.instruments.alias.constants :as constants])
   (:require [cadejo.instruments.alias.editor.alias-factory :as factory])
   (:require [cadejo.ui.instruments.subedit :as subedit])
+  (:require [cadejo.ui.util.help :as help])
+  (:require [cadejo.ui.util.icon])
+  (:require [cadejo.util.math :as math])
   (:require [seesaw.core :as ss])
   (:import javax.swing.Box
+           javax.swing.SwingUtilities
            javax.swing.event.ChangeListener))
+
+(def block-diagram (cadejo.ui.util.icon/logo-file "alias_diagram1" nil))
+
+(defn- mixer-dice [ied]
+  (let [a1 (rand-nth [0 0 0 0 -3 -3 -6 -9 -12])
+        a2 (rand-nth [0 0 0 0 -3 -3 -6 -9 -12])
+        a3 (rand-nth [0 0 0 0 -3 -3 -6 -9 -12])
+        a4 (math/coin 0.75 -48 (rand-nth [0 -3 -6 -9]))
+        a5 (math/coin 0.75 -48 (rand-nth [0 -3 -6 -9]))
+        data {:osc1-amp a1 :osc2-amp a2 :osc3-amp a3 :noise-amp a4 :ringmod-amp a5
+              :osc1-pan (rand) :osc2-pan (rand) :osc3-pan (rand) :noise-pan (rand) :ringmod-pan (rand)
+              :filter1-pan (rand)
+              :filter2-pan (rand)
+              :pitchshift-mix (math/coin 0.5 -48 (rand-nth [-3 -6 -9 -12]))
+              :flanger-mix (math/coin 0.5 -48 (rand-nth [-3 -6 -9 -12]))
+              :echo1-mix (math/coin 0.6 -48 (rand-nth [-3 -6 -9 -12]))
+              :echo2-mix (math/coin 0.6 -48 (rand-nth [-3 -6 -9 -12]))}]
+    (doseq [[p v] data]
+      (.set-param! ied p v))
+    (.sync-ui! ied)
+    (.status! ied "Set random mixer values")))
 
 (defn- filter-in [ied]
   (let [enable-change-listener* (atom true)
@@ -70,6 +96,8 @@
                                 (.set-param! ied param val)))))]
     (doseq [s sliders]
       (.addChangeListener s change-listener))
+    (doseq [s sliders-pan]
+      (ss/config! s :inverted? true))
     {:pan-main pan-main
      :syncfn syncfn}))
 
@@ -216,20 +244,47 @@
      :syncfn syncfn}))
 
 (defn mixer [performance ied]
-  (let [pre (filter-in ied)
+  (let [lab-diagram (ss/label :icon block-diagram
+                              :border (factory/padding 16))
+        pre (filter-in ied)
         post (filter-out ied)
         efx (efx-out ied)
         com (common ied)
         subed [pre post efx com]
+        micro-buttons (factory/micro-button-panel :alias-mixer)
         pan-north (ss/horizontal-panel :items [(:pan-main pre)
                                                (:pan-main post)
                                                (:pan-main efx)]
                                        :border (factory/title "Mixer"))
         pan-south (ss/horizontal-panel :items [(:pan-main com)]
                                        :border (factory/title "Common"))
+        pan-west (:panel micro-buttons)
         pan-main (ss/scrollable 
-                  (ss/vertical-panel :items [pan-north pan-south]))
-        widge-map {:pan-main pan-main}]
+                  (ss/border-panel 
+                   :west pan-west
+                   :center (ss/vertical-panel :items [pan-north pan-south])
+                   :east lab-diagram))
+        widget-map {:pan-main pan-main}]
+    (ss/listen (:jb-init micro-buttons) 
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (let [data constants/initial-program-mixer]
+                                (doseq [[p v] data]
+                                  (.set-param! ied p v))
+                                (.sync-ui! ied)
+                                (.working ied false)
+                                (.status! ied "Mixer initialized")))))))
+    (ss/listen (:jb-dice micro-buttons) 
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (mixer-dice ied)
+                              (.working ied false))))))
     (reify subedit/InstrumentSubEditor
       (widgets [this] {:pan-main pan-main})
       (widget [this key](get (.widgets this) key))

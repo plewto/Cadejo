@@ -81,7 +81,8 @@
      :syncfn syncfn}))
 
 (defn lfo-editor [performance ied]
-  (let [lfo1 (lfoed 1 ied)
+  (let [
+        lfo1 (lfoed 1 ied)
         lfo2 (lfoed 2 ied)
         lfo3 (lfoed 3 ied)
         pan-main (ss/grid-panel :columns 1

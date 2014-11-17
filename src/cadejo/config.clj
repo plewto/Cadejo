@@ -80,6 +80,7 @@
     "Used internally")
 
   (displaybar-colors!
+    [this bg inactive active button]
     [this bg inactive active])
   
   (displaybar-colors
@@ -194,7 +195,8 @@
         instruments* (atom nil)
         displaybar-colors* (atom [[  5  32   2]
                                   [ 77  58  83]
-                                  [245 244 207]])
+                                  [245 244 207]
+                                  [128 128 128]])
         envelope-colors* (atom [nil nil])
         cnfig (reify CadejoConfig
 
@@ -244,8 +246,11 @@
                 (current-skin! [this skin-name]
                   (reset! current-skin* skin-name))
 
+                (displaybar-colors! [this bg inactive active button]
+                  (reset! displaybar-colors* [bg inactive active button]))
+
                 (displaybar-colors! [this bg inactive active]
-                  (reset! displaybar-colors* [bg inactive active]))
+                  (reset! displaybar-colors* [bg inactive active active]))
 
                 (displaybar-colors [this]
                   @displaybar-colors*)
@@ -383,8 +388,11 @@
 (defn current-skin! [skin-name]
   (.current-skin! @current-config* skin-name))
 
-(defn displaybar-colors! [bg inactive active]
-  (.displaybar-colors! @current-config* bg inactive active))
+(defn displaybar-colors! 
+  ([bg inactive active button]
+     (.displaybar-colors! @current-config* bg inactive active button))
+  ([bg inactive active]
+     (displaybar-colors! bg inactive active active)))
 
 (defn displaybar-colors []
   (.displaybar-colors @current-config*))
@@ -492,7 +500,7 @@
 
 (load-gui! true)
 (initial-skin! "Twilight")
-(enable-pp! false)
+(enable-pp! true)
 (maximum-undo-count! 10)
 (warn-on-file-overwrite! true)
 (warn-on-unsaved-data! true)
@@ -501,6 +509,6 @@
 (enable-button-icons! true)
 
 ;; nil colors --> use LNF
-(displaybar-colors! [5 32 2][77 58 83][245 244 207])
-(envelope-colors! [5 32 2][245 244 207])
+(displaybar-colors! [5 32 2][77 58 83][245 244 207] :gray)
+(envelope-colors!   [5 32 2][245 244 207])
 ;(config-path "~/.cadejo")

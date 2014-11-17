@@ -30,13 +30,14 @@
         pan-reset (ss/border-panel :center (:panel bus-reset)
                                    :south (ss/label :text "Reset source"
                                                     :halign :center))
-        pan-east (ss/grid-panel :rows 3 :columns 2
+        pan-east (ss/grid-panel :rows 4 :columns 2
                                 :items [(factory/spinner-panel spin-min "Min")
                                         (factory/spinner-panel spin-reset "Reset")
                                         (factory/spinner-panel spin-max "Max")
                                         (factory/spinner-panel spin-bias "Bias")
                                         (factory/spinner-panel spin-step "Step")
-                                        (factory/spinner-panel spin-scale "Scale")])
+                                        (factory/spinner-panel spin-scale "Scale")
+                                        (ss/vertical-panel)(ss/vertical-panel)])
         pan-main (ss/border-panel 
                   :center (ss/horizontal-panel :items [pan-trigger pan-reset])
                   :east pan-east
@@ -66,12 +67,8 @@
 (defn step-counter-editor [performance ied]
   (let [s1 (steped 1 ied)
         s2 (steped 2 ied)
-        pan-main (ss/scrollable (ss/horizontal-panel 
-                                 :items [(ss/vertical-panel :items [(:pan-main s1)
-                                                                    (Box/createVerticalStrut 32)
-                                                                    (:pan-main s2)
-                                                                    (Box/createVerticalStrut 200)])
-                                         (Box/createHorizontalStrut 512)]))]
+        pan-main (ss/vertical-panel :items [(:pan-main s1)
+                                            (:pan-main s2)])]
     (reify subedit/InstrumentSubEditor
       (widgets [this] {:pan-main pan-main})
       (widget [this key](get (.widgets this) key))

@@ -85,9 +85,9 @@
 (defn sample-and-hold [performance ied]
   (let [s (snh ied)
         nse (lfnoise ied)
-        pan-main (ss/scrollable (ss/horizontal-panel :items [(:pan-main s)
-                                                             (:pan-main nse)
-                                                             (Box/createVerticalStrut 200)]))
+        pan-main (ss/border-panel :center (ss/vertical-panel :items [(:pan-main s)
+                                                                     (:pan-main nse)])
+                                  :east (Box/createHorizontalStrut 400))
         widget-map {:pan-main pan-main}]
     (reify subedit/InstrumentSubEditor
       (widgets [this] {:pan-main pan-main})

@@ -4,21 +4,99 @@
   (:require [cadejo.ui.instruments.subedit :as subedit])
   (:require [cadejo.ui.util.color-utilities :as cutil])
   (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [cadejo.ui.util.help :as help])
+  (:require [cadejo.util.math :as math])
   (:require [sgwr.drawing :as sgwr])
   (:require [seesaw.core :as ss])
   (:require [seesaw.border :as ssb])
   (:import java.awt.event.MouseListener
            java.awt.event.MouseMotionListener
            javax.swing.Box
-           javax.swing.SwingConstants))
+           javax.swing.SwingConstants
+           javax.swing.SwingUtilities))
 
-(def ^:private w 350)
-(def ^:private h 150)
-(def ^:private sustain-time 0.5)
+(def ^:private w 1050)
+(def ^:private h 175)
+(def ^:private sustain-time 1.0)
 
-(defn- enved [prefix ied]
+(def ^:private clipboard* (atom {:attack 0.0
+                                 :decay1 1.0
+                                 :decay2 1.0
+                                 :release 0.0
+                                 :peak 1.0 
+                                 :breakpoint 1.0
+                                 :sustain 1.0}))
+
+(defn- copyfn [prefix ied data]
+  (let  [param (fn [suffix](keyword (format "env%d-%s" prefix suffix)))
+         param-attack (param "attack")
+         param-decay1 (param "decay1")
+         param-decay2 (param "decay2")
+         param-release (param "release")
+         param-peak (param "peak")
+         param-sustain (param "sustain")
+         param-breakpoint (param "breakpoint")]
+    (reset! clipboard* {:attack (param-attack data)
+                        :decay1 (param-decay1 data)
+                        :decay2 (param-decay2 data)
+                        :release (param-release data)
+                        :peak (param-peak data)
+                        :breakpoint (param-breakpoint data)
+                        :sustain (param-sustain data)})
+    (.status! ied (format "Envelope %s copied to clipboard" prefix))))
+         
+(defn- pastefn [prefix]
+  (let  [param (fn [suffix](keyword (format "env%d-%s" prefix suffix)))
+         param-attack (param "attack")
+         param-decay1 (param "decay1")
+         param-decay2 (param "decay2")
+         param-release (param "release")
+         param-peak (param "peak")
+         param-sustain (param "sustain")
+         param-breakpoint (param "breakpoint")
+         data @clipboard*]
+    {param-attack (:attack data)
+     param-decay1 (:decay1 data)
+     param-decay2 (:decay2 data)
+     param-release (:release data)
+     param-peak (:peak data)
+     param-breakpoint (:breakpoint data)
+     param-sustain (:sustain data)}))
+
+(defn- dicefn [prefix]
+  (let [param (fn [suffix](keyword (format "env%d-%s" prefix suffix)))
+        param-attack (param "attack")
+        param-decay1 (param "decay1")
+        param-decay2 (param "decay2")
+        param-release (param "release")
+        param-peak (param "peak")
+        param-sustain (param "sustain")
+        param-breakpoint (param "breakpoint")
+        trange (rand-nth [[0.0 0.1]  ;; short
+                          [0.1 0.5]  ;; medium
+                          [0.1 0.5]  ;; medium
+                          [0.1 0.5]  ;; medium
+                          [0.5 1.0]  ;; long
+                          [0.5 1.0]  ;; long
+                          [0.5 1.0]  ;; long
+                          [1.0 4.0]  ;; very long
+                          [3.0 12.0]]) ;; glacial
+        time (fn [](let [[mn mx] trange
+                         diff (- mx mn)]
+                     (+ mn (rand mx))))]
+    {param-attack (time)
+     param-decay1 (time)
+     param-decay2 (time)
+     param-release (time)
+     param-peak (math/coin 0.75 1.0 (rand))
+     param-breakpoint (math/coin 0.75 (+ 0.5 (rand 0.5))(rand))
+     param-sustain (math/coin 0.75 (+ 0.5 (rand 0.5))(rand))}))
+
+                          
+
+(defn- enved [prefix performance ied]
   (let [enable-change-listener* (atom true)
-        invertable (not (= prefix 3))
+        ;invertable (not (= prefix 3))
         param (fn [suffix](keyword (format "env%d-%s" prefix suffix)))
         param-attack (param "attack")
         param-decay1 (param "decay1")
@@ -27,10 +105,10 @@
         param-peak (param "peak")
         param-sustain (param "sustain")
         param-breakpoint (param "breakpoint")
-        param-invert (param "invert")
-        tb-invert (let [b (ss/radio :text "-1")]
-                    (.setEnabled b invertable)
-                    b)
+        ;;param-invert (param "invert")
+        ;; tb-invert (let [b (ss/radio :text "-1")]
+        ;;             (.setEnabled b invertable)
+        ;;             b)
         lab-position (ss/label :text "[---]")
         [bg fg](config/envelope-colors)
         background (cutil/color (or bg (lnf/get-color (config/current-skin) :text-fg)))
@@ -47,7 +125,7 @@
         peak* (atom 1.0)
         breakpoint* (atom 0.9)
         sustain* (atom 0.8)
-        invert* (atom false)
+        ;invert* (atom false)  ;; NOT USED
         drw (let [d (sgwr.drawing/cartesian-drawing w h [-0.05 -0.125][8.5 1.125])]
               (.paper! d background)
               (.color! d marker-color)
@@ -101,7 +179,6 @@
                 (point-parameters p4 param-decay2 param-sustain)
                 (point-parameters p5 param-release nil))
               d)
-
         update-curve (fn []
                         (let [t0 0
                               t1 @attack*
@@ -143,18 +220,22 @@
                    (reset! selected* p)
                    (.render drw)
                    @selected*))
+        jb-init (factory/button "Init" :general :reset "Initialize envelope")
+        jb-dice (factory/button "Random" :general :dice "Randomize envelope")
+        jb-copy (factory/button "Copy" :general :copy "Copy envelope to clipboard")
+        jb-paste (factory/button "Paste" :general :paste "Paste clipboard to envelope")
+        ;pan-east (ss/vertical-panel :items [jb-init jb-dice jb-copy jb-paste])
+        pan-east (ss/grid-panel :rows 2 :columns 2 :items [jb-init jb-dice jb-copy jb-paste])
         pan-center (ss/horizontal-panel 
                     :items [(.drawing-canvas drw)]
                     :size [w :by h])
         pan-south (ss/grid-panel :rows 1 
-                                 :items [tb-invert lab-position]
+                                 :items [lab-position]
                                  :size [w :by 34])
-        
-        pan-main (ss/vertical-panel
-                  :items [pan-center pan-south
-                          (ss/label :text "Invert button Not Connected")  ;; DEBUG
-                          ]
-                  :border (factory/title (format "Envelope %d" prefix)))
+        pan-main (ss/border-panel :east pan-east
+                                  :center (ss/vertical-panel 
+                                           :items [pan-center pan-south])
+                                  :border (factory/title (format "Envelope %d" prefix)))
         syncfn (fn [data]
                  (reset! attack* (param-attack data))
                  (reset! decay1* (param-decay1 data))
@@ -163,10 +244,11 @@
                  (reset! peak* (param-peak data))
                  (reset! breakpoint* (param-breakpoint data))
                  (reset! sustain* (param-sustain data))
-                 (reset! invert* (param-invert data))
+                 ;(reset! invert* (param-invert data))
                  (update-curve)
-                 (if @invert*
-                   (.setSelected tb-invert (not (zero? @invert*)))))
+                 ;; (if @invert*
+                 ;;   (.setSelected tb-invert (not (zero? @invert*))))
+                 )
         zoomfn (fn [mt]
                  (.remove! drw @zero-line*)
                  (.view! cs [[-0.05 -0.125][mt 1.125]])
@@ -174,6 +256,49 @@
                  (.style! drw 0)
                  (reset! zero-line* (.line! drw [0 0][0 2]))
                  (.render drw))]
+    (ss/listen jb-init :action (fn [_]
+                                 (.working ied true)
+                                 (SwingUtilities/invokeLater
+                                  (proxy [Runnable][]
+                                    (run []
+                                      (let [data {param-attack 0.0
+                                                  param-decay1 0.5
+                                                  param-decay2 0.5
+                                                  param-release 0.0
+                                                  param-peak 1.0
+                                                  param-breakpoint 1.0
+                                                  param-sustain 1.0}]
+                                        (doseq [[p v] data]
+                                          (.set-param! ied p v))
+                                        (.sync-ui! ied)
+                                        (.working ied false)
+                                        (.status! ied (format "Initialized env %s" prefix))))))))
+    (ss/listen jb-dice :action (fn [_]
+                                  (.working ied true)
+                                 (SwingUtilities/invokeLater
+                                  (proxy [Runnable][]
+                                    (run []
+                                      (let [data (dicefn prefix)]
+                                        (doseq [[p v] data]
+                                          (.set-param! ied p v))
+                                        (.sync-ui! ied)
+                                        (.working ied false)
+                                        (.status! ied (format "Randomized env %s" prefix))))))))
+    (ss/listen jb-copy :action (fn [_]
+                                 (let [data (.current-data (.bank performance))]
+                                   (copyfn prefix ied data))))
+    (ss/listen jb-paste :action (fn [_]
+                                  (.working ied true)
+                                 (SwingUtilities/invokeLater
+                                  (proxy [Runnable][]
+                                    (run []
+                                      (let [data (pastefn prefix)]
+                                        (doseq [[p v] data]
+                                          (.set-param! ied p v))
+                                        (.sync-ui! ied)
+                                        (.working ied false)
+                                        (.status! ied (format "Clipboard pasted to env %s" prefix))))))))
+
     ;; select edit point
     (.add-mouse-listener! drw (proxy [MouseListener][]
                                 (mouseEntered [_])
@@ -256,9 +381,9 @@
      :syncfn syncfn}))
 
 (defn envelope-editor [performance ied]
-  (let [env1 (enved 1 ied)
-        env2 (enved 2 ied)
-        env3 (enved 3 ied)
+  (let [env1 (enved 1 performance ied)
+        env2 (enved 2 performance ied)
+        env3 (enved 3 performance ied)
         envs [env1 env2 env3]
         init-curve {:attack 0.0 :decay1 1.0 :decay2 1.0 :release 0.0
                     :peak 1.0 :breakpoint 1.0 :sustain 1.0}
@@ -266,15 +391,22 @@
         jb-zoom-out (factory/button "Out" :view :out "Zoom envelope out")
         jb-zoom-in (factory/button "In" :view :in "Zoom envelope in")
         jb-zoom-reset (factory/button "Reset" :view :reset "Set default zoom")
+        jb-help (let [jb (factory/button "Help" :general :help "Envelope help")]
+                  (.putClientProperty jb :topic :alias-envelope)
+                  (ss/listen jb :action help/help-listener)
+                  jb)
         lab-view (ss/label :text "8.0")
-        pan-center (ss/grid-panel :rows 1
+        pan-center (ss/grid-panel :columns 1
                                   :items [(:pan-main env1)
                                           (:pan-main env2)
                                           (:pan-main env3)])
-        pan-east (ss/vertical-panel 
-                  :items [jb-zoom-out jb-zoom-in jb-zoom-reset lab-view])
+        pan-west (ss/vertical-panel 
+                  :items [(Box/createVerticalStrut 23)
+                          jb-help jb-zoom-out jb-zoom-in jb-zoom-reset lab-view]
+                  :border (factory/padding))
         pan-main (ss/border-panel :center pan-center
-                                  :east pan-east
+                                  :west pan-west
+                                  :east (Box/createHorizontalStrut 400)
                                   :border (factory/bevel))
         widget-map {:pan-main pan-main}]
     (ss/listen jb-zoom-out :action

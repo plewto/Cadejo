@@ -1,15 +1,16 @@
 (ns cadejo.instruments.alias.editor.alias-factory
   (:require [cadejo.instruments.alias.constants :as constants])
+  (:require [seesaw.border :as ssb])
   (:require [seesaw.core :as ss])
   (:require [seesaw.font :as ssf])
+  (:require [cadejo.ui.util.help :as help])
   (:require [cadejo.ui.util.factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:import java.awt.Dimension
-   java.util.Hashtable
+           java.util.Hashtable
            javax.swing.Box
            javax.swing.event.ChangeListener
-           javax.swing.event.ListSelectionListener
-           ))
+           javax.swing.event.ListSelectionListener))
 
 (def title cadejo.ui.util.factory/title)
 (def padding  cadejo.ui.util.factory/padding)
@@ -21,20 +22,152 @@
 
 (def default-font (ssf/font :size 9 :name :serif))
 
-;; (def micro-font (ssf/font :size 7 :name :serif))
-;; (defn mini-button 
-;;   ([text subgroup]
-;;      (let [i (lnf/read-icon :mini subgroup)]
-;;        (ss/button :text text
-;;                   :font micro-font
-;;                   :icon i
-;;                   :size [36 :by 36])))
-;;   ([text]
-;;      (ss/button :text text
-;;                 :font micro-font
-;;                 :size [36 :by 36])))
+; ---------------------------------------------------------------------- 
+;                                  Sliders
+
+;; Returns Hashtable for use as slider label map
+;; with 5 marked positions.
+;; The positions are evenly spaced at 0%, 25%,
+;; 50%, 75% and 100%.
+;;
+(defn slider-label-map [p0 p25 p50 p75 p100]
+  (let [ht (Hashtable. 5)]
+    (.put ht (int 0)(ss/label :text (str p0) :font default-font))
+    (.put ht (int 25)(ss/label :text (str p25) :font default-font))
+    (.put ht (int 50)(ss/label :text (str p50) :font default-font))
+    (.put ht (int 75)(ss/label :text (str p75) :font default-font))
+    (.put ht (int 100)(ss/label :text (str p100) :font default-font))
+    ht))
+
+(defn signed-unit-label-map []
+  (slider-label-map "-1.0" "" " 0.0" "" "+1.0"))
+
+(defn unsigned-unit-label-map []
+  (slider-label-map "0.00" "" "0.50" "" "1.00"))
+
+(defn pan-label-map []
+  (slider-label-map "F1" "" "" "" "F2"))
+
+(def slider-size [56 :by 148])  ;; 175
+(def half-slider-size [56 :by 87])
+
+(defn blank-slider []
+  (Box/createRigidArea (Dimension. (first slider-size)
+                                    (last slider-size))))
+
+;; Returns vertical JSlider with 100 positions.
+;; param - keyword parameter thias slider controls
+;; minval - float, The minimum value 
+;; maxval - float, The maximum value
+;; labmap - boolean or Hashtable. 
+;;          
+;; Returns JSlider with following client properties
+;; :param - 
+;; :scale and :bias - used to map slider psotion to data value 
+;; :rvs-scale and :rvs-bias - uses to map data value to slider position
+;;
+(defn slider [param minval maxval labmap]
+  (let [steps 100
+        isteps 1/100
+        delta (float (- maxval minval))
+        scale (* isteps delta)
+        bias minval
+        rvs-scale (/ steps delta)
+        rvs-bias (/ (* -1 steps minval) delta)
+        s (ss/slider :orientation :vertical
+                     :value 0 :min 0 :max steps
+                     :snap-to-ticks? false
+                     :paint-labels? labmap
+                     :minor-tick-spacing 5
+                     :major-tick-spacing 25)]
+    (if (= (type labmap) Hashtable)
+      (.setLabelTable s labmap))
+    (.putClientProperty s :param param)
+    (.putClientProperty s :scale scale)
+    (.putClientProperty s :bias bias)
+    (.putClientProperty s :rvs-scale rvs-scale)
+    (.putClientProperty s :rvs-bias rvs-bias)
+    s))
+
+;; Creates amplitude slider with DB units.
+;;
+(defn mix-slider [param]
+  (let [s (ss/slider :orientation :vertical
+                     :value 0 :min -48 :max 0 
+                     :snap-to-ticks? false
+                     :paint-labels? true
+                     :font default-font
+                     :minor-tick-spacing 6
+                     :major-tick-spacing 24)]
+    (.putClientProperty s :param param)
+    (.putClientProperty s :scale 1.0)
+    (.putClientProperty s :bias 0.0)
+    (.putClientProperty s :rvs-scale 1.0)
+    (.putClientProperty s :rvs-bias 0.0)
+    s))
+
+(defn unit-slider 
+  ([param signed]
+     (if signed
+       (slider param -1.0 1.0 (signed-unit-label-map))
+       (slider param 0.0 1.0 (unsigned-unit-label-map))))
+  ([param]
+     (unit-slider param false)))
+
+(defn panner-slider
+  ([param lab-map vertical]
+     (let [s (slider param -1.0 1.0 lab-map)]
+       (ss/config! s :orientation (if vertical :vertical :horizontal))
+       s))
+  ([param lab-map]
+     (panner-slider param lab-map false))
+  ([param]
+     (panner-slider param (pan-label-map))))
+
+;; Returns border panel holding slider and label
+;;
+(defn slider-panel 
+  ([slider text]
+     (ss/border-panel :center slider
+                      :south (ss/label :text (str text)
+                                       :font default-font
+                                       :halign :center)
+                      :size slider-size))
+  ([slider text size]
+     (let [p (slider-panel slider text)]
+       (ss/config! p :size size)
+       p)))
   
+(defn half-slider-panel [slider text]
+  (slider-panel slider text half-slider-size))
+                                     
   
+;; Returns slider value. 
+;; Note this is mapped 'real' value as required by program data
+;; and not simply the slider's position.
+;;
+(defn slider-value [slider]
+  (let [s (.getClientProperty slider :scale)
+        b (.getClientProperty slider :bias)
+        pos (.getValue slider)]
+    (+ b (* s pos))))
+
+;; Set slider position according to corresponding value in data
+;;
+(defn sync-slider [slider data]
+  (let [param (.getClientProperty slider :param)
+        value (get data param)
+        rscale (.getClientProperty slider :rvs-scale)
+        rbias (.getClientProperty slider :rvs-bias)]
+    (if value
+      (let [pos (int (+ rbias (* rscale value)))]
+        (.setValue slider pos)))
+    value))
+
+
+; ---------------------------------------------------------------------- 
+;                              'Micro' buttons
+
 (def micro-button-size [18 :by 18])
 
 (defn micro-button [icon-subgroup tooltip-text]
@@ -43,8 +176,29 @@
                      :size micro-button-size)]
     (.setToolTipText b (str (or tooltip-text (name icon-subgroup))))
     b))
-  
 
+(defn micro-button-panel [help-topic]
+  (let [jb-init (micro-button :reset "Initialize")
+        jb-dice (micro-button :dice "Randomize")
+        jb-help (micro-button :help "Help")
+        vgap 8
+        pan (ss/vertical-panel :items [jb-init
+                                       (Box/createVerticalStrut vgap)
+                                       jb-dice
+                                       (Box/createVerticalStrut vgap)
+                                       jb-help
+                                       (Box/createVerticalStrut vgap)]
+                               :border (padding))]
+    (.putClientProperty jb-help :topic help-topic)
+    (ss/listen jb-help :action help/help-listener)
+    {:panel pan
+     :jb-init jb-init
+     :jb-dice jb-dice
+     :jb-help jb-help}))
+
+
+; ---------------------------------------------------------------------- 
+;                                  Matrix
 
 (def ^:private control-bus-names ["CONSTANT" "ENV 1" "ENV 2" "ENV 3" "LFO 1"
                                   "LFO 2" "LFO 3" "STEPPER 1" "STEPPER 2"
@@ -101,106 +255,52 @@
     {:panel pan
      :syncfn syncfn}))
 
-;; **** DEPRECIATED use matrix-toolbar instead *******
-;; Creates limited matrix output bus selection panel
-;; Selection limited to buses A...G 
-;; Returns map
-;;  :panel - JPanel 
-;;  :syncfn - (fn [data]) called on data to syn buttons to data
-;;  :valuefn (fn), returns currently selected bus number or nil
-;; 
-(defn matrix-outbus-panel [ied param]
-  (println "DEPRECIATED *** alias-factory/matrix-outbus-panel ***")
-  (let [grp (ss/button-group)
-        selected* (atom nil)
-        action (fn [ev]
-                 (let [src (.getSource ev)
-                       busnum (.getClientProperty src :bus-number)]
-                   (.set-param! ied param busnum)
-                   (reset! selected* src)))
-        buttons (let [acc* (atom (sorted-map))]
-                  (doseq [[sym val][[:A  1][:B  2][:C  3] 
-                                    [:D  4][:E  5][:F  6] 
-                                    [:G  7][:H  8][:CON 0]]]
-                    (let [b (ss/toggle :text (name sym) 
-                                       :group grp
-                                       :size [48 :by 48])]
-                      (.putClientProperty b :param param)
-                      (.putClientProperty b :bus-number val)
-                      (.putClientProperty b :bus-name sym)
-                      (ss/listen b :action action)
-                      (swap! acc* (fn [q](assoc q val b)))))
-                  @acc*)
-        panel (ss/grid-panel :rows 3 :columns 3 :items (vals buttons)
-                             :size [145 :by 177])
-        syncfn (fn [data]
-                 (let [busnum (get data param)
-                       b (get buttons busnum)]
-                   (.clearSelection grp)
-                   (reset! selected* nil)
-                   (if b 
-                     (do 
-                       (.setSelected b true)
-                       (reset! selected* b)))))
-        resetfn (fn []
-                  (.doClick (get buttons 23)))
-        valuefn (fn []
-                  (let [b @selected*]
-                    (if b 
-                      (.getClientProperty b :bus-number)
-                      nil)))]
-    {:panel panel
+(defn matrix-toolbar 
+  ([param ied] (matrix-toolbar param ied ""))
+  ([param ied busnum]
+     (let [enable-change-listener* (atom true)
+           labmap (let [ht (Hashtable. 10)]
+                    (.put ht (int 0)(ss/label :text "1" :font default-font))
+                    (.put ht (int 1)(ss/label :text "A" :font default-font))
+                    (.put ht (int 2)(ss/label :text "B" :font default-font))
+                    (.put ht (int 3)(ss/label :text "C" :font default-font))
+                    (.put ht (int 4)(ss/label :text "D" :font default-font))
+                    (.put ht (int 5)(ss/label :text "E" :font default-font))
+                    (.put ht (int 6)(ss/label :text "F" :font default-font))
+                    (.put ht (int 7)(ss/label :text "G" :font default-font))
+                    (.put ht (int 8)(ss/label :text "H" :font default-font))
+                    (.put ht (int 9)(ss/label :text "0" :font default-font))
+                    ht)
+           s (ss/slider :orientation :vertical
+                        :inverted? true
+                        :value 0 :min 0 :max 9
+                        :size slider-size
+                        :snap-to-ticks? true
+                        :paint-labels? true
+                        :major-tick-spacing 1)
+           syncfn (fn [data]
+                    (reset! enable-change-listener* false)
+                    (let [v (get data param)]
+                      (.setValue s (int v)))
+                    (reset! enable-change-listener* true))
+
+           valuefn (fn [v]
+                     (let [pos (.getValue s)]
+                       (int pos))) ]
+    (.setLabelTable s labmap)
+    (.addChangeListener s (proxy [ChangeListener][]
+                            (stateChanged [_]
+                              (if @enable-change-listener*
+                                (let [bus (.getValue s)]
+                                  ;(println (format "DEBUG slider positon %s" pos))
+                                  (.set-param! ied param (float bus)))))))
+    {:panel (ss/border-panel :center s
+                             :south (ss/label :text (format "Bus %s" busnum)
+                                              :halign :center
+                                              :font default-font)
+                             :size slider-size)
      :syncfn syncfn
-     :resetfn resetfn
-     :valuefn valuefn}))
-
-
-(defn matrix-toolbar [param ied]
-  (let [grp (ss/button-group)
-        selected* (atom nil)
-        action (fn [ev]
-                 (let [src (.getSource ev)
-                       bus-number (.getClientProperty src :bus-number)]
-                   (.set-param! ied param bus-number)))
-        buttons (let [acc* (atom (sorted-map))]
-                  (doseq [[sym val][[:A  1][:B  2][:C  3] 
-                                    [:D  4][:E  5][:F  6] 
-                                    [:G  7][:H  8][:CON 0]]]
-                    (let [lab (if (= sym :CON) "1" (name sym))
-                          b (ss/toggle :text lab
-                                       :group grp
-                                       :font default-font
-                                       :size [48 :by 48])]
-                      (.putClientProperty b :param param)
-                      (.putClientProperty b :bus-number val)
-                      (.putClientProperty b :bus-name sym)
-                      (ss/listen b :action action)
-                      (swap! acc* (fn [q](assoc q val b)))))
-                  @acc*)
-        panel (ss/grid-panel :rows 3 :columns 3 :items (vals buttons))
-
-        syncfn (fn [data]
-                 (let [busnum (get data param)
-                       b (get buttons busnum)]
-                   (.clearSelection grp)
-                   (reset! selected* nil)
-                   (if b 
-                     (do 
-                       (.setSelected b true)
-                       (reset! selected* b)))))
-        resetfn (fn []
-                  (.doClick (get buttons 23)))
-        valuefn (fn []
-                  (let [b @selected*]
-                    (if b 
-                      (.getClientProperty b :bus-number)
-                      nil)))]
-    {:panel panel
-     :buttons buttons
-     :syncfn syncfn
-     :resetfn resetfn
-     :valuefn valuefn}))
-
+     :valuefn valuefn})))
 
 ; ---------------------------------------------------------------------- 
 ;                                 Spinners
@@ -225,148 +325,9 @@
        (ss/config! p :size size)
        p)))
 
-
 (defn sync-spinner [s data]
   (let [param (.getClientProperty s :param)
         value (double (get data param 0.0))]
     (.setValue s value)))
 
 
-; ---------------------------------------------------------------------- 
-;                                  Sliders
-
-;; Returns Hashtable for use as slider label map
-;; with 5 marked positions.
-;; The positions are evenly spaced at 0%, 25%,
-;; 50%, 75% and 100%.
-;;
-(defn slider-label-map [p0 p25 p50 p75 p100]
-  (let [ht (Hashtable. 5)]
-    (.put ht (int 0)(ss/label :text (str p0) :font default-font))
-    (.put ht (int 25)(ss/label :text (str p25) :font default-font))
-    (.put ht (int 50)(ss/label :text (str p50) :font default-font))
-    (.put ht (int 75)(ss/label :text (str p75) :font default-font))
-    (.put ht (int 100)(ss/label :text (str p100) :font default-font))
-    ht))
-
-(defn signed-unit-label-map []
-  (slider-label-map "-1.0" "" " 0.0" "" "+1.0"))
-
-(defn unsigned-unit-label-map []
-  (slider-label-map "0.00" "" "0.50" "" "1.00"))
-
-(defn pan-label-map []
-  (slider-label-map "F2" "" "" "" "F1"))
-
-(def slider-size [56 :by 175])
-(def half-slider-size [56 :by 87])
-
-(defn blank-slider []
-  (Box/createRigidArea (Dimension. (first slider-size)
-                                    (last slider-size))))
-
-;; Returns vertical JSlider with 100 positions.
-;; param - keyword parameter thias slider controls
-;; minval - float, The minimum value 
-;; maxval - float, The maximum value
-;; labmap - boolean or Hashtable. 
-;;          
-;; Returns JSlider wit following client properties
-;; :param - 
-;; :scale and :bias - used to map slider psotion to data value 
-;; :rvs-scale and :rvs-bias - uses to map data value to slider position
-;;
-(defn slider [param minval maxval labmap]
-  (let [steps 100
-        isteps 1/100
-        delta (float (- maxval minval))
-        scale (* isteps delta)
-        bias minval
-        rvs-scale (/ steps delta)
-        rvs-bias (/ (* -1 steps minval) delta)
-        s (ss/slider :orientation :vertical
-                     :value 0 :min 0 :max steps
-                     :snap-to-ticks? false
-                     :paint-labels? labmap
-                     :minor-tick-spacing 5
-                     :major-tick-spacing 25)]
-    (if (= (type labmap) Hashtable)
-      (.setLabelTable s labmap))
-    (.putClientProperty s :param param)
-    (.putClientProperty s :scale scale)
-    (.putClientProperty s :bias bias)
-    (.putClientProperty s :rvs-scale rvs-scale)
-    (.putClientProperty s :rvs-bias rvs-bias)
-    s))
-
-;; Creates amplitude slider with DB units.
-;;
-(defn mix-slider [param]
-  (let [s (ss/slider :orientation :vertical
-                     :value 0 :min -48 :max 0 
-                     :snap-to-ticks? false
-                     :paint-labels? true
-                     :font default-font
-                     :minor-tick-spacing 6
-                     :major-tick-spacing 24)]
-    (.putClientProperty s :param param)
-    (.putClientProperty s :scale 1.0)
-    (.putClientProperty s :bias 0.0)
-    (.putClientProperty s :rvs-scale 1.0)
-    (.putClientProperty s :rvs-bias 0.0)
-    s))
-
-(defn unit-slider 
-  ([param signed]
-     (if signed
-       (slider param -1.0 1.0 (signed-unit-label-map))
-       (slider param 0.0 1.0 (unsigned-unit-label-map))))
-  ([param]
-     (unit-slider param false)))
-
-(defn panner-slider 
-  ([param lab-map]
-     (slider param -1.0 1.0 lab-map))
-  ([param]
-     (panner-slider param (pan-label-map))))
-
-
-;; Returns border panel holding slider and label
-;;
-(defn slider-panel 
-  ([slider text]
-     (ss/border-panel :center slider
-                      :south (ss/label :text (str text)
-                                       :font default-font
-                                       :halign :center)
-                      :size slider-size))
-  ([slider text size]
-     (let [p (slider-panel slider text)]
-       (ss/config! p :size size)
-       p)))
-  
-(defn half-slider-panel [slider text]
-  (slider-panel slider text half-slider-size))
-                                     
-  
-;; Returns slider value. 
-;; Note this is mapped 'real' value as required by program data
-;; and not simply the slider's position.
-;;
-(defn slider-value [slider]
-  (let [s (.getClientProperty slider :scale)
-        b (.getClientProperty slider :bias)
-        pos (.getValue slider)]
-    (+ b (* s pos))))
-
-;; Set slider position according to corresponding value in data
-;;
-(defn sync-slider [slider data]
-  (let [param (.getClientProperty slider :param)
-        value (get data param)
-        rscale (.getClientProperty slider :rvs-scale)
-        rbias (.getClientProperty slider :rvs-bias)]
-    (if value
-      (let [pos (int (+ rbias (* rscale value)))]
-        (.setValue slider pos)))
-    value))

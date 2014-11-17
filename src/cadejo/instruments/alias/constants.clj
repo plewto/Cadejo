@@ -105,19 +105,19 @@
                             :osc1-fm1-depth 0.1
                             :osc1-fm1-lag 0
                             :osc1-fm2-source 0
-                            :osc1-fm2-depth 0
+                            :osc1-fm2-depth 1
                             :osc1-fm2-lag 0
                             :osc1-wave 0.00
-                            :osc1-wave1-source 3
+                            :osc1-wave1-source 0
                             :osc1-wave1-depth 0
                             :osc1-wave2-source 0
-                            :osc1-wave2-depth 0
+                            :osc1-wave2-depth 1
                             :osc1-amp 0
                             :osc1-amp1-src 0
                             :osc1-amp1-depth 1
                             :osc1-amp1-lag 0
                             :osc1-amp2-src 0
-                            :osc1-amp2-depth 1
+                            :osc1-amp2-depth 0
                             :osc1-amp2-lag 0
                             :osc1-pan 0.0})
 
@@ -127,12 +127,12 @@
                            :osc2-fm1-depth 0.1
                            :osc2-fm1-lag 0
                            :osc2-fm2-source 0
-                           :osc2-fm2-depth 0
+                           :osc2-fm2-depth 1
                            :osc2-fm2-lag 0
                            :osc2-wave 0.50
-                           :osc2-wave1-source 3
+                           :osc2-wave1-source 0
                            :osc2-wave1-depth 0
-                           :osc2-wave2-source 0
+                           :osc2-wave2-source 9
                            :osc2-wave2-depth 0
                            :osc2-amp 0
                            :osc2-amp1-src 0
@@ -148,13 +148,13 @@
                            :osc3-fm1-source 1
                            :osc3-fm1-depth 0.1
                            :osc3-fm1-lag 0
-                           :osc3-fm2-source 0
+                           :osc3-fm2-source 9
                            :osc3-fm2-depth 0
                            :osc3-fm2-lag 0
                            :osc3-wave 0.00
-                           :osc3-wave1-source 3
+                           :osc3-wave1-source 9
                            :osc3-wave1-depth 0
-                           :osc3-wave2-source 0
+                           :osc3-wave2-source 9
                            :osc3-wave2-depth 0
                            :osc3-amp 0
                            :osc3-amp1-src 0
@@ -170,69 +170,69 @@
                             :noise-hp 10
                             :noise-amp -99
                             :noise-amp1-src 0
-                            :noise-amp1-depth 0
+                            :noise-amp1-depth 1
                             :noise-amp1-lag 0
-                            :noise-amp2-src 0
+                            :noise-amp2-src 1
                             :noise-amp2-depth 0
                             :noise-amp2-lag 0
-                            :noise-pan 0.5})
+                            :noise-pan 0.0})
 
 (def initial-program-ringmod {:ringmod-carrier -1.0
                               :ringmod-modulator -1.0
                               :ringmod-amp -99
                               :ringmod-amp1-src 0
-                              :ringmod-amp1-depth 0
+                              :ringmod-amp1-depth 1
                               :ringmod-amp1-lag 0
                               :ringmod-amp2-src 0
-                              :ringmod-amp2-depth 0
+                              :ringmod-amp2-depth 1
                               :ringmod-amp2-lag 0
-                              :ringmod-pan 0.5})
+                              :ringmod-pan 0.0})
 
 (def initial-program-filter1 {:distortion1-pregain 1.00
                               :distortion1-param 0
-                              :distortion1-param-source 3
+                              :distortion1-param-source 9
                               :distortion1-param-depth 0
                               :distortion1-mix 0.00
                               :filter1-res 0.0
-                              :filter1-res-source 4
+                              :filter1-res-source 9
                               :filter1-res-depth 0
                               :filter1-freq 10000
-                              :filter1-freq1-source 0
-                              :filter1-freq1-depth 0
-                              :filter1-freq2-source 0
+                              :filter1-freq1-source 2
+                              :filter1-freq1-depth 1
+                              :filter1-freq2-source 9
                               :filter1-freq2-depth 0
-                              :filter1-pan -0.75
-                              :filter1-pan-source 0
+                              :filter1-pan -0.0
+                              :filter1-pan-source 9
                               :filter1-pan-depth 0
                               :filter1-mode 0
                               :filter1-postgain 1.00})
 
 (def initial-program-filter2 {:distortion2-pregain 1.00
                               :distortion2-param 0
-                              :distortion2-param-source 3
+                              :distortion2-param-source 0
                               :distortion2-param-depth 0
                               :distortion2-mix 0.00
                               :filter2-res 0.0
-                              :filter2-res-source 0
+                              :filter2-res-source 9
                               :filter2-res-depth 0
                               :filter2-freq 10000
-                              :filter2-freq1-source 4
+                              :filter2-freq1-source 2
                               :filter2-freq1-depth 0
-                              :filter2-freq2-source 0
+                              :filter2-freq2-source 9
                               :filter2-freq2-depth 0
-                              :filter2-pan -0.75
-                              :filter2-pan-source 0
+                              :filter2-pan 0.0
+                              :filter2-pan-source 9
                               :filter2-pan-depth 0
                               :filter2-postgain 1.00})
 
 (def initial-program-pitchshift {:pitchshift-ratio 1.00
-                                 :pitchshift-ratio-source 0
+                                 :pitchshift-ratio-source 9
                                  :pitchshift-ratio-depth 0
                                  :pitchshift-pitch-dispersion 0
                                  :pitchshift-time-dispersion 0
                                  :pitchshift-mix -99})
                               
-(def initial-program-flanger  {:flanger-mod-source 0
+(def initial-program-flanger  {:flanger-mod-source 9
                                :flanger-mod-depth 0
                                :flanger-lfo-amp 0.1
                                :flanger-lfo-rate 1.0
@@ -241,24 +241,24 @@
                                :flanger-crossmix 0.0})
 
 (def initial-program-delay1 {:echo1-delay 0.25
-                             :echo1-delay-source 0
+                             :echo1-delay-source 9
                              :echo1-delay-depth 0
                              :echo1-feedback 0
                              :echo1-damp 0.0
-                             :echo1-pan -0.25
-                             :echo1-amp-source 0
-                             :echo1-amp-depth 0
+                             :echo1-pan -0.5
+                             :echo1-amp-source 9
+                             :echo1-amp-depth 1
                              :echo1-mix -99})
                               
 (def initial-program-delay2 {:echo2-delay 0.125
-                             :echo2-delay-source 0
+                             :echo2-delay-source 9
                              :echo2-delay-depth 0
                              :echo2-feedback 0.5
                              :echo2-damp 0.0
                              :echo2-mix -99
                              :echo2-amp-source 0
-                             :echo2-amp-depth 0
-                             :echo2-pan -0.25})
+                             :echo2-amp-depth 1
+                             :echo2-pan 0.50 })
 
 (def initial-program-env1 {:env1-attack 0.000
                            :env1-decay1 0.500
@@ -287,30 +287,30 @@
                            :env3-sustain 1.000})
 
 (def initial-program-lfo1 {:lfo1-freq1-source 0
-                           :lfo1-freq1-depth  7
-                           :lfo1-freq2-source 0
-                           :lfo1-freq2-depth  0
+                           :lfo1-freq2-source 32
                            :lfo1-wave1-source 0
+                           :lfo1-wave2-source 32
+                           :lfo1-freq1-depth  7.0
+                           :lfo1-freq2-depth  0
                            :lfo1-wave1-depth  0.5
-                           :lfo1-wave2-source 0
                            :lfo1-wave2-depth  0})
 
 (def initial-program-lfo2 {:lfo2-freq1-source 0
-                           :lfo2-freq1-depth  3.5
-                           :lfo2-freq2-source 0
-                           :lfo2-freq2-depth  0
+                           :lfo2-freq2-source 32
                            :lfo2-wave1-source 0
+                           :lfo2-wave2-source 32
+                           :lfo2-freq1-depth  7.0
+                           :lfo2-freq2-depth  0
                            :lfo2-wave1-depth  0.5
-                           :lfo2-wave2-source 0
                            :lfo2-wave2-depth  0})
 
 (def initial-program-lfo3 {:lfo3-freq1-source 0
-                           :lfo3-freq1-depth  1.75
-                           :lfo3-freq2-source 0
-                           :lfo3-freq2-depth  0
+                           :lfo3-freq2-source 32
                            :lfo3-wave1-source 0
+                           :lfo3-wave2-source 32
+                           :lfo3-freq1-depth  7.0
+                           :lfo3-freq2-depth  0
                            :lfo3-wave1-depth  0.5
-                           :lfo3-wave2-source 0
                            :lfo3-wave2-depth  0})
 
 (def initial-program-stepper {:stepper1-trigger 4
@@ -355,37 +355,39 @@
                                   :sh-bias 0
                                   :sh-scale 1})
 
+
+
 (def initial-program-matrix {:a-source1  4 ; LFO 1
-                             :a-depth1   1
-                             :a-source2 19 ; MIDI CC A
-                             :a-depth2   1
                              :b-source1  5 ; LFO 2
-                             :b-depth1   1
-                             :b-source2  0
-                             :b-depth2   1
                              :c-source1  1 ; ENV 1
-                             :c-depth1   1
-                             :c-source2  0
-                             :c-depth2   1
                              :d-source1  2 ; ENV 2
-                             :d-depth1   1
-                             :d-source2  0
-                             :d-depth2   1
                              :e-source1  7 ; Stepper 1
-                             :e-depth1   1
-                             :e-source2  0
-                             :e-depth2   1
                              :f-source1 13 ; sample and Hold
-                             :f-depth1   0
-                             :f-source2  0
-                             :f-depth2   1
                              :g-source1 20 ; MIDI CC B
-                             :g-depth1   0
-                             :g-source2  0
-                             :g-depth2   1
                              :h-source1 18 ; Velocity
-                             :h-depth1   0
+                             :a-source2 19 ; MIDI CC A
+                             :b-source2  0
+                             :c-source2  0
+                             :d-source2  0
+                             :e-source2  0
+                             :f-source2  0
+                             :g-source2  0
                              :h-source2  0
+                             :a-depth1   1
+                             :b-depth1   1
+                             :c-depth1   1
+                             :d-depth1   1
+                             :e-depth1   1
+                             :f-depth1   1
+                             :g-depth1   1
+                             :h-depth1   1
+                             :a-depth2   1
+                             :b-depth2   1
+                             :c-depth2   1
+                             :d-depth2   1
+                             :e-depth2   1
+                             :f-depth2   1
+                             :g-depth2   1
                              :h-depth2   1})
 
 (def initial-program (merge 
@@ -414,3 +416,23 @@
                        :port-time 0.00
                        :amp 0.20
                        :cc7->volume 0}))
+
+(def initial-program-mixer {:osc1-amp (:osc1-amp initial-program)
+                            :osc2-amp (:osc2-amp initial-program)
+                            :osc3-amp (:osc3-amp initial-program)
+                            :osc1-pan (:osc1-pan initial-program)
+                            :osc2-pan (:osc2-pan initial-program)
+                            :osc3-pan (:osc3-pan initial-program)
+                            :filter1-postgain (:filter1-postgain initial-program)
+                            :filter1-pan (:filter1-pan initial-program)
+                            :filter2-postgain (:filter2-postgain initial-program)
+                            :filter2-pan (:filter2-pan initial-program)
+                            :pitchshift-mix (:pitchshift-mix initial-program)
+                            :flanger-mix (:flanger-mix initial-program)
+                            :echo1-mix (:echo1-mix initial-program)
+                            :echo2-mix (:echo2-mix initial-program)
+                            :echo1-pan (:echo1-pan initial-program)
+                            :echo2-pan (:echo2-pan initial-program)
+                            :dry-mix 0
+                            :amp 0.20})
+                            

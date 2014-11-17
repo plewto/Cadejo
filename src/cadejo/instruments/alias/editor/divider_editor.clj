@@ -6,7 +6,8 @@
   (:require [cadejo.ui.util.color-utilities :as cutil])
   (:require [seesaw.core :as ss])
   (:require [sgwr.drawing])
-  (:import javax.swing.event.ChangeListener))
+  (:import javax.swing.Box
+           javax.swing.event.ChangeListener))
 
 (def ^:private slider-size [64 :by 175])
 
@@ -41,7 +42,6 @@
                      (.line! d2 [0 (* -1 drawing-range)][0 drawing-range])
                      (.freeze! d1)
                      (.freeze! d2)
-                     
                      [d1 d2])
         syncfn (fn [data]
                   (let [a1 (:divider1-p1 data)
@@ -79,7 +79,8 @@
                     (.plot-to! drw2 @bcc*)))
         pan-main (ss/vertical-panel 
                   :items [(.drawing-canvas drw1)
-                          (.drawing-canvas drw2)])]
+                          (.drawing-canvas drw2)]
+                  :border (factory/bevel))]
     (ss/config! (.drawing-canvas drw1) :size [drawing-width :by drawing-height])
     (ss/config! (.drawing-canvas drw2) :size [drawing-width :by drawing-height])
     {:pan-main pan-main
@@ -157,8 +158,11 @@
         div2 (dived 2 performance ied graph)
         pan-controls (ss/vertical-panel :items [(:pan-main div1)
                                                 (:pan-main div2)])
-        pan-main (ss/scrollable (ss/border-panel :center pan-controls
-                                                  :east (:pan-main graph)))
+        pan-graph (ss/border-panel :center (:pan-main graph)
+                                   :east (Box/createHorizontalStrut 276)
+                                     :border (factory/padding 16))
+        pan-main (ss/border-panel :center pan-controls
+                                  :east pan-graph)
         widget-map {:pan-main pan-main}]
     (reify subedit/InstrumentSubEditor
       (widgets [this] {:pan-main pan-main})

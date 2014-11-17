@@ -109,22 +109,12 @@
 (defn osced [prefix ied]
   (let [enable-change-listener* (atom true)
         [bg inactive active button](config/displaybar-colors)
-        jb-init (let [b (factory/micro-button :reset (format "Reset osc %s parameters" prefix))]
-                  (.putClientProperty b :prefix prefix)
-                  b)
-        jb-dice (let [b (factory/micro-button :dice (format "Random osc %s parameters" prefix))]
-                  (.putClientProperty b :prefix prefix)
-                  b)
-        jb-help (let [b (factory/micro-button :help "Alias osc help")]
-                  (.putClientProperty b :topic :alias-osc)
-                  (ss/listen b :action help/help-listener)
-                  b)
-        drw (let [d (drawing/native-drawing 400 102)]
+        drw (let [d (drawing/native-drawing 360 102)]   ; 400
               (.paper! d bg)
               (.color! d button)
               (.width! d 2)
               (.text! d [8 96] "Detune")
-              (.text! d [240 96] "Bias")
+              (.text! d [200 96] "Bias")   ; [240 96]
               d)
         param (fn [suffix](keyword (format "osc%s-%s" prefix suffix)))
         param-detune (param "detune")
@@ -141,19 +131,15 @@
         param-wave2-source (param "wave2-source")
         param-wave2-depth (param "wave2-depth")
         param-amp (param "amp")
-        param-amp1-source (param "amp1-source")
+        param-amp1-source (param "amp1-src")
         param-amp1-depth (param "amp1-depth")
         param-amp1-lag (param "amp1-lag")
-        param-amp2-source (param "amp2-source")
+        param-amp2-source (param "amp2-src")
         param-amp2-depth (param "amp2-depth")
         param-amp2-lag (param "amp2-lag")
         param-pan (param "pan")
-        pan-north-west (ss/vertical-panel 
-                        :items [jb-init
-                                jb-dice 
-                                jb-help
-                                (Box/createVerticalStrut 48)]
-                        :border (factory/padding))
+        micro-buttons (factory/micro-button-panel :alias-osc)
+        pan-north-west (:panel micro-buttons)
         nbar-detune (let [d (fixedbar/fixedpoint-numberbar 6
                                                            :drawing drw
                                                            :x-offset 0
@@ -165,7 +151,7 @@
                       d)
         nbar-bias (let [d (fixedbar/fixedpoint-numberbar 5
                                                          :drawing drw
-                                                         :x-offset 231
+                                                         :x-offset 191
                                                          :y-offset 0
                                                          :decimal-point 1)]
                       (.color! drw :blue)
@@ -175,71 +161,74 @@
         pan-north (ss/border-panel :west pan-north-west
                                    :center (ss/horizontal-panel
                                             :items [(.drawing-canvas drw)])
-                                   :size [463 :by 102])
+                                   :size [408 :by 102])
         ;; FM Panel
-        bus-fm1 (factory/matrix-toolbar param-fm1-source ied)
+        bus-fm1 (factory/matrix-toolbar param-fm1-source ied 1)
         slide-fm1-depth (factory/unit-slider param-fm1-depth :signed)
         slide-fm1-lag (factory/unit-slider param-fm1-lag)
         pan-fm1 (ss/border-panel
                  :west (:panel bus-fm1)
-                 :center (ss/vertical-panel 
-                          :items [(factory/half-slider-panel slide-fm1-depth "Depth")
-                                  (factory/half-slider-panel slide-fm1-lag "Lag")]))
-        bus-fm2 (factory/matrix-toolbar param-fm2-source ied)
+                 :center (ss/horizontal-panel 
+                          :items [(factory/slider-panel slide-fm1-depth "Depth 1")
+                                  (factory/slider-panel slide-fm1-lag "Lag 1")]))
+        bus-fm2 (factory/matrix-toolbar param-fm2-source ied 2)
         slide-fm2-depth (factory/unit-slider param-fm2-depth :signed)
         slide-fm2-lag (factory/unit-slider param-fm2-lag)
         pan-fm2 (ss/border-panel
                  :west (:panel bus-fm2)
-                 :center (ss/vertical-panel 
-                          :items [(factory/half-slider-panel slide-fm2-depth "Depth")
-                                  (factory/half-slider-panel slide-fm2-lag "Lag")]))
+                 :center (ss/horizontal-panel 
+                          :items [(factory/slider-panel slide-fm2-depth "Depth 2")
+                                  (factory/slider-panel slide-fm2-lag "Lag 2")]))
         pan-fm (ss/horizontal-panel :items [(factory/blank-slider)
                                             pan-fm1 pan-fm2]
+                                    :size [408 :by 164]
                                     :border (factory/title "FM"))
         ;; Wave panel
-        bus-wave1 (factory/matrix-toolbar param-wave1-source ied)
+        bus-wave1 (factory/matrix-toolbar param-wave1-source ied 1)
         slide-wave1-depth (factory/unit-slider param-wave1-depth :signed)
         pan-wave1 (ss/border-panel
                    :west (:panel bus-wave1)
-                   :center (ss/vertical-panel
-                            :items [(factory/slider-panel slide-wave1-depth "Depth")]))
-        bus-wave2 (factory/matrix-toolbar param-wave2-source ied)
+                   :center  (factory/slider-panel slide-wave1-depth "Depth 1"))
+        bus-wave2 (factory/matrix-toolbar param-wave2-source ied 2)
         slide-wave2-depth (factory/unit-slider param-wave2-depth :signed)
         pan-wave2 (ss/border-panel
                    :west (:panel bus-wave2)
-                   :center (ss/vertical-panel
-                            :items [(factory/slider-panel slide-wave2-depth "Depth")]))
+                   :center (factory/slider-panel slide-wave2-depth "Depth 2"))
         slide-wave (factory/unit-slider param-wave)
         pan-wave (ss/horizontal-panel :items [(factory/slider-panel slide-wave "Wave")
                                               pan-wave1
                                               pan-wave2]
+                                      :size [408 :by 164]
                                       :border (factory/title "Wave"))
         ;; Amp panel
-        bus-amp1 (factory/matrix-toolbar param-amp1-source ied)
+        bus-amp1 (factory/matrix-toolbar param-amp1-source ied 1)
         slide-amp1-depth (factory/unit-slider param-amp1-depth :signed)
         slide-amp1-lag (factory/unit-slider param-amp1-lag)
         pan-amp1 (ss/border-panel
                   :west (:panel bus-amp1)
-                  :center (ss/vertical-panel
-                           :items [(factory/half-slider-panel slide-amp1-depth "Depth")
-                                   (factory/half-slider-panel slide-amp1-lag "lag")]))
-        bus-amp2 (factory/matrix-toolbar param-amp2-source ied)
+                  :center (ss/horizontal-panel
+                           :items [(factory/slider-panel slide-amp1-depth "Depth 1")
+                                   (factory/slider-panel slide-amp1-lag "lag 1")]))
+        bus-amp2 (factory/matrix-toolbar param-amp2-source ied 2)
         slide-amp2-depth (factory/unit-slider param-amp2-depth :signed)
         slide-amp2-lag (factory/unit-slider param-amp2-lag)
         pan-amp2 (ss/border-panel
                   :west (:panel bus-amp2)
-                  :center (ss/vertical-panel
-                           :items [(factory/half-slider-panel slide-amp2-depth "Depth")
-                                   (factory/half-slider-panel slide-amp2-lag "lag")]))
+                  :center (ss/horizontal-panel
+                           :items [(factory/slider-panel slide-amp2-depth "Depth 2")
+                                   (factory/slider-panel slide-amp2-lag "lag 2")]))
         slide-amp (factory/mix-slider param-amp)
-        slide-pan (factory/panner-slider param-pan)
-        pan-am (ss/horizontal-panel
-                :items [(ss/vertical-panel
-                         :items [(factory/half-slider-panel slide-amp "Amp")
-                                 (factory/half-slider-panel slide-pan "Pan")])
-                        pan-amp1
-                        pan-amp2]
-                :border (factory/title "AM"))
+        slide-pan (factory/panner-slider param-pan (factory/pan-label-map) false)
+        pan-am (ss/border-panel 
+                 :center (ss/horizontal-panel 
+                          :items [(factory/slider-panel slide-amp "Amp")
+                                  pan-amp1
+                                  pan-amp2])
+                 :south (ss/border-panel :west (ss/label :text "Pan" 
+                                                         :font factory/default-font)
+                                         :center slide-pan)
+                 :size [408 :by 220]
+                 :border (factory/title "AM"))
         pan-main (ss/vertical-panel
                   :items [pan-north
                           pan-fm
@@ -278,27 +267,30 @@
                               (.set-param! ied param-detune (float value))))
     ((:set-hook nbar-bias)(fn [value]
                             (.set-param! ied param-bias (float value))))
-    (ss/listen jb-init :action (fn [_]
-                                 (.working ied true)
-                                 (SwingUtilities/invokeLater
-                                  (proxy [Runnable][]
-                                    (run []
-                                      (let [data (nth [constants/initial-program-osc1
-                                                       constants/initial-program-osc2
-                                                       constants/initial-program-osc3]
-                                                      (dec prefix))]
-                                        (doseq [[p v] data]
-                                          (.set-param! ied p v))
-                                        (.sync-ui! ied)
-                                        (.working ied false)
-                                        (.status! ied (format "OSC %s initialized" prefix))))))))
-    (ss/listen jb-dice :action (fn [_]
-                                 (.working ied true)
-                                 (SwingUtilities/invokeLater
-                                  (proxy [Runnable][]
-                                    (run []
-                                      (osc-dice ied prefix)
-                                      (.working ied false))))))
+    (ss/listen (:jb-init micro-buttons) 
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (let [data (nth [constants/initial-program-osc1
+                                               constants/initial-program-osc2
+                                               constants/initial-program-osc3]
+                                              (dec prefix))]
+                                (doseq [[p v] data]
+                                  (.set-param! ied p v))
+                                (.sync-ui! ied)
+                                (.working ied false)
+                                (.status! ied (format "OSC %s initialized" prefix))))))))
+
+    (ss/listen (:jb-dice micro-buttons) 
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (osc-dice ied prefix)
+                              (.working ied false))))))
                                                   
     (.render drw)
     {:pan-main pan-main
@@ -309,10 +301,10 @@
   (let [osc1 (osced 1 ied)
         osc2 (osced 2 ied)
         osc3 (osced 3 ied)
-        pan-main (ss/scrollable (ss/grid-panel :rows 1
-                                               :items [(:pan-main osc1)
-                                                       (:pan-main osc2)
-                                                       (:pan-main osc3)]))]
+        pan-main (ss/grid-panel :rows 1
+                                :items [(:pan-main osc1)
+                                        (:pan-main osc2)
+                                        (:pan-main osc3)])]
         (reify subedit/InstrumentSubEditor
           (widgets [this] {:pan-main pan-main})
           (widget [this key](get (.widgets this) key))

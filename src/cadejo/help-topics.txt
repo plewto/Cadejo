@@ -2,6 +2,17 @@
 
 :cadejo  - splash screen
 :scene   - scene editor
-:add-instrument-dialog - channel-editor
+:scale-registry
+:channel
+:add-instrument (channel-editor)
 :performance - performance-editor
 :bank-editor
+
+:alias
+:alias-osc
+:alias-noise
+:alias-ringmod
+:alias-mixer
+:alias-filter
+:alias-matrix
+:alias-envelope

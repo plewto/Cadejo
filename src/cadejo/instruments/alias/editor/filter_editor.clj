@@ -1,44 +1,109 @@
 (ns cadejo.instruments.alias.editor.filter-editor
-   (:require [cadejo.config :as config])
-   (:require [cadejo.instruments.alias.constants :as constants])
-   (:require [cadejo.instruments.alias.editor.alias-factory :as factory])
-   (:require [cadejo.ui.instruments.subedit :as subedit])
-   (:require [cadejo.ui.util.lnf :as lnf])
-   (:require [seesaw.core :as ss])
-   (:import javax.swing.Box
-            javax.swing.event.ChangeListener))
+  (:use [cadejo.util.trace])
+  (:require [cadejo.config :as config])
+  (:require [cadejo.instruments.alias.constants :as constants])
+  (:require [cadejo.instruments.alias.editor.alias-factory :as factory])
+  (:require [cadejo.ui.instruments.subedit :as subedit])
+  (:require [cadejo.ui.util.help :as help])
+  (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [cadejo.util.math :as math])
+  (:require [seesaw.core :as ss])
+  (:require [sgwr.indicators.fixed-numberbar :as fixedbar])
+  (:import javax.swing.Box
+           javax.swing.SwingUtilities
+           javax.swing.event.ChangeListener))
 
-(def ^:private icon-inc1 (lnf/read-icon :mini :up1))
-(def ^:private icon-inc2 (lnf/read-icon :mini :up2))
-(def ^:private icon-dec1 (lnf/read-icon :mini :down1))
-(def ^:private icon-dec2 (lnf/read-icon :mini :down2))
+(defn- flip 
+  ([n p]
+     (* (math/coin p -1 1) n))
+  ([n]
+     (flip n 0.5)))
+  
 
+(defn- filter1-dice [ied]
+  (let [data {:distortion1-pregain (math/coin 0.75 1 (rand 16))
+              :distortion1-param (rand)
+              :distortion1-param-source (math/coin 0.75 0 (int (rand 9)))
+              :distortion1-param-depth (flip (rand))
+              :distortion1-mix (flip (rand))
+              :filter1-res (rand)
+              :filter1-res-source (int (rand 9))
+              :filter1-res-depth (flip (math/coin 0.75 0 1))
+              :filter1-freq (rand 10000)
+              :filter1-freq1-source (int (rand 9))
+              :filter1-freq1-depth (flip 0.10 (rand 5000))
+              :fitler1-freq2-source (int (rand 9))
+              :filter1-freq2-depth (flip 0.10 (rand 5000))
+              :filter1-pan (math/coin 0.75 -0.75 (flip (rand)))
+              :filter1-pan-source (int (rand 9))
+              :filter1-pan-depth (math/coin 0.75 0 (flip (rand)))
+              :filter1-mode (math/coin 0.75 0 (rand))
+              :filter1-postgain 1.0}]
+    (doseq [[p v] data]
+      (.set-param! ied p v))))
+    ;; (.sync-ui! ied)
+    ;; (.status! ied "Randomized filter 1")))
+
+(defn- filter2-dice [ied]
+  (let [data {:distortion2-pregain (math/coin 0.75 1 (rand 16))
+              :distortion2-param (rand)
+              :distortion2-param-source (math/coin 0.75 0 (int (rand 9)))
+              :distortion2-param-depth (flip (rand))
+              :distortion2-mix (flip (rand))
+              :filter2-res (rand)
+              :filter2-res-source (int (rand 9))
+              :filter2-res-depth (flip (math/coin 0.75 0 1))
+              :filter2-freq (rand 10000)
+              :filter2-freq1-source (int (rand 9))
+              :filter2-freq1-depth (flip 0.10 (rand 5000))
+              :fitler2-freq2-source (int (rand 9))
+              :filter2-freq2-depth (flip 0.10 (rand 5000))
+              :filter2-pan (math/coin 0.75 -0.75 (flip (rand)))
+              :filter2-pan-source (int (rand 9))
+              :filter2-pan-depth (math/coin 0.75 0 (flip (rand)))
+              :filter2-postgain 1.0}]
+    (doseq [[p v] data]
+      (.set-param! ied p v))))
+    ;; (.sync-ui! ied)
+    ;; (.status! ied "Randomized filter 2")))
+
+(defn- vertical-strut []
+  (Box/createVerticalStrut 1))
 
 (defn- distortion-editor [prefix ied]
   (let [enable-change-listener* (atom true)
         param-pregain (keyword (format "distortion%d-pregain" prefix))
         param-clip (keyword (format "distortion%d-param" prefix))
-        param-source (keyword (format "distortion%d-source" prefix))
-        param-depth (keyword (format "distortion%d-depth" prefix))
+        param-source (keyword (format "distortion%d-param-source" prefix))
+        param-depth (keyword (format "distortion%d-param-depth" prefix))
         param-mix (keyword (format "distortion%d-mix" prefix))
-        buspan (factory/matrix-outbus-panel ied param-source)
+        buspan (factory/matrix-toolbar param-source ied)
         slide-pregain (factory/slider param-pregain 1.0 16.0
                                       (factory/slider-label-map "1" "4" "8" "12" "16"))
         slide-clip (factory/unit-slider param-clip false)
         slide-depth (factory/unit-slider param-depth true)
         slide-mix (factory/slider param-mix -1.0 1.0
-                                  (factory/slider-label-map "Dry" "" "1/2" "" "Wet"))
+                                  (factory/slider-label-map "Dry" "" "" "" "Wet"))
         sliders [slide-pregain slide-clip slide-depth slide-mix]
-        pan-west (ss/horizontal-panel 
-                  :items [(factory/slider-panel slide-pregain "Pregain")
-                          (factory/slider-panel slide-clip "Clip")])
+        pan-pregain (ss/vertical-panel 
+                  :items [(factory/half-slider-panel slide-pregain "Pregain")
+                          (factory/half-slider-panel slide-clip "Clip")])
         pan-center (ss/horizontal-panel 
                     :items [(:panel buspan)
-                            (factory/slider-panel slide-depth "Depth")
-                            (factory/slider-panel slide-mix "Mix")])
-        pan-main (ss/border-panel :north (Box/createVerticalStrut 52)
-                                  :center (ss/horizontal-panel :items [pan-west pan-center])
-                                  :border (factory/title "Distortion"))
+                            (ss/vertical-panel 
+                             :items [(factory/half-slider-panel slide-depth "Depth")
+                                     (factory/half-slider-panel slide-mix "Mix")])])
+        pan-main (ss/vertical-panel 
+                  :items [(vertical-strut)
+                          (ss/horizontal-panel :items [pan-pregain pan-center])]
+                  :border (factory/title "Distortion"))
+        ;; pan-main (ss/horizontal-panel 
+        ;;           :items [(factory/slider-panel slide-pregain "Pregain")
+        ;;                   (factory/slider-panel slide-clip "Clip")
+        ;;                   (:panel buspan)
+        ;;                   (factory/slider-panel slide-depth "Depth")
+        ;;                   (factory/slider-panel slide-mix "Mix")]
+        ;;           :border (factory/title "Distortion"))
         syncfn (fn [data]
                  (reset! enable-change-listener* false)
                  ((:syncfn buspan) data)
@@ -95,7 +160,6 @@
      :syncfn syncfn
      :resetfn resetfn}))
 
-
 (defn- freq-editor [prefix ied]
   (let [enable-change-listener* (atom true)
         param-freq (keyword (format "filter%d-freq" prefix))
@@ -103,21 +167,24 @@
         param-source2 (keyword (format "filter%d-freq2-source" prefix))
         param-depth1 (keyword (format "filter%d-freq1-depth" prefix))
         param-depth2 (keyword (format "filter%d-freq2-depth" prefix))
-        spin-freq (factory/spinner param-freq 1000.0 10.0 10000.0 100.0)
-        slide-depth1 (factory/unit-slider param-depth1 true)
-        slide-depth2 (factory/unit-slider param-depth2 true)
-        buspan1 (factory/matrix-outbus-panel ied param-source1)
-        buspan2 (factory/matrix-outbus-panel ied param-source2)
-        pan-1 (ss/horizontal-panel :items [(:panel buspan1)
-                                           (factory/slider-panel slide-depth1 "Depth")]
-                                   :border (factory/title "FM 1"))
-        pan-2 (ss/horizontal-panel :items [(:panel buspan2)
-                                           (factory/slider-panel slide-depth2 "Depth")]
-                                   :border (factory/title "FM 2"))
-        pan-main (ss/border-panel :north spin-freq
-                                  :center (ss/horizontal-panel 
-                                           :items [pan-1 pan-2])
-                                  :border (factory/title "Freq"))
+        buspan1 (factory/matrix-toolbar param-source1 ied "1")
+        buspan2 (factory/matrix-toolbar param-source2 ied "2")
+        slide-depth1 (factory/slider param-depth1 -8000 8000 (factory/slider-label-map "-8k" "" "0" "" "+8k"))
+        slide-depth2 (factory/slider param-depth2 -8000 8000 (factory/slider-label-map "-8k" "" "0" "" "+8k"))
+        nbar-freq (let [[bg inactive active button](config/displaybar-colors)
+                        nbar (fixedbar/fixedpoint-numberbar 5)]
+                    (ss/config! (:drawing-canvas nbar) :size [165 :by 90])
+                    ((:colors nbar) bg inactive active button)
+                    ((:set-hook nbar)(fn [value]
+                                       (.set-param! ied param-freq value)))
+                    nbar)
+        pan-north (ss/flow-panel :items [(:drawing-canvas nbar-freq)])
+        pan-fm1 (ss/horizontal-panel :items [(:panel buspan1)
+                                           (factory/slider-panel slide-depth1 "Depth 1")
+                                           (:panel buspan2)
+                                           (factory/slider-panel slide-depth2 "Depth 2")])
+        pan-main (ss/vertical-panel :items [pan-north pan-fm1]
+                                    :border (factory/title "Frequency"))
         sliders [slide-depth1 slide-depth2]
         syncfn (fn [data]
                  (reset! enable-change-listener* false)
@@ -125,7 +192,7 @@
                  ((:syncfn buspan2) data)
                  (doseq [s sliders]
                    (factory/sync-slider s data))
-                 (.setValue spin-freq (double (get data param-freq 10000)))
+                 ((:setfn nbar-freq)(float (param-freq data)))
                  (reset! enable-change-listener* true))
         resetfn (fn []
                   (let [data {param-freq 10000.0
@@ -147,7 +214,6 @@
                                 (.set-param! ied param val)))))]
     (doseq [s sliders]
       (.addChangeListener s change-listener))
-    (.addChangeListener spin-freq change-listener)
     {:pan-main pan-main
      :syncfn syncfn
      :resetfn resetfn}))
@@ -157,15 +223,16 @@
         param-res (keyword (format "filter%d-res" prefix))
         param-source (keyword (format "filter%d-res-source" prefix))
         param-depth (keyword (format "filter%d-res-depth" prefix))
-        buspan (factory/matrix-outbus-panel ied param-source)
+        buspan (factory/matrix-toolbar param-source ied)
         slide-res (factory/unit-slider param-res false)
         slide-depth (factory/unit-slider param-depth true)
-        pan-main (ss/horizontal-panel
-                  :items [(factory/blank-slider)
-                          (factory/slider-panel slide-res "Res")
-                          (:panel buspan)
-                          (factory/slider-panel slide-depth "Depth")
-                          (factory/blank-slider)]
+        pan-main (ss/vertical-panel 
+                  :items [(vertical-strut)
+                          (ss/horizontal-panel 
+                           :items [(:panel buspan)
+                                   (ss/vertical-panel 
+                                    :items [(factory/half-slider-panel slide-depth "Depth")
+                                            (factory/half-slider-panel slide-res "Res")])])]
                   :border (factory/title "Resonance"))
         sliders [slide-res slide-depth]
         syncfn (fn [data]
@@ -202,15 +269,18 @@
         param-source (keyword (format "filter%d-pan-source" prefix))
         param-depth (keyword (format "filter%d-pan-depth" prefix))
         param-gain (keyword (format "filter%d-postgain" prefix))
-        buspan (factory/matrix-outbus-panel ied param-source)
+        buspan (factory/matrix-toolbar param-source ied)
         slide-pan (factory/unit-slider param-pan true)
         slide-depth (factory/unit-slider param-depth true)
         slide-gain (factory/unit-slider param-gain false)
-        pan-main (ss/horizontal-panel
-                  :items [(factory/slider-panel slide-pan "Pan")
-                          (:panel buspan)
-                          (factory/slider-panel slide-depth "Depth")
-                          (factory/slider-panel slide-gain "Post gain")]
+        pan-main (ss/vertical-panel 
+                  :items [(vertical-strut)
+                          (ss/horizontal-panel
+                           :items [(:panel buspan)
+                                   (ss/vertical-panel 
+                                    :items [(factory/half-slider-panel slide-depth "Depth")
+                                            (factory/half-slider-panel slide-pan "Pan") ])
+                                   (factory/slider-panel slide-gain "Post gain")])]
                   :border (factory/title "Out"))
         sliders [slide-pan slide-depth slide-gain]
         syncfn (fn [data]
@@ -242,7 +312,7 @@
      :syncfn syncfn
      :resetfn resetfn}))
         
-(defn filter-editor [prefix performance ied]
+(defn filtered [prefix performance ied]
   (let [dst (distortion-editor prefix ied)
         mode (if (= prefix 1)
                (mode-editor ied)
@@ -250,21 +320,45 @@
         freq (freq-editor prefix ied)
         res (res-editor prefix ied)
         out (pan-editor prefix ied)
-        pan-north (ss/horizontal-panel 
-                   :items [(:pan-main dst)
-                           (:pan-main freq)
-                           (if mode (:pan-main mode)(Box/createHorizontalStrut 8))
-                           (Box/createHorizontalStrut 315)])
-        pan-south (ss/horizontal-panel
-                   :items [(:pan-main res)
-                           (:pan-main out)
-                           (Box/createHorizontalStrut 189)])
-        pan-main (ss/vertical-panel
-                  :items [pan-north
-                          pan-south
-                          (Box/createVerticalStrut 120)]
-                  :border (factory/title (format "Filter %d" prefix)))
+        micro-buttons (factory/micro-button-panel :alias-filter)
+        pan-west (:panel micro-buttons)
+        pan-east (ss/horizontal-panel :items [(:pan-main res)
+                                            (:pan-main out)])
+        pan-main (ss/horizontal-panel :items [pan-west
+                                              (:pan-main dst)
+                                              (if mode 
+                                                (:pan-main mode)
+                                                (Box/createHorizontalStrut 56))
+                                              (:pan-main freq)
+                                              pan-east]
+                                      :border (factory/title (format "Filter %s" prefix)))
         widget-map {:pan-main pan-main}]
+    (ss/listen (:jb-init micro-buttons)
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (let [data (nth [constants/initial-program-filter1
+                                               constants/initial-program-filter2]
+                                              (dec prefix))]
+                                (doseq [[p v] data]
+                                  (.set-param! ied p v))
+                                (.sync-ui! ied)
+                                (.working ied false)
+                                (.status! ied (format "Initialized filter %s" prefix))))))))
+    (ss/listen (:jb-dice micro-buttons)
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (if (= prefix 1)
+                                (filter1-dice ied)
+                                (filter2-dice ied))
+                              (.sync-ui! ied)
+                              (.working ied false)
+                              (.status! ied (format "Randomized filter %s" prefix)))))))
     (reify subedit/InstrumentSubEditor
       (widgets [this] widget-map)
       (widget [this key] (get widget-map key))
@@ -285,7 +379,11 @@
           ((:syncfn out) data)
           (if mode ((:syncfn mode) data)))))))
 
-        
-        
-
+(defn filter-editor [performance ied]
+  (let [f1 (filtered 1 performance ied)
+        f2 (filtered 2 performance ied)
+        pan (ss/scrollable 
+             (ss/vertical-panel :items [(.widget f1 :pan-main)
+                                        (.widget f2 :pan-main)]))]
+    (subedit/subeditor-wrapper [f1 f2] pan)))
         

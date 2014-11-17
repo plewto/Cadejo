@@ -71,49 +71,47 @@
         param-depth2 :noise-amp2-depth
         param-lag1 :noise-amp1-lag
         param-lag2 :noise-amp2-lag
-        jb-init (factory/micro-button :reset "Reset noise parameters")
-        jb-dice (factory/micro-button :dice "Set random noise parameters")
-        jb-help (let [b (factory/micro-button :help "Alias noise help")]
-                  (.putClientProperty b :topic :alias-noise)
-                  (ss/listen b :action help/help-listener)
-                  b)
+
         slide-crackle (factory/unit-slider param-crackle false)
         slide-lp (factory/slider param-lp 10.0 10000.0 
                                  (factory/slider-label-map "" "2.5k" "5k" "7.5k" "10.k"))
         slide-hp (factory/slider param-hp 10.0 10000.0 
                                  (factory/slider-label-map "" "2.5k" "5k" "7.5k" "10.k"))
         slide-amp (factory/mix-slider param-amp)
-        slide-pan (factory/panner-slider param-pan)
+        slide-pan (factory/panner-slider param-pan (factory/pan-label-map) false)
         slide-depth1 (factory/unit-slider param-depth1 true)
         slide-depth2 (factory/unit-slider param-depth2 true)
         slide-lag1 (factory/unit-slider param-lag1 false)
         slide-lag2 (factory/unit-slider param-lag2 false)
-        buspan1 (factory/matrix-toolbar param-src1 ied)
-        buspan2 (factory/matrix-toolbar param-src2 ied)
+        buspan1 (factory/matrix-toolbar param-src1 ied 1)
+        buspan2 (factory/matrix-toolbar param-src2 ied 2)
         sliders [slide-crackle slide-lp slide-hp slide-amp slide-pan
                  slide-depth1 slide-depth2 slide-lag1 slide-lag2]
-        pan-west (ss/vertical-panel :items [jb-init jb-dice jb-help]
-                                    :border (factory/padding))
-        pan-1 (ss/horizontal-panel 
-               :items [(factory/slider-panel slide-crackle "Crackle")
-                       (factory/slider-panel slide-lp "LP")
-                       (factory/slider-panel slide-hp "HP")
-                       (factory/slider-panel slide-amp "Amp")
-                       (factory/slider-panel slide-pan "Pan")]
-               :border (factory/padding))
+        micro-buttons (factory/micro-button-panel :alias-noise)
+        pan-west (:panel micro-buttons)
+        pan-1 (ss/vertical-panel 
+               :items [(ss/horizontal-panel 
+                        :items [(factory/half-slider-panel slide-crackle "Crackle")
+                                (factory/half-slider-panel slide-lp "LP")
+                                (factory/half-slider-panel slide-hp "HP")
+                                (factory/half-slider-panel slide-amp "Amp")])
+                       (ss/horizontal-panel
+                        :items [(ss/label :text "Pan " :font factory/default-font)
+                                slide-pan])])
         pan-2 (ss/horizontal-panel 
                :items [(:panel buspan1)
-                       (factory/slider-panel slide-depth1 "Depth")
-                       (factory/slider-panel slide-lag1 "Lag")]
-               :border (factory/title "AM 1"))
+                       (factory/slider-panel slide-depth1 "Depth 1")
+                       (factory/slider-panel slide-lag1 "Lag 1")])
         pan-3 (ss/horizontal-panel 
                :items [(:panel buspan2)
-                       (factory/slider-panel slide-depth2 "Depth")
-                       (factory/slider-panel slide-lag2 "Lag")]
-               :border (factory/title "AM 2"))
+                       (factory/slider-panel slide-depth2 "Depth 2")
+                       (factory/slider-panel slide-lag2 "Lag 2")])
         pan-main (ss/border-panel :west pan-west
-                                  :center (ss/vertical-panel 
-                                           :items [pan-1 pan-2 pan-3])
+                                  :center (ss/vertical-panel
+                                           :items [pan-1
+                                                   (ss/horizontal-panel 
+                                                    :items [pan-2 pan-3]
+                                                    :border (factory/title "AM"))])
                   :border (factory/title "Noise"))
         syncfn (fn [data]
                  (reset! enable-change-listener* false)
@@ -144,24 +142,26 @@
                                 (.set-param! ied param val)))))]
     (doseq [s sliders]
       (.addChangeListener s change-listener))
-    (ss/listen jb-init :action (fn [_]
-                                 (.working ied true)
-                                  (SwingUtilities/invokeLater
-                                   (proxy [Runnable][]
-                                     (run []
-                                      (let [data constants/initial-program-noise]
-                                        (doseq [[p v] data]
-                                          (.set-param! ied p v))
-                                        (.sync-ui! ied)
-                                        (.working ied false)
-                                        (.status! ied "Noise source initialized")))))))
-    (ss/listen jb-dice :action (fn [_]
-                                 (.working ied true)
-                                 (SwingUtilities/invokeLater
-                                  (proxy [Runnable][]
-                                    (run []
-                                      (noise-dice ied)
-                                      (.working ied false))))))
+    (ss/listen (:jb-init micro-buttons) 
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (let [data constants/initial-program-noise]
+                                (doseq [[p v] data]
+                                  (.set-param! ied p v))
+                                (.sync-ui! ied)
+                                (.working ied false)
+                                (.status! ied "Noise source initialized")))))))
+    (ss/listen (:jb-dice micro-buttons) 
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (noise-dice ied)
+                              (.working ied false))))))
     {:pan-main pan-main
      :syncfn syncfn
      :resetfn resetfn}))
@@ -178,47 +178,44 @@
         param-depth2 :ringmod-amp2-depth
         param-lag1 :ringmod-amp1-lag
         param-lag2 :ringmod-amp2-lag
-        jb-init (factory/micro-button :reset "Reset ringmod parameters")
-        jb-dice (factory/micro-button :dice "Set random ringmod parameters")
-        jb-help (let [b (factory/micro-button :help "Alias ringmod help")]
-                  (.putClientProperty b :topic :alias-ringmod)
-                  (ss/listen b :action help/help-listener)
-                  b)
+        micro-buttons (factory/micro-button-panel :alias-ringmod)
         slide-carrier (factory/slider param-carrier -1.0 1.0
                                       (factory/slider-label-map "Osc1" "" "" "" "Osc2"))
         slide-modulator (factory/slider param-modulator -1.0 1.0
                                         (factory/slider-label-map "Osc3" "" "" "" "Noise"))
         slide-amp (factory/mix-slider param-amp)
-        slide-pan (factory/panner-slider param-pan)
+        slide-pan (factory/panner-slider param-pan (factory/pan-label-map) false)
         slide-depth1 (factory/unit-slider param-depth1 true)
         slide-depth2 (factory/unit-slider param-depth2 true)
         slide-lag1 (factory/unit-slider param-lag1 false)
         slide-lag2 (factory/unit-slider param-lag2 false)
         sliders [slide-carrier slide-modulator slide-amp slide-pan 
                  slide-depth1 slide-depth2 slide-lag1 slide-lag2]
-        buspan1 (factory/matrix-toolbar param-src1 ied)
-        buspan2 (factory/matrix-toolbar param-src2 ied)
-        pan-west (ss/vertical-panel :items [jb-init jb-dice jb-help]
-                                    :border (factory/padding))
-        pan-1 (ss/horizontal-panel 
-               :items [(factory/slider-panel slide-carrier "Carrier")
-                       (factory/slider-panel slide-modulator "Modulator")
-                       (factory/slider-panel slide-amp "Amp")
-                       (factory/slider-panel slide-pan "Pan")]
-               :border (factory/padding))
+        buspan1 (factory/matrix-toolbar param-src1 ied 1)
+        buspan2 (factory/matrix-toolbar param-src2 ied 2)
+        pan-west (:panel micro-buttons)
+        pan-1 (ss/vertical-panel
+               :items [(ss/horizontal-panel 
+                        :items [(factory/half-slider-panel slide-carrier "Carrier")
+                                (factory/half-slider-panel slide-modulator "Modulator")
+                                (factory/half-slider-panel slide-amp "Amp")])
+                       (ss/horizontal-panel 
+                        :items [(ss/label :text "Pan " :font factory/default-font)
+                                slide-pan])])
         pan-2 (ss/horizontal-panel 
                :items [(:panel buspan1)
-                       (factory/slider-panel slide-depth1 "Depth")
-                       (factory/slider-panel slide-lag1 "Lag")]
-               :border (factory/title "AM 1"))
+                       (factory/slider-panel slide-depth1 "Depth 1")
+                       (factory/slider-panel slide-lag1 "Lag 1")])
         pan-3 (ss/horizontal-panel 
                :items [(:panel buspan2)
-                       (factory/slider-panel slide-depth2 "Depth")
-                       (factory/slider-panel slide-lag2 "Lag")]
-               :border (factory/title "AM 2"))
+                       (factory/slider-panel slide-depth2 "Depth 2")
+                       (factory/slider-panel slide-lag2 "Lag 2")])
         pan-main (ss/border-panel :west pan-west
                                   :center (ss/vertical-panel 
-                                           :items [pan-1 pan-2 pan-3])
+                                           :items [pan-1
+                                                   (ss/horizontal-panel 
+                                                    :items [pan-2 pan-3]
+                                                    :border (factory/title "AM"))])
                                   :border (factory/title "Ring Modulator"))
         syncfn (fn [data]
                  (reset! enable-change-listener* false)
@@ -247,24 +244,26 @@
                                 (.set-param! ied param val)))))]
     (doseq [s sliders]
       (.addChangeListener s change-listener))
-    (ss/listen jb-init :action (fn [_]
-                                 (.working ied true)
-                                  (SwingUtilities/invokeLater
-                                   (proxy [Runnable][]
-                                     (run []
-                                      (let [data constants/initial-program-ringmod]
-                                        (doseq [[p v] data]
-                                          (.set-param! ied p v))
-                                        (.sync-ui! ied)
-                                        (.working ied false)
-                                        (.status! ied "Ringmod initialized")))))))
-    (ss/listen jb-dice :action (fn [_]
-                                 (.working ied true)
-                                 (SwingUtilities/invokeLater
-                                  (proxy [Runnable][]
-                                    (run []
-                                      (ringmod-dice ied)
-                                      (.working ied false))))))
+    (ss/listen (:jb-init micro-buttons) 
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (let [data constants/initial-program-ringmod]
+                                (doseq [[p v] data]
+                                  (.set-param! ied p v))
+                                (.sync-ui! ied)
+                                (.working ied false)
+                                (.status! ied "Ringmod initialized")))))))
+    (ss/listen (:jb-dice micro-buttons)
+               :action (fn [_]
+                         (.working ied true)
+                         (SwingUtilities/invokeLater
+                          (proxy [Runnable][]
+                            (run []
+                              (ringmod-dice ied)
+                              (.working ied false))))))
     {:pan-main pan-main
      :syncfn syncfn
      :resetfn resetfn}))
@@ -272,11 +271,10 @@
 (defn noise-editor [performance ied]
   (let [ned (noise ied)
         red (ringmod ied)
-        pan-main (ss/scrollable 
-                  (ss/horizontal-panel 
-                   :items [(:pan-main ned)
-                           (:pan-main red)
-                           (Box/createHorizontalStrut 250)]))]
+       
+        pan-main (ss/vertical-panel 
+                  :items [(:pan-main ned)
+                          (:pan-main red)])]
     (reify subedit/InstrumentSubEditor
       (widgets [this] {:pan-main pan-main})
       (widget [this key](get (.widgets this) key))
