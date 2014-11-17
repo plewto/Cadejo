@@ -42,3 +42,8 @@ Pressure has no effect on ALGO lfo2
 BUG 0004 2014.03.08 STATUS OPEN
 Periodically alias.genpatch/rand-alias creates an Alias program which
 crashes the sc server. This always? preceded by a "TOO LOUD!!" warning
+
+# ---------------------------------------------------------- BUG 0005
+BUG 0005 2014.11.17 STATUS OPEN
+Clicking "Save Program File" on Alias InstrumentEditor throws 
+ClassCastException. Have not yet tested other editors.
