@@ -234,7 +234,7 @@
         jb-open (factory/button "Open" :general :open "Open program file")
         jb-save (factory/button "Save" :general :save "Save program file")
         jb-help (factory/button "Help" :general :help "Program editor help")
-        jb-sync (ss/button :text "Sync") ;; DEBUG
+        jb-sync (ss/button :text "[Sync]") ;; DEBUG
         pan-north (ss/toolbar :floatable? false
                               :items [lab-id 
                                       :separator jb-show-parent
@@ -540,6 +540,10 @@
     
     (ss/listen jb-sync :action
                (fn [_]
+                 (let [bnk (.bank performance)
+                       data (.current-data bnk)
+                       pp (.pp-hook bnk)]
+                   (println (pp -1 "" data "")))
                  (.sync-ui! ied)))
 
     (if (config/enable-tooltips)
