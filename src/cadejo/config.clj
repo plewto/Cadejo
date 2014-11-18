@@ -101,6 +101,12 @@
     [this flag]
     "Enable/disable pretty-printer hook on MIDI program change")
 
+  (maximum-scene-count
+    [this])
+  
+  (maximum-scene-count!
+    [this n])
+
   (maximum-undo-count 
     [this]
     "Returns maximum depth of undo/redo operations")
@@ -108,6 +114,8 @@
   (maximum-undo-count!
     [this n]
     "Sets maximum depth of undo/redo operations")
+
+
 
   (warn-on-file-overwrite
     [this]
@@ -182,6 +190,7 @@
         selected-icon-style* (atom nil)
         initial-skin* (atom "Dust")
         current-skin* (atom "Dust")
+        max-scene-count* (atom 4)
         enable-pp* (atom true)
         max-undo-count* (atom 10)
         overwrite-warn* (atom true)
@@ -265,6 +274,11 @@
 
                 (enable-pp! [this flag]
                   (reset! enable-pp* flag))
+                
+                (maximum-scene-count [this] @max-scene-count*)
+
+                (maximum-scene-count! [this n]
+                  (reset! max-scene-count* (int n)))
 
                 (maximum-undo-count [this]
                   @max-undo-count*)
@@ -409,6 +423,12 @@
 (defn enable-pp! [flag]
   (.enable-pp! @current-config* flag))
 
+(defn maximum-scene-count []
+  (.maximum-scene-count @current-config*))
+
+(defn maximum-scene-count! [n]
+  (.maximum-scene-count! @current-config* n))
+
 (defn maximum-undo-count []
   (.maximum-undo-count @current-config*))
 
@@ -501,6 +521,7 @@
 (load-gui! true)
 (initial-skin! "Twilight")
 (enable-pp! true)
+(maximum-scene-count! 2)
 (maximum-undo-count! 10)
 (warn-on-file-overwrite! true)
 (warn-on-unsaved-data! true)

@@ -14,6 +14,7 @@
 
 (config/load-gui! true)
 
+(def maximum-scene-count (config/maximum-scene-count))
 (def scenes* (atom [])) ;; global list of scenes
 
 (def ^:private txt-about (ss/text :multi-line? true
@@ -85,8 +86,9 @@
                    (.doClick tb-show-midi))))
   pan-server-main))
 
-(defn- midi-panel [txt-status]
+(defn- midi-panel [txt-status scene-buttons]
   (let [lab-title (ss/label :text "Select Scene MIDI device")
+        scene-counter* (atom 0)
         device-buttons* (atom [])
         selected-button* (atom nil)
         grp (ss/button-group)
@@ -103,9 +105,12 @@
                          :enabled? flag)]
         (.putClientProperty tb :name hw-name)
         (.putClientProperty tb :dev sys-dev)
+
         (ss/listen tb :action (fn [ev]
                                 (reset! selected-button* (.getSource ev))
-                                (ss/config! jb-create-scene :enabled? true)))
+                                (ss/config! jb-create-scene 
+                                            :enabled? (< @scene-counter* maximum-scene-count))))
+
         (if hw-name (swap! device-buttons* (fn [n](conj n tb)))) ))
     (let [pan-west (ss/vertical-panel :items (flatten (merge [(Box/createVerticalStrut 16)
                                                               lab-title
@@ -124,13 +129,22 @@
                          dev (.getClientProperty rb :dev)
                          s (cadejo.midi.scene/scene dev)
                          sed (.get-editor s)
-                         sframe (.frame sed)]
+                         sframe (.frame sed)
+                         s-count @scene-counter*
+                         jb (nth scene-buttons s-count)]
+                     (.putClientProperty jb :scene-editor sed)
+                     (swap! scene-counter* inc)
+                     (ss/config! jb :text (str name))
+                     (ss/config! jb :enabled? true)
                      (swap! scenes* (fn [q](conj q s)))
                      (.put-property! s :midi-device-name name)
                      (.setEnabled rb false)
                      (.setEnabled jb-create-scene false)
                      (.sync-ui! sed)
                      (ss/show! sframe)
+                     (if (>= (inc s-count) maximum-scene-count)
+                       (doseq [b @device-buttons*]
+                         (ss/config! b :enabled? false)))
                      (ss/config! txt-status
                                  :text (format "Scene %s %s created" 
                                                name dev)))))
@@ -158,19 +172,32 @@
                     :editable? false
                     :border (factory/bevel))
         status (fn [txt](ss/config! txt-status :text txt))
+        scene-buttons (let [acc* (atom [])]
+                        (dotimes [n maximum-scene-count]
+                          (let [jb (ss/button :text "" :enabled? false)]
+                            (ss/listen jb :action (fn [ev]
+                                                     (let [src (.getSource ev)
+                                                           sed (.getClientProperty src :scene-editor)
+                                                           frm (.widget sed :frame)]
+                                                       (ss/show! frm)
+                                                       (.toFront frm))))
+                            (swap! acc* (fn [q](conj q jb)))))
+                        @acc*)
         pan-tbar (ss/toolbar :floatable? false
-                             :items [tb-show-server
-                                     tb-show-midi
-                                     jb-config
-                                     jb-skin
-                                     tb-show-about
-                                     jb-help
-                                     jb-exit])
+                             :items (flatten (merge [tb-show-server
+                                                     tb-show-midi
+                                                     jb-config
+                                                     jb-skin
+                                                     tb-show-about
+                                                     jb-help
+                                                     jb-exit
+                                                     :separator]
+                                                    scene-buttons)))
         pan-south (ss/vertical-panel :items [pan-tbar txt-status]
                                      :border (factory/padding 4))
                   
         pan-server (server-panel tb-show-server tb-show-midi txt-status)
-        pan-midi (midi-panel txt-status)
+        pan-midi (midi-panel txt-status scene-buttons)
         pan-cards (ss/card-panel 
                    :items [[pan-server :server]
                            [pan-midi :midi]

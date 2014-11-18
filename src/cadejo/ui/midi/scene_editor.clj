@@ -70,7 +70,7 @@
                          :icon (if (cadejo.config/enable-button-icons)(lnf/read-icon :general :staff) nil)
                          :content (.widget reged :pan-main)}]
                  :border (factory/padding))]
-    (ss/config! (.widget basic-ed :frame) :on-close :nothing)
+    (ss/config! (.widget basic-ed :frame) :on-close :hide)
     (ss/config! (.widget basic-ed :frame) :size frame-size)
     (.add pan-center pan-channels BorderLayout/SOUTH)
     (.add pan-center pan-tab BorderLayout/CENTER)
