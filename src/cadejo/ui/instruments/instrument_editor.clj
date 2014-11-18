@@ -270,9 +270,9 @@
                                                 pan-store-inc1
                                                 pan-store-inc8
                                                 jb-store])
+        
         progress-bar (ss/progress-bar :indeterminate? false)
         pan-south1 (ss/border-panel 
-                    :west progress-bar
                     :center (ss/horizontal-panel :items [jb-init jb-dice])
                     :east pan-store
                     :border (factory/padding))
@@ -282,6 +282,8 @@
         pan-south2 (ss/grid-panel 
                     :rows 1
                     :items [(ss/vertical-panel :items [lab-status]
+                                               :border (factory/bevel))
+                            (ss/vertical-panel :items [progress-bar]
                                                :border (factory/bevel))
                             (ss/vertical-panel :items [lab-name]
                                                :border (factory/bevel))])

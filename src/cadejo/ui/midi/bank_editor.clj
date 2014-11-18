@@ -13,6 +13,7 @@
   (:require [seesaw.chooser])
   (:import javax.swing.event.ListSelectionListener
            javax.swing.event.CaretListener
+           javax.swing.SwingUtilities
            java.io.File))
 
 (def program-count 128) 
@@ -45,6 +46,9 @@
 
   (set-parent-editor! 
     [this parent])
+
+  (working
+    [this flag])
 
   (status!
     [this msg])
@@ -168,6 +172,9 @@
                             (.sync-ui! this)
                             (.status! this (format "Redo %s" (first src))))
                         (.warning! this "Nothing to Redo"))))
+                  
+                  (working [this flag]
+                    (.working @parent* flag))
 
                   (status! [this msg]
                     (.status! @parent* msg))
@@ -202,16 +209,23 @@
                         (do (.warning! this "Instrument editor not defined")
                             nil))) 
                   ) ;; end bank-ed
-
-                  create-instrument-editor (fn []
-                                             (let [performance (.node @parent*)
-                                                   itype (.get-property performance :instrument-type)
-                                                   descriptor (.get-property performance :descriptor)
-                                                   ied (.create-editor descriptor performance)]
-                                               (if ied
-                                                 (reset! instrument-editor* ied)
-                                                 (.warning! bank-ed "No editor defined"))))]
-
+        
+        create-instrument-editor (fn []
+                                   (println ";; Creating instrument editor ...")
+                                   (.working bank-ed true)
+                                   (SwingUtilities/invokeLater
+                                    (proxy [Runnable][]
+                                      (run []
+                                        (let [performance (.node @parent*)
+                                              itype (.get-property performance :instrument-type)
+                                              descriptor (.get-property performance :descriptor)
+                                              ied (.create-editor descriptor performance)]
+                                          (reset! instrument-editor* ied)
+                                          (try
+                                            (ss/show! (.widget ied :frame))
+                                            (catch NullPointerException ex
+                                              (.warning! bank-ed "Instrument Editor not defined")))
+                                          (.working bank-ed false))))))]
     (.addListSelectionListener 
      lst-programs
      (proxy [ListSelectionListener][]
@@ -236,12 +250,18 @@
           nil)))) 
                                
     (ss/listen jb-init :action (fn [_]
-                                 (let [ied (.instrument-editor bank-ed)]
-                                   (.push-undo-state! bank-ed "Initialize Bank")
-                                   (.init! bnk)
-                                   (if ied (.init! ied))
-                                   (.sync-ui! bank-ed)
-                                   (.status! bank-ed "Initialized Bank"))))
+                                 (.working bank-ed true)
+                                 (SwingUtilities/invokeLater
+                                  (proxy [Runnable][]
+                                    (run []
+                                      (let [ied (.instrument-editor bank-ed)]
+                                        (.push-undo-state! bank-ed "Initialize Bank")
+                                        (.init! bnk)
+                                        (if ied (.init! ied))
+                                        (.sync-ui! bank-ed)
+                                        (.status! bank-ed "Initialized Bank")
+                                        (.working bank-ed false)))))))
+
 
     (ss/listen jb-name :action (fn [_]
                                  (let [ref-name (.bank-name bnk)
@@ -336,17 +356,8 @@
     (ss/listen jb-undo :action (fn [_](.undo! bank-ed)))
 
     (ss/listen jb-redo :action (fn [_](.redo! bank-ed)))
-
-    ;; (ss/listen jb-transmit :action
-    ;;            (fn [_]
-    ;;              (let [pnum (.getSelectedIndex lst-programs)]
-    ;;                (if pnum 
-    ;;                  (do 
-    ;;                    (reset! enable-list-selection-listener* false)
-    ;;                    (.program-change bnk pnum)
-    ;;                    (reset! enable-list-selection-listener* true))))))
-    
- (ss/listen jb-transmit :action
+   
+    (ss/listen jb-transmit :action
                (fn [_]
                  (let [slot (.current-slot bnk)]
                    (if slot
@@ -354,7 +365,7 @@
                        (reset! enable-list-selection-listener* false)
                        (.program-change bnk {:data1 slot})
                        (reset! enable-list-selection-listener* true))))))
-
+    
     (ss/listen jb-edit :action
                (fn [_]
                  (let [ied @instrument-editor*]
@@ -367,8 +378,7 @@
                          (.set-store-location! ied (.current-slot bnk))
                          (.sync-ui! ied)
                          (ss/show! f)
-                         (.toFront f)))
-                     (.warning! bank-ed "Editor not defined"))) ))
+                         (.toFront f)))))))
 
     (.putClientProperty jb-help :topic :bank-editor)
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)

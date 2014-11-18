@@ -35,6 +35,9 @@
     [this msg]
     "Set text of info label")
 
+  (working
+    [this flag])
+
   (status! 
     [this msg]
     "Display status message")
@@ -80,14 +83,15 @@
                    :border (factory/padding))
         pan-center (ss/border-panel
                     :border (factory/padding))
+        progress-bar (ss/progress-bar :indeterminate? false)
         lab-status (ss/label :text " ")
         pan-status (ss/vertical-panel :items [lab-status]
                                    :border (factory/bevel))
         lab-info (ss/label :text " ")
         pan-info (ss/vertical-panel :items [lab-info]
                                  :border (factory/bevel))
-        pan-south (ss/grid-panel :rows 1 :items [pan-status pan-info]
-                              :border (factory/bevel 4))
+        pan-south (ss/grid-panel :rows 1 :items [pan-status progress-bar pan-info]
+                                 :border (factory/bevel 4))
         pan-main (ss/border-panel :north pan-north
                                :center pan-center
                                :south pan-south)
@@ -122,8 +126,11 @@
              (set-node! [this n]
                (reset! node* n))
 
+             (working [this flag]
+               (ss/config! progress-bar :indeterminate? flag))
+
              (info-text! [this msg]
-               (ss/config! lab-info :text msg))
+               (ss/config! lab-info :text (format "PATH: %s" msg)))
 
              (status! [this msg]
                (ss/config! lab-status :text msg)

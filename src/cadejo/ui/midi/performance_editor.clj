@@ -24,6 +24,9 @@
   (node 
     [this])
 
+  (working
+    [this flag])
+
   (status!
     [this msg])
 
@@ -52,6 +55,7 @@
                                          {:title (if (config/enable-button-text) "MIDI" "")
                                           :icon (if (config/enable-button-icons) (lnf/read-icon :midi :plug) nil)
                                           :content (.widget properties-editor :pan-main)}])
+        progress-bar (ss/progress-bar :indeterminate? false)
         pan-center (.widget basic-ed :pan-center)
         descriptor (.get-property performance :descriptor)
         available-controllers (.controllers descriptor)
@@ -73,6 +77,9 @@
 
                  (node [this] (.node basic-ed))
                 
+                 (working [this flag]
+                   (.working basic-ed flag))
+
                  (status! [this msg]
                    (.status! basic-ed msg))
                  
