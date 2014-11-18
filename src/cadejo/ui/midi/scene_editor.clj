@@ -51,10 +51,10 @@
                           (.putClientProperty jb :channel i)
                           (swap! acc* (fn [n](conj n jb)))))
                       @acc*)
-        pan-channels (ss/toolbar :orientation :horizontal
-                                 :floatable? true
-                                 :items [(ss/grid-panel :rows 2 :items jb-channels
-                                                        :border (factory/title "Channels"))])
+        pan-channels  (ss/toolbar :orientation :horizontal
+                                  :floatable? false
+                                  :items [(ss/grid-panel :rows 2 :items jb-channels
+                                                         :border (factory/title "Channels"))])
         reged (cadejo.ui.scale.registry-editor/registry-editor scene)
 
         txt-tree (ss/text :text " "
