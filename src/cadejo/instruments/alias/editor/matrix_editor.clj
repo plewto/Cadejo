@@ -686,7 +686,7 @@
                   (proxy [Runnable][]
                     (run []
                       (doseq [[p v] default-matrix]
-                        (.set-param! ied p v))
+                          (.set-param! ied p v))
                       (.sync-ui! ied)
                       (.status! ied "Set matrix to default")
                       (.working ied false))))))
@@ -699,7 +699,7 @@
                       (doseq [[p v] zero-matrix]
                         (.set-param! ied p v))
                       (.sync-ui! ied)
-                      (.status! ied "Set matrix to default")
+                      (.status! ied "Reset matrix to 'zero'")
                       (.working ied false))))))
    
     (ss/listen jb-dice :action
