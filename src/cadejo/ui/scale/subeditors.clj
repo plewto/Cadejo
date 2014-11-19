@@ -5,16 +5,20 @@
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.scale.scale-utilities :as scale-util])
-  (:require [seesaw.core :as ss]))
+  (:require [seesaw.core :as ss])
+  (import javax.swing.Box))
 
 (def msg-1 "No scale selected")
 (def msg-2 "Some parameters are invalid")
+(def spinner-size [100 :by 28])
 
 (defn linear-editor [sced]
   (let [vtf-f1 (vtf/numeric-text-field :min 0 :max 20000 :value 0
-                                       :border "F1")
+                                       :border "F1"
+                                       :size spinner-size)
         vtf-f2 (vtf/numeric-text-field :min 0 :max 20000 :value 20000
-                                       :border "F2")
+                                       :border "F2"
+                                       :size spinner-size)
         jb-reset (factory/button "Reset" :general :reset "Reset linear parameters")
         jb-linear (factory/button "Linear" :general :linear "Set linear table values")
         jb-invert (factory/button "Invert" :general :invert "Invert table range")
@@ -28,6 +32,7 @@
                                                 (.widget vtf-f2 :pan-main)])
         pan-main (ss/border-panel :north pan-north
                                   :center pan-center
+                                  :south (Box/createVerticalStrut 180)
                                   :border (factory/title "Linear"))]
     (ss/listen jb-linear
                :action
@@ -75,9 +80,12 @@
         wrap (.wraprange sced)
         jb-reset (factory/button "Reset" :general :reset "Reset transpose parameters")
         jb-transpose (factory/button "Transpose" :general :transpose "Transpose table range")
-        spin-steps (ss/spinner :model (ss/spinner-model 0 :min -24 :max 24 :step 1 :size [114 :by 24]))
-        spin-cents (ss/spinner :model (ss/spinner-model 0 :min -99 :max 99 :step 1 :size [114 :by 24]))
-        spin-bias (ss/spinner :model (ss/spinner-model 0 :min -100 :max 100 :step 1 :size [114 :by 24]))
+        spin-steps (ss/spinner :model (ss/spinner-model 0 :min -24 :max 24 :step 1 :size [114 :by 24])
+                               :size spinner-size)
+        spin-cents (ss/spinner :model (ss/spinner-model 0 :min -99 :max 99 :step 1 :size [114 :by 24])
+                               :size spinner-size)
+        spin-bias (ss/spinner :model (ss/spinner-model 0 :min -100 :max 100 :step 1 :size [114 :by 24])
+                              :size spinner-size)
         pan-steps (ss/vertical-panel :items [spin-steps]
                                      :size [114 :by 36]
                                      :border (factory/title "Steps"))
@@ -128,7 +136,8 @@
         jb-splice (factory/button "Splice" :general :splice "Splce selected tables")
         pan-north (ss/grid-panel :rows 1
                               :items [jb-clear jb-swap jb-dup jb-splice])
-        spin-location (ss/spinner :model (ss/spinner-model 0 :min 0 :max 127 :by 1))
+        spin-location (ss/spinner :model (ss/spinner-model 0 :min 0 :max 127 :by 1)
+                                  :size spinner-size)
         pan-location (ss/vertical-panel :items [spin-location]
                                      :border (factory/title "Location"))
         

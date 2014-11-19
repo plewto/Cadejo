@@ -17,6 +17,7 @@
   (:require [seesaw.core :as ss]))
 
 (def current-filename* (atom ""))
+(def spinner-size [100 :by 28])
 
 (def filefilter (let [ext cadejo.scale.registry/file-extension
                       description "Cadejo scale registry files"]
@@ -160,14 +161,18 @@
                                  :border (factory/title "Registered Scales"))
         ;; Edit limits
         spin-range-low (ss/spinner :model (ss/spinner-model
-                                           0 :from 0 :to 127 :by 1))
+                                           0 :from 0 :to 127 :by 1)
+                                   :size spinner-size)
         spin-range-high (ss/spinner :model (ss/spinner-model
-                                            127 :from 0 :to 127 :by 1))
+                                            127 :from 0 :to 127 :by 1)
+                                    :size spinner-size)
         spin-wrap-low (ss/spinner :model (ss/spinner-model
-                                          0 :from 0 :to 200 :by 10))
+                                          0 :from 0 :to 200 :by 10)
+                                  :size spinner-size)
         spin-wrap-high (ss/spinner :model (ss/spinner-model
                                            20000
-                                           :from 4000 :to 20000 :by 1000))
+                                           :from 4000 :to 20000 :by 1000)
+                                   :size spinner-size)
         pan-range-low (ss/vertical-panel :items [spin-range-low]
                                          :border (factory/title "Low"))
         pan-range-high (ss/vertical-panel :items [spin-range-high]
