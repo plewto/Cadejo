@@ -1,22 +1,26 @@
 (ns cadejo.instruments.combo.pp
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.instruments.combo.program :as program])
-  ;(:require [cadejo.util.col :as col])
-)
+  (:require [cadejo.util.user-message :as umsg]))
+
      
 (defn pp-combo [pnum pname data remarks]
   (let [pad1 "    "
         pad2 (str pad1 "       ")
         sb (StringBuilder.)
-        ;dmap (col/alist->map data)
         fget (fn [p]
-               (float (get data p)))
+               (let [v (get data p)]
+                 (if v
+                   (float v)
+                   (do
+                     (umsg/warning (format "Combo %s parameter missing" p))
+                     0.0))))
         iget (fn [p] 
                (int (fget p)))
         app (fn [frmt & args]
               (.append sb (apply #'format (cons frmt args))))]
-    (app ";; Combo ------------------------------- %3d \"%s\"\n" pnum pname)
-    (app "(save-program %3d \"%s\" \"%s\"\n" pnum pname remarks)
+    (app ";; Combo ------------------------------- %3s \"%s\"\n" pnum pname)
+    (app "(save-program %3s \"%s\" \"%s\"\n" pnum pname remarks)
     (app "%s(combo :a1      %5.3f  :w1 %5.3f\n"
          pad1 (fget :amp1)(fget :wave1))
     (app "%s:a2      %5.3f  :w2 %5.3f\n"
@@ -49,3 +53,14 @@
          (fget :reverb-mix)
          (fget :amp))
     (.toString sb)))
+
+(defn combo-dump [pnum pname data remarks]
+  (let [sb (StringBuilder. 1024)]
+    (.append sb (format "Combo data dump\n"))
+    (.append sb (format "\tpnum = %s  pname = '%s'\n" pnum pname))
+    (.append sb (format "\tremarks are '%s'\n" remarks))
+    (.append sb (format "\tdata\n"))
+    (doseq [k (sort (keys data))]
+      (.append sb (format "\t\t[%-16s] --> %s\n" k (get data k))))
+    (.toString sb)))
+        

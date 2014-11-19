@@ -43,7 +43,10 @@ BUG 0004 2014.03.08 STATUS OPEN
 Periodically alias.genpatch/rand-alias creates an Alias program which
 crashes the sc server. This always? preceded by a "TOO LOUD!!" warning
 
-# ---------------------------------------------------------- BUG 0005
-BUG 0005 2014.11.17 STATUS OPEN
+# ---------------------------------------------------------- BUG 0005 CLOSED
+BUG 0005 2014.11.17 STATUS CLOSED
 Clicking "Save Program File" on Alias InstrumentEditor throws 
 ClassCastException. Have not yet tested other editors.
+2014.11.19 Combo editor also throws error
+2014.11.19 program save (and also paste, open and copy) were 
+using old form of cadejo.midi.program/Program

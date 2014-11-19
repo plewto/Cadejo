@@ -15,12 +15,12 @@
   (:require [seesaw.chooser :as ssc])
   (:require [seesaw.font :as ssfont])
   (:require [sgwr.indicators.numberbar :as numberbar])
-  (:import 
-   java.awt.event.FocusListener
-   java.io.File
-   java.io.FileNotFoundException
-   javax.swing.Box
-   javax.swing.JFileChooser))
+  (:import java.awt.event.FocusListener
+           java.io.File
+           java.io.FileNotFoundException
+           javax.swing.Box
+           javax.swing.JFileChooser
+           javax.swing.event.ChangeListener))
 
 
 (def ^:private max-program-number 128)
@@ -53,20 +53,6 @@
         (.status! ied "Save Canceled")
         nil))))
 
-;; (defn- open-program [ied jfc dform ext]
-;;   (let [file (.getSelectedFile jfc)
-;;         filename (path/replace-extension 
-;;                   (.getAbsolutePath file) ext)
-;;         rec (try
-;;               (read-string (slurp filename))
-;;               (catch FileNotFoundException e
-;;                 nil))]
-;;     (if (and rec 
-;;              (= (:file-type rec) :cadejo-program)
-;;              (= (:data-format rec) dform))
-;;       (dissoc rec :file-type :data-format)
-;;       nil)))
-
 (defn- open-program [ied jfc dform ext]
   (let [file (.getSelectedFile jfc)
         filename (path/replace-extension 
@@ -80,8 +66,6 @@
              (= (:data-format rec) dform))
       (dissoc rec :file-type :data-format)
       nil)))
-
-
 
 
 (defn- program-name-editor [parent-editor]
@@ -356,8 +340,7 @@
                 (.current-data bank))
 
               (program->clipboard [this]
-                (let [d (ucol/map->alist (.current-data this))
-                      prog (assoc (.current-program this) :args d)]
+                (let [prog (.current-program this)]
                   (reset! clipboard* prog)
                   (.setEnabled jb-paste true)
                   (.status! this "Program copied to clipboard")))
@@ -424,14 +407,23 @@
                       (.sync-ui! this)
                       (.status! this "Random Program")))))
 
+              ;; (sync-ui! [this]
+              ;;   (let [prog (.current-program bank)
+              ;;         data (and prog (.data prog))]
+              ;;     (if data
+              ;;       (do
+              ;;         (ss/config! lab-name :text (.program-name prog))
+              ;;         (doseq [s @sub-editors*]
+              ;;           (.sync-ui! s))))))
+
               (sync-ui! [this]
                 (let [prog (.current-program bank)
                       data (and prog (.data prog))]
                   (if data
-                    (do
+                    (let [selected-index (.getSelectedIndex pan-tabs)
+                          se (nth @sub-editors* selected-index)]
                       (ss/config! lab-name :text (.program-name prog))
-                      (doseq [s @sub-editors*]
-                        (.sync-ui! s))))))
+                      (.sync-ui! se)))))
               ) ;; end ied
 
         name-editor (program-name-editor ied)]
@@ -440,6 +432,11 @@
                       (if (config/enable-button-text) "Common" "")
                       (if (config/enable-button-icons)(lnf/read-icon :edit :text) nil)
                       name-editor)
+
+    (.addChangeListener pan-tabs
+                        (proxy [ChangeListener][]
+                          (stateChanged [_]
+                            (.sync-ui! ied))))
     
     (ss/listen jb-show-parent :action
                (fn [_](let [ped (.get-editor performance)
