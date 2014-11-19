@@ -386,7 +386,7 @@
                         (println (ppf pnum pname d rem)))))))
            
               (set-store-location! [this slot]
-                (if (and (>= slot 0)(<= slot max-program-number))
+                (if (and slot (>= slot 0)(<= slot max-program-number))
                   (.display! nbar-store (str (int slot)))))
 
               (init! [this]
