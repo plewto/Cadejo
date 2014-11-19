@@ -79,6 +79,7 @@
 
   (current-program!
     [this prog]
+    [this name remarks data]
     "Sets current-program
      synths and instument-editor are updated.")
 
@@ -232,6 +233,10 @@
                   (apply ot/ctl (synths)(ucol/map->alist (.data prog)))
                   (if @editor* (.sync-ui! @editor*))
                   prog)
+
+                (current-program! [this name remarks data]
+                  (let [prog (cadejo.midi.program/program name remarks data)]
+                    (.current-program! this prog)))
 
                 (current-data [this]
                   (let [p (.current-program this)]

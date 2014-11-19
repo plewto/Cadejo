@@ -35,8 +35,7 @@
         filename (path/replace-extension 
                   (.getAbsolutePath file) ext) 
         pan-main (.widget ied :pan-main)
-        pout (assoc program 
-               :args (ucol/map->alist data)
+        pout (assoc (.to-map program)
                :file-type :cadejo-program
                :data-format dform)]
     (if (overwrite-warning pan-main "Program" filename)
@@ -54,6 +53,20 @@
         (.status! ied "Save Canceled")
         nil))))
 
+;; (defn- open-program [ied jfc dform ext]
+;;   (let [file (.getSelectedFile jfc)
+;;         filename (path/replace-extension 
+;;                   (.getAbsolutePath file) ext)
+;;         rec (try
+;;               (read-string (slurp filename))
+;;               (catch FileNotFoundException e
+;;                 nil))]
+;;     (if (and rec 
+;;              (= (:file-type rec) :cadejo-program)
+;;              (= (:data-format rec) dform))
+;;       (dissoc rec :file-type :data-format)
+;;       nil)))
+
 (defn- open-program [ied jfc dform ext]
   (let [file (.getSelectedFile jfc)
         filename (path/replace-extension 
@@ -67,6 +80,9 @@
              (= (:data-format rec) dform))
       (dissoc rec :file-type :data-format)
       nil)))
+
+
+
 
 (defn- program-name-editor [parent-editor]
   (let [txt-name (ss/text 
@@ -380,7 +396,7 @@
                     (let [pname (:name prog)
                           rem (:remarks prog)
                           pnum (.value nbar-store)
-                          d (ucol/map->alist (.current-data this))
+                          d (.current-data this)
                           ppf (.pp-hook bank)]
                       (if ppf
                         (println (ppf pnum pname d rem)))))))
@@ -453,7 +469,7 @@
                                                     file-extension)]
                              (if prog
                                (do 
-                                 (.current-program! bank prog)
+                                 (.current-program! bank (:name prog)(:remarks prog)(:data prog))
                                  (.sync-ui! ied)
                                  (.pp ied)
                                  (.status! ied (format "Opened %s"
