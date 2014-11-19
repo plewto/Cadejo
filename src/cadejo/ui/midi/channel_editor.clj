@@ -12,7 +12,8 @@
   (:require [cadejo.ui.util.validated-text-field :as vtf])
   (:require [clojure.string ])
   (:require [seesaw.core :as ss])
-  (:import java.awt.BorderLayout
+  (:import javax.swing.SwingUtilities
+           java.awt.BorderLayout
            java.awt.event.WindowListener))
 
 (def frame-size [1281 :by 661])
@@ -35,7 +36,8 @@
 ;; Display modal dialog for adding performance/instrument to channel
 ;; 
 (defn- performance-options-dialog [chanobj descriptor]
-  (let [logo (.logo descriptor :small)
+  (let [chan-ed (.get-editor chanobj)
+        logo (.logo descriptor :small)
         instrument-type (.instrument-name descriptor)
         iname (clojure.string/capitalize (name instrument-type))
         about (.about descriptor)
@@ -138,29 +140,36 @@
     
     (ss/listen jb-add :action 
                (fn [_]
-                 (let [s (.parent chanobj)
-                       ci (.channel-number chanobj)
-                       id (.get-value vtf-instrument-id)
-                       vc (int (.getValue spin-voice-count))
-                       mbus (int (.getValue spin-mainbus))
-                       args (let [acc* (atom [s ci (keyword id)
-                                              :voice-count vc
-                                              :main-out mbus])]
-                              (doseq [cc (keys @cc-spinners*)]
-                                (let [spin (get @cc-spinners* (keyword cc))
-                                      val (int (.getValue spin))]
-                                  (swap! acc* (fn [n](conj n cc)))
-                                  (swap! acc* (fn [n](conj n val)))))
-                              @acc*)]
-                   (if (.is-valid? vtf-instrument-id)
-                     (let [kmode @selected-mode*]
-                       (.create descriptor kmode args)
-                       (.sync-ui! (.get-editor s))
-                       (.status! (.get-editor chanobj)
-                                 (format "Added %s %s id = %s" kmode iname id))
-                       (ss/return-from-dialog dia true))
-                     (do
-                       (Thread/sleep 750))) )))
+                 (.working chan-ed true)
+                 (.status! chan-ed "Creating performance/instrument")
+                 (SwingUtilities/invokeLater
+                  (proxy [Runnable][]
+                    (run []
+                      (let [s (.parent chanobj)
+                            ci (.channel-number chanobj)
+                            id (.get-value vtf-instrument-id)
+                            vc (int (.getValue spin-voice-count))
+                            mbus (int (.getValue spin-mainbus))
+                            args (let [acc* (atom [s ci (keyword id)
+                                                   :voice-count vc
+                                                   :main-out mbus])]
+                                   (doseq [cc (keys @cc-spinners*)]
+                                     (let [spin (get @cc-spinners* (keyword cc))
+                                           val (int (.getValue spin))]
+                                       (swap! acc* (fn [n](conj n cc)))
+                                       (swap! acc* (fn [n](conj n val)))))
+                                   @acc*)]
+                        (if (.is-valid? vtf-instrument-id)
+                          (let [kmode @selected-mode*]
+                            (.create descriptor kmode args)
+                            (.sync-ui! (.get-editor s))
+                            (.status! chan-ed
+                                      (format "Added %s %s id = %s" kmode iname id))
+                            (.working chan-ed false)
+                            (ss/return-from-dialog dia true))
+                          (do
+                            (Thread/sleep 750)
+                            (.working chan-ed false)))))))))
     (ss/show! dia)))
                        
 
@@ -203,6 +212,9 @@
   (node 
     [this])
   
+  (working
+    [this flag])
+
   (status!
     [this msg])
 
@@ -221,7 +233,7 @@
 (defn channel-editor [chanobj]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
         pan-center (.widget basic-ed :pan-center)
-        tbar-performance (ss/toolbar :floatable? true)
+        tbar-performance (ss/toolbar :floatable? false)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         pan-add-performance (add-performance-panel chanobj)
         pan-tabs (ss/tabbed-panel :tabs [{:title (if (cadejo.config/enable-button-text) "Add Instruments" "")
@@ -241,6 +253,9 @@
                       (umsg/warning (format "ChannelEditor does not have %s widget" key))))
 
                 (node [this] (.node basic-ed))
+
+                (working [this flag]
+                  (.working basic-ed flag))
 
                 (status! [this msg]
                   (.status! basic-ed msg))
