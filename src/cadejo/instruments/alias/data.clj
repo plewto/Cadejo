@@ -1839,3 +1839,68 @@
   (flanger  -99 :lfo [0.275 0.293] :mod [:h      0.738] :fb +0.16 :xmix 0.25)
   (echo1    -99 :delay [1.000 :off    0.000] :fb -0.41 :damp 0.73 :gate [:d      0.11] :pan -0.50)
   (echo2    -99 :delay [1.200 :e      0.000] :fb -0.45 :damp 0.14 :gate [:f      0.46] :pan +0.50)))
+
+;; --------------------------------------------------------------------------- 29 GhostShift1
+;;
+(save-program  29 "GhostShift1" "Uses gated delay lines"
+ (alias-program
+  (common  :amp 0.200  :port-time 0.000 :cc7->volume 0.000)
+  ;; ENVS A     D1    D2    R
+  (env1   0.000 0.500 0.500 0.001  :pk 1.000 :bp 1.000 :sus 1.000 :invert 0)
+  (env2   2.116 0.822 0.500 0.283  :pk 1.000 :bp 0.732 :sus 1.000 :invert 0)
+  (env3   0.000 0.500 0.500 0.001  :pk 1.000 :bp 1.000 :sus 1.000)
+  (lfo1     :fm1   [:con    7.000] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo2     :fm1   [:con    7.000] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (lfo3     :fm1   [:con    7.000] :fm2   [:off    0.000]
+            :wave1 [:con    0.500] :wave2 [:off    0.000])
+  (stepper1 :trig  :lfo1           :reset :off
+            :min -10 :max +10 :step  +1 :ivalue -10 :bias 0.0 :scale 0.10)
+  (stepper2 :trig  :lfo2           :reset :off
+            :min -10 :max +10 :step  +1 :ivalue -10 :bias 0.0 :scale 0.10)
+  (divider1 :p1 +0.000 :p3 +0.000 :p5 +0.000 :p7 +1.000 :pw 0.50
+            :am [:con    1.000]   :bias +0.000)
+  (divider2 :p2 +0.000 :p4 +0.000 :p6 +0.000 :p8 +1.000 :pw 0.50
+            :am [:con    1.000]   :bias +0.000)
+  (lfnoise  :fm [:con    1.000])
+  (sh       :rate 7.000 :src :lfnse  :bias 0.000 :scale 1.000)
+  (matrix
+            :a1 [:lfo1   1.000] :a2 [:cca    1.000] 
+            :b1 [:lfo2   1.000] :b2 [:con    1.000] 
+            :c1 [:env1   1.000] :c2 [:con    1.000] 
+            :d1 [:env2   1.000] :d2 [:con    1.000] 
+            :e1 [:step1  1.000] :e2 [:con    1.000] 
+            :f1 [:sh     1.000] :f2 [:con    1.000] 
+            :g1 [:env3   1.000] :g2 [:con    1.000] 
+            :h1 [:period 1.000] :h2 [:con    1.000] )
+  ;; OSCILLATORS
+  (osc1-freq 1.000 :bias 0.000 :fm1 [:a      0.100 0.00] :fm2 [:con    1.000 0.00])
+  (osc1-wave 0.400             :w1  [:d      1.000     ] :w2  [:con    1.000     ])
+  (osc1-amp  +0 :pan +0.00     :am1 [:con    1.000 0.00] :am2 [:con    0.000 0.00])
+
+  (osc2-freq 2.000 :bias 0.000 :fm1 [:a      0.100 0.00] :fm2 [:con    1.000 0.00])
+  (osc2-wave 0.500             :w1  [:b      0.520     ] :w2  [:off    0.000     ])
+  (osc2-amp  +0 :pan +0.00     :am1 [:con    1.000 0.00] :am2 [:con    1.000 0.00])
+
+  (osc3-freq 0.300 :bias 0.000 :fm1 [:a      0.100 0.00] :fm2 [:off    0.000 0.00])
+  (osc3-wave 0.000             :w1  [:d      0.660     ] :w2  [:off    0.000     ])
+  (osc3-amp  +0 :pan +0.00     :am1 [:con    1.000 0.00] :am2 [:con    1.000 0.00])
+
+  (noise    -99 :pan +0.00 :crackle 0.00     :lp 10000   :hp    10
+                               :am1 [:con    1.000 0.00] :am2 [:a      0.000 0.00])
+  (ringmod  -99 :pan +0.00 :carrier -1.0     :modulator -1.0
+                               :am1 [:con    1.000 0.00] :am2 [:con    1.000 0.00])
+  ;; FILTERS
+  (clip    :gain 1.000 :mix +0.000 :clip [0.00 :off    0.00])
+  (filter1 :gain 1.000 :freq 10000 :fm1  [:b              1] :fm2 [:off        0]
+           :mode 0.00              :res  [0.00 :off    0.00] :pan [-0.00 :off    +0.00])
+  (fold    :gain 1.000 :mix +0.000 :clip [0.00 :con    0.00])
+  (filter2 :gain 1.000 :freq 10000 :fm1  [:b              0] :fm2 [:off        0]
+                                   :res  [0.00 :off    0.00] :pan [+0.00 :off    +0.00])
+  ;; EFX
+  (dry       +0)
+  (pshifter  -4 :ratio [0.750 :off    0.000] :rand 0.04 :spread 0.00)
+  (flanger  -99 :lfo [1.000 0.100] :mod [:off    0.000] :fb +0.50 :xmix 0.00)
+  (echo1     +0 :delay [0.031 :h      1.000] :fb -0.94 :damp 0.00 :gate [:g      1.00] :pan +0.10)
+  (echo2     +0 :delay [0.100 :h      0.980] :fb +0.90 :damp 0.00 :gate [:g      1.00] :pan +0.50)))
