@@ -10,7 +10,8 @@
   (:require [cadejo.util.midi])
   (:require [seesaw.core :as ss])
   (:require [overtone.core :as ot])
-  (:import javax.swing.Box))
+  (:import javax.swing.SwingUtilities
+           javax.swing.Box))
 
 (config/load-gui! true)
 
@@ -21,7 +22,29 @@
                                   :editable? false
                                   :text cadejo.about/about-text))
 
-(defn- server-panel [tb-show-server tb-show-midi txt-status]
+(defn- exit-warning-dialog []
+  (let [flag* (atom false)]
+    (if (config/warn-on-exit)
+      (let [dia (ss/dialog :content (ss/label :text "Exit Cadejo ?")
+                           :option-type :yes-no
+                           :default-option :no
+                           :success-fn (fn [_]
+                                         (reset! flag* true))
+                           :no-fn (fn [_]
+                                    (reset! flag* false)))]
+        (ss/config! dia :size [200 :by 200])
+        (ss/show! dia)
+        @flag*)
+      true)))
+
+(defn- cadejo-exit []
+  (if (exit-warning-dialog)
+    (do
+      (println "Exiting Cadejo ...")
+      (System/exit 0))
+    (println ";; Cadejo exit canceled")))
+
+(defn- server-panel [tb-show-server tb-show-midi txt-status progbar]
   (let [lab-title (ss/label :text "Select Server")
         selected* (atom :default)
         grp (ss/button-group)
@@ -38,7 +61,6 @@
                                    :enabled? true
                                    :size [400 :by 100])
         pan-server-main (ss/border-panel 
-                         ;:north lab-title
                          :west pan-options
                          :center (ss/vertical-panel
                                   :items [jb-start-server]
@@ -65,28 +87,32 @@
 
     (ss/listen jb-start-server :action 
                (fn [_]
-                 (let [s @selected*]
-                   (ss/config! txt-status
-                               :text (format "Booting %s server" s))
-                   (cond (= s :default)
-                         (ot/boot-server)
-                         (= s :internal)
-                         (ot/boot-internal-server)
-                         (= s :external)
-                         (ot/boot-external-server)
-                         
-                         (= s :existing)
-                         nil ;; not implemented
-
-                         :default
-                         nil ;; should never see default
-                         )
-                   (ss/config! tb-show-server :enabled? false)
-                   (ss/config! tb-show-midi :enabled? true)
-                   (.doClick tb-show-midi))))
+                 (ss/config! progbar :indeterminate? true)
+                 (ss/config! txt-status :text "Starting server")
+                 (SwingUtilities/invokeLater
+                  (proxy [Runnable][]
+                    (run []
+                      (let [s @selected*]
+                        (cond (= s :default)
+                              (ot/boot-server)
+                              (= s :internal)
+                              (ot/boot-internal-server)
+                              (= s :external)
+                              (ot/boot-external-server)
+                              
+                              (= s :existing)
+                              nil ;; not implemented
+                              
+                              :default ;; should never see default
+                              nil) 
+                        (ss/config! tb-show-server :enabled? false)
+                        (ss/config! tb-show-midi :enabled? true)
+                        (.doClick tb-show-midi)
+                        (ss/config! txt-status :text (format "%s server started" (name s)))
+                        (ss/config! progbar :indeterminate? false)))))))
   pan-server-main))
 
-(defn- midi-panel [txt-status scene-buttons]
+(defn- midi-panel [txt-status scene-buttons progbar]
   (let [lab-title (ss/label :text "Select Scene MIDI device")
         scene-counter* (atom 0)
         device-buttons* (atom [])
@@ -124,32 +150,38 @@
       (ss/listen jb-create-scene
                  :action 
                  (fn [_]
-                   (let [rb @selected-button*
-                         name (.getClientProperty rb :name)
-                         dev (.getClientProperty rb :dev)
-                         s (cadejo.midi.scene/scene dev)
-                         sed (.get-editor s)
-                         sframe (.frame sed)
-                         s-count @scene-counter*
-                         jb (nth scene-buttons s-count)]
-                     (.putClientProperty jb :scene-editor sed)
-                     (swap! scene-counter* inc)
-                     (ss/config! jb :text (str name))
-                     (ss/config! jb :enabled? true)
-                     (swap! scenes* (fn [q](conj q s)))
-                     (.put-property! s :midi-device-name name)
-                     (.setEnabled rb false)
-                     (.setEnabled jb-create-scene false)
-                     (.sync-ui! sed)
-                     (ss/show! sframe)
-                     (if (>= (inc s-count) maximum-scene-count)
-                       (doseq [b @device-buttons*]
-                         (ss/config! b :enabled? false)))
-                     (ss/config! txt-status
-                                 :text (format "Scene %s %s created" 
-                                               name dev)))))
-      pan-midi-main)))
-
+                   (ss/config! progbar :indeterminate? true)
+                   (ss/config! txt-status :text "Creating Cadejo Scene")
+                   (SwingUtilities/invokeLater
+                    (proxy [Runnable][]
+                      (run []
+                        (let [rb @selected-button*
+                              name (.getClientProperty rb :name)
+                              dev (.getClientProperty rb :dev)
+                              s (cadejo.midi.scene/scene dev)
+                              sed (.get-editor s)
+                              sframe (.frame sed)
+                              s-count @scene-counter*
+                              jb (nth scene-buttons s-count)]
+                          (.putClientProperty jb :scene-editor sed)
+                          (swap! scene-counter* inc)
+                          (ss/config! jb :text (str name))
+                          (ss/config! jb :enabled? true)
+                          (swap! scenes* (fn [q](conj q s)))
+                          (.put-property! s :midi-device-name name)
+                          (.setEnabled rb false)
+                          (.setEnabled jb-create-scene false)
+                          (.sync-ui! sed)
+                          (ss/show! sframe)
+                          (if (>= (inc s-count) maximum-scene-count)
+                            (doseq [b @device-buttons*]
+                              (ss/config! b :enabled? false)))
+                          (ss/config! progbar :indeterminate? false)
+                          (ss/config! txt-status
+                                      :text (format "Scene %s %s created" 
+                                                    name dev))))))))
+                    pan-midi-main)))
+      
 
 (defn cadejo-splash []
   (let [lab-header (ss/label :icon cadejo.ui.util.icon/splash-image)
@@ -193,11 +225,16 @@
                                                      jb-exit
                                                      :separator]
                                                     scene-buttons)))
-        pan-south (ss/vertical-panel :items [pan-tbar txt-status]
+        progress-bar (ss/progress-bar :indeterminate? false)
+        pan-south (ss/vertical-panel :items [pan-tbar
+                                             (ss/horizontal-panel 
+                                              :items [txt-status progress-bar]
+                                              :border (factory/bevel))]
                                      :border (factory/padding 4))
+                                     
                   
-        pan-server (server-panel tb-show-server tb-show-midi txt-status)
-        pan-midi (midi-panel txt-status scene-buttons)
+        pan-server (server-panel tb-show-server tb-show-midi txt-status progress-bar)
+        pan-midi (midi-panel txt-status scene-buttons progress-bar)
         pan-cards (ss/card-panel 
                    :items [[pan-server :server]
                            [pan-midi :midi]
@@ -223,10 +260,10 @@
                                  (lnf/skin-dialog)))
 
     (ss/listen jb-config :action (fn [_]
-                                   (status "Confing NOT IMPLEMENTED")))
+                                   (status "Config NOT IMPLEMENTED")))
 
     (ss/listen jb-exit :action (fn [_]
-                                 (status "Exit NOT IMPLEMENTED")))
+                                 (cadejo-exit)))
 
     (.putClientProperty jb-help :topic :cadejo)
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
