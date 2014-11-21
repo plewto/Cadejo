@@ -407,15 +407,6 @@
                       (.sync-ui! this)
                       (.status! this "Random Program")))))
 
-              ;; (sync-ui! [this]
-              ;;   (let [prog (.current-program bank)
-              ;;         data (and prog (.data prog))]
-              ;;     (if data
-              ;;       (do
-              ;;         (ss/config! lab-name :text (.program-name prog))
-              ;;         (doseq [s @sub-editors*]
-              ;;           (.sync-ui! s))))))
-
               (sync-ui! [this]
                 (let [prog (.current-program bank)
                       data (and prog (.data prog))]
