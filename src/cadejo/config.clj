@@ -4,7 +4,7 @@
   (:require [cadejo.util.midi])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel))
 
-(def ^:private +VERSION+ "0.2.0")
+(def ^:private +VERSION+ "0.2.1-SNAPSHOT")
 
 (def ^:private available-skins (map str (keys (SubstanceLookAndFeel/getAllSkins))))
 
