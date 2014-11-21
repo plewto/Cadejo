@@ -25,7 +25,7 @@
 (defn- exit-warning-dialog []
   (let [flag* (atom false)]
     (if (config/warn-on-exit)
-      (let [dia (ss/dialog :content (ss/label :text "Exit Cadejo ?")
+      (let [dia (ss/dialog :content (ss/label :text "Exit Overtone ?")
                            :option-type :yes-no
                            :default-option :no
                            :success-fn (fn [_]

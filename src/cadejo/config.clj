@@ -4,7 +4,7 @@
   (:require [cadejo.util.midi])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel))
 
-(def ^:private +VERSION+ "0.1.2-SNAPSHOT")
+(def ^:private +VERSION+ "0.2.0")
 
 (def ^:private available-skins (map str (keys (SubstanceLookAndFeel/getAllSkins))))
 
@@ -115,7 +115,11 @@
     [this n]
     "Sets maximum depth of undo/redo operations")
 
+  (warn-on-exit
+    [this])
 
+  (warn-on-exit!
+    [this flag])
 
   (warn-on-file-overwrite
     [this]
@@ -193,6 +197,7 @@
         max-scene-count* (atom 4)
         enable-pp* (atom true)
         max-undo-count* (atom 10)
+        exit-warn* (atom true)
         overwrite-warn* (atom true)
         unsaved-warn* (atom true)
         
@@ -285,6 +290,12 @@
 
                 (maximum-undo-count! [this n]
                   (reset! max-undo-count* (int n)))
+                
+                (warn-on-exit [this]
+                  @exit-warn*)
+
+                (warn-on-exit! [this flag]
+                  (reset! exit-warn* flag))
 
                 (warn-on-file-overwrite [this]
                   @overwrite-warn*)
@@ -435,6 +446,12 @@
 (defn maximum-undo-count! [n]
   (.maximum-undo-count! @current-config* n))
 
+(defn warn-on-exit []
+  (.warn-on-exit @current-config*))
+
+(defn warn-on-exit! [flag]
+  (.warn-on-exit! @current-config* flag))
+
 (defn warn-on-file-overwrite []
   (.warn-on-file-overwrite @current-config*))
 
@@ -523,6 +540,7 @@
 (enable-pp! true)
 (maximum-scene-count! 2)
 (maximum-undo-count! 10)
+(warn-on-exit! true)
 (warn-on-file-overwrite! true)
 (warn-on-unsaved-data! true)
 (enable-tooltips! true)
@@ -530,6 +548,5 @@
 (enable-button-icons! true)
 
 ;; nil colors --> use LNF
-(displaybar-colors! [5 32 2][77 58 83][245 244 207] :gray)
-(envelope-colors!   [5 32 2][245 244 207])
-;(config-path "~/.cadejo")
+(envelope-colors!      :black [109  81 117])
+(displaybar-colors!    :black [ 77  58  83][245 244 207][ 77 58 83])

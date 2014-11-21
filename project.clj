@@ -1,6 +1,6 @@
-(defproject cadejo "0.1.2-SNAPSHOT"
+(defproject cadejo "0.2.0"
   :description "MIDI management tool for Overtone"
-  :url "http://example.com/FIXME"
+  :url "https://github.com/plewto/cadejo"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
