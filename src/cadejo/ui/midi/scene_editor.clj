@@ -1,3 +1,5 @@
+(println "--> cadejo.ui.midi.scene-editor")
+
 (ns cadejo.ui.midi.scene-editor
   (:require [cadejo.ui.scale.registry-editor])
   (:require [cadejo.config])

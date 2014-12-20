@@ -1,3 +1,5 @@
+(println "-->    masa editor")
+
 (ns cadejo.instruments.masa.masa-editor
   (:require [cadejo.instruments.masa.gamut-editor])
   (:require [cadejo.instruments.masa.efx-editor])

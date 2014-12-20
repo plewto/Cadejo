@@ -1,3 +1,5 @@
+(println "-->    combo pp")
+
 (ns cadejo.instruments.combo.pp
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.instruments.combo.program :as program])

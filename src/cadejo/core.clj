@@ -7,7 +7,11 @@
    (:require [cadejo.midi.performance])
    (:require [cadejo.midi.pbank])
    (:require [cadejo.midi.mono-mode])
-   (:require [cadejo.midi.poly-mode]))
+   (:require [cadejo.midi.poly-mode])
+   (:require [cadejo.instruments.descriptor])
+   (:require [sgwr.coordinate-system])
+   (:require [sgwr.drawing])
+)
 
 (require '[cadejo.instruments.algo.algo-engine :as algo])
 (def algo-descriptor algo/algo-descriptor) 

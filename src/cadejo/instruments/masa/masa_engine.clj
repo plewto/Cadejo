@@ -1,4 +1,5 @@
-(println "--> MASA")
+(println "--> Loading MASA organ")
+
 (ns cadejo.instruments.masa.masa-engine
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu])

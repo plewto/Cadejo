@@ -1,3 +1,5 @@
+(println "--> sgwr.drawing")
+
 (ns sgwr.drawing
   "Drawing is the primary class for sgwr
    

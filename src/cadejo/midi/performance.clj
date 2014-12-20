@@ -7,7 +7,6 @@
   (:require [cadejo.midi.bend-handler])
   (:require [cadejo.midi.pressure-handler])
   (:require [cadejo.midi.cc.controller-suite])
-  ;(:require [cadejo.midi.program-bank])
   (:require [cadejo.midi.node])
   (:require [cadejo.util.col])
   (:require [cadejo.util.user-message :as umsg])

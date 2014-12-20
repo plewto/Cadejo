@@ -1,4 +1,5 @@
-(println "--> Alias")
+(println "--> Loading Alias mono synth")
+
 (ns cadejo.instruments.alias.alias-engine
   (:use [overtone.core])
   (:require [cadejo.midi.mono-mode])

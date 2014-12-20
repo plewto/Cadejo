@@ -1,3 +1,5 @@
+(println "--> cadejo.ui.midi.bank-editor")
+
 (ns cadejo.ui.midi.bank-editor
   (:use [cadejo.util.trace])
   (:require [cadejo.config :as config])

@@ -1,3 +1,5 @@
+(println "--> cadejo.ui.util.lnf")
+
 (ns cadejo.ui.util.lnf
   (:require [cadejo.config :as config])
   (:require [cadejo.util.path :as path])
@@ -345,7 +347,7 @@
         (ss/invoke-later
          (SubstanceLookAndFeel/setSkin (.getClassName skin)))
         (config/current-skin! skin-name)
-        (umsg/message (format "Using skin '%s'"
+        (umsg/message (format "--> Using '%s' skin"
                               skin-name))))
     (if (and skin-name (not skin))
       (umsg/warning (format "config initial-skin value '%s' is invalid" skin-name)))))

@@ -1,3 +1,5 @@
+(println "-->    alias data")
+
 (ns cadejo.instruments.alias.data
   (:use [cadejo.instruments.alias.program]))
  

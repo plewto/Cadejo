@@ -1,3 +1,5 @@
+(println "--> cadejo.ui.instruments.instrument-editor")
+
 (ns cadejo.ui.instruments.instrument-editor
   (:use [cadejo.util.trace])
   (:require [cadejo.config :as config])

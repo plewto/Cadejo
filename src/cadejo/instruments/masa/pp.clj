@@ -1,3 +1,5 @@
+(println "-->    masa pp")
+
 (ns cadejo.instruments.masa.pp
   (:use [cadejo.instruments.masa.program])
   (:require [cadejo.util.col])

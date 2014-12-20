@@ -1,3 +1,5 @@
+(println "-->    alias filters")
+
 (ns cadejo.instruments.alias.tone
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu]))

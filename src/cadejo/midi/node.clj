@@ -1,3 +1,4 @@
+(println "--> cadejo.midi.node")
 
 ;; standard properties:
 ;; node-type - keyword

@@ -1,3 +1,5 @@
+(println "-->    combo editor")
+
 (ns cadejo.instruments.combo.combo-editor
   (:use [cadejo.util.trace])
   (:use [cadejo.instruments.combo.constants])

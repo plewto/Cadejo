@@ -1,3 +1,5 @@
+(println "-->    masa program")
+
 (ns cadejo.instruments.masa.program
   (:use [cadejo.instruments.masa.masa-constants])
   (:require [cadejo.midi.pbank])

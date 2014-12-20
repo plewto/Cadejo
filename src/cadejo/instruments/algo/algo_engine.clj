@@ -1,4 +1,4 @@
-(println "--> ALGO")
+(println "--> Loading Algo FM synth")
 
 ;; [3]-->[2]-->(hp)-->[1]   feedback on 6 and 8 
 ;;                          feedback from 7 to 8 if possible

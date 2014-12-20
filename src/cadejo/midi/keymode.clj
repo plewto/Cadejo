@@ -1,3 +1,5 @@
+(println "--> cadejo.midi.keymode")
+
 (ns cadejo.midi.keymode)
 
 (defprotocol Keymode

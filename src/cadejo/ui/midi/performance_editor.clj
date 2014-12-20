@@ -1,3 +1,5 @@
+(println "--> cadejo.ui.midi.performance-editor")
+
 (ns cadejo.ui.midi.performance-editor
   (:require [cadejo.config :as config])
   (:require [cadejo.util.user-message :as umsg])

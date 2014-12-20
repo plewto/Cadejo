@@ -1,3 +1,5 @@
+(println "-->    combo genpatch")
+
 (ns cadejo.instruments.combo.genpatch
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.util.math :as math])

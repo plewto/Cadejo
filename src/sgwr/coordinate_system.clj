@@ -1,3 +1,5 @@
+(println "--> sgwr.coordinate-system")
+
 (ns sgwr.coordinate-system
   "Defines various mapping schemes between 'real' points and pixel coordinates"
   (:require [sgwr.util.math :as math]))

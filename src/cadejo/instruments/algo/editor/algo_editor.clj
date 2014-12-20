@@ -1,3 +1,5 @@
+(println "-->    algo editor")
+
 (ns cadejo.instruments.algo.editor.algo-editor
   (:require [cadejo.config :as config])
   (:require [cadejo.util.user-message :as umsg])
@@ -12,7 +14,6 @@
   (:require [cadejo.instruments.algo.editor.fx-editor :as fxed])
   (:require [seesaw.core :as ss]))  
 
-(def ^:private icon-style (config/icon-style))
 (def ^:private fm-icon (lnf/read-icon :wave :fm))
 (def ^:private am-icon (lnf/read-icon :wave :am))
 (def ^:private env-icon (lnf/read-icon :env :adsr))

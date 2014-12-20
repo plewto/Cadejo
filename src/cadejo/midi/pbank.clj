@@ -1,3 +1,5 @@
+(println "--> cadejo.midi.pbank")
+
 (ns cadejo.midi.pbank
   (:use [cadejo.util.trace])
   (:require [cadejo.midi.program])

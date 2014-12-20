@@ -1,3 +1,5 @@
+(println "-->    alias editor")
+
 (ns cadejo.instruments.alias.editor.alias-editor
   (:require [cadejo.ui.instruments.instrument-editor :as ied])
   (:require [cadejo.ui.instruments.subedit :as subedit])
@@ -13,8 +15,7 @@
   (:require [cadejo.instruments.alias.editor.stepper-editor :as steped])
   (:require [cadejo.instruments.alias.editor.divider-editor :as dived])
   (:require [cadejo.instruments.alias.editor.matrix-editor :as matrix])
-  (:require [seesaw.core :as ss])
-  )
+  (:require [seesaw.core :as ss]))
 
 (def osc-icon (lnf/read-icon :wave :sine2))
 (def noise-icon (lnf/read-icon :wave :noise))

@@ -1,4 +1,4 @@
-(println "--> Combo")
+(println "--> Loading Combo organ")
 
 (ns cadejo.instruments.combo.combo-engine
   (:use [cadejo.util.trace])

@@ -1,3 +1,5 @@
+(println "-->    combo program")
+
 (ns cadejo.instruments.combo.program
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.midi.program])

@@ -1,4 +1,4 @@
-(println "--> channel-editor")
+(println "--> cadejo.ui.midi.channel-editor")
 
 (ns cadejo.ui.midi.channel-editor
   (:require [cadejo.config])

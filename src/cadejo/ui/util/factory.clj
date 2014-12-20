@@ -67,6 +67,9 @@
     (do
       (.setVerticalTextPosition b SwingConstants/BOTTOM)
       (.setHorizontalTextPosition b SwingConstants/CENTER)))
+  (.setOpaque b false)
+  (.setContentAreaFilled b false)
+  (.setBorderPainted b false)
   b)
 
 (defn radio 
@@ -101,8 +104,6 @@
      (button txt icon-main icon-sub nil))
   ([txt]
      (button txt nil nil)))                 
-
-
 
 ;; Return filter selection button
 ;; ftype - keyword, filter type one of :bp :br :lp :hp :bypass 

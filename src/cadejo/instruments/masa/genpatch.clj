@@ -1,3 +1,5 @@
+(println "-->    masa genpatch")
+
 (ns cadejo.instruments.masa.genpatch
   (:use [cadejo.util.trace])
   (:require [cadejo.util.math :as math])

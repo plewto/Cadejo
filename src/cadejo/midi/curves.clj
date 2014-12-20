@@ -1,3 +1,5 @@
+(println "--> cadejo.midi.curves")
+
 (ns cadejo.midi.curves
   "Provides standard mapping functions.
    Mapping functions come in two flavours: monopolar and bipolar

@@ -1,3 +1,5 @@
+(println "--> cadejo.instruments.descriptor")
+
 (ns cadejo.instruments.descriptor
   (:use [cadejo.util.trace])
   (:require [cadejo.midi.program])
