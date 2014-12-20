@@ -1,3 +1,5 @@
+(println "--> cadejo.ui.midi.node-editor")
+
 (ns cadejo.ui.midi.node-editor
   "Defines interface for all 'editor' components"
   (:require [cadejo.config :as config])
