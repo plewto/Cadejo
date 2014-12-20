@@ -1,3 +1,5 @@
+(println "-->    algo program")
+
 (ns cadejo.instruments.algo.program
   (:require [cadejo.midi.pbank])
   (:require [cadejo.midi.program])
