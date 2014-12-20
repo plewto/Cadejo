@@ -2,10 +2,9 @@
   (:require [cadejo.config :as config])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.util.user-message :as umsg])
-  ;(:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
   (:require [seesaw.color :as ssc])
-  (:require [seesaw.font :as ssf]) ;; debug only
+  ;(:require [seesaw.font :as ssf]) ;; debug only
   (:require [seesaw.icon])
   (:require [seesaw.swingx :as swingx])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel
@@ -16,69 +15,69 @@
 
 (def available-skins (keys skins))
 
-;; Map skin to 'normal' icon index
+;; Map skin to 'normal' icon prefix
 ;;
-(def skin-icon-index 
-  {"Autumn" 0,
-   "Business" 10,
-   "Business Black Steel" 12,
-   "Business Blue Steel" 12,
-   "Cerulean" 11,
-   "Challenger Deep" 19,
-   "Creme" 9,
-   "Creme Coffee" 9,
-   "Dust" 9,
-   "Dust Coffee" 7,
-   "Emerald Dusk" 21,
-   "Gemini" 10,
-   "Graphite" 15,
-   "Graphite Aqua" 14,
-   "Graphite Glass" 14,
-   "Magellan" 17,
-   "Mariner" 9,
-   "Mist Aqua" 12,
-   "Mist Silver" 12,
-   "Moderate" 12,
-   "Nebula" 12,
-   "Nebula Brick Wall" 12,
-   "Office Black 2007" 10,
-   "Office Blue 2007" 6,
-   "Office Silver 2007" 12,
-   "Raven" 22,
-   "Sahara" 12,
-   "Twilight" 23})
+(def ^:private skin-icon-prefix 
+  {"Autumn" "gray"
+   "Business" "black"
+   "Business Black Steel" "black"
+   "Business Blue Steel" "black"
+   "Cerulean" "gray"
+   "Challenger Deep" "white"
+   "Creme" "black"
+   "Creme Coffee" "black"
+   "Dust" "black"
+   "Dust Coffee" "gray"
+   "Emerald Dusk" "white"
+   "Gemini" "black"
+   "Graphite" "white"
+   "Graphite Aqua" "white"
+   "Graphite Glass" "white"
+   "Magellan" "black"
+   "Mariner" "black"
+   "Mist Aqua" "black"
+   "Mist Silver" "black"
+   "Moderate" "black"
+   "Nebula" "black"
+   "Nebula Brick Wall" "black"
+   "Office Black 2007" "black"
+   "Office Blue 2007" "gray"
+   "Office Silver 2007" "black"
+   "Raven" "black"
+   "Sahara" "black"
+   "Twilight" "black"})
 
-;; Map skin to 'selected' icon index
+;; Map skin to 'selected' icon prefix
 ;;
-(def skin-selected-icon-index 
-  {"Autumn" 2,
-   "Business" 12,
-   "Business Black Steel" 5,
-   "Business Blue Steel" 5,
-   "Cerulean" 6,
-   "Challenger Deep" 18,
-   "Creme" 6,
-   "Creme Coffee" 3,
-   "Dust" 8,
-   "Dust Coffee" 1,
-   "Emerald Dusk" 20,
-   "Gemini" 2,
-   "Graphite" 10,
-   "Graphite Aqua" 15,
-   "Graphite Glass" 15,
-   "Magellan" 16,
-   "Mariner" 2,
-   "Mist Aqua" 5,
-   "Mist Silver" 4,
-   "Moderate" 5,
-   "Nebula" 6,
-   "Nebula Brick Wall" 6,
-   "Office Black 2007" 1,
-   "Office Blue 2007" 1,
-   "Office Silver 2007" 1,
-   "Raven" 12,
-   "Sahara" 25,
-   "Twilight" 24})
+(def ^:private skin-selected-icon-prefix 
+  {"Autumn" "gray"
+   "Business" "black"
+   "Business Black Steel" "black"
+   "Business Blue Steel" "black"
+   "Cerulean" "gray"
+   "Challenger Deep" "gray"
+   "Creme" "gray"
+   "Creme Coffee" "black"
+   "Dust" "gray"
+   "Dust Coffee" "gray"
+   "Emerald Dusk" "gray"
+   "Gemini" "gray"
+   "Graphite" "black"
+   "Graphite Aqua" "white"
+   "Graphite Glass" "white"
+   "Magellan" "gray"
+   "Mariner" "gray"
+   "Mist Aqua" "black"
+   "Mist Silver" "black"
+   "Moderate" "black"
+   "Nebula" "gray"
+   "Nebula Brick Wall" "gray"
+   "Office Black 2007" "gray"
+   "Office Blue 2007" "gray"
+   "Office Silver 2007" "gray"
+   "Raven" "black"
+   "Sahara" "black"
+   "Twilight" "gray"})
 
 (defn skin-name [i]
   (nth available-skins i))
@@ -244,58 +243,56 @@
 
 
 
-;; Return java.io.File for icon using the current config/icon-style
+;; Return java.io.File for icon 
+;; prefix - String, one of "black", "gray" or "white"
+;;         if not specified derive from current skin
 ;; group - keyword, major icon grouping  :curve :filter :env ....
 ;; subgroup - keyword, specific icon within in group 
 ;;
 (defn- get-icon-file 
-  ([style group subgroup]
-     (let [name (format "%02d_%s%s.png"
-                        style 
+  ([prefix group subgroup]
+     (let [name (format "%s_%s%s.png"
+                        prefix 
                         (name group)
                         (if subgroup (format "_%s" (name subgroup)) ""))
            pathname (path/join "resources" "icons" name)]
        (File. pathname)))
   ([group subgroup]
-     (get-icon-file (config/icon-style) group subgroup nil)))
+   (let [skin-name (config/current-skin)
+         iprefix (get skin-icon-prefix skin-name "black")]
+     (get-icon-file iprefix group subgroup nil))))
 
 
 ;; Return 'normal' un-selected icon
-;; style    - int or String, style may be either int icon index 
-;;            0 <= style <= 25 or skin name as String
+;; prefix    - String, one of "black", "gray" or "white"
 ;; group    - keyword, major icon group 
 ;; subgroup - keyword, specific icon within group.
 ;;
 (defn read-icon 
-  ([style group subgroup]
-     (let [sty (cond (= (type style) java.lang.String)
-                     (get skin-icon-index style 11)
-                     (= (type style) java.lang.Long)
-                     (min (max 0 style) 25)
-                     :default 11)
-           f (get-icon-file sty group subgroup)]
-       (seesaw.icon/icon f)))
+  ([prefix group subgroup]
+     (let [f (get-icon-file prefix group subgroup)
+           icn (seesaw.icon/icon f)]
+       icn))
   ([group subgroup]
-     (read-icon (config/icon-style) group subgroup)))
+   (let [skin-name (config/current-skin)
+         iprefix (get skin-icon-prefix skin-name "black")]
+     (read-icon iprefix group subgroup))))
 
 
 ;; Return 'selected' icon
-;; style    - int or String, style may be either int icon index 
-;;            0 <= style <= 25 or skin name as String
+;; prefix    - String, one of "black", "gray" or "white"
 ;; group    - keyword, major icon group 
 ;; subgroup - keyword, specific icon within group.
 ;;
 (defn read-selected-icon
-  ([style group subgroup]
-     (let [sty (cond (= (type style) java.lang.String)
-                     (get skin-selected-icon-index style)
-                     (= (type style) java.lang.Long)
-                     (min (max 0 style) 25)
-                     :default 6)
-           f (get-icon-file sty group subgroup)]
-       (seesaw.icon/icon f)))
+  ([prefix group subgroup]
+     (let [f (get-icon-file prefix group subgroup)
+           icn (seesaw.icon/icon f)]
+       icn))
   ([group subgroup]
-     (read-selected-icon (config/selected-icon-style) group subgroup)))
+   (let [skin-name (config/current-skin)
+         iprefix (get skin-selected-icon-prefix skin-name "black")]
+     (read-selected-icon iprefix group subgroup))))
 
 ;; Return skin-selectin panel
 ;;
@@ -328,10 +325,7 @@
         (swingx/titled-panel
          :title "Substance Skins"
          :content (ss/border-panel 
-                   :center (lnf-selector-panel)
-                   :south (ss/label 
-                           :text (format "Current config icon style is %s" 
-                                         (config/icon-style)))))
+                   :center (lnf-selector-panel)))
         jb-dismis (ss/button :text "Dismis")
         dia (ss/dialog :title "Substance Skins"
                        :content pan-main
@@ -340,7 +334,6 @@
                        :options [jb-dismis])]
     (ss/listen jb-dismis :action (fn [_](ss/return-from-dialog dia true)))
     (ss/show! dia)))
-
 
 ;; Set initial skin
 ;;
@@ -352,29 +345,28 @@
         (ss/invoke-later
          (SubstanceLookAndFeel/setSkin (.getClassName skin)))
         (config/current-skin! skin-name)
-        (umsg/message (format "Using skin '%s' icon-style %s"
-                              skin-name (config/icon-style)))))
+        (umsg/message (format "Using skin '%s'"
+                              skin-name))))
     (if (and skin-name (not skin))
       (umsg/warning (format "config initial-skin value '%s' is invalid" skin-name)))))
   
-(defn skin-test []
-
-  (let [grp (ss/button-group)
-        fnt (ssf/font :style :bold :size 36)
-        b1 (ss/toggle :text "Selected"
-                      :group grp
-                      :selected? true
-                      :font fnt)
-        b2 (ss/toggle :text "UnSelected"
-                      :group grp
-                      :font fnt)
-        b3 (ss/toggle :text "Disabled"
-                      :font fnt
-                      :enabled? false)
-        pan-south (ss/grid-panel :rows 1 :items [b1 b2 b3])
-        f (ss/frame :title "Skin Test"
-                    :content pan-south
-                    :on-close :dispose)]
-    (ss/pack! f)
-    (ss/show! f)
-    (skin-dialog)))
+;; (defn skin-test []
+;;   (let [grp (ss/button-group)
+;;         fnt (ssf/font :style :bold :size 36)
+;;         b1 (ss/toggle :text "Selected"
+;;                       :group grp
+;;                       :selected? true
+;;                       :font fnt)
+;;         b2 (ss/toggle :text "UnSelected"
+;;                       :group grp
+;;                       :font fnt)
+;;         b3 (ss/toggle :text "Disabled"
+;;                       :font fnt
+;;                       :enabled? false)
+;;         pan-south (ss/grid-panel :rows 1 :items [b1 b2 b3])
+;;         f (ss/frame :title "Skin Test"
+;;                     :content pan-south
+;;                     :on-close :dispose)]
+;;     (ss/pack! f)
+;;     (ss/show! f)
+;;     (skin-dialog)))

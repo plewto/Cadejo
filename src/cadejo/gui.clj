@@ -196,6 +196,7 @@
         jb-config (factory/button "Config" :general :config "Open Cadejo config editor")
         jb-skin (factory/button "Skin" :general :skin "Open skin selector")
         jb-help (factory/button "Help" :general :help "Display help")
+        ;jb-test (factory/button "Test" :general :test "Test transperancey")
         jb-exit (factory/button "Exit" :general :exit "Exit Cadejo/Overtone")
         
         txt-status (ss/text 
@@ -222,6 +223,7 @@
                                                      jb-skin
                                                      tb-show-about
                                                      jb-help
+                                                     ;jb-test
                                                      jb-exit
                                                      :separator]
                                                     scene-buttons)))

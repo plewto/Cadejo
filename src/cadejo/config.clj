@@ -39,28 +39,28 @@
     [this flag]
     "Sets flag indicating whether GUI components are to be use are not.")
 
-  (icon-style
-    [this]
-    "Return icon style index. 
-     If icon-style is not explicitly set derive style from current-skin
-     The returned value is either an int indicating the icon index directly
-     or a string indicating the current skin")
+  ;; (icon-style
+  ;;   [this]
+  ;;   "Return icon style index. 
+  ;;    If icon-style is not explicitly set derive style from current-skin
+  ;;    The returned value is either an int indicating the icon index directly
+  ;;    or a string indicating the current skin")
 
-  (icon-style!
-    [this n]
-    "Set icon style 
-     n - int, style index 0 <= n <= 25
-     If icon style is not explicitly set the style is derived from the current skin")
+  ;; (icon-style!
+  ;;   [this n]
+  ;;   "Set icon style 
+  ;;    n - int, style index 0 <= n <= 25
+  ;;    If icon style is not explicitly set the style is derived from the current skin")
 
-  (selected-icon-style 
-    [this]
-    "Return icon style for 'selected' buttons
-     If not explicitly set the style is derived from the current skin")
+  ;; (selected-icon-style 
+  ;;   [this]
+  ;;   "Return icon style for 'selected' buttons
+  ;;    If not explicitly set the style is derived from the current skin")
 
-  (selected-icon-style!
-    [this n]
-    "Set icon style for selected buttons.
-     If not explicitly set, icon style is derived from current skin")
+  ;; (selected-icon-style!
+  ;;   [this n]
+  ;;   "Set icon style for selected buttons.
+  ;;    If not explicitly set, icon style is derived from current skin")
 
   (initial-skin 
     [this]
@@ -190,8 +190,8 @@
 (defn cadejo-config []
   (let [input-ports* (atom [])
         load-gui* (atom false)
-        icon-style* (atom nil)
-        selected-icon-style* (atom nil)
+        ;; icon-style* (atom nil)
+        ;; selected-icon-style* (atom nil)
         initial-skin* (atom "Dust")
         current-skin* (atom "Dust")
         max-scene-count* (atom 4)
@@ -233,21 +233,21 @@
                 (load-gui! [this flag]
                   (reset! load-gui* flag))
 
-                (icon-style [this] 
-                  (or @icon-style*
-                      @current-skin*
-                      11))
+                ;; (icon-style [this] 
+                ;;   (or @icon-style*
+                ;;       @current-skin*
+                ;;       11))
 
-                (icon-style! [this n]
-                  (reset! icon-style* (int (min (max 0 n) 25))))
+                ;; (icon-style! [this n]
+                ;;   (reset! icon-style* (int (min (max 0 n) 25))))
 
-                (selected-icon-style [this]
-                  (or @selected-icon-style*
-                      @current-skin*
-                      6))
+                ;; (selected-icon-style [this]
+                ;;   (or @selected-icon-style*
+                ;;       @current-skin*
+                ;;       6))
 
-                (selected-icon-style! [this n]
-                  (reset! selected-icon-style* (min (max 0 n) 25)))
+                ;; (selected-icon-style! [this n]
+                ;;   (reset! selected-icon-style* (min (max 0 n) 25)))
 
                 (initial-skin [this] @initial-skin*)
 
@@ -389,17 +389,17 @@
 (defn load-gui! [flag]
   (.load-gui! @current-config* flag))
 
-(defn icon-style []
-  (.icon-style @current-config*))
+;; (defn icon-style []
+;;   (.icon-style @current-config*))
 
-(defn icon-style! [n]
-  (.icon-style! @current-config* n))
+;; (defn icon-style! [n]
+;;   (.icon-style! @current-config* n))
 
-(defn selected-icon-style []
-  (.selected-icon-style @current-config*))
+;; (defn selected-icon-style []
+;;   (.selected-icon-style @current-config*))
 
-(defn selected-icon-style! [n]
-  (.selected-icon-style! @current-config* n))
+;; (defn selected-icon-style! [n]
+;;   (.selected-icon-style! @current-config* n))
 
 (defn initial-skin []
   (.initial-skin @current-config*))
@@ -535,6 +535,8 @@
 ; "Twilight"
 
 
+;(icon-style! 0)
+;(selected-icon-style! 0)
 (load-gui! true)
 (initial-skin! "Twilight")
 (enable-pp! true)
