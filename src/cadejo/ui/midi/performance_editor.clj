@@ -127,7 +127,7 @@
                             (windowActivated [_] 
                               (.sync-ui! ped))
                             (windowOpened [_] nil)))
-      (.info-text! basic-ed (let [scene (.get-scene performance)
+      (.set-path-text! basic-ed (let [scene (.get-scene performance)
                                   chanobj (.parent performance)
                                   sid (.get-property scene :id)
                                   cid (.get-property chanobj :id)

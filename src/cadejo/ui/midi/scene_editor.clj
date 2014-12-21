@@ -77,7 +77,7 @@
     (.add pan-center pan-channels BorderLayout/SOUTH)
     (.add pan-center pan-tab BorderLayout/CENTER)
 
-    (.info-text! basic-ed (format "MIDI device %s" (.get-property scene :id)))
+    (.set-path-text! basic-ed (format "MIDI device %s" (.get-property scene :id)))
     (let [sed (reify SceneEditor 
                 
                 (widgets [this]

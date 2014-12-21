@@ -4,6 +4,7 @@
   "Defines interface for all 'editor' components"
   (:require [cadejo.config :as config])
   (:require [cadejo.util.user-message :as umsg])
+  (:require [cadejo.ui.cadejo-frame :as cframe])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -12,6 +13,19 @@
 
 
 (defprotocol NodeEditor
+
+  (frame! 
+    [this cframe embed]
+    [this cframe])
+
+  (frame
+    [this])
+
+  (show!
+    [this])
+
+  (hide!
+    [this])
 
   (widgets 
     [this]
@@ -33,9 +47,12 @@
     [this n]
     "Set the node object this editor is to operate with.")
 
-  (info-text!
-    [this msg]
-    "Set text of info label")
+  (set-path-text!
+    [this msg])
+
+  ;; (info-text!
+  ;;   [this msg]
+  ;;   "DEPRECIATED Set text of info label")
 
   (working
     [this flag])
@@ -52,7 +69,8 @@
 (def id-font-size 24)
 
  
-(defn basic-node-editor [type-id client-node]
+(defn basic-node-editor 
+  ([type-id client-node create-frame]
   "Provides basic frame work for 'editor' panels.
    The basic-editor-panel implements several methods of NodeEditor
    and provides the following components:
@@ -69,53 +87,37 @@
    :pan-main   - JPanel - the main outer panel holding all other components"
    
   (let [node* (atom client-node)
-        lab-id (ss/label 
-                :text (format " %s %s "
-                              (name type-id) (.get-property @node* :id))
-                :font (ssfont/font :size id-font-size))
-        jb-parent (factory/button "Parent" :tree :up "Display parent window")
-        jb-help (factory/button "Help" :general :help "Display context help")
-
-        pan-tools (ss/toolbar :floatable? false
-                              :items [ :separator jb-parent jb-help])
-        pan-north (ss/border-panel 
-                   :west (ss/vertical-panel :items [lab-id]
-                                            :border (factory/bevel 4))
-                   :center pan-tools
-                   :border (factory/padding))
-        pan-center (ss/border-panel
-                    :border (factory/padding))
-        progress-bar (ss/progress-bar :indeterminate? false)
-        lab-status (ss/label :text " ")
-        pan-status (ss/vertical-panel :items [lab-status]
-                                   :border (factory/bevel))
-        lab-info (ss/label :text " ")
-        pan-info (ss/vertical-panel :items [lab-info]
-                                 :border (factory/bevel))
-        pan-south (ss/grid-panel :rows 1 :items [pan-status progress-bar pan-info]
-                                 :border (factory/bevel 4))
-        pan-main (ss/border-panel :north pan-north
-                               :center pan-center
-                               :south pan-south)
-        editor-frame (ss/frame :title (format "Cadejo %s Editor" (name type-id))
-                               :content pan-main
-                               :size [700 :by 300])
-        widgets* (atom {:jb-parent jb-parent
-                        :jb-help jb-help
-                        :lab-id lab-id
-                        :lab-status lab-status
-                        :lab-info lab-info
-                        :pan-north pan-north
-                        :pan-center pan-center
-                        :pan-main pan-main
-                        :frame editor-frame})
+        frame* (atom (if create-frame
+                       (let [cf (cframe/cadejo-frame (format "Cadejo %s" type-id)
+                                                     (.get-property client-node :id))]
+                         cf)
+                       nil))
+        widgets* (atom {
+                        })
         ed (reify NodeEditor
              
-             (widgets [this] 
-               @widgets*)
+             (frame! [this cframe embed]
+               (reset! frame* cframe)
+               ;; (if embed
+               ;;   (let [pan (.widget cframe :pan-center)]
+               ;;     (reset! pan-main* pan)))
+               )
+
+             (frame! [this cframe]
+               (.frame! this cframe true))
+
+             (widgets [this]
+               (if @frame*
+                 (assoc @widgets*
+                        :frame (.widget @frame* :frame)
+                        :pan-main (.widget @frame* :pan-main)
+                        :pan-center (.widget @frame* :pan-center)
+                        :jb-parent (.widget @frame* :jb-parent)
+                        :jb-help (.widget @frame* :jb-help))
+                 @widgets*))
 
              (widget [this key]
-               (or (get @widgets* key)
+               (or (get (.widgets this) key)
                    (umsg/warning 
                     (format "%s NodeEditor does not have %s widget"
                             type-id key))))
@@ -129,23 +131,23 @@
                (reset! node* n))
 
              (working [this flag]
-               (ss/config! progress-bar :indeterminate? flag))
+               (and @frame* (.working @frame* flag)))
 
-             (info-text! [this msg]
-               (ss/config! lab-info :text (format "PATH: %s" msg)))
+             (set-path-text! [this msg]
+               (and @frame* (.set-path-text! @frame* msg)))
+
+             ;; (info-text! [this msg]
+             ;;   (umsg/warning "NodeEditor.info-text! depreciated use set-path-text!")
+             ;;   (.set-path-text! this msg))
 
              (status! [this msg]
-               (ss/config! lab-status :text msg)
+               (and @frame* (.status! @frame* msg))
                msg)
 
              (warning! [this msg]
-               (.status! this (format "WARNING! %s" msg))) )]
-    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
-
-    ;; START DEBUG
-    (ss/listen jb-help :action (fn [_]
-                                 (println (ss/config editor-frame :size))))
-    ;; END DEBUG
-
+               (and @frame* (.warning! @frame* msg))
+               msg) )]
     ed))
+  ([type-id client-node]
+   (basic-node-editor type-id client-node true)))
 

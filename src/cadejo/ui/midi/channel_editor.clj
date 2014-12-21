@@ -337,7 +337,7 @@
                             (windowActivated [_] 
                               (.sync-ui! ced))
                             (windowOpened [_] nil)))
-      (.info-text! basic-ed (let [scene (.parent chanobj)
+      (.set-path-text! basic-ed (let [scene (.parent chanobj)
                                   sid (.get-property scene :id)
                                   cid (.get-property chanobj :id)]
                               (format "Scene %s Channel %s" sid cid)))
