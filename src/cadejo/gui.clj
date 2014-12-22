@@ -1,3 +1,4 @@
+(println "DEPRECIATED cadejo.gui is now depreciated ******")
 (ns cadejo.gui
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.core])
