@@ -296,6 +296,19 @@
          iprefix (get skin-selected-icon-prefix skin-name "black")]
      (read-selected-icon iprefix group subgroup))))
 
+;; disabled icon set currently does not exists
+;; for the moment read-disabled-icons always returns a blank icon.
+;;
+(defn read-disabled-icon 
+  ([prefix group subgroup]
+   (let [f (get-icon-file prefix group subgroup)
+         icn (seesaw.icon/icon f)]
+     icn))
+  ([group subgroup]
+   (read-disabled-icon "black" "general" "blank")))
+     
+
+
 ;; Return skin-selectin panel
 ;;
 (defn- lnf-selector-panel []

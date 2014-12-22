@@ -50,3 +50,22 @@ ClassCastException. Have not yet tested other editors.
 2014.11.19 Combo editor also throws error
 2014.11.19 program save (and also paste, open and copy) were 
 using old form of cadejo.midi.program/Program
+
+# ---------------------------------------------------------- BUG 0006 OPEN
+BUG 0006 2014.12.22 STATUS OPEN
+Exception java.lang.IllegalArgumentException: Width (-1) and height (-1) cannot be <= 0
+	at java.awt.image.DirectColorModel.createCompatibleWritableRaster(DirectColorModel.java:1016)
+	at java.awt.GraphicsConfiguration.createCompatibleImage(GraphicsConfiguration.java:186)
+	at org.pushingpixels.substance.internal.utils.SubstanceCoreUtilities.getBlankImage(SubstanceCoreUtilities.java:709)
+	at org.pushingpixels.substance.internal.utils.SubstanceImageCreator.getColorSchemeImage(SubstanceImageCreator.java:2315)
+	at org.pushingpixels.substance.api.SubstanceLookAndFeel.getDisabledIcon(SubstanceLookAndFeel.java:2367)
+	at javax.swing.AbstractButton.getDisabledIcon(AbstractButton.java:653)
+	at seesaw.core.proxy$javax.swing.JRadioButton$Tag$a79ba523.getDisabledIcon(Unknown Source)
+
+after clicking channel editor "MIDI" tab
+
+This only appears if the lnf skin has been changed
+
+The problem is somehow related to the interaction of disabled button icons and changes in the LNF skin.
+As a temp work around certain buttons (specifically in cadejo.ui.midi.curve-panel) are not allowed to 
+be disabled. 

@@ -59,8 +59,10 @@
     (ss/config! b :text (str txt)))
   (if (and icon-main (config/enable-button-icons))
     (let [i1 (lnf/read-icon icon-main icon-sub)
-          i2 (lnf/read-selected-icon icon-main icon-sub)]
+          i2 (lnf/read-selected-icon icon-main icon-sub)
+          i3 (lnf/read-disabled-icon icon-main icon-sub)]
       (.setIcon b i1)
+      (.setDisabledIcon b i3)
       (.setSelectedIcon b i2)))
   (if (and (config/enable-button-text)
            (config/enable-button-icons))
@@ -69,7 +71,7 @@
       (.setHorizontalTextPosition b SwingConstants/CENTER)))
   (.setOpaque b false)
   (.setContentAreaFilled b false)
-  (.setBorderPainted b false)
+  (.setBorderPainted b true)
   b)
 
 (defn radio 

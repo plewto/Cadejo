@@ -250,5 +250,5 @@
 
 (def global-splash-frame (splash-screen))
 (.show! global-splash-frame)
-(lnf/set-initial-skin)
+;(lnf/set-initial-skin)
 
