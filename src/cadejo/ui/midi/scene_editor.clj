@@ -5,13 +5,14 @@
   (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.node-editor])
+  (:require [cadejo.ui.util.icon :as icon])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout))
 
 (def channel-count (cadejo.config/channel-count))
-(def frame-size [1160 :by 680])
+;(def frame-size [1160 :by 680])
 
 (defprotocol SceneEditor
   
@@ -34,6 +35,9 @@
   (warning!
     [this msg])
 
+  (frame!
+    [this f])
+
   (frame 
     [this])
 
@@ -44,8 +48,9 @@
     [this]))
 
 (defn scene-editor [scene]
-  (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :scene scene)
-        pan-center (.widget basic-ed :pan-center)
+  (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :scene scene false)
+        ;pan-center (.widget basic-ed :pan-center)
+        pan-main (ss/border-panel)
         jb-channels (let [acc* (atom [])]
                       (dotimes [i channel-count]
                         (let [jb (ss/button :text (format "%02d" i)
@@ -72,19 +77,21 @@
                          :icon (if (cadejo.config/enable-button-icons)(lnf/read-icon :general :staff) nil)
                          :content (.widget reged :pan-main)}]
                  :border (factory/padding))]
-    (ss/config! (.widget basic-ed :frame) :on-close :hide)
-    (ss/config! (.widget basic-ed :frame) :size frame-size)
-    (.add pan-center pan-channels BorderLayout/SOUTH)
-    (.add pan-center pan-tab BorderLayout/CENTER)
+    ;; (ss/config! (.widget basic-ed :frame) :on-close :hide)
+    ;; (ss/config! (.widget basic-ed :frame) :size frame-size)
+    (.add pan-main pan-channels BorderLayout/SOUTH)
+    (.add pan-main pan-tab BorderLayout/CENTER)
 
     (.set-path-text! basic-ed (format "MIDI device %s" (.get-property scene :id)))
+    (.set-icon! basic-ed (icon/logo "scene" :tiny))
     (let [sed (reify SceneEditor 
                 
                 (widgets [this]
-                  (.widgets basic-ed))
+                  (assoc (.widgets basic-ed)
+                         :pan-main pan-main))
 
                 (widget [this key]
-                  (or (.widget basic-ed key)
+                  (or (get (.widgets this) key)
                       (umsg/warning (format "SceneEditor does not have %s widget" key))))
 
                 (node [this]
@@ -101,6 +108,9 @@
 
                 (frame [this]
                   (.widget basic-ed :frame))
+
+                (frame! [this f]
+                  (.frame! basic-ed f))
 
                 (show-hide-channel [this id]
                   (let [cobj (.channel scene id)
@@ -126,16 +136,16 @@
                   (ss/config! txt-tree :text (.rep-tree scene 0))
                   (.revalidate (.widget basic-ed :frame))) )]
 
-      (ss/listen (.widget basic-ed :jb-parent)
-                 :action (fn [_]
-                           (let [f @cadejo.config/splash-frame*]
-                             (if f 
-                               (do 
-                                 (.setVisible f true)
-                                 (.toFront f))))))
-      (if (cadejo.config/enable-tooltips)
-        (.setToolTipText (.widget basic-ed :jb-parent) "Display Cadejo Startup Window"))
-      (.putClientProperty (.widget basic-ed :jb-help) :topic :scene)
+      ;; (ss/listen (.widget basic-ed :jb-parent)
+      ;;            :action (fn [_]
+      ;;                      (let [f @cadejo.config/splash-frame*]
+      ;;                        (if f 
+      ;;                          (do 
+      ;;                            (.setVisible f true)
+      ;;                            (.toFront f))))))
+      ;; (if (cadejo.config/enable-tooltips)
+      ;;   (.setToolTipText (.widget basic-ed :jb-parent) "Display Cadejo Startup Window"))
+      ;; (.putClientProperty (.widget basic-ed :jb-help) :topic :scene)
       (doseq [jb jb-channels]
         (ss/listen jb :action (fn [ev]
                                 (let [src (.getSource ev)

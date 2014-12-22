@@ -136,4 +136,5 @@
 
                  (warning! [this msg]
                    (.status! this (format "WARNING: %s" msg))))]
+    (ss/listen jb-help :action (fn [_] (println (ss/config frame :size))))  ;; DEBUG ONLY
     cframe)) 

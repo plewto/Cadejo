@@ -21,6 +21,9 @@
   (frame
     [this])
 
+  (set-icon! 
+    [this ico])
+
   (show!
     [this])
 
@@ -87,17 +90,16 @@
    :pan-main   - JPanel - the main outer panel holding all other components"
    
   (let [node* (atom client-node)
-        frame* (atom (if create-frame
+        cframe* (atom (if create-frame
                        (let [cf (cframe/cadejo-frame (format "Cadejo %s" type-id)
                                                      (.get-property client-node :id))]
                          cf)
                        nil))
-        widgets* (atom {
-                        })
+        widgets* (atom {})
         ed (reify NodeEditor
              
              (frame! [this cframe embed]
-               (reset! frame* cframe)
+               (reset! cframe* cframe)
                ;; (if embed
                ;;   (let [pan (.widget cframe :pan-center)]
                ;;     (reset! pan-main* pan)))
@@ -106,14 +108,17 @@
              (frame! [this cframe]
                (.frame! this cframe true))
 
+             (set-icon! [this ico]
+               (and @cframe* (.set-icon! @cframe* ico)))
+
              (widgets [this]
-               (if @frame*
+               (if @cframe*
                  (assoc @widgets*
-                        :frame (.widget @frame* :frame)
-                        :pan-main (.widget @frame* :pan-main)
-                        :pan-center (.widget @frame* :pan-center)
-                        :jb-parent (.widget @frame* :jb-parent)
-                        :jb-help (.widget @frame* :jb-help))
+                        :frame (.widget @cframe* :frame)
+                        :pan-main (.widget @cframe* :pan-main)
+                        :pan-center (.widget @cframe* :pan-center)
+                        :jb-parent (.widget @cframe* :jb-parent)
+                        :jb-help (.widget @cframe* :jb-help))
                  @widgets*))
 
              (widget [this key]
@@ -131,21 +136,21 @@
                (reset! node* n))
 
              (working [this flag]
-               (and @frame* (.working @frame* flag)))
+               (and @cframe* (.working @cframe* flag)))
 
              (set-path-text! [this msg]
-               (and @frame* (.set-path-text! @frame* msg)))
+               (and @cframe* (.set-path-text! @cframe* msg)))
 
              ;; (info-text! [this msg]
              ;;   (umsg/warning "NodeEditor.info-text! depreciated use set-path-text!")
              ;;   (.set-path-text! this msg))
 
              (status! [this msg]
-               (and @frame* (.status! @frame* msg))
+               (and @cframe* (.status! @cframe* msg))
                msg)
 
              (warning! [this msg]
-               (and @frame* (.warning! @frame* msg))
+               (and @cframe* (.warning! @cframe* msg))
                msg) )]
     ed))
   ([type-id client-node]

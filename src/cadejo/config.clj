@@ -370,7 +370,6 @@
 (defn set-config! [this cnfg]
   (reset! current-config* cnfg))
 
-
 (defn cadejo-version []
   (.version @current-config*))
 
