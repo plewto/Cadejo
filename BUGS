@@ -69,3 +69,11 @@ This only appears if the lnf skin has been changed
 The problem is somehow related to the interaction of disabled button icons and changes in the LNF skin.
 As a temp work around certain buttons (specifically in cadejo.ui.midi.curve-panel) are not allowed to 
 be disabled. 
+
+# ---------------------------------------------------------- BUG 0007 CLOSED
+BUG 0007 2014.12.22 STATUS CLOSED
+java.lang.ClassCastException: java.lang.Long cannot be cast to java.lang.Integer
+
+Exception thrown by sync-ui! method of bend-panel in cadejo.ui.midi.properties-editor
+
+Fixed, cast band-range to int.

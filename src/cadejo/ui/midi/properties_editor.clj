@@ -225,15 +225,16 @@
                (sync-ui! [this]
                  (reset! enable-change-listeners* false)
                  (let [node (.node this)
+                       bend-range (int (or (.local-property node :bend-range) 0))
                        vcurve (.local-property node :bend-curve)]
                    (if vcurve
-                     (do
+                     (do 
                        (.setSelected cb-enable true)
                        (.setEnabled jb-dec true)
                        (.setEnabled jb-inc true)
                        (.setEnabled spin-range true)
                        (.setEnabled pan-spin true)
-                       (.setValue spin-range (or (.local-property node :bend-range) 0))
+                       (.setValue spin-range bend-range)
                        (.set-curve! curve-panel vcurve)
                        (.enable! curve-panel true))
                      (do
