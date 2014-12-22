@@ -17,7 +17,7 @@
 (def clipboard* (atom nil))
 
 (def masa-descriptor
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :masa "Organ" clipboard*)]
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :masa "MASA Organ" clipboard*)]
     (.add-controller! d :cc1 "Vibrato" 1)
     (.add-controller! d :cc4 "Pedal" 4)  ;; adds to partial amplitude 
                                          ;; if partial amplitud is at max, pedal has no effect

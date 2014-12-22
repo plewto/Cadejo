@@ -12,11 +12,13 @@
   (:require [cadejo.ui.util.validated-text-field :as vtf])
   (:require [clojure.string ])
   (:require [seesaw.core :as ss])
+  (:require [seesaw.font :as ssf])
   (:import javax.swing.SwingUtilities
            java.awt.BorderLayout
            java.awt.event.WindowListener))
 
-(def frame-size [1281 :by 661])
+(def ^:private frame-size [1281 :by 661])
+(def ^:private id-font (ssf/font :name :serif :size 24))
 
 ;; Generate unique performance name 
 ;;
@@ -183,11 +185,13 @@
                     (let [d (cadejo.config/instrument-descriptor id)
                           logo (.logo d :medium)
                           ttt (format "Add %s - %s" (.instrument-name d)(.about d))
-                          jb (ss/button :icon logo)]
+                          jb (ss/button :icon logo)
+                          lab (ss/label :text (.about d) :halign :center)
+                          pan (ss/border-panel :center jb :south lab)]
                       (.putClientProperty jb :instrument-name id)
                       (.putClientProperty jb :descriptor d)
                       (.setToolTipText jb ttt)
-                      (swap! acc* (fn [n](conj n jb)))
+                      (swap! acc* (fn [n](conj n pan)))
                       (ss/listen jb :action
                                  (fn [ev]
                                    (let [src (.getSource ev)
@@ -232,17 +236,25 @@
 
 (defn channel-editor [chanobj]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
+        lab-id (.widget basic-ed :lab-id)
         pan-center (.widget basic-ed :pan-center)
         tbar-performance (ss/toolbar :floatable? false)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
+        bgroup (ss/button-group)
+      
         pan-add-performance (add-performance-panel chanobj)
-        pan-tabs (ss/tabbed-panel :tabs [{:title (if (cadejo.config/enable-button-text) "Add Instruments" "")
-                                          :icon (if (cadejo.config/enable-button-icons)(lnf/read-icon :general :instrument) nil)
-                                          :content pan-add-performance}
-                                         {:title (if (cadejo.config/enable-button-text) "MIDI" "")
-                                          :icon (if (cadejo.config/enable-button-icons)(lnf/read-icon :midi :plug) nil)
-                                          :content (.widget properties-editor :pan-main)}])]
-
+        pan-cards (ss/card-panel :items [[pan-add-performance "ADD-INSTRUMENT"]
+                                         [(.widget properties-editor :pan-main) "MIDI"]])
+        jb-add (let [b (factory/toggle "Add Instrument" :general :instrument "Add instrument" bgroup)]
+                 (ss/listen b :action (fn [_](ss/show-card! pan-cards "ADD-INSTRUMENT")))
+                 b)
+        jb-midi (let [b (factory/toggle "MIDI" :midi :plug "Set channel MIDI properties" bgroup)]
+                  (ss/listen b :action (fn [_](ss/show-card! pan-cards "MIDI")))
+                  b)
+        toolbar (.widget basic-ed :toolbar)
+        ]
+    (.add toolbar jb-add)
+    (.add toolbar jb-midi)
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
     (let [ced (reify ChannelEditor
                 
@@ -275,9 +287,9 @@
 
                 (sync-ui! [this]
                   (.removeAll tbar-performance)
-                  (.add tbar-performance (let [lab (ss/label :text (format " %2d " (.channel-number chanobj))
-                                                             :border (factory/line))]
-                                           lab))
+                  ;; (.add tbar-performance (let [lab (ss/label :text (format " %2d " (.channel-number chanobj))
+                  ;;                                            :border (factory/line))]
+                  ;;                          lab))
                   (doseq [p (.children chanobj)]
                     (let [itype (.get-property p :instrument-type)
                           id (.get-property p :id)
@@ -311,11 +323,13 @@
                       (.putClientProperty jb :performance p)
                       (.setToolTipText jb (format "%s id = %s" (name itype)(name id)))
                       (.add tbar-performance jb)
-                      (.sync-ui! (.get-editor p))
-                      ))
+                      (.sync-ui! (.get-editor p))))
 
                   (.sync-ui! properties-editor)
                   (.revalidate (.widget basic-ed :frame))) )]
+      (ss/config! lab-id 
+                  :text (format "Channel %s " (.channel-number chanobj))
+                  :font id-font)
       (ss/listen (.widget ced :jb-parent)
                  :action (fn [_]
                            (let [scene (.parent chanobj)
@@ -324,7 +338,7 @@
                              (ss/show! sframe)
                              (.toFront sframe))))
       (.set-parent-editor! properties-editor ced)
-      (.add pan-center pan-tabs BorderLayout/CENTER)
+      (.add pan-center pan-cards BorderLayout/CENTER)
       (.add pan-center tbar-performance BorderLayout/SOUTH)
       (ss/config! (.frame ced) :size frame-size)
       (.addWindowListener (.widget ced :frame)
@@ -340,6 +354,6 @@
       (.set-path-text! basic-ed (let [scene (.parent chanobj)
                                   sid (.get-property scene :id)
                                   cid (.get-property chanobj :id)]
-                              (format "Scene %s Channel %s" sid cid)))
+                                  (format "Root / %s / %s" sid cid)))
       (.putClientProperty (.widget basic-ed :jb-help) :topic :channel)
       ced)))

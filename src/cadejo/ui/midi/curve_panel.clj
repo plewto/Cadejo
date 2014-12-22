@@ -59,7 +59,9 @@
               u-icon (lnf/read-icon :curve curve)
               s-icon (lnf/read-selected-icon :curve curve)
               d-icon (lnf/read-disabled-icon :curve curve)
-              jrb (ss/radio :group grp)]
+              ;jrb (ss/radio :group grp)
+              jrb (factory/toggle "" :curve curve "" grp)
+              ]
           (.putClientProperty jrb :curve curve)
           (.setIcon jrb u-icon)
           (.setSelectedIcon jrb s-icon)
@@ -146,15 +148,14 @@
          
          (get-curve [this]
            @current-curve*)
-         
-         ;; (enable! [this flag]
-         ;;   (doseq [b buttons]
-         ;;     (.setEnabled b flag)))
-
 
          ;; HACK for BUG 0006
          ;; Disabled curve buttons were interfering with change in LNF skin
          ;; as a temp work around curve buttons are not allowed to be disabled.
+         ;;
+         ;; (enable! [this flag]
+         ;;   (doseq [b buttons]
+         ;;     (.setEnabled b flag)))
          (enable! [this ignore]
            (doseq [b buttons]
              (.setEnabled b true)))

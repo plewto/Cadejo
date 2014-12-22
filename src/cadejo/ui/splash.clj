@@ -171,7 +171,7 @@
                                      (fn [ev]
                                        (let [src (.getSource ev)
                                              id (ss/config src :user-data)]
-                                         (.set-path-text! cframe (format "Root/%s" id))
+                                         (.set-path-text! cframe (format "Root/ %s" id))
                                          (ss/show-card! card-panel id))))
                           (.working cframe false)
                           (.doClick tb)
@@ -191,7 +191,7 @@
 
 
 
-(defn splash-screen []
+(defn- splash-screen []
   (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame (config/cadejo-version) "")
         bgroup (ss/button-group)
         tb-server (let [b (factory/toggle "Server" :general :server "Select SuperCollider Server" bgroup)]
@@ -249,6 +249,7 @@
     cframe))
 
 (def global-splash-frame (splash-screen))
+(lnf/set-initial-skin)
 (.show! global-splash-frame)
-;(lnf/set-initial-skin)
+
 

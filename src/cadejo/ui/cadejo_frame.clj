@@ -86,7 +86,8 @@
                                    :border (factory/padding))
         pan-center (ss/border-panel
                     :border (factory/padding))
-        pan-south (ss/horizontal-panel
+        pan-south (ss/grid-panel 
+                   :rows 1
                    :items [(ss/vertical-panel :items [lab-status] :border (factory/bevel 2))
                            (ss/vertical-panel :items [progbar] :border (factory/bevel 2))
                            (ss/vertical-panel :items [lab-path] :border (factory/bevel 2))]
@@ -106,6 +107,7 @@
                     :toolbar tbar-client
                     :pan-main pan-main
                     :pan-center pan-center
+                    :lab-id lab-id
                     :frame frame})
 
                  (widget [this key]

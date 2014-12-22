@@ -18,7 +18,7 @@
 (def clipboard* (atom nil))
 
 (def combo-descriptor
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :combo "Simple organ" clipboard*)]
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :combo "Combo Organ" clipboard*)]
     (.add-controller! d :cc1 "Vibrato" 1)
     (.initial-program! d (cadejo.instruments.combo.program/combo))
     (.set-editor-constructor! d cadejo.instruments.combo.combo-editor/combo-editor)

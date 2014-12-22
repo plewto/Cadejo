@@ -74,20 +74,8 @@
  
 (defn basic-node-editor 
   ([type-id client-node create-frame]
-  "Provides basic frame work for 'editor' panels.
-   The basic-editor-panel implements several methods of NodeEditor
-   and provides the following components:
-   :jb-parent  - JButton used to display/give focus to editor 
-                 for the parent node. For root nodes (I.E. Scene)
-                 jb-parent should be either removed or disabled.
-   :jb-help    - JButton for displaying help
-   :lab-id     - JLabel used to identify this editor
-   :lab-status - JLabel for status and warning messages
-   :lab-info   - JLabel for info text
-   :pan-north  - JPanel holding lab-id, jb-parent and jb-help
-   :pan-center - JPanel with BorderLayout. pan-center is left empty
-                 for use by extending classes.
-   :pan-main   - JPanel - the main outer panel holding all other components"
+  "Provides basic framework for 'editor' panels."
+  
    
   (let [node* (atom client-node)
         cframe* (atom (if create-frame
@@ -118,7 +106,9 @@
                         :pan-main (.widget @cframe* :pan-main)
                         :pan-center (.widget @cframe* :pan-center)
                         :jb-parent (.widget @cframe* :jb-parent)
-                        :jb-help (.widget @cframe* :jb-help))
+                        :jb-help (.widget @cframe* :jb-help)
+                        :toolbar (.widget @cframe* :toolbar)
+                        :lab-id (.widget @cframe* :lab-id))
                  @widgets*))
 
              (widget [this key]

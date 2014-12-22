@@ -21,7 +21,7 @@
 (def clipboard* (atom nil))
 
 (def alias-descriptor 
-  (let [d (cadejo.instruments.descriptor/instrument-descriptor :alias "Matrix Synth" clipboard*)]
+  (let [d (cadejo.instruments.descriptor/instrument-descriptor :alias "Alias Mono Synth" clipboard*)]
     (.add-controller! d :cc7 "Volume" 7)
     (.add-controller! d :cca "A"  1)
     (.add-controller! d :ccb "B" 16)
