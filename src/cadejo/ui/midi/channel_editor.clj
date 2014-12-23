@@ -173,9 +173,6 @@
                             (Thread/sleep 750)
                             (.working chan-ed false)))))))))
     (ss/show! dia)))
-                       
-
-
 
 ;; Provides buttons for available instruments
 ;;
@@ -256,6 +253,7 @@
     (.add toolbar jb-add)
     (.add toolbar jb-midi)
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
+    (ss/config! (.widget basic-ed :frame) :title (format "Cadejo Channel %d" (.channel-number chanobj)))
     (let [ced (reify ChannelEditor
                 
                 (widgets [this] (.widgets basic-ed))
@@ -287,9 +285,6 @@
 
                 (sync-ui! [this]
                   (.removeAll tbar-performance)
-                  ;; (.add tbar-performance (let [lab (ss/label :text (format " %2d " (.channel-number chanobj))
-                  ;;                                            :border (factory/line))]
-                  ;;                          lab))
                   (doseq [p (.children chanobj)]
                     (let [itype (.get-property p :instrument-type)
                           id (.get-property p :id)

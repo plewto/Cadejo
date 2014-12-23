@@ -171,7 +171,7 @@
                                      (fn [ev]
                                        (let [src (.getSource ev)
                                              id (ss/config src :user-data)]
-                                         (.set-path-text! cframe (format "Root/ %s" id))
+                                         (.set-path-text! cframe (format "Root / %s" id))
                                          (ss/show-card! card-panel id))))
                           (.working cframe false)
                           (.doClick tb)
