@@ -6,6 +6,7 @@
   (:require [cadejo.ui.midi.bank-editor])
   (:require [cadejo.ui.midi.cceditor-tab])
   (:require [cadejo.ui.midi.node-editor])
+  (:require [cadejo.ui.midi.program-bar])
   (:require [cadejo.ui.midi.properties-editor])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -58,7 +59,8 @@
         instrument-editor* (atom nil) ;; editor created only if needed
         toolbar (.widget basic-ed :toolbar)
         bank (.bank performance)
-        bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank)]
+        program-bar (cadejo.ui.midi.program-bar/program-bar performance)
+        bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank program-bar)]
                   (.editor! bank bed)
                   bed)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
@@ -71,7 +73,9 @@
                      panc)
         
         available-controllers (.controllers descriptor)
-        cc-panels* (atom [])]
+        cc-panels* (atom [])
+        ;
+        ]
     
     (let [b (factory/button "Transmit" :midi :transmit "Transmit current program")]
       (.add toolbar b)
@@ -151,6 +155,7 @@
                  (sync-ui! [this]
                    (.sync-ui! bank-ed)
                    (.sync-ui! properties-editor)
+                   (.sync-ui! program-bar)
                    (doseq [cced @cc-panels*]
                      (.sync-ui! cced))))]
       (.set-parent-editor! properties-editor ped)
@@ -187,7 +192,7 @@
         (ss/listen b :action (fn [ev]
                                (let [src (.getSource ev)
                                      card-id (.getClientProperty src :card)]
-                                 (println (format "DEBUG card-id = '%s'" card-id)) ;; DEBUG
                                  (ss/show-card! pan-cards card-id)))))
+      (.add (.widget basic-ed :pan-center)(.widget program-bar :pan-main) BorderLayout/SOUTH)
       (.putClientProperty (.widget basic-ed :jb-help) :topic :performance)
       ped))) 

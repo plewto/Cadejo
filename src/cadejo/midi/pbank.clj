@@ -290,6 +290,7 @@
                   (let [slot (:data1 event)
                         rcflag (.recall this slot)
                         ed @editor*]
+                    (reset! unsaved-data* false)
                     (if ed (.sync-ui! ed))
                     @current-program*))
                 

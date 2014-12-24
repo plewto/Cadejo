@@ -76,7 +76,7 @@
       (swap! acc* (fn [n](conj n (format-program-cell p programs)))))
     @acc*))
 
-(defn bank-editor [bnk]
+(defn bank-editor [bnk program-bar]
   (let [parent* (atom nil)
         enabled* (atom true)
         instrument-editor* (atom nil)
@@ -184,6 +184,7 @@
                         ;;   (catch Exception ex
                         ;;     (umsg/warning "Caught exception BankEditor.sync-ui!"
                         ;;                   "ensureIndexIsVisible")))
+                        (.sync-ui! program-bar)
                         (if @instrument-editor*
                           (.sync-ui! @instrument-editor*))
                         (reset! enable-list-selection-listener* true))))
@@ -224,14 +225,16 @@
           @enable-list-selection-listener* ;; program-change
           (let [slot (.getSelectedIndex lst-programs)]
             (.recall bnk slot)
-            (if @instrument-editor*
-              (let [ied @instrument-editor*
-                    prog (.current-program bnk)]
-                (if prog
-                  (do 
-                    (.set-store-location! ied slot)
-                    (.sync-ui! ied)
-                    )) )))
+            (.sync-ui! program-bar)
+            ;; (if @instrument-editor*
+            ;;   (let [ied @instrument-editor*
+            ;;         prog (.current-program bnk)]
+            ;;     (if prog
+            ;;       (do 
+            ;;         (.set-store-location! ied slot)
+            ;;         (.sync-ui! ied)
+            ;;         )) 
+                )
 
           :default                      ; do nothing
           nil)))) 
