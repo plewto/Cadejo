@@ -1,8 +1,12 @@
 (println "--> cadejo.ui.midi.program-bar")
 
 (ns cadejo.ui.midi.program-bar
-  "Provides component for display of current program as well as controls to 
-   store program into a program-bank"
+  "The program bar is a JPanel with a large display for the current 
+   program name and number. It also includes contans buttons for storing 
+   the current program into a program bank slot. A low priority thread
+   updates the program-name display to indicate if the current program has
+   unsaved data."
+  (:use [cadejo.util.trace])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.config :as config])
@@ -18,6 +22,7 @@
 (def ^:private prognum-drawing-width 100)
 (def ^:private prognum-drawing-height name-drawing-height)
 (def ^:private pan-east-size [385 :by 65])
+(def ^:private update-period 10000) ;; 'modified' indicator update period in ms
 
 (defprotocol ProgramBar
 
@@ -28,8 +33,7 @@
     [this key])
   
   (sync-ui!
-    [this])
-  )
+    [this]))
 
 (defn program-bar [performance]
   (let [prognum* (atom 0)
@@ -85,17 +89,27 @@
                     (umsg/warning (format "ProgramBar does not have %s widget" key))))
 
               (sync-ui! [this]
-                (let [modified (.current-program-saved? bank)
+                (let [modified (.modified? bank)
                       prog (.current-program bank)
                       pname (clojure.string/upper-case (or (and prog (.program-name prog)) "---"))
                       name-limit (min name-length (count pname))]
-                  (println (format "DEBUG program-bar sync-ui!  modified = %s" modified)) ;; DEBUG
                   (reset! prognum* (or (.current-slot bank) 0))
                   (.color! (.attributes modified-marker)
                            (if modified active inactive))
                   (display-prognum)
                   (.display! dbar-name (subs pname 0 name-limit))
-                  (.pad! dbar-name))) )]
+                  (.pad! dbar-name))))
+
+        update-thread (proxy [Thread][]
+                             (run []
+                               (while true
+                                 (let [modified (.modified? bank)
+                                       att (.attributes modified-marker)
+                                       color (if modified active inactive)]
+                                   (.color! att color)
+                                   (.render drawing)
+                                 (Thread/sleep update-period))))) ]
+
     (ss/listen jb-inc :action (fn [_](inc-prognum 1)))
     (ss/listen jb-inc-page :action (fn [_](inc-prognum 8)))
     (ss/listen jb-dec :action (fn [_](dec-prognum 1)))
@@ -117,5 +131,8 @@
     (let [[bg inactive active alt](config/displaybar-colors)]
       (.colors! dbar-name bg inactive active)
       (.colors! dbar-prognum bg inactive active))
-
+    (.setName update-thread "ProgramBar-update")
+    (.setPriority update-thread 1)
+    (.setDaemon update-thread true)
+    (.start update-thread)
     cpb))
