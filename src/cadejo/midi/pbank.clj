@@ -9,8 +9,7 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.string])
   (:require [overtone.core :as ot])
-  (:import java.io.FileNotFoundException)
-)
+  (:import java.io.FileNotFoundException))
 
 (def program-count 128)
 
@@ -101,11 +100,14 @@
      GUI editor is -not- updated and the current-program is marked
      as 'not saved'
      Returns the new program data or nil")
+ 
+  (modified! 
+    [this flag]
+    "Set data modification flag")
 
-  (current-program-saved? 
+  (modified? 
     [this]
-    "Predicate returns true if current program has modifications which 
-     have not been stored into the programs list.")
+    "Return data modification flag")
 
   (programs
     [this]
@@ -140,8 +142,8 @@
      slot - int MIDI program number, if not specified use current slot number
      program - instance of cadejo.midi.program/Program, if not specified
                use current program.
-     The current slot and program are updated and the current program 
-     is marked as 'saved'. Returns program")
+     The current slot and program are updated and modified flag cleared.
+     Returns program")
 
   (read-bank! 
     [this filename]
@@ -180,7 +182,7 @@
            remarks* (atom (str bnk-remarks))
            current-slot* (atom nil)
            current-program* (atom nil)
-           unsaved-data* (atom false)
+           modified* (atom false)
            synths (fn []
                     (if @parent*
                       (concat (.synths @parent*)
@@ -221,7 +223,7 @@
                   (.bank-remarks! this "")
                   (reset! current-slot* nil)
                   (reset! current-program* nil)
-                  (reset! unsaved-data* false)
+                  (.modified! this false)
                   (reset! programs* (sorted-map))
                   this)
                 
@@ -231,7 +233,7 @@
                 
                 (current-program! [this prog]
                   (reset! current-program* prog)
-                  (reset! unsaved-data* false)
+                  (modified! this false)
                   (apply ot/ctl (synths)(ucol/map->alist (.data prog)))
                   (if @editor* (.sync-ui! @editor*))
                   prog)
@@ -252,12 +254,14 @@
                       (do 
                         (.set-param! prog param value)
                         (apply ot/ctl (synths)(ucol/map->alist (.data prog)))
-                        (reset! unsaved-data* true)
+                        (.modified! this true)
                         (.data prog))
                       nil)))
                 
-                (current-program-saved? [this]
-                  (not @unsaved-data*))
+                (modified! [this flag]
+                  (reset! modified* flag))
+
+                (modified? [this] @modified*)
                 
                 (programs [this] @programs*)
 
@@ -269,7 +273,7 @@
                           (apply ot/ctl (synths)(ucol/map->alist data))
                           (reset! current-slot* slot)
                           (reset! current-program* (.clone p))
-                          (reset! unsaved-data* false)
+                          (.modified! this false)
                           (if (and (config/enable-pp) @pp-hook*)
                             (let [pname (.program-name p)
                                   premarks (.program-remarks p)]
@@ -290,7 +294,7 @@
                   (let [slot (:data1 event)
                         rcflag (.recall this slot)
                         ed @editor*]
-                    (reset! unsaved-data* false)
+                    (.modified! this false)
                     (if ed (.sync-ui! ed))
                     @current-program*))
                 
@@ -300,7 +304,7 @@
                       (swap! programs* (fn [n](assoc n slot program)))
                       (reset! current-slot* slot)
                       (reset! current-program* program)
-                      (reset! unsaved-data* false)
+                      (.modified! this false)
                       program)
                     nil))
                 
@@ -395,11 +399,10 @@
                         (printf "%spp-hook %s\n" pad2 (.pp-hook this))
                         (printf "%seditor %s\n" pad2 (.editor this))
                         (printf "%scurrent-slot %s\n" pad2 @current-slot*)
-                        (printf "%sunsaved-data %s\n" pad2 @unsaved-data*)
+                        (printf "%smodified %s\n" pad2 (.modified? this))
                         (doseq [k (keys @programs*)]
                           (let [p (get @programs* k)]
-                            (printf "%s[%3s] '%s'\n" pad2 k (.program-name p))))
-                        ))
+                            (printf "%s[%3s] '%s'\n" pad2 k (.program-name p))))))
                     (println)))
                 
                 (dump [this]
