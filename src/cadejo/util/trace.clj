@@ -41,10 +41,18 @@
           (println ";; ERROR trace-exit empty stack")))))
   return)
 
-(defn trace-mark [msg & {:keys [return]
-                         :or {return nil}}]
+;; (defn trace-mark [msg & {:keys [return]
+;;                          :or {return nil}}]
+;;   (if @enable*
+;;     (let [d (max 0 (dec @depth*))
+;;           p (if (pos? d)(subs @pad* 0 (- (count @pad*) 4)) "")]
+;;     (println (format ";; %s   [%d] MARK: %s" p d msg))))
+;;   return)
+
+
+(defn trace-mark [msg & args]
   (if @enable*
     (let [d (max 0 (dec @depth*))
           p (if (pos? d)(subs @pad* 0 (- (count @pad*) 4)) "")]
     (println (format ";; %s   [%d] MARK: %s" p d msg))))
-  return)
+  (first args))
