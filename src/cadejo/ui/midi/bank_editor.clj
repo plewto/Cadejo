@@ -1,24 +1,18 @@
 (println "--> cadejo.ui.midi.bank-editor")
 
 (ns cadejo.ui.midi.bank-editor
-  (:use [cadejo.util.trace])
-  (:require [cadejo.config :as config])
-  (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
-  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.overwrite-warning])
   (:require [cadejo.ui.util.undo-stack])
   (:require [seesaw.core :as ss])
   (:require [seesaw.chooser])
   (:import javax.swing.event.ListSelectionListener
-           javax.swing.event.CaretListener
-           javax.swing.SwingUtilities
-           java.io.File))
+           javax.swing.SwingUtilities))
 
-(def program-count 128) 
+(def ^:private program-count 128) 
 
 (defprotocol BankEditor
 
@@ -95,21 +89,16 @@
         jb-save (factory/button "Save" :general :save "Save bank file")
         jb-undo (.get-button undo-stack)
         jb-redo (.get-button redo-stack)
-        jb-transmit (factory/button "Transmit" :midi :transmit "Transmit selected program data")
-        jb-edit (factory/button "Edit" :edit nil "Edit program")
         jb-help (factory/button "Help" :general :help "Program bank help")
         tbar1 (ss/toolbar :floatable? false
                           :items [jb-init jb-name 
                                   jb-open jb-save
                                   :separator jb-undo jb-redo 
-                                  :separator jb-edit jb-transmit 
                                   :separator jb-help])
-        lab-name (ss/label :text " "
-                           :border (factory/bevel))
-        lab-filename (ss/label :text (config/config-path)
+        lab-filename (ss/label :text "Bank File : "
                                :border (factory/bevel))
         pan-info (ss/grid-panel :rows 1
-                                :items [lab-name lab-filename])
+                                :items [lab-filename])
         pan-south (ss/grid-panel :columns 1
                                  :items [pan-info])
         lst-programs (ss/listbox :model (create-program-list bnk))
@@ -128,10 +117,7 @@
                     :jb-name jb-name
                     :jb-open jb-open
                     :jb-save jb-save
-                    :jb-transmit jb-transmit
-                    :jb-edit jb-edit
                     :jb-help jb-help
-                    :lab-name lab-name
                     :lab-filename lab-filename
                     :list-programs lst-programs
                     :pan-main pan-main}
@@ -189,7 +175,6 @@
                       (let [plst (.widget this :list-programs)
                             pnum (or (.current-slot bnk) 0)]
                         (reset! enable-list-selection-listener* false)
-                        (ss/config! (.widget this :lab-name) :text (.bank-name bnk))
                         (ss/config! plst :model (create-program-list bnk))
                         (.setSelectedIndex plst pnum)
                         ;; ISSUE: automatic scrolling causes substance 
@@ -264,7 +249,6 @@
                                         (.status! bank-ed "Initialized Bank")
                                         (.working bank-ed false)))))))
 
-
     (ss/listen jb-name :action (fn [_]
                                  (let [ref-name (.bank-name bnk)
                                        ref-rem (.bank-remarks bnk)
@@ -311,16 +295,16 @@
                                         pan-main "Bank" abs)
                                      (if (.write-bank bnk abs)
                                        (do 
-                                         (ss/config! lab-filename :text abs)
+                                         (ss/config! lab-filename :text (format "Bank File : '%s'" abs))
                                          (.status! bank-ed "Saved Bank"))
                                        (.warning! bank-ed (format "Can not save bank to \"%s\"" abs)))
                                      (.status! bank-ed "Bank Save Canceled"))))
                        cancel (fn [jfc]
                                 (.status! bank-ed "Bank Save Canceled"))
-                       default-file (ss/config lab-filename :text)
+                       ;default-file (ss/config lab-filename :text)
                        dia (seesaw.chooser/choose-file
                             :type (format "Save %s Bank" (name (.data-format bnk)))
-                            :dir default-file
+                            ;:dir default-file
                             :multi? false
                             :selection-mode :files-only
                             :filters [file-filter]
@@ -337,7 +321,6 @@
                                    (if (.read-bank! bnk abs)
                                      (do 
                                        (ss/config! lab-filename :text abs)
-                                       (ss/config! lab-name :text (.bank-name bnk))
                                        (.sync-ui! bank-ed)
                                        (.status! bank-ed "Bank read"))
                                      (.warning! bank-ed (format "Can not open \"%s\" as %s bank"
@@ -359,29 +342,6 @@
 
     (ss/listen jb-redo :action (fn [_](.redo! bank-ed)))
    
-    (ss/listen jb-transmit :action
-               (fn [_]
-                 (let [slot (.current-slot bnk)]
-                   (if slot
-                     (do 
-                       (reset! enable-list-selection-listener* false)
-                       (.program-change bnk {:data1 slot})
-                       (reset! enable-list-selection-listener* true))))))
-    
-    (ss/listen jb-edit :action
-               (fn [_]
-                 (let [ied @instrument-editor*]
-                   (if (not ied)
-                     (create-instrument-editor)))
-                 (let [ied @instrument-editor*]
-                   (if ied
-                     (do 
-                       (let [f (.widget ied :frame)]
-                         (.set-store-location! ied (.current-slot bnk))
-                         (.sync-ui! ied)
-                         (ss/show! f)
-                         (.toFront f)))))))
-
     (.putClientProperty jb-help :topic :bank-editor)
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     (.sync-ui! bank-ed)
