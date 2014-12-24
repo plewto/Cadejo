@@ -107,6 +107,21 @@
   ([txt]
      (button txt nil nil)))                 
 
+(defn icon-button [icon-main icon-sub tooltip]
+  (let [b (ss/button)
+        i1 (lnf/read-icon icon-main icon-sub)
+        i2 (lnf/read-selected-icon icon-main icon-sub)
+        i3 (lnf/read-disabled-icon icon-main icon-sub)]
+    (.setToolTipText b tooltip)
+    (.setIcon b i1)
+    (.setSelectedIcon b i2)
+    (.setDisabledIcon b i3)
+    (.setOpaque b false)
+    (.setContentAreaFilled b false)
+    (.setBorderPainted b true)
+    b))
+
+
 ;; Return filter selection button
 ;; ftype - keyword, filter type one of :bp :br :lp :hp :bypass 
 
