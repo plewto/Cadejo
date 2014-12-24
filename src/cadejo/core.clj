@@ -13,9 +13,9 @@
    (:require [sgwr.drawing])
 )
 
-;; (require '[cadejo.instruments.algo.algo-engine :as algo])
-;; (def algo-descriptor algo/algo-descriptor) 
-;; (cadejo.config/add-instrument! algo-descriptor)
+(require '[cadejo.instruments.algo.algo-engine :as algo])
+(def algo-descriptor algo/algo-descriptor) 
+(cadejo.config/add-instrument! algo-descriptor)
 
 ;; (require '[cadejo.instruments.alias.alias-engine :as alias])
 ;; (def alias-descriptor alias/alias-descriptor)
@@ -25,9 +25,9 @@
 ;; (def masa-descriptor masa/masa-descriptor)
 ;; (cadejo.config/add-instrument! masa-descriptor)
 
-(require '[cadejo.instruments.combo.combo-engine :as combo])
-(def combo-descriptor combo/combo-descriptor)
-(cadejo.config/add-instrument! combo-descriptor)
+;; (require '[cadejo.instruments.combo.combo-engine :as combo])
+;; (def combo-descriptor combo/combo-descriptor)
+;; (cadejo.config/add-instrument! combo-descriptor)
 
 
 (require 'cadejo.ui.splash)

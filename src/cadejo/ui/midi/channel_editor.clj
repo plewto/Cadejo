@@ -5,12 +5,10 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.midi.properties-editor])
-  (:require [cadejo.ui.util.color-utilities])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
-  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.validated-text-field :as vtf])
-  (:require [clojure.string ])
+  (:require [clojure.string])
   (:require [seesaw.core :as ss])
   (:require [seesaw.font :as ssf])
   (:import javax.swing.SwingUtilities
@@ -45,7 +43,7 @@
         about (.about descriptor)
         lab-logo (ss/label :icon logo)
         lab-name (ss/label :text (format "  %s   %s" iname about))
-        jb-help (factory/button "Help" :general :help "Help") ; (ss/button)
+        jb-help (factory/button "Help" :general :help "Help")
         pan-head (ss/border-panel :west lab-logo
                                   :center lab-name
                                   :east jb-help
@@ -349,6 +347,6 @@
       (.set-path-text! basic-ed (let [scene (.parent chanobj)
                                   sid (.get-property scene :id)
                                   cid (.get-property chanobj :id)]
-                                  (format "Root / %s / %s" sid cid)))
+                                  (format "Root / %s / chan %s" sid cid)))
       (.putClientProperty (.widget basic-ed :jb-help) :topic :channel)
       ced)))

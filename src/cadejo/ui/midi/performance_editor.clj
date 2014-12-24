@@ -11,7 +11,8 @@
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [seesaw.core :as ss])
   (:import java.awt.BorderLayout
-           java.awt.event.WindowListener))
+           java.awt.event.WindowListener
+           javax.swing.SwingUtilities))
 
 (def frame-size [1280 :by 587])
 
@@ -45,30 +46,79 @@
     [this]))
 
 (defn performance-editor [performance]
-  (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :performance performance)
-        bank-ed (let [bank (.bank performance)
-                      bed (cadejo.ui.midi.bank-editor/bank-editor bank)]
+  (let [descriptor (.get-property performance :descriptor)
+        basic-ed (let [bed (cadejo.ui.midi.node-editor/basic-node-editor :performance performance)
+                       logo (.logo descriptor :small)
+                       iname (.instrument-name descriptor)
+                       id (.get-property performance :id)]
+                   (.set-icon! bed logo)
+                   (ss/config! (.widget bed :frame) :title (name id))
+                   (ss/config! (.widget bed :lab-id) :text (name id))
+                   bed)
+        instrument-editor* (atom nil) ;; editor created only if needed
+        toolbar (.widget basic-ed :toolbar)
+        bank (.bank performance)
+        bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank)]
                   (.editor! bank bed)
                   bed)
         properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
-        pan-tabs (ss/tabbed-panel :tabs [{:title (if (config/enable-button-text) "Bank" "")
-                                          :icon (if (config/enable-button-icons) (lnf/read-icon :general :bank) nil)
-                                          :content (.widget bank-ed :pan-main)}
-                                         {:title (if (config/enable-button-text) "MIDI" "")
-                                          :icon (if (config/enable-button-icons) (lnf/read-icon :midi :plug) nil)
-                                          :content (.widget properties-editor :pan-main)}])
-        progress-bar (ss/progress-bar :indeterminate? false)
-        pan-center (.widget basic-ed :pan-center)
-        descriptor (.get-property performance :descriptor)
+        card-buttons* (atom [])
+        card-group (ss/button-group)
+        pan-cards (ss/card-panel :items [[(.widget bank-ed :pan-main) "BANK"]
+                                         [(.widget properties-editor :pan-main) "MIDI"]])
+        pan-center (let [panc (.widget basic-ed :pan-center)]
+                     (.add panc pan-cards)
+                     panc)
+        
         available-controllers (.controllers descriptor)
         cc-panels* (atom [])]
+    
+    (let [b (factory/button "Transmit" :midi :transmit "Transmit current program")]
+      (.add toolbar b)
+      (ss/listen b :action (fn [_]
+                             (let [slot (.current-slot bank)]
+                               (if slot 
+                                 (do
+                                   (.program-change bank {:data1 slot})
+                                   ))))))
+    (let [b (factory/toggle "Bank" :general :bank "Display program bank" card-group)]
+      (.putClientProperty b :card "BANK")
+      (ss/config! b :selected? true)
+      (swap! card-buttons* (fn [n](conj n b)))
+      (.add toolbar b))
+    (let [b (factory/toggle "MIDI" :midi :plug "Display MIDI properties" card-group)]
+      (.putClientProperty b :card "MIDI")
+      (swap! card-buttons* (fn [n](conj n b)))
+      (.add toolbar b))
+    ;; Add CTRL properties panels
     (doseq [i (range 0 (count available-controllers) 4)]
-      (let [cced (cadejo.ui.midi.cceditor-tab/cceditor-tab descriptor i)]
-        (.addTab pan-tabs 
-                 (if (config/enable-button-text) (format "CC\\%d" i) "")
-                 (if (config/enable-button-icons)(lnf/read-icon :midi :ctrl) nil)
-                 (.widget cced :pan-main))
-        (swap! cc-panels* (fn [n](conj n cced)))))
+      (let [cced (cadejo.ui.midi.cceditor-tab/cceditor-tab descriptor i)
+            card-id (format "CTRL-%d" i)
+            jb (factory/toggle card-id :midi :ctrl "Display MIDI controller properties" card-group)]
+        (.putClientProperty jb :card card-id)
+        (.add pan-cards (.widget cced :pan-main) card-id)
+        (swap! card-buttons* (fn [n](conj n jb)))
+        (.add toolbar jb)))
+    (let [b (factory/toggle "Edit" :edit nil "Edit current program" card-group)]
+      (.putClientProperty b :card "EDIT")
+      (ss/listen b :action (fn [_]
+                             (if (not @instrument-editor*)
+                               (do (.working basic-ed true)
+                                   (.status! basic-ed "Creating editor")
+                                   (SwingUtilities/invokeLater
+                                    (proxy [Runnable][]
+                                      (run []
+                                        (let [ied (.create-editor descriptor performance)]
+                                          (reset! instrument-editor* ied)
+                                          (.add pan-cards (.widget ied :pan-main) "EDIT"))
+                                        (.working basic-ed false)
+                                        (.status! basic-ed "")
+                                        (ss/show-card! pan-cards "EDIT")))))
+                               (try
+                                 (ss/show-card! pan-cards "EDIT")
+                                 (catch NullPointerException ex
+                                   (.warning! basic-ed "Editor not defined"))))))
+      (.add toolbar b))
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
     (let [ped (reify PerformanceEditor
                  (widgets [this] (.widgets basic-ed))
@@ -108,7 +158,6 @@
       (.put-property! performance :bank-editor bank-ed)
       (doseq [cced @cc-panels*]
         (.set-parent-editor! cced ped))
-      (.add pan-center pan-tabs BorderLayout/CENTER)
       (ss/config! (.frame ped) :size frame-size)
       (ss/listen (.widget ped :jb-parent)
                  :action (fn [_]
@@ -132,7 +181,13 @@
                                   sid (.get-property scene :id)
                                   cid (.get-property chanobj :id)
                                   pid (.get-property performance :id)]
-                              (format "Scene %s   Channel %s   Performance %s"
-                                      sid cid pid)))
+                              (format "Root / %s / chan %s / %s"
+                                      sid cid (name pid))))
+      (doseq [b @card-buttons*]
+        (ss/listen b :action (fn [ev]
+                               (let [src (.getSource ev)
+                                     card-id (.getClientProperty src :card)]
+                                 (println (format "DEBUG card-id = '%s'" card-id)) ;; DEBUG
+                                 (ss/show-card! pan-cards card-id)))))
       (.putClientProperty (.widget basic-ed :jb-help) :topic :performance)
       ped))) 

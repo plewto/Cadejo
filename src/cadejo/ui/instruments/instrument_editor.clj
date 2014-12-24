@@ -1,33 +1,21 @@
 (println "--> cadejo.ui.instruments.instrument-editor")
 
 (ns cadejo.ui.instruments.instrument-editor
-  (:use [cadejo.util.trace])
   (:require [cadejo.config :as config])
-  (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.ui.util.factory :as factory])
-  (:require [cadejo.ui.util.color-utilities :as cutil])
   (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.user-message :as umsg])
   (:use [cadejo.ui.util.overwrite-warning :only [overwrite-warning]])
-  (:require [overtone.core :as ot])
   (:require [seesaw.core :as ss])
   (:require [seesaw.chooser :as ssc])
-  (:require [seesaw.font :as ssfont])
-  (:require [sgwr.indicators.numberbar :as numberbar])
   (:import java.awt.event.FocusListener
            java.io.File
            java.io.FileNotFoundException
-           javax.swing.Box
            javax.swing.JFileChooser
            javax.swing.event.ChangeListener))
-
-
-(def ^:private max-program-number 128)
-
-(defn- third [col](nth col 2))
 
 (def all-file-filter (ssc/file-filter
                       "All Files" (constantly true)))
@@ -124,8 +112,6 @@
                            (let [bank (.parent-bank parent-editor)
                                  pname (ss/config txt-name :text)]
                              (.program-name! (.current-program bank) (str pname))
-                             (ss/config! (.widget parent-editor :lab-name)
-                                         :text pname)
                              (.status! parent-editor 
                                        "Program name changed")))))
     (.addFocusListener txt-remarks
@@ -183,18 +169,8 @@
   (warning! 
     [this msg])
 
-  ;; If flag true place progress bar into 'indeterminate' mode
-  ;; if flag false restore progress bar to default state
   (working
     [this flag])
-
-  (pp
-    [this]
-    "Apply bank pp-hook to current data, display results")
-
-  (set-store-location!
-    [this pnum]
-    "Sets the value of the store-program spinner")
   
   (init!
     [this]
@@ -211,6 +187,7 @@
 
 (defn instrument-editor [performance]
   (let [itype (.get-property performance :instrument-type)
+        parent-editor (.get-editor performance)
         id (.get-property performance :id)
         descriptor (config/instrument-descriptor itype)
         clipboard* (.clipboard descriptor)
@@ -227,85 +204,30 @@
 
         ;; North toolbar
         ;;
-        lab-id (ss/label :text (name id)
-                         :font (ssfont/font :size id-font-size)
-                         :border (factory/bevel))
-        jb-show-parent (factory/button "Parent" :tree :up "Show parent program-bank")
         jb-copy (factory/button "Copy" :general :copy "Copy program data to clipboard")
         jb-paste (factory/button "Paste" :general :paste "Paste clipboard data to program")
         jb-open (factory/button "Open" :general :open "Open program file")
         jb-save (factory/button "Save" :general :save "Save program file")
         jb-help (factory/button "Help" :general :help "Program editor help")
-        jb-sync (ss/button :text "[Sync]") ;; DEBUG
         pan-north (ss/toolbar :floatable? false
-                              :items [lab-id 
-                                      :separator jb-show-parent
+                              :items [
                                       :separator jb-open jb-save
                                       :separator jb-copy jb-paste
-                                      :separator jb-help jb-sync]
+                                      :separator jb-help]
                               :border (factory/padding))
-
-        ;; South toolbar
-        ;;
-        nbar-store (let [[cbg cna cav](config/displaybar-colors)
-                         skin(config/current-skin)
-                         bg (cutil/color (or cbg (lnf/get-color skin :text-fg)))
-                         na (cutil/color (or cna (lnf/get-color skin :text-bg)))
-                         av (cutil/color (or cav (lnf/get-color skin :text-bg-selected)))
-                         nbar (numberbar/numberbar 3 0 127)]
-                     (ss/config! (.drawing-canvas nbar) :size [128 :by 48])
-                     (.colors! nbar bg na av)
-                     (.display! nbar "0")
-                     nbar)
-        
-        jb-init (factory/button "Init" :general :reset "Initialize program data")
-        jb-dice (factory/button "Random" :general :dice "Generate random patch")
-        jb-store (factory/button "Store" :general :bankstore "Store program data to selected bank slot")
-        jb-store-inc1 (ss/button :icon (lnf/read-icon :mini :up1) :size [18 :by 18])
-        jb-store-inc8 (ss/button :icon (lnf/read-icon :mini :up2) :size [18 :by 18])
-        jb-store-dec1 (ss/button :icon (lnf/read-icon :mini :down1) :size [18 :by 18])
-        jb-store-dec8 (ss/button :icon (lnf/read-icon :mini :down2) :size [18 :by 18])
-        pan-store-inc1 (ss/grid-panel :columns 1 :items [jb-store-inc1 jb-store-dec1])
-        pan-store-inc8 (ss/grid-panel :columns 1 :items [jb-store-inc8 jb-store-dec8])
-       
-        pan-store (ss/horizontal-panel :items [(.drawing-canvas nbar-store)
-                                                pan-store-inc1
-                                                pan-store-inc8
-                                                jb-store])
-        
-        progress-bar (ss/progress-bar :indeterminate? false)
-        pan-south1 (ss/border-panel 
-                    :center (ss/horizontal-panel :items [jb-init jb-dice])
-                    :east pan-store
-                    :border (factory/padding))
-
-        lab-status (ss/label :text " ")
-        lab-name (ss/label :text " ")
-        pan-south2 (ss/grid-panel 
-                    :rows 1
-                    :items [(ss/vertical-panel :items [lab-status]
-                                               :border (factory/bevel))
-                            (ss/vertical-panel :items [progress-bar]
-                                               :border (factory/bevel))
-                            (ss/vertical-panel :items [lab-name]
-                                               :border (factory/bevel))])
-        pan-south (ss/vertical-panel :items [pan-south1 pan-south2]
-                                     :border (factory/padding))
                                      
         pan-tabs (ss/tabbed-panel
                   :border (factory/padding))
 
         ;; Main panel
         pan-main (ss/border-panel :north pan-north
-                                  :center pan-tabs
-                                  :south pan-south)
+                                  :center pan-tabs)
         frame (ss/frame :title (format "%s Editor" (name id))
                         :content pan-main
                         :on-close :hide
                         :size [1050 :by 650]
                         :icon (.logo descriptor :tiny))
         widget-map {:jb-help jb-help
-                    :lab-name lab-name
                     :pan-main pan-main
                     :pan-tabs pan-tabs
                     :frame frame}
@@ -367,29 +289,14 @@
                     (umsg/warning (format "InstrumentEditor does not have %s widget" key))))
 
               (status! [this msg]
-                (ss/config! lab-status :text (str msg)))
+                (.status! parent-editor msg))
 
               (warning! [this msg]
-                (ss/config! lab-status :text (format "WARNING: %s" msg)))
+                (.warning! parent-editor msg))
 
               (working [this flag]
-                (ss/config! progress-bar :indeterminate? flag))
-
-              (pp [this]
-                (let [prog (.current-program this)]
-                  (if (and prog (config/enable-pp))
-                    (let [pname (:name prog)
-                          rem (:remarks prog)
-                          pnum (.value nbar-store)
-                          d (.current-data this)
-                          ppf (.pp-hook bank)]
-                      (if ppf
-                        (println (ppf pnum pname d rem)))))))
-           
-              (set-store-location! [this slot]
-                (if (and slot (>= slot 0)(<= slot max-program-number))
-                  (.display! nbar-store (str (int slot)))))
-
+                (.working parent-editor flag))
+    
               (init! [this]
                 (let [prog (.clone (.initial-program descriptor))
                       bank (.parent-bank this)]
@@ -415,7 +322,6 @@
                   (if data
                     (let [selected-index (.getSelectedIndex pan-tabs)
                           se (nth @sub-editors* selected-index)]
-                      (ss/config! lab-name :text (.program-name prog))
                       (.sync-ui! se)))))
               ) ;; end ied
 
@@ -430,13 +336,7 @@
                         (proxy [ChangeListener][]
                           (stateChanged [_]
                             (.sync-ui! ied))))
-    
-    (ss/listen jb-show-parent :action
-               (fn [_](let [ped (.get-editor performance)
-                            f (.frame ped)]
-                        (.setVisible f true)
-                        (.toFront f))))
-    
+ 
     (ss/listen jb-copy :action 
                (fn [_](.program->clipboard ied)))
 
@@ -506,62 +406,7 @@
                              (umsg/warning "InstrumentEditor jb-save action"
                                            "default cond executed")
                              (.warning! ied "Unknown save error")))))))
-    
-    (ss/listen jb-store :action
-               (fn [_]
-                 (let [bank-ed (.editor bank)
-                       prog (.current-program bank)
-                       slot (int (max 0 (min max-program-number (.value nbar-store))))]
-                   (.push-undo-state! bank-ed 
-                                      (format "Store program %s" slot))
-                   (.store! bank slot (.clone prog))
-                   (.sync-ui! bank-ed)
-                   (.status! ied (format "Stored program %s" slot)))))
-                       
-    (ss/listen jb-store-inc1 :action 
-               (fn [_]
-                 (let [v (int (min 127 (inc (.value nbar-store))))]
-                   (.display! nbar-store (str v)))))
-
-    (ss/listen jb-store-inc8 :action 
-               (fn [_]
-                 (let [v (int (min 127 (+ 8 (.value nbar-store))))]
-                   (.display! nbar-store (str v)))))
-    
-    (ss/listen jb-store-dec1 :action 
-               (fn [_]
-                 (let [v (int (max 0 (dec (.value nbar-store))))]
-                   (.display! nbar-store (str v)))))
-
-    (ss/listen jb-store-dec8 :action 
-               (fn [_]
-                 (let [v (int (max 0 (- (.value nbar-store) 8)))]
-                   (.display! nbar-store (str v)))))
-
-    (ss/listen jb-dice :action
-               (fn [_]
-                 (.random-program! ied)))
-
-    (ss/listen jb-init :action
-               (fn [_]
-                 (.init! ied)))
-    
-    (ss/listen jb-sync :action
-               (fn [_]
-                 (let [bnk (.bank performance)
-                       data (.current-data bnk)
-                       pp (.pp-hook bnk)]
-                   (println (pp -1 "" data "")))
-                 (.sync-ui! ied)))
-
-    (if (config/enable-tooltips)
-      (do (.setToolTipText jb-store-inc1 "Increment program store location")
-          (.setToolTipText jb-store-dec1 "Decrement program store location")
-          (.setToolTipText jb-store-inc8 "Increase program store location by 8")
-          (.setToolTipText jb-store-dec8 "Decrease program store location by 8")
-          (.setToolTipText (.drawing-canvas nbar-store) "Program store location")))
     (.putClientProperty jb-help :topic (.help-topic descriptor))
-    (ss/listen jb-help :action (fn [_](println (ss/config pan-main :size)))) ;; DEBUG
     (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     ied))
                 
