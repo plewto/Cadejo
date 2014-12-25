@@ -42,7 +42,7 @@
 
   (show-channel
    [this])
-    
+
   (sync-ui!
     [this]))
 
@@ -73,9 +73,7 @@
                      panc)
         
         available-controllers (.controllers descriptor)
-        cc-panels* (atom [])
-        ;
-        ]
+        cc-panels* (atom [])]
     
     (let [b (factory/button "Transmit" :midi :transmit "Transmit current program")]
       (.add toolbar b)
