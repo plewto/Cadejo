@@ -3,6 +3,7 @@
 (ns cadejo.ui.instruments.instrument-editor
   (:require [cadejo.config :as config])
   (:require [cadejo.util.path :as path])
+  (:require [cadejo.ui.instruments.program-name-editor])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
@@ -11,8 +12,7 @@
   (:use [cadejo.ui.util.overwrite-warning :only [overwrite-warning]])
   (:require [seesaw.core :as ss])
   (:require [seesaw.chooser :as ssc])
-  (:import java.awt.event.FocusListener
-           java.io.File
+  (:import java.io.File
            java.io.FileNotFoundException
            javax.swing.JFileChooser
            javax.swing.event.ChangeListener))
@@ -56,75 +56,6 @@
              (= (:data-format rec) dform))
       (dissoc rec :file-type :data-format)
       nil)))
-
-
-(defn- program-name-editor [parent-editor]
-  (let [txt-name (ss/text 
-                  :text "<name>"
-                  :multi-line? :false)
-        txt-remarks (ss/text
-                     :text "<remarks"
-                     :multi-line? :true)
-        pan-main (ss/border-panel 
-                  :north (ss/vertical-panel 
-                          :items [txt-name]
-                          :border (factory/title "Program Name"))
-                  :center (ss/vertical-panel 
-                           :items [(ss/scrollable txt-remarks)]
-                           :border (factory/title "Program Remarks")))
-        widget-map {:txt-name txt-name
-                    :txt-remarks txt-remarks
-                    :pan-main pan-main}
-        pne (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
-
-              (widgets [this] widget-map)
-
-              (widget [this key]
-                (or (get widget-map key)
-                    (umsg/warning (format "program-name-editor does not have %s widget" key))))
-
-              (parent [this] parent-editor)
-
-              (parent! [this other]  nil) ;; ignore
-
-              (status! [this msg]
-                (.status! parent-editor msg))
-
-              (warning! [this msg]
-                (.warning! parent-editor msg))
-
-              (set-param! [this param value] nil) ;; ignore
-              
-              (init! [this] )
-
-              (sync-ui! [this]
-                (let [bank (.parent-bank parent-editor)
-                      prog (.current-program bank)
-                      name (.program-name prog)
-                      remarks (.program-remarks prog)]
-                  (ss/config! txt-name :text name)
-                  (ss/config! txt-remarks :text remarks))))]
-    
-    (.addFocusListener txt-name 
-                       (proxy [FocusListener][]
-                         (focusGained [_])
-                         (focusLost [_]
-                           (let [bank (.parent-bank parent-editor)
-                                 pname (ss/config txt-name :text)]
-                             (.program-name! (.current-program bank) (str pname))
-                             (.status! parent-editor 
-                                       "Program name changed")))))
-    (.addFocusListener txt-remarks
-                       (proxy [FocusListener][]
-                         (focusGained [_])
-                         (focusLost [_]
-                           (let [bank (.parent-bank parent-editor)
-                                 remarks (ss/config txt-remarks :text)]
-                             (.program-remarks! (.current-program bank)(str remarks))
-                             (.status! parent-editor
-                                       "Program remarks changed")))))
-    pne))
-                
 
 (defprotocol InstrumentEditor
 
@@ -183,8 +114,6 @@
   (sync-ui!
     [this]))
 
-(def id-font-size 24)
-
 (defn instrument-editor [performance]
   (let [itype (.get-property performance :instrument-type)
         parent-editor (.get-editor performance)
@@ -204,13 +133,15 @@
 
         ;; North toolbar
         ;;
+        jb-init (factory/button "Init" :general :reset "Initialize program")
+        jb-dice (factory/button "Random" :general :dice "Create random program")
         jb-copy (factory/button "Copy" :general :copy "Copy program data to clipboard")
         jb-paste (factory/button "Paste" :general :paste "Paste clipboard data to program")
         jb-open (factory/button "Open" :general :open "Open program file")
         jb-save (factory/button "Save" :general :save "Save program file")
         jb-help (factory/button "Help" :general :help "Program editor help")
         pan-north (ss/toolbar :floatable? false
-                              :items [
+                              :items [jb-init jb-dice
                                       :separator jb-open jb-save
                                       :separator jb-copy jb-paste
                                       :separator jb-help]
@@ -311,6 +242,7 @@
                   (if prog
                     (do
                       (.current-program! bank prog)
+                      (.modified! bank true)
                       (if (and pp (config/enable-pp))
                         (println (pp -1 "Random" (.data prog) "")))
                       (.sync-ui! this)
@@ -325,7 +257,7 @@
                       (.sync-ui! se)))))
               ) ;; end ied
 
-        name-editor (program-name-editor ied)]
+        name-editor (cadejo.ui.instruments.program-name-editor/program-name-editor ied)]
 
     (.add-sub-editor! ied 
                       (if (config/enable-button-text) "Common" "")
@@ -337,6 +269,11 @@
                           (stateChanged [_]
                             (.sync-ui! ied))))
  
+    (ss/listen jb-init :action (fn [_](.init! ied)))
+               
+
+    (ss/listen jb-dice :action (fn [_](.random-program! ied)))
+
     (ss/listen jb-copy :action 
                (fn [_](.program->clipboard ied)))
 
