@@ -14,8 +14,7 @@
   (:require [seesaw.chooser :as ssc])
   (:import java.io.File
            java.io.FileNotFoundException
-           javax.swing.JFileChooser
-           javax.swing.event.ChangeListener))
+           javax.swing.JFileChooser))
 
 (def all-file-filter (ssc/file-filter
                       "All Files" (constantly true)))
@@ -66,8 +65,10 @@
     [this])
 
   (add-sub-editor!
-    [this label subed]
-    [this label icon subed])
+    [this text icon-main icon-sub tooltip subed])
+
+  (show-card-number!
+    [this n])
 
   (current-program 
     [this]
@@ -129,8 +130,6 @@
                              (fn [f]
                                (path/has-extension? (.getAbsolutePath f)
                                                     file-extension)))
-        sub-editors* (atom [])
-
         ;; North toolbar
         ;;
         jb-init (factory/button "Init" :general :reset "Initialize program")
@@ -144,15 +143,21 @@
                               :items [jb-init jb-dice
                                       :separator jb-open jb-save
                                       :separator jb-copy jb-paste
-                                      :separator jb-help]
+                                      :separator jb-help 
+                                      :separator]
                               :border (factory/padding))
-                                     
-        pan-tabs (ss/tabbed-panel
-                  :border (factory/padding))
+       
+        sub-editors* (atom [])
+        card-buttons* (atom [])
+        pan-cards (ss/card-panel
+                   :border (factory/padding))
+        group-cards (ss/button-group)
+        current-card* (atom nil)
 
         ;; Main panel
         pan-main (ss/border-panel :north pan-north
-                                  :center pan-tabs)
+                                  :center pan-cards
+                                  )
         frame (ss/frame :title (format "%s Editor" (name id))
                         :content pan-main
                         :on-close :hide
@@ -160,7 +165,7 @@
                         :icon (.logo descriptor :tiny))
         widget-map {:jb-help jb-help
                     :pan-main pan-main
-                    :pan-tabs pan-tabs
+                    :pan-cards pan-cards
                     :frame frame}
         ied (reify InstrumentEditor
               
@@ -169,24 +174,30 @@
               (parent-bank [this]
                 (.bank performance))
 
-              (add-sub-editor! [this label subed]
+              (add-sub-editor! [this text icon-main icon-sub tooltip subed]
                 (swap! sub-editors* (fn [n](conj n subed)))
-                (.addTab pan-tabs label (.widget subed :pan-main))
-                (.parent! subed this))
+                (reset! current-card* subed)
+                (let [tb (factory/toggle text icon-main icon-sub tooltip group-cards)]
+                  (swap! card-buttons* (fn [q](conj q tb)))
+                  (.putClientProperty tb :id text)
+                  (.putClientProperty tb :editor subed)
+                  (.add pan-north tb)
+                  (.add pan-cards (.widget subed :pan-main) text)
+                  (.parent! subed this)
+                  (ss/listen tb :action
+                             (fn [ev]
+                               (let [src (.getSource ev)
+                                     id (.getClientProperty src :id)
+                                     ed (.getClientProperty src :editor)]
+                                 (ss/show-card! pan-cards id)
+                                 (reset! current-card* ed)
+                                 (.sync-ui! ed))))))
 
-              (add-sub-editor! [this label icon subed]
-                (swap! sub-editors* (fn [n](conj n subed)))
-                (let [pan-main (.widget subed :pan-main)]
-                  (cond (and (config/enable-button-text)
-                             (config/enable-button-icons))
-                        (.addTab pan-tabs label icon pan-main)
-
-                        (config/enable-button-icons)
-                        (.addTab pan-tabs "" icon pan-main)
-
-                        :default
-                        (.addTab pan-tabs label))
-                  (.parent! subed this)))
+              (show-card-number! [this n]
+                (let [tb (nth @card-buttons* n)
+                      id (.getClientProperty tb :id)]
+                  (ss/show-card! pan-cards id)
+                  (ss/config! tb :selected? true)))
 
               (current-program [this]
                 (.current-program bank))
@@ -252,25 +263,15 @@
                 (let [prog (.current-program bank)
                       data (and prog (.data prog))]
                   (if data
-                    (let [selected-index (.getSelectedIndex pan-tabs)
-                          se (nth @sub-editors* selected-index)]
-                      (.sync-ui! se)))))
+                    (.sync-ui! @current-card*))))
+                
               ) ;; end ied
 
         name-editor (cadejo.ui.instruments.program-name-editor/program-name-editor ied)]
 
-    (.add-sub-editor! ied 
-                      (if (config/enable-button-text) "Common" "")
-                      (if (config/enable-button-icons)(lnf/read-icon :edit :text) nil)
-                      name-editor)
-
-    (.addChangeListener pan-tabs
-                        (proxy [ChangeListener][]
-                          (stateChanged [_]
-                            (.sync-ui! ied))))
+    (.add-sub-editor! ied "Common" :edit :text "Edit program name" name-editor)
  
     (ss/listen jb-init :action (fn [_](.init! ied)))
-               
 
     (ss/listen jb-dice :action (fn [_](.random-program! ied)))
 
