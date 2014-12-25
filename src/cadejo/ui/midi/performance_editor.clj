@@ -182,10 +182,11 @@
       (.set-path-text! basic-ed (let [scene (.get-scene performance)
                                   chanobj (.parent performance)
                                   sid (.get-property scene :id)
-                                  cid (.get-property chanobj :id)
+                                  ;cid (.get-property chanobj :id)
+                                  chan (inc (.channel-number chanobj))
                                   pid (.get-property performance :id)]
                               (format "Root / %s / chan %s / %s"
-                                      sid cid (name pid))))
+                                      sid chan (name pid))))
       (doseq [b @card-buttons*]
         (ss/listen b :action (fn [ev]
                                (let [src (.getSource ev)

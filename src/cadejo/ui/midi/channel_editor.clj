@@ -25,7 +25,7 @@
         counter* (atom 0)
         name* (atom "")
         found* (atom false)
-        chan (.channel-number chanobj)
+        chan (inc (.channel-number chanobj))
         frmt "%s-%d-%d"]
     (while (not @found*)
       (reset! name* (format frmt iname chan @counter*))
@@ -121,7 +121,7 @@
                                   :center pan-controllers
                                   :south (.widget vtf-instrument-id :pan-main))
         dia (ss/dialog :title (format "Add %s to channel %d"
-                                      iname (.channel-number chanobj))
+                                      iname (inc (.channel-number chanobj)))
                        :content pan-main  
                        :type :plain
                        :options [jb-add jb-cancel]
@@ -251,7 +251,7 @@
     (.add toolbar jb-add)
     (.add toolbar jb-midi)
     (ss/config! (.widget basic-ed :frame) :on-close :hide)
-    (ss/config! (.widget basic-ed :frame) :title (format "Cadejo Channel %d" (.channel-number chanobj)))
+    (ss/config! (.widget basic-ed :frame) :title (format "Cadejo Channel %d" (inc (.channel-number chanobj))))
     (let [ced (reify ChannelEditor
                 
                 (widgets [this] (.widgets basic-ed))
@@ -321,7 +321,7 @@
                   (.sync-ui! properties-editor)
                   (.revalidate (.widget basic-ed :frame))) )]
       (ss/config! lab-id 
-                  :text (format "Channel %s " (.channel-number chanobj))
+                  :text (format "Channel %s " (inc (.channel-number chanobj)))
                   :font id-font)
       (ss/listen (.widget ced :jb-parent)
                  :action (fn [_]
@@ -346,7 +346,7 @@
                             (windowOpened [_] nil)))
       (.set-path-text! basic-ed (let [scene (.parent chanobj)
                                   sid (.get-property scene :id)
-                                  cid (.get-property chanobj :id)]
-                                  (format "Root / %s / chan %s" sid cid)))
+                                  chan (inc (.channel-number chanobj))]   ;(.get-property chanobj :id)]
+                                  (format "Root / %s / chan %s" sid chan)))
       (.putClientProperty (.widget basic-ed :jb-help) :topic :channel)
       ced)))

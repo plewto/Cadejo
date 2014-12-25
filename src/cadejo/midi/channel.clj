@@ -109,8 +109,10 @@
 
   (rep-tree [this depth]
     (let [pad (cadejo.util.string/tab depth)
-          sb (StringBuilder.)]
-      (.append sb (format "%sChannel %s\n" pad (.get-property this :id)))
+          sb (StringBuilder.)
+          cindex (.channel-number this)]
+      ;(.append sb (format "%sChannel %s\n" pad (.get-property this :id)))
+      (.append sb (format "%sChannel +%s\n" pad (inc cindex)))
       (doseq [p (.children this)]
         (.append sb (.rep-tree p (inc depth))))
       (.toString sb)))
