@@ -7,6 +7,7 @@
   (:require [cadejo.ui.midi.properties-editor])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.validated-text-field :as vtf])
   (:require [clojure.string])
   (:require [seesaw.core :as ss])
@@ -346,7 +347,8 @@
                             (windowOpened [_] nil)))
       (.set-path-text! basic-ed (let [scene (.parent chanobj)
                                   sid (.get-property scene :id)
-                                  chan (inc (.channel-number chanobj))]   ;(.get-property chanobj :id)]
+                                  chan (inc (.channel-number chanobj))] 
                                   (format "Root / %s / chan %s" sid chan)))
+      (.set-icon! basic-ed (lnf/read-channel-icon (inc (.channel-number chanobj))))
       (.putClientProperty (.widget basic-ed :jb-help) :topic :channel)
       ced)))

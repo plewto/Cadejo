@@ -264,6 +264,12 @@
          iprefix (get skin-icon-prefix skin-name "black")]
      (get-icon-file iprefix group subgroup nil))))
 
+(defn read-channel-icon [chan]
+  (let [fname (format "chan_%02d.png" chan)
+        pathname (path/join "resources" "icons" fname)
+        icn (seesaw.icon/icon (File. pathname))]
+    icn))
+
 
 ;; Return 'normal' un-selected icon
 ;; prefix    - String, one of "black", "gray" or "white"
