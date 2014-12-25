@@ -8,10 +8,8 @@
                  [seesaw "1.4.4"]
                  [com.github.insubstantial/substance "7.1"]
                  [overtone "0.9.1"]]
- :main cadejo.core
- ;; :main cadejo.ui.midi.program-bar
+ :main cadejo.core)
 
-)
 
 
 

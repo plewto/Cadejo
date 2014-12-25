@@ -538,7 +538,7 @@
 ;(selected-icon-style! 0)
 (load-gui! true)
 (initial-skin! "Twilight")
-(enable-pp! true)
+(enable-pp! false)
 (maximum-scene-count! 2)
 (maximum-undo-count! 10)
 (warn-on-exit! true)

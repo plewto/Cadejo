@@ -358,5 +358,6 @@
     (.addActionListener tb-filter-4 harmonic-action)
     (.addActionListener tb-filter-6 harmonic-action)
     (.addActionListener tb-filter-8 harmonic-action)
-    (.add-sub-editor! ied "Combo" combo-ed)
+    (.add-sub-editor! ied "Edit" :general :mixer "Combo editor" combo-ed)
+    (.show-card-number! ied 1)
     ied))

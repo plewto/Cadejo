@@ -14,7 +14,8 @@
   (:require [seesaw.chooser :as ssc])
   (:import java.io.File
            java.io.FileNotFoundException
-           javax.swing.JFileChooser))
+           javax.swing.JFileChooser
+           javax.swing.Box))
 
 (def all-file-filter (ssc/file-filter
                       "All Files" (constantly true)))
@@ -143,8 +144,8 @@
                               :items [jb-init jb-dice
                                       :separator jb-open jb-save
                                       :separator jb-copy jb-paste
-                                      :separator jb-help 
-                                      :separator]
+                                      :separator jb-help :separator
+                                      (Box/createHorizontalStrut 32)]
                               :border (factory/padding))
        
         sub-editors* (atom [])
@@ -197,7 +198,8 @@
                 (let [tb (nth @card-buttons* n)
                       id (.getClientProperty tb :id)]
                   (ss/show-card! pan-cards id)
-                  (ss/config! tb :selected? true)))
+                  (ss/config! tb :selected? true)
+                  (.sync-ui! (.getClientProperty tb :editor))))
 
               (current-program [this]
                 (.current-program bank))

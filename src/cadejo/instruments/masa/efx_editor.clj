@@ -128,7 +128,8 @@
 
     (doseq [s sliders]
       (.addChangeListener s change-listener))
-    (.add-sub-editor! ied "EFX" ed)
+    ;(.add-sub-editor! ied "EFX" ed)
+    (.add-sub-editor! ied "Efx" :general :fx "Effects editor" ed)
     ed))
 
 

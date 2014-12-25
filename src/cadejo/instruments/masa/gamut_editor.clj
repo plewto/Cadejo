@@ -173,7 +173,8 @@
     (doseq [q drawbars]
       (.addChangeListener (first q) change-listener)
       (.addChangeListener (second q) change-listener))
-    (.add-sub-editor! ied "Gamut" ed)
+    ;(.add-sub-editor! ied "Gamut" ed)
+    (.add-sub-editor! ied "Gamut" :wave :sine "Frequency gamut editor" ed)
 
     (ss/listen jb-preset-b3 
                :action (fn [_]

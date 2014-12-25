@@ -14,19 +14,15 @@
   (:require [cadejo.instruments.algo.editor.fx-editor :as fxed])
   (:require [seesaw.core :as ss]))  
 
-(def ^:private fm-icon (lnf/read-icon :wave :fm))
-(def ^:private am-icon (lnf/read-icon :wave :am))
-(def ^:private env-icon (lnf/read-icon :env :adsr))
-(def ^:private fx-icon (lnf/read-icon :general :fx))
-
 (defn algo-editor [performance]
   (let [ied (ied/instrument-editor performance)
         faed (freqed/freq-editor performance ied)
         enved (enved/envelope-editor performance ied)
         amped (amped/amp-editor performance ied)
         fxed (fxed/fx-editor performance ied)]
-    (.add-sub-editor! ied "FM" fm-icon faed)
-    (.add-sub-editor! ied "AM" am-icon amped)
-    (.add-sub-editor! ied "Env" env-icon enved)
-    (.add-sub-editor! ied "Fx" fx-icon fxed)
+    (.add-sub-editor! ied "FM" :wave :fm "Edit Frequency modulation" faed)
+    (.add-sub-editor! ied "AM" :wave :am "Edit Amplitude modulation" amped)
+    (.add-sub-editor! ied "Env" :env :adsr "Edit Envelopes" enved)
+    (.add-sub-editor! ied "Fx" :general :fx "Edit Effects" fxed)
+    (.show-card-number! ied 1)
     ied))

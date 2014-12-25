@@ -382,7 +382,7 @@
     (doseq [s (map third drawbars)]
       (.addActionListener s perc-action))
 
-    (.add-sub-editor! ied "Registration" ed)
+    (.add-sub-editor! ied "Mix" :general :mixer "Tone mix editor" ed)
     ed))
 
 
@@ -391,4 +391,5 @@
         rtab (registration-tab performance ied)
         gtab (cadejo.instruments.masa.gamut-editor/gamut-tab performance ied)
         fxed (cadejo.instruments.masa.efx-editor/efx-tab performance ied)]
+    (.show-card-number! ied 1)
     ied))
