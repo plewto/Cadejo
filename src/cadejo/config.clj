@@ -545,7 +545,7 @@
 (warn-on-file-overwrite! true)
 (warn-on-unsaved-data! true)
 (enable-tooltips! true)
-(enable-button-text! true)
+(enable-button-text! false)
 (enable-button-icons! true)
 
 ;; nil colors --> use LNF

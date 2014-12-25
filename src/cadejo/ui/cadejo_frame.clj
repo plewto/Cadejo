@@ -76,13 +76,13 @@
         lab-status (ss/label :text "<status>")
         lab-path (ss/label :text "<path>")
         progbar (ss/progress-bar :indeterminate? false)
-        tbar-fixed (ss/toolbar :floatable? false 
+        tbar-east (ss/toolbar :floatable? false 
                                :items [:separator jb-parent jb-help])
         tbar-client (ss/toolbar :floatable? false 
                                 :items [])
         pan-north (ss/border-panel :west lab-id 
                                    :center tbar-client
-                                   :east tbar-fixed
+                                   :east tbar-east
                                    :border (factory/padding))
         pan-center (ss/border-panel
                     :border (factory/padding))
@@ -105,6 +105,7 @@
                    {:jb-parent jb-parent
                     :jb-help jb-help
                     :toolbar tbar-client
+                    :toolbar-east tbar-east
                     :pan-main pan-main
                     :pan-center pan-center
                     :lab-id lab-id

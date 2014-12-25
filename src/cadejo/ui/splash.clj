@@ -9,12 +9,9 @@
   (:require [cadejo.util.midi])
   (:require [overtone.core :as ot])
   (:require [seesaw.core :as ss])
-  ;(:require [seesaw.dev :as ssdev]) ;; ISSUE for testing only
-  
   (:import java.awt.BorderLayout
            javax.swing.SwingUtilities
-           javax.swing.Box)
-)
+           javax.swing.Box))
 
 (def global-scenes* (atom {}))
 
@@ -105,7 +102,7 @@
                                     nil ;; ISSUE existing server not implemented
                                     :default ;; should never see this
                                     nil)
-                              (ss/config! tb-server :enabled? false)
+                              (doseq [b (conj buttons jb-start)](ss/config! b :enabled? false))
                               (ss/config! tb-midi :enabled? true :selected? true)
                               (.doClick tb-midi)
                               (.status! cframe (format "%s server started" (name server)))
@@ -161,7 +158,7 @@
                               device (.getClientProperty button :device)
                               s (cadejo.midi.scene/scene device)
                               sed (.get-editor s)
-                              tb (ss/toggle :text (format "Scene %s %s" name device) :group bgroup :user-data device)]
+                              tb (ss/toggle :text (format "(%s %s)" name device) :group bgroup :user-data device)]
                           (.frame! sed cframe)
                           (ss/config! button :enabled? false :selected? false)
                           (ss/config! jb-create :enabled? false)
@@ -197,9 +194,11 @@
         tb-server (let [b (factory/toggle "Server" :general :server "Select SuperCollider Server" bgroup)]
                     (ss/config! b :selected? true)
                     (ss/config! b :enabled? true)
+                    (.setDisabledIcon b (lnf/read-icon "gray" :general :server))
                     b)
         tb-new-scene (let [b (factory/toggle "MIDI" :midi :plug "Create Scene" bgroup)]
                        (ss/config! b :enabled? false)
+                       (.setDisabledIcon b (lnf/read-icon "gray" :midi :plug))
                        b)
         tb-about (factory/toggle "About" :general :info "Display about text" bgroup)
         jb-config (factory/button "Config" :general :config "Open configuration editor")
@@ -208,16 +207,23 @@
                   (ss/config! b :user-data cframe)
                   b)
         jb-help (.widget cframe :jb-help)
-        toolbar (let [tbar (.widget cframe :toolbar)]
-                  (ss/config! tbar :items [tb-server tb-new-scene tb-about jb-config jb-skin jb-exit])
+        toolbar-east (let [tbar (.widget cframe :toolbar-east)
+                           jb-parent (.widget cframe :jb-parent)]
+                       (.remove tbar jb-parent)
+                       (.add tbar tb-about)
+                       (.add tbar jb-exit)
+                       tbar)
+        toolbar-scenes (ss/toolbar :floatable? false
+                                   :orientation :horizontal)
+        toolbar (let [tbar (ss/toolbar :floatable? false
+                                       :orientation :horizontal)]
+                      (.add (.widget cframe :toolbar) tbar)
+                  (ss/config! tbar :items [tb-server tb-new-scene toolbar-scenes :separator jb-config jb-skin :separator ])
                   tbar)
-        toolbar-south (let [tbar (ss/toolbar :floatable? false
-                                             :orientation :horizontal)]
-                        (.add (.widget cframe :pan-center) tbar BorderLayout/SOUTH)
-                        tbar)
+       
         pan-server (create-server-panel tb-server tb-new-scene cframe)
         pan-cards (ss/card-panel)
-        pan-midi (create-midi-panel cframe pan-cards toolbar-south bgroup)
+        pan-midi (create-midi-panel cframe pan-cards toolbar-scenes bgroup)
         pan-about (create-about-panel)
         show-card (fn [button]
                     (let [id (ss/user-data button)]
@@ -235,7 +241,6 @@
                              (let [src (.getSource ev)]
                                (.set-path-text! cframe "Root")
                                (show-card src)))))
-    (ss/config! (.widget cframe :jb-parent) :visible? false)
     (.set-path-text! cframe "Root")
     (ss/config! (.widget cframe :frame) :on-close :nothing)
     (ss/config! (.widget cframe :frame) :icon (cadejo.ui.util.icon/logo "cadejo" :tiny))
