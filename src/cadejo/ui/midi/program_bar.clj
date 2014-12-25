@@ -8,6 +8,7 @@
    unsaved data."
   (:use [cadejo.util.trace])
   (:require [cadejo.util.user-message :as umsg])
+  (:require [cadejo.ui.util.color-utilities :as cutil])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.config :as config])
   (:require [seesaw.core :as ss])
@@ -38,8 +39,8 @@
 (defn program-bar [performance]
   (let [prognum* (atom 0)
         bank (.bank performance)
-        jb-init (factory/button "Init" :general :reset "Initialize program")
-        jb-dice (factory/button "Random" :general :dice "Generate random program")
+        ;; jb-init (factory/button "Init" :general :reset "Initialize program")
+        ;; jb-dice (factory/button "Random" :general :dice "Generate random program")
         jb-inc (factory/icon-button :mini :up1 "Increment program number")
         jb-dec (factory/icon-button :mini :down1 "Decrement program number")
         jb-inc-page (factory/icon-button :mini :up2 "Increment program number page")
@@ -58,8 +59,8 @@
         pan-buttons (ss/grid-panel :rows 2 :columns 2
                                    :items [jb-inc jb-inc-page 
                                            jb-dec jb-dec-page])
-        pan-west (ss/horizontal-panel :items [jb-init jb-dice 
-                                              (Box/createHorizontalStrut 16)
+        pan-west (ss/horizontal-panel :items [;; jb-init jb-dice 
+                                              ;; (Box/createHorizontalStrut 16)
                                               pan-buttons jb-store]
                                       :border (factory/padding))
 
@@ -105,9 +106,12 @@
                                (while true
                                  (let [modified (.modified? bank)
                                        att (.attributes modified-marker)
-                                       color (if modified active inactive)]
-                                   (.color! att color)
-                                   (.render drawing)
+                                       new-color (cutil/color (if modified active inactive))
+                                       old-color (cutil/color (.color att))]
+                                   (if (not (= old-color new-color))
+                                     (do 
+                                       (.color! att new-color)
+                                       (.render drawing)))
                                  (Thread/sleep update-period))))) ]
 
     (ss/listen jb-inc :action (fn [_](inc-prognum 1)))
@@ -124,10 +128,10 @@
                    (.store! bank slot (.clone prog))
                    (.sync-ui! bank-ed)
                    (.status! (.get-editor performance) (format "Stored program %s" slot)))))
-    (ss/listen jb-init :action (fn [_]
-                                 (.init-program (.get-editor performance))))
-    (ss/listen jb-dice :action (fn [_]
-                                 (.random-program (.get-editor performance))))
+    ;; (ss/listen jb-init :action (fn [_]
+    ;;                              (.init-program (.get-editor performance))))
+    ;; (ss/listen jb-dice :action (fn [_]
+    ;;                              (.random-program (.get-editor performance))))
     (let [[bg inactive active alt](config/displaybar-colors)]
       (.colors! dbar-name bg inactive active)
       (.colors! dbar-prognum bg inactive active))
