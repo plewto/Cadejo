@@ -12,6 +12,7 @@ pom.xml.asc
 .lein-plugins
 .lein-repl-history
 test*
+temp*
 src/cadejo/*test*
 
 # Ignore temp emacks files
