@@ -1,6 +1,7 @@
 ;; General utilities
 ;;
 (ns sgwr.util.utilities
+  (:require [sgwr.constants :as constants])
   (:import java.awt.geom.Line2D
            java.awt.geom.Path2D))
 
@@ -9,15 +10,31 @@
   (println (format "sgwr WARNING: %s" msg))
   nil)
 
+(defn map-style [st]
+  (let [q (get constants/style-map st)]
+    (int (or q st))))
+
 (defn member? [obj col]
   "Predicate true if obj is = to some element of collection."
   (some (fn [n](= n obj)) col))
 
-(defn is-group? [obj]
-  (try
-    (= (.element-type obj) :group)
-    (catch IllegalArgumentException ex
-      false)))
+(defn not-member? [obj col]
+  (not (member? obj col)))
+
+(defn tab 
+  ([n]
+     (if (> n 0)
+       (let [frmt (format "%%%ds" (* n 4))]
+         (format frmt ""))
+       ""))
+  ([](tab 1)))
+
+
+;; (defn is-group? [obj]
+;;   (try
+;;     (= (.element-type obj) :group)
+;;     (catch IllegalArgumentException ex
+;;       false)))
 
 
 ;; jaba.awt.shape utilities
