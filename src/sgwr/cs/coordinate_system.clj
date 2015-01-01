@@ -1,0 +1,52 @@
+(println "--> sgwr.cs.coordinate-system")
+
+(ns sgwr.cs.coordinate-system
+  "Defines genralized mapping scheme between 'real' points and pixel coordinates")
+
+(defprotocol CoordinateSystem
+
+  (canvas-bounds
+    [this]
+    "Returns size of 'physical' canvas as pair [width height]")
+
+  (view
+    [this]
+    "Returns the current 'view' as a vector.
+     The exact format of the result is implementation dependent.")
+
+  (view!
+    [this v]
+    "Set the current view to v 
+     The exact format of v is implementation dependent.")
+
+  (map-point
+    [this p]
+    "Convert 'real' point p [x y] to pixel coordinates [column row]")
+
+  (inv-map
+    [this q]
+    "Inversion of map-point, converts pixel coordinates [column row]
+     to 'real' point [x y]")
+
+  (clip 
+    [this q]
+    "Clip 'physical' point q to canvas bounds
+     For point q [u v]  0 <= u < width  and 0 <= v < height")
+
+  (distance 
+    [this p1 p2]
+    "Return distance between points p1 and p2")
+
+  (zoom!
+    [this ratio]
+    "Zoom into view by fixed ratio")
+
+  (zoom-ratio 
+    [this]
+    "Zoom out of view by fixed ratio")
+
+  (to-string
+    [this])
+  )
+
+
