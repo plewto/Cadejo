@@ -3,6 +3,7 @@
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.group])
   (:require [sgwr.cs.native :as native-cs])
+  (:require [sgwr.cs.cartesian :as cartesian-cs])
   (:require [sgwr.util.color :as ucolor])
   (:require [sgwr.util.stroke :as ustroke])
   (:require [sgwr.util.utilities :as utilities])
@@ -11,6 +12,8 @@
            javax.swing.JPanel
            )
   )
+
+(def zoom-ratio* (atom 2/3))
 
 
 (defprotocol SgwrDrawing
@@ -34,6 +37,12 @@
     [this g2d element])
 
   (image
+    [this])
+
+  (zoom-in
+    [this])
+
+  (zoom-out
     [this])
 
   )
@@ -95,6 +104,15 @@
                                 (.draw g2d shape))))))))
               (image [this]
                 @image*)
+              
+              (zoom-in [this]
+                (.zoom! cs @zoom-ratio*)
+                (.render this))
+
+              (zoom-out [this]
+                (.zoom! cs (/ 1.0 @zoom-ratio*))
+                (.render this))
+
               )]
     (.set-local-attributes! root-group)
     (reset! cpan* (proxy [JPanel][true]
@@ -109,27 +127,72 @@
   (let [cs (native-cs/native-coordinate-system w h)]
     (drawing cs)))
 
+
+(defn cartesian-drawing [w h p0 p1]
+  (let [cs (cartesian-cs/cartesian-coordinate-system w h p0 p1)]
+    (drawing cs)))
+
 ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST 
 
 
 (require '[seesaw.core :as ss])
+(require '[sgwr.elements.group :as grp])
 (require '[sgwr.elements.line :as line])
+(require '[sgwr.elements.rectangle :as rect])
 
-(def drw (native-drawing 400 600))2
+(def drw (cartesian-drawing 500 500 [-10 -10] [10 10]))
 (def root (.root drw))
 
 (.color! root :red)
 (.width! root 1)
-(.style! root :dash)
-(def a1 (line/line root [100 100][300 500]))
+(.style! root 0)
+
+(def a1 (line/line root [0 -10][0 10]))
+(def a2 (line/line root [-10 0][10 0]))
+(def r1 (rect/rectangle root [1 1][5 5]))
+(.put-property! r1 :corner-radius 32)
+
+(.put-property! a1 :id :a1)
+(.put-property! a2 :id :a2)
+(.put-property! r1 :id :r1)
 
 
-(def a2 (line/line root [100 300][300 100]))
-(.color! a2 :blue)
+(def g3 (grp/group root :g3))
+(def a3 (line/line g3 [-2 -2][-4 -4]))
+(def r3 (rect/rectangle g3 [-1 -1][-5 -5]))
+
+
+
+(.put-property! a3 :id :a3)
+(.put-property! r3 :id :r3)
+
+(.set-local-attributes! g3)
+(.set-local-attributes! a3)
+(.set-local-attributes! r3)
+
+(.add-attributes! g3 :alpha)
+(.add-attributes! a3 :alpha)
+(.add-attributes! r3 :alpha)
+(.use-attributes! g3 :alpha)
+(.color! a3 :blue)
+(.color! r3 :green)
+
+(.add-attributes! g3 :beta)
+(.add-attributes! a3 :beta)
+(.add-attributes! r3 :beta)
+(.use-attributes! g3 :beta)
+(.color! a3 :gray)
+(.color! r3 :purple)
+
 
 
 (def jb-render (ss/button :text "Render"))
-(ss/listen jb-render :action (fn [_](.render drw)))
+
+(ss/listen jb-render :action (fn [_]
+                               (.render drw)
+                               (.dump root)
+                               (println)))
+
 (def pan-main (ss/border-panel :center (.canvas drw)
                                :south jb-render))
 

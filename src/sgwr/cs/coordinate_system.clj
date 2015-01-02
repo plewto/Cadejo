@@ -44,7 +44,7 @@
 
   (zoom-ratio 
     [this]
-    "Zoom out of view by fixed ratio")
+    "Returns the zoom ratio")
 
   (to-string
     [this])
