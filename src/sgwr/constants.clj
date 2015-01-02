@@ -28,7 +28,7 @@
                 :short-dash 3
                 :long-dash 4
                 :center 5               ; dot-dash
-                :dot-dash 5
+                :dot-dash 6
                 })
 
 (def dot-styles {:default 0
@@ -42,6 +42,24 @@
                  :cross 7
                  :x 8
                  :triangle 9})
+
+(def line-styles {:solid 0
+                  :dotted 1
+                  :dash 2
+                  :short-dash 3
+                  :long-dash 4
+                  :center 5
+                  :dot-dash 6
+                  })
+
+(def dash-patterns {0 [1.0]
+                    1 [2.0 2.0]
+                    2 [6.0 6.0]
+                    3 [4.0 4.0]
+                    4 [12.0 12.0]
+                    5 [12.0 6.0 2.0 6.0]
+                    6 [2.0 2.0 6.0 2.0]})
+
 
 (def null-shape (java.awt.geom.Line2D$Double.)) 
 
