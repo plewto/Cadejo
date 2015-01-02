@@ -115,17 +115,18 @@
 (require '[seesaw.core :as ss])
 (require '[sgwr.elements.line :as line])
 
-(def drw (native-drawing 400 600))
+(def drw (native-drawing 400 600))2
 (def root (.root drw))
 
 (.color! root :red)
 (.width! root 1)
 (.style! root :dash)
-(line/line root [100 100][300 500])
+(def a1 (line/line root [100 100][300 500]))
 
 
+(def a2 (line/line root [100 300][300 100]))
+(.color! a2 :blue)
 
-(line/line root [100 300][300 100])
 
 (def jb-render (ss/button :text "Render"))
 (ss/listen jb-render :action (fn [_](.render drw)))

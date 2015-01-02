@@ -1,4 +1,13 @@
 (println "--> sgwr.elements.element")
+
+;; NOTE:
+;;    By default elements inherit attributes from their parent.
+;;    The set-local-attributes! method is used to establish a local set of
+;;    attributes instead. The following attribute modification methods
+;;    implicitly creates a local attributes set: color!, style!, width!,
+;;    fill! and hide!
+;;
+
 (ns sgwr.elements.element
   (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.elements.attributes :as att])
@@ -154,9 +163,9 @@
     [this])
 )
 
-(defn- modification-warning [el]
-  (if (.attributes-inherited? el)
-    (utilities/warning "Modifications made to inherited attributes")))
+;; (defn- modification-warning [el]
+;;   (if (.attributes-inherited? el)
+;;     (utilities/warning "Modifications made to inherited attributes")))
 
 
 
@@ -254,7 +263,8 @@
                        att/default-attribute-set)))
                
                (add-attributes! [this id]
-                 (modification-warning this)
+                 (if (.attributes-inherited? this)
+                   (.set-local-attributes! this))
                  (.add! (.get-attributes this) id))
                
                (current-attribute-id [this]
@@ -277,23 +287,28 @@
                    (.remove! @attributes* id)))
                
                (color! [this c]
-                 (modification-warning this)
+                 (if (.attributes-inherited? this)
+                   (.set-local-attributes! this))
                  (.color! (.get-attributes this) c))
                
                (style! [this n]
-                 (modification-warning this)
+                 (if (.attributes-inherited? this)
+                   (.set-local-attributes! this))
                  (.style! (.get-attributes this) n))
                
                (width! [this n]
-                 (modification-warning this)
+                 (if (.attributes-inherited? this)
+                   (.set-local-attributes! this))
                  (.width! (.get-attributes this) n))
                
                (fill! [this n]
-                 (modification-warning this)
+                 (if (.attributes-inherited? this)
+                   (.set-local-attributes! this))
                  (.fill! (.get-attributes this) n))
                
                (hide! [this n]
-                 (modification-warning this)
+                 (if (.attributes-inherited? this)
+                   (.set-local-attributes! this))
                  (.hide! (.get-attributes this) n))
                
                (select! [this f]
