@@ -43,8 +43,6 @@
   (let [root-group (sgwr.elements.group/group :root)
         background-color* (atom (ucolor/color :black))
         enable-render* (atom true)
-        ;; width (.getWidth (.canvas-bounds cs))
-        ;; height (.getHeight (.canvas-bounds cs))
         [width height](.canvas-bounds cs)
         image* (atom (BufferedImage. width height BufferedImage/TYPE_INT_ARGB))
         cpan* (atom nil)
@@ -75,7 +73,7 @@
                   (doseq [c (.children element)]
                     (.render-node this g2d c))
                   
-                  (if (not (.is-hidden? element))
+                  (if (not (.hidden? element))
                     (let [etype (.element-type element)
                           shape (.shape element)]
                     (.setColor g2d (.color element))
@@ -95,10 +93,14 @@
                               (if (.filled? element)
                                 (.fill g2d shape)
                                 (.draw g2d shape))))))))
-
               (image [this]
                 @image*)
               )]
+    (.set-local-attributes! root-group)
+    (reset! cpan* (proxy [JPanel][true]
+                    (paint [g]
+                      (.drawImage g @image* constants/null-transform-op 0 0))))
+
     (.set-coordinate-system! root-group cs)
     drw))
 
@@ -106,3 +108,33 @@
 (defn native-drawing [w h]
   (let [cs (native-cs/native-coordinate-system w h)]
     (drawing cs)))
+
+;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST 
+
+
+(require '[seesaw.core :as ss])
+(require '[sgwr.elements.line :as line])
+
+(def drw (native-drawing 400 600))
+(def root (.root drw))
+
+(.color! root :red)
+(.width! root 1)
+(.style! root :dash)
+(line/line root [100 100][300 500])
+
+
+
+(line/line root [100 300][300 100])
+
+(def jb-render (ss/button :text "Render"))
+(ss/listen jb-render :action (fn [_](.render drw)))
+(def pan-main (ss/border-panel :center (.canvas drw)
+                               :south jb-render))
+
+(def f (ss/frame :title "SGWR Test"
+                 :on-close :dispose
+                 :content pan-main
+                 :size [500 :by 700]))
+
+(ss/show! f)
