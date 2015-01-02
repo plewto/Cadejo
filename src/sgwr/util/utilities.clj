@@ -29,14 +29,6 @@
        ""))
   ([](tab 1)))
 
-
-;; (defn is-group? [obj]
-;;   (try
-;;     (= (.element-type obj) :group)
-;;     (catch IllegalArgumentException ex
-;;       false)))
-
-
 ;; jaba.awt.shape utilities
 
 (defn combine-shapes 
@@ -48,3 +40,54 @@
  
 (defn fuse [& args]
   (reduce combine-shapes args))
+
+
+;; Predicates
+
+(defn is-group? [obj]
+  (try
+    (= (.element-type obj) :group)
+    (catch IllegalArgumentException ex
+      false)))
+
+(defn is-point? [obj]
+  (try
+    (= (.element-type obj) :point
+    (catch IllegalArgumentException ex
+      false)))
+
+(defn is-line? [obj]
+  (try
+    (= (.element-type obj) :line
+    (catch IllegalArgumentException ex
+      false)))
+
+(defn is-rectangle? [obj]
+  (try
+    (= (.element-type obj) :rectangle)
+    (catch IllegalArgumentException ex
+      false)))
+
+(defn is-ellipse? [obj]
+  (try
+    (= (.element-type obj) :ellipse)
+    (catch IllegalArgumentException ex
+      false)))
+
+(defn is-circle? [obj]
+  (try
+    (= (.element-type obj) :circle)
+    (catch IllegalArgumentException ex
+      false)))
+
+(defn is-text? [obj]
+  (try
+    (= (.element-type obj) :text)
+    (catch IllegalArgumentException ex
+      false)))
+
+(defn is-image? [obj]
+  (try
+    (= (.element-type obj) :image)
+    (catch IllegalArgumentException ex
+      false)))
