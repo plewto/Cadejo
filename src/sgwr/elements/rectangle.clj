@@ -4,7 +4,6 @@
 
 (ns sgwr.elements.rectangle
   (:require [sgwr.util.math :as math])
-
   (:require [sgwr.elements.element])
   (:require [seesaw.graphics :as ssg]))
 

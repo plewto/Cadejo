@@ -153,8 +153,10 @@
 (require '[sgwr.elements.group :as grp])
 (require '[sgwr.elements.point :as point])
 (require '[sgwr.elements.line :as line])
+(require '[sgwr.elements.rectangle :as rect])
+(require '[sgwr.elements.circle :as circle])
 
-(def drw (cartesian-drawing 600 400 [-10 -10][10 10]))
+(def drw (cartesian-drawing 600 600 [-10 -10][10 10]))
 (def root (.root drw))
 (.color! root [64 64 96])
 (.width! root 1)
@@ -163,22 +165,23 @@
 (.hide! root false)
 (line/line root [-10 0][10 0])
 (line/line root [0 -10][0 10])
-
+(rect/rectangle root [-1 -1][1 1])
 
 (def g1 (grp/group root :g1))
-(.color! g1 :green )
-(.width! g1 2)
+(.set-local-attributes! g1)
+;; (.color! g1 :green )
+;; (.width! g1 1)
 
-(def p1 (point/point g1 [1 1]))
-(def p2 (point/point g1 [3 3]))
-(def p3 (point/point g1 [5 5])) 
-(def p4 (point/point g1 [7 7])) 
-(def sty :dog)
+(point/point g1 [-1 -1])
+(point/point g1 [1 1])
 
-(.width! p1 1)(.style! p1 sty)
-(.width! p2 2)(.style! p2 sty)
-(.width! p3 3)(.style! p3 sty)
-(.width! p4 4)(.style! p4 sty)
+(circle/circle g1 [-1 -1][1 0.5])
+(.style! g1 :solid)
+(.width! g1 4)
+
+
+
+;; (def c1 (circle/circle g1 [-1 -1] [1 1]))
 
 
 (def jb-render (ss/button :text "Render"))
@@ -218,7 +221,7 @@
 (def f (ss/frame :title "SGWR Test"
                  :on-close :dispose
                  :content pan-main
-                 :size [650 :by 500]))
+                 :size [650 :by 650]))
 
 (ss/show! f)
 
