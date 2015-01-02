@@ -135,6 +135,10 @@
 ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST 
 
 
+(defn rl [] (use 'sgwr.elements.drawing :reload))
+(defn rla [] (use 'sgwr.elements.drawing :reload-all))
+(defn exit [] (System/exit 0))
+
 (require '[seesaw.core :as ss])
 (require '[sgwr.elements.group :as grp])
 (require '[sgwr.elements.line :as line])
@@ -142,47 +146,24 @@
 
 (def drw (cartesian-drawing 500 500 [-10 -10] [10 10]))
 (def root (.root drw))
-
-(.color! root :red)
+(.color! root [64 64 96])
 (.width! root 1)
 (.style! root 0)
-
-(def a1 (line/line root [0 -10][0 10]))
-(def a2 (line/line root [-10 0][10 0]))
-(def r1 (rect/rectangle root [1 1][5 5]))
-(.put-property! r1 :corner-radius 32)
-
-(.put-property! a1 :id :a1)
-(.put-property! a2 :id :a2)
-(.put-property! r1 :id :r1)
+(line/line root [-10 0][10 0])
+(line/line root [0 -10][0 10])
 
 
-(def g3 (grp/group root :g3))
-(def a3 (line/line g3 [-2 -2][-4 -4]))
-(def r3 (rect/rectangle g3 [-1 -1][-5 -5]))
+(def g1 (sgwr.elements.group/group root :g1))
+(def a1 (line/line g1 [1 1][9 9]))
 
+(.color! a1 :alpha :red)
+(.color! a1 :beta  :green)
+(.color! a1 :gamma :blue)
 
+(def r1 (rect/rectangle g1 [-1 -1][-5 -5]))
 
-(.put-property! a3 :id :a3)
-(.put-property! r3 :id :r3)
-
-(.set-local-attributes! g3)
-(.set-local-attributes! a3)
-(.set-local-attributes! r3)
-
-(.add-attributes! g3 :alpha)
-(.add-attributes! a3 :alpha)
-(.add-attributes! r3 :alpha)
-(.use-attributes! g3 :alpha)
-(.color! a3 :blue)
-(.color! r3 :green)
-
-(.add-attributes! g3 :beta)
-(.add-attributes! a3 :beta)
-(.add-attributes! r3 :beta)
-(.use-attributes! g3 :beta)
-(.color! a3 :gray)
-(.color! r3 :purple)
+(.color! r1 :alpha :red)
+(.color! r1 :beta :green)
 
 
 
@@ -193,8 +174,28 @@
                                (.dump root)
                                (println)))
 
+(def jb-alpha (ss/button :text "Alpha"))
+(def jb-beta (ss/button :text "Beta"))
+(def jb-gamma (ss/button :text "Gamma"))
+
+(ss/listen jb-alpha :action (fn [_]
+                              (.use-attributes! g1 :alpha)
+                              (.render drw)))
+
+(ss/listen jb-beta :action (fn [_]
+                              (.use-attributes! g1 :beta)
+                              (.render drw)))
+
+
+(ss/listen jb-gamma :action (fn [_]
+                              (.use-attributes! g1 :gamma)
+                              (.render drw)))
+
+
+(def pan-south (ss/horizontal-panel :items [jb-render jb-alpha jb-beta jb-gamma]))
+
 (def pan-main (ss/border-panel :center (.canvas drw)
-                               :south jb-render))
+                               :south pan-south))
 
 (def f (ss/frame :title "SGWR Test"
                  :on-close :dispose
@@ -202,3 +203,9 @@
                  :size [500 :by 700]))
 
 (ss/show! f)
+
+(println (.local-attributes-exist? a3 :beta))
+(println (.local-attributes-exist? a3 :gamma))
+
+
+

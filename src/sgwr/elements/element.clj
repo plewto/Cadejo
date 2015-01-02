@@ -4,7 +4,7 @@
 ;;    By default elements inherit attributes from their parent.
 ;;    The set-local-attributes! method is used to establish a local set of
 ;;    attributes instead. The following attribute modification methods
-;;    implicitly creates a local attributes set: color!, style!, width!,
+;;    implicitly creates a local attribute set: color!, style!, width!,
 ;;    fill! and hide!
 ;;
 
@@ -79,6 +79,9 @@
   (add-attributes!
     [this id])
 
+  (local-attributes-exist? 
+    [this id])
+
   (current-attribute-id
     [this])
 
@@ -92,19 +95,24 @@
     [this id])
 
   (color!
-    [this c])
+    [this c]
+    [this id c])
 
   (style!
-    [this st])
+    [this st]
+    [this id st])
 
   (width!
-    [this w])
+    [this w]
+    [this id w])
 
   (fill!
-    [this f])
+    [this f]
+    [this id f])
 
   (hide!
-    [this f])
+    [this f]
+    [this id f])
   
   (select! 
     [this f])
@@ -163,10 +171,21 @@
     [this])
 )
 
-;; (defn- modification-warning [el]
-;;   (if (.attributes-inherited? el)
-;;     (utilities/warning "Modifications made to inherited attributes")))
 
+;; Add local attributes set to element 
+;; If one does not already exist.
+;;
+;; If id spcified create attribute map with id
+;;
+(defn- add-implicit-local-attributes! 
+  ([elem]
+   (if (.attributes-inherited? elem)
+     (.set-local-attributes! elem)))
+
+  ([elem id]
+   (add-implicit-local-attributes! elem)
+   (.add-attributes! elem id)
+   (.use-attributes! elem id)))
 
 
 (defn create-element 
@@ -182,7 +201,7 @@
          selected* (atom false)
          update-hook* (atom (fn [& _] nil))
          points* (atom [])
-         obj (reify SgwrElement
+         elem (reify SgwrElement
        
                (element-type [this] etype)
                
@@ -266,7 +285,11 @@
                  (if (.attributes-inherited? this)
                    (.set-local-attributes! this))
                  (.add! (.get-attributes this) id))
-               
+
+               (local-attributes-exist? [this id]
+                 (and (.attributes-inherited? this)
+                      (.exist? @attributes* id)))
+
                (current-attribute-id [this]
                  (.current-id (.get-attributes this)))
                
@@ -278,38 +301,52 @@
                  (if @attributes*
                    (.use! @attributes* id))
                  (doseq [c @children*]
-                   (.use-attributes! c id))
-                 )
+                   (.use-attributes! c id)))
                
                (remove-attributes! [this id]
                  (if (.attributes-inherited? this)
                    (utilities/warning (format "can not remove id %s from inherited attributes" id))
                    (.remove! @attributes* id)))
-               
+
                (color! [this c]
-                 (if (.attributes-inherited? this)
-                   (.set-local-attributes! this))
+                 (add-implicit-local-attributes! this)
                  (.color! (.get-attributes this) c))
+
+               (color! [this id c]
+                 (add-implicit-local-attributes! this id)
+                 (.color! (.get-attributes this) c))
+
+               (style! [this st]
+                 (add-implicit-local-attributes! this)
+                 (.style! (.get-attributes this) st))
+
+               (style! [this id st]
+                 (add-implicit-local-attributes! this id)
+                 (.style! (.get-attributes this) st))
                
-               (style! [this n]
-                 (if (.attributes-inherited? this)
-                   (.set-local-attributes! this))
-                 (.style! (.get-attributes this) n))
+               (width! [this w]
+                 (add-implicit-local-attributes! this)
+                 (.width! (.get-attributes this) w))
                
-               (width! [this n]
-                 (if (.attributes-inherited? this)
-                   (.set-local-attributes! this))
-                 (.width! (.get-attributes this) n))
+               (width! [this id w]
+                 (add-implicit-local-attributes! this id)
+                 (.width! (.get-attributes this) w))
+
+               (fill! [this f]
+                 (add-implicit-local-attributes! this)
+                 (.fill! (.get-attributes this) f))
                
-               (fill! [this n]
-                 (if (.attributes-inherited? this)
-                   (.set-local-attributes! this))
-                 (.fill! (.get-attributes this) n))
+               (fill! [this id f]
+                 (add-implicit-local-attributes! this id)
+                 (.fill! (.get-attributes this) f))
+
+               (hide! [this f]
+                 (add-implicit-local-attributes! this)
+                 (.hide! (.get-attributes this) f))
                
-               (hide! [this n]
-                 (if (.attributes-inherited? this)
-                   (.set-local-attributes! this))
-                 (.hide! (.get-attributes this) n))
+               (hide! [this id f]
+                 (add-implicit-local-attributes! this id)
+                 (.hide! (.get-attributes this) f))
                
                (select! [this f]
                  (reset! selected* f))
@@ -344,9 +381,6 @@
                (set-update-hook! [this hfn]
                  (reset! update-hook* hfn))
 
-               ;; (points [this]
-               ;;   @points*)
-
                (points [this]
                  (let [pfn (get fnmap :points-fn (fn [_ pnts] pnts))]
                    (pfn this @points*)))
@@ -360,15 +394,6 @@
                (shape [this]
                  (let [sfn (:shape-fn fnmap)]
                    (sfn this)))
-
-                 ;; (bounds [this]
-               ;;   (let [d (map first @points*)
-               ;;         r (map second @points*)
-               ;;         x0 (apply min d)
-               ;;         x1 (apply max d)
-               ;;         y0 (apply min r)
-               ;;         y1 (apply max r)]
-               ;;     [[x0 y0][x1 y1]]))
 
                (bounds [this]
                  (let [bf (:bounds-fn fnmap)]
@@ -412,7 +437,5 @@
                        ))
                    (.toString sb)))
                )]
-     obj
-
-     ))) 
+     elem ))) 
 

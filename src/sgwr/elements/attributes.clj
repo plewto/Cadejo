@@ -66,12 +66,16 @@
      Returns sorted list of attribute id keywords defined in this.
      Two id keywords are always defined :current and :default")
 
+  (exist? [this id]
+    "(exist? this id)
+     Predicate returns true if attribute map with given id exist.")
+
   (get 
     [this id]
     [this]
     "(get this id) (get this)
      Returns the attribute map with matching id. If the map does not
-     exists return nil.  If id not specified return current map")
+     exist return nil.  If id not specified return current map")
 
   (use!
     [this id]
@@ -88,7 +92,7 @@
 
   (color! 
     [this c]
-    "(color! c)
+    "(color! c) (color! id c)
      Sets color value of the current map. The argument c may be either an 
      instance of java.awt.Color or any valid argument to seesaw.color/color
      Returns the color object.")
@@ -175,6 +179,9 @@
 
       (keys [this]
         (sort (clojure.core/keys @maps*)))
+
+      (exist? [this id]
+        (utilities/member? id (.keys this)))
 
       (current-id [this]
         @current-id*)
