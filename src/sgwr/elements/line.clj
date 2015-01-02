@@ -1,11 +1,15 @@
+;; TODO
+;;    1. Add orthogonal constructors
+;;    2. Add simulated infinit constructors
+;;    3. Add point-slope constructors
+
 (println "--> sgwr.elements.line")
 (ns sgwr.elements.line
   (:require [sgwr.util.math :as math])
   (:require [sgwr.elements.element])
   (:import java.awt.geom.Line2D))
 
-
-(defn- shape-function [obj]
+(defn- shape-fn [obj]
   (let [cs (.coordinate-system obj)
         [p0 p1](.points obj)
         q0 (.map-point cs p0)
@@ -38,13 +42,11 @@
     [[x0 y0][x1 y1]]))
     
 
-(def ^:private line-function-map {:shape-fn shape-function
+(def ^:private line-function-map {:shape-fn shape-fn
                                   :contains-fn (constantly false)
                                   :distance-fn distance-fn
                                   :update-fn update-fn
-                                  :bounds-fn bounds-fn
-                                  })
-  
+                                  :bounds-fn bounds-fn})
 
 (defn line
   ([](line nil [0 0][1 1]))
@@ -54,4 +56,3 @@
      (.set-points! obj [p0 p1]) 
      (if parent (.set-parent! obj parent))
      obj)))
-     

@@ -1,3 +1,7 @@
+;; TODO 
+;;    1. Add rounded-corner constructor
+
+
 (ns sgwr.elements.rectangle
   (:require [sgwr.util.math :as math])
 

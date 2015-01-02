@@ -11,7 +11,7 @@
   nil)
 
 (defn map-style [st]
-  (let [q (get constants/style-map st)]
+  (let [q (get constants/style-map st 0)]
     (int (or q st))))
 
 (defn member? [obj col]
