@@ -1,7 +1,8 @@
 (println "--> sgwr.cs.coordinate-system")
-
 (ns sgwr.cs.coordinate-system
-  "Defines genralized mapping scheme between 'real' points and pixel coordinates")
+  "Defines genralized mapping scheme between 'real' points and pixel coordinates"
+  (:require [sgwr.util.math :as math])
+  (:require [sgwr.util.utilities :as utilities]))
 
 (defprotocol CoordinateSystem
 
@@ -50,3 +51,30 @@
   )
 
 
+
+(def default-coordinate-system 
+  (reify CoordinateSystem
+
+    (canvas-bounds [this] 
+      (utilities/warning "default-coordinate-system view canvasbounds is nil")
+      nil)
+
+    (view [this] (.canvas-bounds this))
+
+    (view! [this _] (.view this))
+
+    (map-point [this p] p)
+
+    (inv-map [this q] q)
+
+    (clip [this q] [nil nil])
+
+    (distance [this p1 p2]
+      (math/distance p1 p2))
+
+    (zoom! [this _] (.view this))
+
+    (zoom-ratio [this] nil)
+
+    (to-string [this]
+      "default-coordinate-system")))

@@ -1,4 +1,10 @@
-(ns sgwr.constants)
+(ns sgwr.constants
+  (:import 
+   java.awt.geom.AffineTransform
+   java.awt.image.AffineTransformOp
+   java.awt.geom.Line2D
+))
+
 
 (def +VERSION+ "0.2.0-SNAPSHOT")
 
@@ -36,3 +42,9 @@
                  :cross 7
                  :x 8
                  :triangle 9})
+
+(def null-shape (java.awt.geom.Line2D$Double.)) 
+
+(def null-transform (AffineTransform.))
+(def null-transform-op  (AffineTransformOp.
+                         null-transform AffineTransformOp/TYPE_NEAREST_NEIGHBOR))

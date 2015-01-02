@@ -159,7 +159,7 @@
 
 (defn attributes []
   "(attributes)
-   Create new instance of Attributes")
+   Create new instance of Attributes"
   (let [current-id* (atom :default)
         default (create-attribute-map :default)
         maps* (atom {:default default
@@ -284,7 +284,8 @@
            (.dump this verbosity 0))
 
          (dump [this]
-           (.dump this 2))))) 
+           (.dump this 2)) )))
+         
       
 (def default-attribute-set (attributes))
   

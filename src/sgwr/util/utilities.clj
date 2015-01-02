@@ -39,8 +39,6 @@
 
 ;; jaba.awt.shape utilities
 
-(def null-shape (java.awt.geom.Line2D$Double.)) 
-
 (defn combine-shapes 
   "Combine two instances of java.awt.Shape"
   [s1 s2]
