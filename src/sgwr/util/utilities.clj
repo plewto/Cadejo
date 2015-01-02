@@ -52,13 +52,13 @@
 
 (defn is-point? [obj]
   (try
-    (= (.element-type obj) :point
+    (= (.element-type obj) :point)
     (catch IllegalArgumentException ex
       false)))
 
 (defn is-line? [obj]
   (try
-    (= (.element-type obj) :line
+    (= (.element-type obj) :line)
     (catch IllegalArgumentException ex
       false)))
 

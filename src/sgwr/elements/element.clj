@@ -195,7 +195,7 @@
 
                (has-children? [this](pos? (.child-count this)))
 
-               (is-root? [this] (null parent))
+               (is-root? [this] (nil? parent))
 
                (is-leaf? [this] (not (.has-children? this)))
 
