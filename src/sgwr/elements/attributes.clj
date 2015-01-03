@@ -15,8 +15,13 @@
   (:require [sgwr.util.color :as ucolor])
   (:require [sgwr.util.utilities :as utilities]))
 
-
 (defn- bol [n](if n true false))
+
+(def default-color (ucolor/color :white))
+(def default-style 0)
+(def default-width 1.0)
+(def default-size 1.0)
+
 
 (defn create-attribute-map [id]
   "(create-attribute-map [id])
