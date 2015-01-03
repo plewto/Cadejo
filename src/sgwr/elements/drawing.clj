@@ -10,6 +10,7 @@
   (:require [sgwr.util.color :as ucolor])
   (:require [sgwr.util.stroke :as ustroke])
   (:require [sgwr.util.utilities :as utilities])
+  (:require [seesaw.core :as ss])
   (:import 
            java.awt.image.BufferedImage
            javax.swing.JPanel
@@ -131,7 +132,7 @@
     (reset! cpan* (proxy [JPanel][true]
                     (paint [g]
                       (.drawImage g @image* constants/null-transform-op 0 0))))
-
+    (ss/config! @cpan* :size [width :by height])
     (.set-coordinate-system! root-group cs)
     drw))
 
@@ -153,133 +154,3 @@
   ([w r]
    (polar-drawing w r :rad)))
  
-
-;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST ;;; TEST TEST TEST TEST 
-
-
-(defn rl [] (use 'sgwr.elements.drawing :reload))
-(defn rla [] (use 'sgwr.elements.drawing :reload-all))
-(defn exit [] (System/exit 0))
-
-(require '[seesaw.core :as ss])
-(require '[sgwr.elements.group :as grp])
-(require '[sgwr.elements.point :as point])
-(require '[sgwr.elements.line :as line])
-(require '[sgwr.elements.rectangle :as rect])
-(require '[sgwr.elements.circle :as circle])
-
-;; (def i1 (let [drw (cartesian-drawing 100 100 [0 0][1 1])
-;;               root (.root drw)
-;;               g1 (grp/group root :g1)
-;;               g2 (grp/group root :g2)
-;;               f (ss/frame :content (.canvas drw)
-;;                           :size [200 :by 200]
-;;                           :on-close :dispose)]
-;;           (.background! drw [0 0 0 0])
-;;           (.color! g1 :red)
-;;           (.hide! g1 false)
-;;           (.style! g1 0)
-;;           (.width! g1 1)
-;;           (line/line g1 [0 0][1 1])
-;;           (line/line g1 [0 1][1 0])
-   ;;       
-;;           (.color! g2 [0 128 0 128])
-;;           (.fill! g2 true)
-;;           (rect/rectangle g2 [0.25 0.25][0.75 0.75])
-;;           (.render drw)
-;;           (ss/show! f)
-;;           ;(.dump root 10 0)
-;;           (.image drw true)
-;;           ))
-
-  
-                
-
-
-
-(def drw (cartesian-drawing 600 600 [-10 -10][10 10]))
-(.background! drw :black)
-(def root (.root drw))
-(.color! root [64 64 96])
-(.width! root 1)
-(.style! root 0)
-(.fill! root false)
-(.hide! root false)
-(line/line root [-10 0][10 0])
-(line/line root [0 -10][0 10])
-(rect/rectangle root [-1 -1][1 1])
-
-(def g1 (grp/group root :g1))
-(.set-local-attributes! g1)
-(.color! g1 :green )
-(.style! g1 :solid)
-(.width! g1 1)
-(.fill! g1 true)
-(point/point g1 [-1 -1])
-(point/point g1 [1 1])
-(circle/circle g1 [-1 -1][1 0.5])
-
-(def txt "The Quick Brown Fox")
-
-(def g2 (grp/group root :g2))
-(def tx2 (sgwr.elements.text/text g2 [0 0] txt))
-(.style! g2 :sans)
-(.width! g2 8)
-
-(def g3 (grp/group root :g3))
-(def tx3 (sgwr.elements.text/text g3 [0 1] txt))
-(.style! g3 :sans-bold-italic)
-(.width! g3 8)
-
-(def g4 (grp/group root :g4))
-(rect/rectangle g4 [0 -5][4 5])
-(.color! g4 [255 0 0 128])
-(.fill! g4 true)
-
-;(.set-points! i1 [[5 5]])
-;(.set-parent! i1 g4)
-
-(def jb-render (ss/button :text "Render"))
-(def jb-alpha (ss/button :text "Alpha"))
-(def jb-beta (ss/button :text "Beta"))
-(def jb-gamma (ss/button :text "Gamma"))
-(def jb-zoom-in (ss/button :text "Zoom in"))
-(def jb-zoom-out (ss/button :text "Zoom out"))
-
-(ss/listen jb-render :action (fn [_]
-                               (.render drw)
-                               ;(.dump root)
-                               ))
-
-(ss/listen jb-alpha :action (fn [_]
-                              (.use-attributes! root :alpha)
-                              (.render drw)))
-
-(ss/listen jb-beta :action (fn [_]
-                              (.use-attributes! root :beta)
-                              (.render drw)))
-
-
-(ss/listen jb-gamma :action (fn [_]
-                              (.use-attributes! root :gamma)
-                              (.render drw)))
-
-(ss/listen jb-zoom-in :action (fn [_](.zoom-in drw)))
-(ss/listen jb-zoom-out :action (fn [_](.zoom-out drw)))
-
-
-(def pan-south (ss/horizontal-panel :items [jb-render jb-alpha jb-beta jb-gamma jb-zoom-in jb-zoom-out]))
-
-(def pan-main (ss/border-panel 
-               :center (.canvas drw)
-               :south pan-south))
-
-(def f (ss/frame :title "SGWR Test"
-                 :on-close :dispose
-                 :content pan-main
-                 :size [650 :by 650]))
-(.render drw)
-(.dump root)
-(ss/show! f)
-
-
