@@ -74,6 +74,19 @@
 (def locked-properties [:id :text])
 
 (defn text 
+  "(text txt])
+   (text parent p txt)
+  
+   Create text object with left-hand bas-point p [x y].
+  
+   Text objects never 'contain' points and the the distance between a
+   text object and a point q is defined as the distance between q and p. 
+
+   The bounds of a text object is a degenerate rectangle [[x y][x y]]
+
+   The font style and size are determined by the attributes style and
+   width values. Text objects ignore the attributes fill value."
+
   ([txt](text nil [0 0] txt))
   ([parent position txt]
    (let [obj (sgwr.elements.element/create-element :text parent text-function-map locked-properties)]

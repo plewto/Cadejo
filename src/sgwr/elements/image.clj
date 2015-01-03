@@ -61,6 +61,15 @@
 (def locked-properties [:id :image]) 
                                   
 (defn image 
+  "(image parent p w h)
+
+    Creates an initially blank image element. Images are rectangular
+    bit maps which ignore most attribute values. Images also do not
+    scale 
+
+    The contains and distance concepts for an image are identical to
+    rectangle objects. "
+
   ([parent p0 w h]
    (let [obj (sgwr.elements.element/create-element :image
                                                    parent 

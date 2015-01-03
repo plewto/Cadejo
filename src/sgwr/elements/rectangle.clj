@@ -90,6 +90,17 @@
 (def locked-properties [:id :center :width :height :corner-radius])
 
 (defn rectangle 
+  "(rectangle)
+   (rectangle parent p0 p1)
+   (rectangle parent x0 y0 x1 y1)
+   
+   Constructs rectangle with diagonal points p0 [x0 y0] and p1 [x1 y1]
+
+   The distance between a rectangle and points enclosed by it is
+   defined as 0.  The distance between a rectangle a a point q not
+  enclosed by it is defined as the shortest distance between q and one
+  of the sides of the rectangle."
+
   ([](rectangle nil [0 0][1 1]))
   ([parent x0 y0 x1 y1](rectangle parent [x0 y0][x1 y1]))
   ([parent p0 p1]

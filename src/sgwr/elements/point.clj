@@ -1,4 +1,9 @@
 (ns sgwr.elements.point
+  "Sgwr points are the most basic drawing element. They are rendered
+  in any number of shapes depending on the attributes style.  Unlike
+  most other elements a point's size remains the same remains the same
+  with different degrees of drawing zoom."
+
   (:require [sgwr.elements.element])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities])
@@ -18,7 +23,7 @@
            [x1 y1] p1]
        (line x0 y0 x1 y1))))
 
-(defn- pixel [x y _]   ;; pixel stykle ignores size
+(defn- pixel [x y _]   ;; pixel style ignores size
   (line x y (inc x) y))
 
 (defn- dash [x y size]
@@ -95,6 +100,18 @@
 (def locked-properties [:id])
 
 (defn point 
+  "(point)
+   (point parent p)
+   (point parent x y)
+   
+   Creates point object with given parent and position. 
+   If p is specified it should be a vector [x y].
+   The values of x and y are interpreted by the current coordinate-system.
+
+   Point objects never 'contain' other points even if they have
+   identical coordinates. The point bounds returns a degenerate rectangle 
+   [[x y][x y]]
+   Point objects ignore the attribute fill value."
   ([](point nil [0 0]))
   ([parent x y](point parent [x y]))
   ([parent p]

@@ -1,6 +1,6 @@
 ;; TODO:
-;;     1. Define two diameter point constructor
-;;     2. Define center radius constructor
+;;     1. Define two-point (diameter) constructor
+;;     2. Define center, radius constructor
 ;;     3. define three-point constructor
 
 (ns sgwr.elements.circle
@@ -62,8 +62,28 @@
 
 (def locked-properties [:id :center :radius])
 
-(defn circle                            ; circle defined by bounding rectangle
-  ([](circle nil [-1 -1][1 1]))         ; If rectangle is not square, the side with greatest length is used
+; circle defined by bounding rectangle
+; If rectangle is not square, the side with greatest length is used
+
+(defn circle
+  "(circle)
+   (circle parent p0 p1)
+   
+   Create circle with bounding square p0 p1
+   If rectangle [p0 p1] is not square use a square with sides equal to
+   the longest side of [p0 p1].
+ 
+   Circle objects 'containe' a point q if the distance between q and
+   the center point is less the or equal to the radius. 
+
+   The distance between all points enclosed by the locus of the
+   circle is defined as 0.  For points q outside the circle's locus the
+   distance is defined as the distance between q and the point of
+   intersection between the circle and a line through q and normal to the
+   circle."  
+
+
+  ([](circle nil [-1 -1][1 1]))         
   ([parent p0 p1]
    (let [x0 (apply min (map first [p0 p1]))
          y0 (apply min (map second [p0 p1]))

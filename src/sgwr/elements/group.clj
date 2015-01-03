@@ -1,8 +1,7 @@
 (ns sgwr.elements.group
   (:require [sgwr.constants :as constants])
   (:require [sgwr.util.utilities :as utilities])
-  (:require [sgwr.elements.rectangle :as rect])
-  )
+  (:require [sgwr.elements.rectangle :as rect]))
 
 (defn- shape-function [obj]
     (if (.hidden? obj)
@@ -13,20 +12,6 @@
             (swap! acc* (fn [q](conj q (.shape c))))))
         (or (and (pos? (count @acc*))(apply utilities/fuse @acc*))
             constants/null-shape))))
-
-;; (defn- bounds-fn [obj points]
-;;   (let [acc* (atom [])]
-;;     (doseq [c (.children obj)]
-;;       (swap! acc* (fn [q](conj q (.bounds c)))))
-;;     (if (pos? (count @acc*))
-;;       (let [x (map first points)
-;;             y (map second points)
-;;             x0 (apply min x)
-;;             x1 (apply max x)
-;;             y0 (apply min y)
-;;             y1 (apply max y)]
-;;         [[x0 y0][x1 y1]])
-;;       [[0 0][0 0]])))
 
 (defn- bounds-fn [obj points]
   (if (.has-children? obj)
@@ -57,8 +42,6 @@
         (swap! i* dec)))
     @d*))
 
-    
-
 (defn- points-fn [obj pnts]
   (let [acc* (atom [])]
     (doseq [c (.children obj)]
@@ -75,6 +58,17 @@
 (def locked-properties [:id])
 
 (defn group 
+  "(group parent)
+   (group parent id)
+
+   Create a group object. Group objects are SgwrElements which contain
+   other SgwrElements, possibly other groups. 
+
+   A group contains a point q if any of its child elements contains
+   the point. The distance between a point q and a group is defined as
+   the shortest distance between the point and any of the group's
+   children."
+
   ([parent](group parent :group))
   ([parent id]
    (let [obj (sgwr.elements.element/create-element :group

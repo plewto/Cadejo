@@ -1,7 +1,6 @@
 ;; TODO
 ;;    1. Add orthogonal constructors
-;;    2. Add simulated infinit constructors
-;;    3. Add point-slope constructors
+;;    2. Add point-slope constructors
 
 (println "--> sgwr.elements.line")
 (ns sgwr.elements.line
@@ -51,6 +50,17 @@
 (def locked-properties [:id :midpoint])
 
 (defn line
+  "(line)
+   (line parent p0 p1)
+   (line parent x0 y0 x1 y1)
+   Constructs a finite line segment between points p0 and p1
+   If p0 and p1 specified they should be vectors in the form 
+   [x0 y0] and [x1 y1]
+
+   Line objects never 'contain' points and they ignore the attribute
+   fill value."
+
+
   ([](line nil [0 0][1 1]))
   ([parent x0 y0 x1 y1](line parent [x0 y0][x1 y1]))
   ([parent p0 p1]
