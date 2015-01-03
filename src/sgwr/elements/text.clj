@@ -1,3 +1,5 @@
+;; TODO: Add text rotation
+
 (ns sgwr.elements.text 
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.element])

@@ -3,6 +3,7 @@
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.group])
   (:require [sgwr.elements.text])
+  (:require [sgwr.elements.image])
   (:require [sgwr.cs.native :as native-cs])
   (:require [sgwr.cs.cartesian :as cartesian-cs])
   (:require [sgwr.cs.polar :as polar-cs])
@@ -39,6 +40,7 @@
     [this g2d element])
 
   (image
+    [this as-sgwr-element]
     [this])
 
   (zoom-in
@@ -74,7 +76,7 @@
                         g2d (.createGraphics image)]
                     (.setColor g2d @background-color*)
                     (.fillRect g2d 0 0 width height)
-                    (doseq [e (.children root)]
+                    (doseq [e (.children root-group)]
                       (.render-node this g2d e))
                     (.repaint @cpan*))))
 
@@ -97,7 +99,7 @@
                             )
                           (= etype :image)
                           (do
-                            ;; ISSUE: image render not implemented
+                            (sgwr.elements.image/render-image element g2d)
                             )
                           :default
                           (do (.setStroke g2d (ustroke/stroke element))
@@ -105,8 +107,24 @@
                                 (.fill g2d shape)
                                 (.draw g2d shape))))))))
               (image [this]
+                (.render this)
                 @image*)
               
+              (image [this as-sgwr-element]
+                (if (not as-sgwr-element)
+                  (.image this)
+                  (let [[w h](.canvas-bounds this)
+                        si (sgwr.elements.image/image nil [0 0] w h)]
+                    (.put-property! si :image (.image this))
+                    si)))
+
+              ;; (sgwr-image [this]
+              ;;   (let [[w h] (.canvas-bounds this)
+              ;;         si (sgwr.elements.image/image nil w h)]
+              ;;     (.render this)
+              ;;     (.put-property! si :image (.image this))
+              ;;     si))
+
               (zoom-in [this]
                 (.zoom! cs @zoom-ratio*)
                 (.render this))
@@ -157,7 +175,37 @@
 (require '[sgwr.elements.rectangle :as rect])
 (require '[sgwr.elements.circle :as circle])
 
+(def i1 (let [drw (cartesian-drawing 100 100 [0 0][1 1])
+              root (.root drw)
+              g1 (grp/group root :g1)
+              g2 (grp/group root :g2)
+              f (ss/frame :content (.canvas drw)
+                          :size [200 :by 200]
+                          :on-close :dispose)]
+          (.background! drw [0 0 0 0])
+          (.color! g1 :red)
+          (.hide! g1 false)
+          (.style! g1 0)
+          (.width! g1 1)
+          (line/line g1 [0 0][1 1])
+          (line/line g1 [0 1][1 0])
+          
+          (.color! g2 [0 128 0 128])
+          (.fill! g2 true)
+          (rect/rectangle g2 [0.25 0.25][0.75 0.75])
+          (.render drw)
+          (ss/show! f)
+          ;(.dump root 10 0)
+          (.image drw true)
+          ))
+
+  
+                
+
+
+
 (def drw (cartesian-drawing 600 600 [-10 -10][10 10]))
+(.background! drw :black)
 (def root (.root drw))
 (.color! root [64 64 96])
 (.width! root 1)
@@ -173,11 +221,10 @@
 (.color! g1 :green )
 (.style! g1 :solid)
 (.width! g1 1)
-(.hide! g1 true)
+(.fill! g1 true)
 (point/point g1 [-1 -1])
 (point/point g1 [1 1])
 (circle/circle g1 [-1 -1][1 0.5])
-
 
 (def txt "The Quick Brown Fox")
 
@@ -191,9 +238,13 @@
 (.style! g3 :sans-bold-italic)
 (.width! g3 8)
 
+(def g4 (grp/group root :g4))
+(rect/rectangle g4 [0 -5][4 5])
+(.color! g4 [255 0 0 128])
+(.fill! g4 true)
 
-;; (def c1 (circle/circle g1 [-1 -1] [1 1]))
-
+(.set-points! i1 [[5 5]])
+(.set-parent! i1 g4)
 
 (def jb-render (ss/button :text "Render"))
 (def jb-alpha (ss/button :text "Alpha"))
@@ -226,13 +277,16 @@
 
 (def pan-south (ss/horizontal-panel :items [jb-render jb-alpha jb-beta jb-gamma jb-zoom-in jb-zoom-out]))
 
-(def pan-main (ss/border-panel :center (.canvas drw)
-                               :south pan-south))
+(def pan-main (ss/border-panel 
+               :center (.canvas drw)
+               :south pan-south))
 
 (def f (ss/frame :title "SGWR Test"
                  :on-close :dispose
                  :content pan-main
                  :size [650 :by 650]))
 (.render drw)
+(.dump root)
 (ss/show! f)
+
 

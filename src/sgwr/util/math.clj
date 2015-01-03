@@ -92,28 +92,14 @@
     (sqrt (+ dx dy))))
            
         
-;; (defn line-contains? [q p0 p1]
-;;   (zero? (distance q p0 p1)))
-
-
-;; (defn rectangle-contains? [q p0 p1]
-;;   (let [x0 (min (first p0)(first p1))
-;;         x1 (max (first p0)(first p1))
-;;         y0 (min (second p0)(second p1))
-;;         y1 (max (second p0)(second p1))
-;;         [x y] q]
-;;     (and (<= x0 x)(<= x x1)(<= y0 y)(<= y y1))))
-    
-;; (defn rectangle-distance [q p0 p1]
-;;   (if (contains? q p0 p1)
-;;     0
-;;     (let [[x0 y0] p0
-;;           [x1 y1] p1
-;;           a (line/distance q [x0 y0][x0 y1])
-;;           b (line/distance q [x0 y1][x1 y1])
-;;           c (line/distance q [x1 y1][x1 y0])
-;;           d (line/distance q [x0 y0][x1 y0])]
-;;       (min a b c d))))
+(defn point-rectangle-distance [q p0 p1]
+  (let [[x0 y0] p0
+        [x1 y1] p1
+        a (point-line-distance q [x0 y0][x0 y1])
+        b (point-line-distance q [x0 y1][x1 y1])
+        c (point-line-distance q [x1 y1][x1 y0])
+        d (point-line-distance q [x0 y0][x1 y0])]
+    (min a b c d)))
 
 ;; (defn circle-contains? [q pc r]
 ;;   (let [d (math/distance q pc)]

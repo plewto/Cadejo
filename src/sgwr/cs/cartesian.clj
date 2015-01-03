@@ -86,7 +86,3 @@
                           (float x1)(float y1))))))]
     (.view! cs [p0 p1])
     cs))
-
-
-
-;(def default-coordinate-system (cartesian-coordinate-system 1 1 [0 0][1 1])) 

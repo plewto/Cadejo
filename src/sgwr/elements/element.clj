@@ -278,7 +278,7 @@
                  (or @attributes*
                      (and parent (.get-attributes parent))
                      (do 
-                       (utilities/warning "Using global default attributes")
+                       ;(utilities/warning "Using global default attributes")
                        att/default-attribute-set)))
                
                (add-attributes! [this id]
