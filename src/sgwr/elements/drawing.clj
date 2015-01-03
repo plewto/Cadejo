@@ -2,6 +2,7 @@
 (ns sgwr.elements.drawing
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.group])
+  (:require [sgwr.elements.text])
   (:require [sgwr.cs.native :as native-cs])
   (:require [sgwr.cs.cartesian :as cartesian-cs])
   (:require [sgwr.cs.polar :as polar-cs])
@@ -92,7 +93,7 @@
                               (.draw g2d shape))
                           (= etype :text)
                           (do
-                            ;; ISSUE: text render not implemented
+                            (sgwr.elements.text/render-text element g2d)
                             )
                           (= etype :image)
                           (do
@@ -169,16 +170,26 @@
 
 (def g1 (grp/group root :g1))
 (.set-local-attributes! g1)
-;; (.color! g1 :green )
-;; (.width! g1 1)
-
+(.color! g1 :green )
+(.style! g1 :solid)
+(.width! g1 1)
+(.hide! g1 true)
 (point/point g1 [-1 -1])
 (point/point g1 [1 1])
-
 (circle/circle g1 [-1 -1][1 0.5])
-(.style! g1 :solid)
-(.width! g1 4)
 
+
+(def txt "The Quick Brown Fox")
+
+(def g2 (grp/group root :g2))
+(def tx2 (sgwr.elements.text/text g2 [0 0] txt))
+(.style! g2 :sans)
+(.width! g2 8)
+
+(def g3 (grp/group root :g3))
+(def tx3 (sgwr.elements.text/text g3 [0 1] txt))
+(.style! g3 :sans-bold-italic)
+(.width! g3 8)
 
 
 ;; (def c1 (circle/circle g1 [-1 -1] [1 1]))
@@ -222,6 +233,6 @@
                  :on-close :dispose
                  :content pan-main
                  :size [650 :by 650]))
-
+(.render drw)
 (ss/show! f)
 

@@ -27,8 +27,25 @@
                 :dotted 1
                 :short-dash 3
                 :long-dash 4
-                :center 5               ; dot-dash
+                :center 5 
                 :dot-dash 6
+
+                :mono        0           ; font styles %ibff
+                :sans        1
+                :serif       2
+                :dialog      3
+                :mono-bold   4           ; %01ff 
+                :sans-bold   5
+                :serif-bold  6
+                :dialog-bold 7
+                :mono-italic    8        ; %10ff
+                :sans-italic    9
+                :serif-italic  10
+                :dialog-italic 11
+                :mono-bold-italic   12   ; %11ff
+                :sans-bold-italic   13
+                :serif-bold-italic  14
+                :dialog-bold-italic 15
                 })
 
 (def dot-styles {:default 0
@@ -66,3 +83,4 @@
 (def null-transform (AffineTransform.))
 (def null-transform-op  (AffineTransformOp.
                          null-transform AffineTransformOp/TYPE_NEAREST_NEIGHBOR))
+(def infinity 1e999)
