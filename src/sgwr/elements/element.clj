@@ -10,163 +10,348 @@
 
 (ns sgwr.elements.element
   "SgwrElement defines the basic interface for drawing elements.
-   Each element is a node which automatically inherits properties and
-   attribtues from it's ancestors." 
+  Each element is a node which automatically inherits properties and
+  attributes from it's ancestors. The terms 'node' and 'element' are
+  used interchangeably here. Nodes may broadly be divided into
+  2 classes, leaf nodes and internal nodes.
+
+  Each element has a set of properties in the form of key/value
+  pairs. If a specific property is not defined for an element the
+  property value is inherited from the parent node, or a default value
+  is used.  Each element type also defines a set of 'locked'
+  properties which may not be removed. The value of locked properties
+  may be changed but the element is guaranteed to always have such locked 
+  properties defined. 
+
+  Attributes are a separate set of values used to define how an
+  element is to be rendered, I.E. color, line-style, width, etc. Like
+  properties, attributes are inherited from parent to child. Changing
+  the current attribute for a parent node causes it to send a message
+  to all of it's children nodes. If the child nodes defines an
+  attribute by the same name the it switches to that attribute."
+ 
   (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.elements.attributes :as att])
-  (:require [sgwr.cs.coordinate-system])
-)
+  (:require [sgwr.cs.coordinate-system]))
 
 (defprotocol SgwrElement
 
   (element-type 
-    [this])
+    [this]
+    "(element-type this)
+     Returns keyword identification for element type")
 
   (parent
-    [this])
+    [this]
+    "(parent this)
+     Returns the parent node of this or nil")
 
   (set-parent!
-    [this parent])
+    [this parent]
+    "(set-parent! this parent)
+     Sets the parent node for this. The parent's add-child method is
+     automatically called.
+     Returns vector of parent's children")
 
   (add-child! 
-    [this other])
+    [this other]
+    "(add-child! this parent)
+     Adds this as a child node to parent.
+     Do not call add-child! directly, use add-parent! instead.
+     Returns vector of parent's child node.")
 
   (children 
-    [this])
+    [this]
+    "(children this)
+     Returns vector of child nodes")
 
   (child-count 
-    [this])
+    [this]
+    "(child-count this)
+     Returns number of child nodes")
 
   (has-children?
-    [this])
+    [this]
+    "(has-children? this)
+      Convenience method returns true if child count is greater then 0")
 
   (is-root? 
-    [this])
+    [this]
+    "(is-root? this)
+     Convenience method returns true if parent node is nil")
   
   (is-leaf?
-    [this])
+    [this]
+    "(is-leaf? this)
+     Convenience method returns true if child-count is 0")
 
   (locked-properties 
-    [this])
+    [this]
+    "(locked-properties this)
+     Returns list of locked property keys")
 
   (put-property!
-    [this key value])
+    [this key value]
+    "(put-property! this key value)
+     Assign local value to property key
+     Returns map of local properties.")
 
   (get-property
     [this key default]
-    [this key])
+    [this key]
+    "(get-property this key default)
+     (get-property this key) Returns value for property key. If the
+     property is not defined by this node then return the value from the
+     parent node. If the property is not defined by any of the ancestor
+    nodes return default. Unless otherwise specified the default return
+    value is nil")
 
   (remove-property!
-    [this key])
+    [this key]
+    "(remove-property! this key)
+     Remove the definition of the property key from this.
+     If key is a 'locked' property display a warning message and return
+     nil, otherwise return a map of the local properties after key has been
+    removed.") 
 
   (property-keys
     [this local-only]
-    [this])
+    [this]
+    "(property-keys this local-only)
+     (property-keys this)
+     Returns a list of all defined property keys. If local-only is true
+     return only those properties defined by this, otherwise return keys
+     for the defined properties for this and all of the ancestor nodes of
+     this. local-only is false by default.")
 
   (has-property? 
     [this key local-only]
-    [this key])
+    [this key]
+    "(has-property? this key local-only)
+     (has-property? this key)
+     Convenience method returns true if key is a defined property of this.
+     If local-only is true only consider properties defined by this,
+     otherwise consider all properties defined by this and all ancestor
+     nodes of this. local-only is false by default.")
 
   ;; Attributes
 
   (attributes-inherited? 
-    [this])
+    [this]
+    "(attributes-inherited? this)
+     Returns true if this node defines it's own attribute set.")
 
   (set-local-attributes! 
     [this att]
-    [this])
+    [this]
+    "(set-local-attributes! this att)
+     (set-local-attributes! this)
+     Set attributes att as the local attributes for this. If att is not
+     specified a new attributes object is created and used.
+     Returns instance of sgwr.elements.attributes.Attributes")
 
   (remove-local-attributes!
-    [this])
+    [this]
+    "(remove-local-attributes! this)
+     Remove local attributes if any, returns nil")
 
   (get-attributes
-    [this])
+    [this]
+    "(get-attributes this)
+     Returns the attribute object used by this. 
+     The result will either be locally defined or inherited. Care should
+     be used when manipulating inherited attributes.")
     
   (add-attributes!
-    [this id])
+    [this id]
+    "(add-attributes! this id)
+     Add a named attribute set to this. 
+     A local attributes object is implicitly created.
+     Returns a map")
 
   (local-attributes-exist? 
-    [this id])
+    [this id]
+    "(local-attributes-exist? this id)
+     Returns true if an attribute map with given id is defined for this.")
 
   (current-attribute-id
-    [this])
+    [this]
+    "(current-attribute-id this)
+     Return the keyword id for the currently selected attribute map.")
 
   (attribute-keys 
-    [this])
+    [this]
+    "(attribute-keys this)
+     Return list of keywords for all defined attribute maps")
 
   (use-attributes!
-    [this id])
+    [this id]
+    "(use-attributes! this id)
+     Make attributes with id the 'current' attributes if no matching
+     attribute map is defined then ignore the change. In either case
+     broadcast the change to all child nodes. Returns nil.")
 
   (remove-attributes!
-    [this id])
+    [this id]
+    "(remove-attributes! this id)
+     Remove the matching attribute map. It is not possible to remove an
+    attribute map if the attributes are inherited.")
 
   (color!
     [this c]
-    [this id c])
+    [this id c]
+    "(color! this id c)
+     (color! this c)
+     Set the color for the current attributes. A local attributes object is
+     implicitly created if needed. If id is specified create or use an
+     attribute map with matching id. The color argument c may be either an
+     instance of java.awt.Color or any valid argument to seesaw.color/color 
+     Alpha values are supported. Returns the color object.")
 
   (style!
     [this st]
-    [this id st])
+    [this id st]
+    "(style! this id st)
+     (style! this st)
+     Set the style value for the current attribute. A local attributes
+     object is implicitly created if needed. If id is specified create or use
+     an attribute map with matching id. The style argument may be either
+     numeric or symbolic. See sgwr.constants/style-map for possible
+     symbolic values. Each element type interprets the style value
+     differently. For group elements style is ignored except to serve as an
+     inherited value. Point objects use style to define the point
+     shape. Line, rectangle and circle objects use style as a
+     dash-pattern. For text objects style sets the font.")
 
   (width!
     [this w]
-    [this id w])
+    [this id w]
+    "(width! this id w)
+     (width! this w)
+     Sets width (size) value for current attributes.  A local attributes
+     object is implicitly created if needed. If id is specified create or use
+     an attribute map with matching id. The width argument should be a
+     float value greater then 0.0")
 
   (fill!
     [this f]
-    [this id f])
+    [this id f]
+    "(fill! this id flag)
+     (fill! this flag)
+     Sets the fill flag for the current attributes.  A local attributes
+     object is implicitly created if needed. If id is specified create or use
+     an attribute map with matching id.") 
 
   (hide!
     [this f]
-    [this id f])
+    [this id f]
+    "(hide! this id flag)
+     (hide! this flag)
+     Sets the hide flag for the current attributes.  A local attributes
+     object is implicitly created if needed. If id is specified create or use
+     an attribute map with matching id. Hidden objects are not rendered")
   
   (select! 
-    [this f])
+    [this f]
+    "(select! this flag)
+     Sets the selected flag for this. Note that selection status is not
+     part of the attributes mechanism.")
   
   (color
-    [this])
+    [this]
+    "(color this)
+     Returns the current attribute color")
 
   (style
-    [this])
+    [this]
+    "(style this)
+     Returns the current attributes style")
 
   (width
-    [this])
+    [this]
+    "(width this)
+     Returns the current attributes width")
 
   (filled? 
-    [this])
+    [this]
+    "(filled? this)
+     Returns the current attributes fill flag")
 
   (hidden?
-    [this])
+    [this]
+    "(hidden? this)
+     Returns the current attributes hide flag")
   
   (selected?
-    [this])
+    [this]
+    "(selected? this)
+     Returns the selection state of this. Note that object selection is not
+     part of the attributes mechanism but it is inherited. If any
+     ancestor node to this is selected then this is also
+     selected. Conversely this may be selected  while the ancestors are not
+     selected.")
 
   (set-coordinate-system!
-    [this cs])
+    [this cs]
+    "(set-coordinate-system! this cs)
+     Sets the coordinate system for this. If not established the coordinate
+     system is automatically inherited from the parent node.")
 
   (coordinate-system
-    [this])
+    [this]
+    "(coordinate-system this)
+     Returns the coordinate-systems in use for this. The coordinate system
+     will either be defined locally or be inherited.")
 
   (set-update-hook!
-    [this hfn])
+    [this hfn]
+    "(set-update-hook! this hfn)
+     Sets a hook function to be executed whenever the set-points! method is
+     called. The function should takes two arguments (hfn this points)
+     the first is this and the second is the vector of construction points
+     -after- they have been updated.")
 
   (points
-    [this])
+    [this]
+    "(points this)
+     Returns a vector of construction points which define the position/shape
+     of this. The result is always a nested vector of form 
+     [[x0 y0][x1 y1]...[xn yn]]") 
 
   (set-points!
-    [this pnts])
+    [this pnts]
+    "(set-points! this pnts)
+     Set the construction points which define the position and size/shape of
+     this. Each element type will have it's own interpretation for these
+     points and in some cases (groups) may ignore them. 
+     The points argument is always a nested vector of form 
+     [[x0 y0][x1 y0]...[xn yn]] Where pairs [xi yi] make 'sence' to the
+     coordinate-system in use.")
 
   (shape 
-    [this])
+    [this]
+    "(shape this)
+     Returns an instance of java.awt.Shape")
 
   (bounds 
-    [this])
+    [this]
+    "(bounds this)
+     Returns vector [[x0 y0][x1 y1]] defining the rectangular bounds for
+     this object. Point and text objects return a single point 
+     [[x y][x y]] regardless for their on screen image.")
 
   (contains?
-    [this q])
+    [this q]
+    "(contains? this q)
+     Returns true if this object contains the point q. For group objects
+     contains? is true if it is true for any of the group's child
+     objects. For some objects, (points, lines and text) contains? always
+     returns false.")
 
   (distance 
-    [this q])
+    [this q]
+    "Returns the distance between this object and point q.
+     If an object contains the point the the distance is 0.")
 
   (to-string 
     [this verbosity depth])
@@ -181,7 +366,7 @@
 ;; Add local attributes set to element 
 ;; If one does not already exist.
 ;;
-;; If id spcified create attribute map with id
+;; If id specified create attribute map with id
 ;;
 (defn- add-implicit-local-attributes! 
   ([elem]
@@ -194,7 +379,19 @@
    (.use-attributes! elem id)))
 
 
-(defn create-element 
+(defn create-element
+  "(create-element etype fnmap)
+   (create-element etype parent fnmap locked)
+   Create a new SgwrElement object 
+   
+   etype - keyword 
+   parent - nil or instance of SgwrElement
+   fnmap - map which defines certain aspects of the element. Each
+           element type will define it's own function-map 
+   locked - list of locked property keywords.
+ 
+   See other files in sgwr.elements for usage examples."
+
   ([etype fnmap]
    (create-element etype nil fnmap {}))
 
@@ -248,6 +445,8 @@
                (get-property [this key]
                  (.get-property this key nil))
                
+               (locked-properties [this](.keys @locked-properties*))
+
                (remove-property! [this key]
                  (if (not (get @locked-properties* key))
                    (swap! properties* (fn [q](dissoc q key)))
@@ -316,7 +515,8 @@
                  (if @attributes*
                    (.use! @attributes* id))
                  (doseq [c @children*]
-                   (.use-attributes! c id)))
+                   (.use-attributes! c id))
+                 nil)
                
                (remove-attributes! [this id]
                  (if (.attributes-inherited? this)
@@ -453,4 +653,3 @@
                    (.toString sb)))
                )]
      elem ))) 
-
