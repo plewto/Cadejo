@@ -60,6 +60,8 @@
                                     :update-fn update-fn
                                     :bounds-fn bounds-fn})
 
+(def locked-properties [:id :center :radius])
+
 (defn circle                            ; circle defined by bounding rectangle
   ([](circle nil [-1 -1][1 1]))         ; If rectangle is not square, the side with greatest length is used
   ([parent p0 p1]
@@ -70,7 +72,9 @@
          side (max (- x1 x0)(- y1 y0))
          obj (sgwr.elements.element/create-element :circle
                                                    parent
-                                                   circle-function-map)]
+                                                   circle-function-map
+                                                   locked-properties)]
      (.set-points! obj [[x0 y0][(+ x0 side)(+ y0 side)]])
+     (.put-property! obj :id :circle)
      (if parent (.set-parent! obj parent))
      obj)))

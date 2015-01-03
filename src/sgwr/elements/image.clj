@@ -57,14 +57,18 @@
                                    :distance-fn (fn [obj q](second (distance-helper obj q)))
                                    :update-fn update-fn
                                    :bounds-fn bounds-fn})
-                                   
+
+(def locked-properties [:id :image]) 
+                                  
 (defn image 
   ([parent p0 w h]
    (let [obj (sgwr.elements.element/create-element :image
                                                    parent 
-                                                   image-function-map)
+                                                   image-function-map
+                                                   locked-properties)
          img (BufferedImage. w h BufferedImage/TYPE_INT_ARGB)]
      (.put-property! obj :image img)
+     (.put-property! obj :id :image)
      (.set-points! obj [p0])
      (if parent (.set-parent! obj parent))
      obj)))

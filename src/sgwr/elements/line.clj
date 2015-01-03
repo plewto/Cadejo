@@ -48,11 +48,14 @@
                                   :update-fn update-fn
                                   :bounds-fn bounds-fn})
 
+(def locked-properties [:id :midpoint])
+
 (defn line
   ([](line nil [0 0][1 1]))
   ([parent x0 y0 x1 y1](line parent [x0 y0][x1 y1]))
   ([parent p0 p1]
-   (let [obj (sgwr.elements.element/create-element :line parent line-function-map)]
+   (let [obj (sgwr.elements.element/create-element :line parent line-function-map locked-properties)]
+     (.put-property! obj :id :line)
      (.set-points! obj [p0 p1]) 
      (if parent (.set-parent! obj parent))
      obj)))

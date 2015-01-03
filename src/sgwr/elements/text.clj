@@ -71,11 +71,14 @@
                                   :update-fn update-fn
                                   :bounds-fn bounds-fn})
 
+(def locked-properties [:id :text])
+
 (defn text 
   ([txt](text nil [0 0] txt))
   ([parent position txt]
-   (let [obj (sgwr.elements.element/create-element :text parent text-function-map)]
+   (let [obj (sgwr.elements.element/create-element :text parent text-function-map locked-properties)]
      (.set-points! obj [position])
+     (.put-property! obj :id :text)
      (if parent (.set-parent! obj parent))
      (.put-property! obj :text (str txt))
      obj)))

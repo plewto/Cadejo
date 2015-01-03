@@ -9,6 +9,9 @@
 ;;
 
 (ns sgwr.elements.element
+  "SgwrElement defines the basic interface for drawing elements.
+   Each element is a node which automatically inherits properties and
+   attribtues from it's ancestors." 
   (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.elements.attributes :as att])
   (:require [sgwr.cs.coordinate-system])
@@ -41,6 +44,9 @@
     [this])
   
   (is-leaf?
+    [this])
+
+  (locked-properties 
     [this])
 
   (put-property!
@@ -190,12 +196,16 @@
 
 (defn create-element 
   ([etype fnmap]
-   (create-element etype nil fnmap))
+   (create-element etype nil fnmap {}))
 
-  ([etype parent fnmap]
+  ([etype parent fnmap locked]
    (let [parent* (atom parent)
          coordinate-system* (atom nil)
          children* (atom [])
+         locked-properties* (let [acc* (atom {})]
+                              (doseq [p locked]
+                                (swap! acc* (fn [q](assoc q p true))))
+                              acc*)
          properties* (atom {})
          attributes* (atom nil)
          selected* (atom false)
@@ -239,7 +249,12 @@
                  (.get-property this key nil))
                
                (remove-property! [this key]
-                 (swap! properties* (fn [q](dissoc q key))))
+                 (if (not (get @locked-properties* key))
+                   (swap! properties* (fn [q](dissoc q key)))
+                   (do
+                     (utilities/warning (format "Can not remove locked property %s from %s element"
+                                                key (.element-type this)))
+                     nil)))
                
                (property-keys [this local-only]
                  (if local-only

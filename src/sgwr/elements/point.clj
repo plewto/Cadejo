@@ -91,11 +91,15 @@
                                    :distance-fn distance-fn
                                    :update-fn update-fn
                                    :bounds-fn bounds-fn})
+
+(def locked-properties [:id])
+
 (defn point 
   ([](point nil [0 0]))
   ([parent x y](point parent [x y]))
   ([parent p]
-   (let [obj (sgwr.elements.element/create-element :point parent point-function-map)]
+   (let [obj (sgwr.elements.element/create-element :point parent point-function-map locked-properties)]
      (.set-points! obj [p])
+     (.put-property! obj :id :point)
      (if parent (.set-parent! obj parent))
      obj)))

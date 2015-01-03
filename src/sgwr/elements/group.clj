@@ -49,7 +49,7 @@
     @flag*))
 
 (defn distance-fn [obj g]
-  (let [d* (atom 1e999)
+  (let [d* (atom constants/infinity)
         i* (atom (dec (.child-count obj)))]
     (while (and (>= @d* 0)(>= @i* 0))
       (let [c (nth (.children obj) @i*)]
@@ -70,15 +70,17 @@
                                    :distance-fn distance-fn
                                    :update-fn (fn [& _] [])
                                    :points-fn points-fn
-                                   :bounds-fn bounds-fn
-                                   })
+                                   :bounds-fn bounds-fn})
+
+(def locked-properties [:id])
 
 (defn group 
-  ([id](group nil id))
+  ([parent](group parent :group))
   ([parent id]
    (let [obj (sgwr.elements.element/create-element :group
                                                    parent
-                                                   group-function-map)]
+                                                   group-function-map
+                                                   locked-properties)]
      (.put-property! obj :id id)
      (if parent (.set-parent! obj parent))
      obj)))

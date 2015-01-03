@@ -87,14 +87,18 @@
                                        :update-fn update-fn
                                        :bounds-fn bounds-fn})
 
+(def locked-properties [:id :center :width :height :corner-radius])
+
 (defn rectangle 
   ([](rectangle nil [0 0][1 1]))
   ([parent x0 y0 x1 y1](rectangle parent [x0 y0][x1 y1]))
   ([parent p0 p1]
    (let [obj (sgwr.elements.element/create-element :rectangle
                                                    parent
-                                                   rectangle-function-map)]
+                                                   rectangle-function-map
+                                                   locked-properties)]
      (.put-property! obj :corner-radius 0)
+     (.put-property! obj :id :rectangle)
      (.set-points! obj [p0 p1])
      (if parent (.set-parent! obj parent))
      obj)))

@@ -53,7 +53,7 @@
     
 
 (defn drawing [cs]
-  (let [root-group (sgwr.elements.group/group :root)
+  (let [root-group (sgwr.elements.group/group nil :root)
         background-color* (atom (ucolor/color :black))
         enable-render* (atom true)
         [width height](.canvas-bounds cs)
@@ -118,13 +118,6 @@
                     (.put-property! si :image (.image this))
                     si)))
 
-              ;; (sgwr-image [this]
-              ;;   (let [[w h] (.canvas-bounds this)
-              ;;         si (sgwr.elements.image/image nil w h)]
-              ;;     (.render this)
-              ;;     (.put-property! si :image (.image this))
-              ;;     si))
-
               (zoom-in [this]
                 (.zoom! cs @zoom-ratio*)
                 (.render this))
@@ -175,29 +168,29 @@
 (require '[sgwr.elements.rectangle :as rect])
 (require '[sgwr.elements.circle :as circle])
 
-(def i1 (let [drw (cartesian-drawing 100 100 [0 0][1 1])
-              root (.root drw)
-              g1 (grp/group root :g1)
-              g2 (grp/group root :g2)
-              f (ss/frame :content (.canvas drw)
-                          :size [200 :by 200]
-                          :on-close :dispose)]
-          (.background! drw [0 0 0 0])
-          (.color! g1 :red)
-          (.hide! g1 false)
-          (.style! g1 0)
-          (.width! g1 1)
-          (line/line g1 [0 0][1 1])
-          (line/line g1 [0 1][1 0])
-          
-          (.color! g2 [0 128 0 128])
-          (.fill! g2 true)
-          (rect/rectangle g2 [0.25 0.25][0.75 0.75])
-          (.render drw)
-          (ss/show! f)
-          ;(.dump root 10 0)
-          (.image drw true)
-          ))
+;; (def i1 (let [drw (cartesian-drawing 100 100 [0 0][1 1])
+;;               root (.root drw)
+;;               g1 (grp/group root :g1)
+;;               g2 (grp/group root :g2)
+;;               f (ss/frame :content (.canvas drw)
+;;                           :size [200 :by 200]
+;;                           :on-close :dispose)]
+;;           (.background! drw [0 0 0 0])
+;;           (.color! g1 :red)
+;;           (.hide! g1 false)
+;;           (.style! g1 0)
+;;           (.width! g1 1)
+;;           (line/line g1 [0 0][1 1])
+;;           (line/line g1 [0 1][1 0])
+   ;;       
+;;           (.color! g2 [0 128 0 128])
+;;           (.fill! g2 true)
+;;           (rect/rectangle g2 [0.25 0.25][0.75 0.75])
+;;           (.render drw)
+;;           (ss/show! f)
+;;           ;(.dump root 10 0)
+;;           (.image drw true)
+;;           ))
 
   
                 
@@ -243,8 +236,8 @@
 (.color! g4 [255 0 0 128])
 (.fill! g4 true)
 
-(.set-points! i1 [[5 5]])
-(.set-parent! i1 g4)
+;(.set-points! i1 [[5 5]])
+;(.set-parent! i1 g4)
 
 (def jb-render (ss/button :text "Render"))
 (def jb-alpha (ss/button :text "Alpha"))
