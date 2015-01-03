@@ -60,7 +60,7 @@
                                     :update-fn update-fn
                                     :bounds-fn bounds-fn})
 
-(def locked-properties [:id :center :radius])
+(def locked-properties [:center :radius])
 
 ; circle defined by bounding rectangle
 ; If rectangle is not square, the side with greatest length is used

@@ -58,7 +58,7 @@
                                    :update-fn update-fn
                                    :bounds-fn bounds-fn})
 
-(def locked-properties [:id :image]) 
+(def locked-properties [:image]) 
                                   
 (defn image 
   "(image parent p w h)

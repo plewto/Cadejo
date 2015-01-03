@@ -87,7 +87,7 @@
                                        :update-fn update-fn
                                        :bounds-fn bounds-fn})
 
-(def locked-properties [:id :center :width :height :corner-radius])
+(def locked-properties [:center :width :height :corner-radius])
 
 (defn rectangle 
   "(rectangle)

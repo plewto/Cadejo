@@ -47,7 +47,7 @@
                                   :update-fn update-fn
                                   :bounds-fn bounds-fn})
 
-(def locked-properties [:id :midpoint])
+(def locked-properties [:midpoint])
 
 (defn line
   "(line)

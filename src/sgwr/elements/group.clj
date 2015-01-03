@@ -55,7 +55,7 @@
                                    :points-fn points-fn
                                    :bounds-fn bounds-fn})
 
-(def locked-properties [:id])
+(def locked-properties [])
 
 (defn group 
   "(group parent)

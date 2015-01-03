@@ -379,6 +379,8 @@
    (.use-attributes! elem id)))
 
 
+(def reserved-property-keys '(:id :color :style :width :size :filled :hidden :current-attributes :selected))
+
 (defn create-element
   "(create-element etype fnmap)
    (create-element etype parent fnmap locked)
@@ -399,13 +401,10 @@
    (let [parent* (atom parent)
          coordinate-system* (atom nil)
          children* (atom [])
-         locked-properties* (let [acc* (atom {})]
-                              (doseq [p locked]
-                                (swap! acc* (fn [q](assoc q p true))))
-                              acc*)
+         locked-properties* (distinct (flatten (merge reserved-property-keys locked)))
          properties* (atom {})
          attributes* (atom nil)
-         selected* (atom false)
+         ;selected* (atom false)
          update-hook* (atom (fn [& _] nil))
          points* (atom [])
          elem (reify SgwrElement
@@ -564,7 +563,8 @@
                  (.hide! (.get-attributes this) f))
                
                (select! [this f]
-                 (reset! selected* f))
+                 (.put-property! this :selected f)
+                 f)
                
                (color [this]
                  (.color (.get-attributes this)))
@@ -582,8 +582,7 @@
                  (.hidden? (.get-attributes this)))
                
                (selected? [this]
-                 (or @selected*
-                     (and parent (.selected? parent))))
+                 (.get-property this :selected))
                
                (set-coordinate-system! [this cs]
                  (reset! coordinate-system* cs))
@@ -652,4 +651,13 @@
                        ))
                    (.toString sb)))
                )]
+     (.put-property! elem :id etype)
+     (.put-property! elem :color nil)
+     (.put-property! elem :style nil)
+     (.put-property! elem :width nil)
+     (.put-property! elem :size nil)
+     (.put-property! elem :filled nil)
+     (.put-property! elem :hidden nil)
+     (.put-property! elem :current-attributes nil)
+     (.put-property! elem :selected false)
      elem ))) 

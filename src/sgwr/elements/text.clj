@@ -71,7 +71,7 @@
                                   :update-fn update-fn
                                   :bounds-fn bounds-fn})
 
-(def locked-properties [:id :text])
+(def locked-properties [:text])
 
 (defn text 
   "(text txt])
