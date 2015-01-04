@@ -2,7 +2,9 @@
   "Provides functions for color manipulation"
   (:require [sgwr.util.math :as math])
   (:require [seesaw.color :as ssc])
-  (:import java.awt.Color))
+  (:import java.awt.Color
+           ;java.awt.GradientPaint
+           ))
 
 
 (defn str-rep-color [c]
@@ -21,6 +23,7 @@
 ;;
 (defn color [& args]
   (cond (= (type (first args)) Color) (first args)
+        ;(= (type (first args)) GradientPaint)(first args)
         (nil? (first args)) nil
         (keyword? (first args))(ssc/color (first args))
         (or (list? (first args))(vector? (first args)))
