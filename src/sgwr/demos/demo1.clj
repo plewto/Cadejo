@@ -11,26 +11,21 @@
   (:require [seesaw.core :as ss]))
 
 
-(def drw1 (let [drw (drw/native-drawing 600 200)
-                root (.root drw)]
-            (.background! drw :black)
-            (let [y 10 
-                  x* (atom 10)
-                  x-delta 32
-                  grp1 (grp/group root :grp1)]
-              (.color! grp1 :green)
-              (.width! grp1 2)
-              (doseq [st (keys constants/point-styles)]
-                (let [p (point/point grp1 @x* y)]
-                  (swap! x* (fn [x](+ x x-delta)))
-                  (.style! p st)
-                  (.color! p :green)
-                  (.width! p 2)))
-              )
-            (.render drw)
-            ;(ss/config! (.canvas drw) :size [600 :by 200])
-            drw))
+(def drw1 (drw/native-drawing 600 200))
 
+(def root (.root drw1))
+(def grp1 (grp/group root :grp1))
+(def p1 (point/point grp1 20 20))
+(def p2 (point/point grp1 40 20))
+(def p3 (point/point grp1 60 20))
+
+
+
+(.width! grp1 2)
+(.color! grp1 :green)
+
+(.use-attributes! grp1 :default)
+(.render drw1)
 (def pan-main (ss/border-panel :north (.canvas drw1)
                                ))
 
@@ -40,6 +35,11 @@
                  :size [700 :by 500]))
 
 (ss/show! f)
+
+(comment ----------------------------------------------------
+---------------------------------------------------------------- END COMMENT)
                  
-                    
+(defn rl [] (use 'sgwr.demos.demo1 :reload))
+(defn rla [] (use 'sgwr.demos.demo1 :reload-all))
+(defn exit [] (System/exit 0))                    
                 
