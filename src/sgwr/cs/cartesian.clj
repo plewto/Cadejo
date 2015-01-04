@@ -24,6 +24,16 @@
              (view [this]
                @view*)
 
+             (restore-view! [this]
+               (.view! this [p0 p1])
+               (reset! zoom-ratio* 1.0)
+               @view*)
+
+             (set-view! [this p]
+               (.view! this p)
+               (reset! zoom-ratio* 1.0)
+               @view*)
+
              ; view v as pair [p0 p1]
              (view! [this v]
                (let [[p0 p1] v

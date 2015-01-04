@@ -9,12 +9,6 @@
   (println (format "sgwr WARNING: %s" msg))
   nil)
 
-;; (defn map-style [st]
-;;   (let [q (get constants/style-map st 0)]
-;;     (min constants/max-style 
-;;          (max constants/min-style 
-;;               (int (or q st))))))
-
 (defn map-style [st]
   (cond (number? st)
         (int (min constants/max-style (max constants/min-style st)))

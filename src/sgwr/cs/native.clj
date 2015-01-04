@@ -20,6 +20,8 @@
       (view [this]
         bounds)
 
+      (restore-view! [this] )
+
       (view! [this _]  ; ignore, view is constant
         bounds)
 

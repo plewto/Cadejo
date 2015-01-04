@@ -15,10 +15,22 @@
     "Returns the current 'view' as a vector.
      The exact format of the result is implementation dependent.")
 
+  (set-view!
+    [this v]
+    "Set current view to v
+    The exact format of v is implementation dependent.
+    Use this method instead of view!
+    Returns the current view.")
+
   (view!
     [this v]
     "Set the current view to v 
-     The exact format of v is implementation dependent.")
+     The exact format of v is implementation dependent.
+     Do not call view! directly, instead use set-view!
+     Returns the current view.")
+
+  (restore-view!
+    [this])
 
   (map-point
     [this p]
@@ -58,6 +70,10 @@
     (canvas-bounds [this] 
       (utilities/warning "default-coordinate-system view canvasbounds is nil")
       nil)
+
+    (restore-view! [this](.view this))
+
+    (set-view! [this _](.view this))
 
     (view [this] (.canvas-bounds this))
 

@@ -40,6 +40,16 @@
              (view [this]
                (:radius @params*))
 
+             (restore-view! [this]
+               (.view! this r)
+               (reset! zoom-ratio* 1.0)
+               (.view this))
+
+             (set-view! [this r]
+               (.view! this r)
+               (reset! zoom-ratio* 1.0)
+               (.view this))
+
              ;; view float r = radius
              (view! [this r]
                (let [scale (/ (* 0.5 (:width @params*)) r)]

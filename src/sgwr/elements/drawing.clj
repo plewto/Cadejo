@@ -50,11 +50,17 @@
   (zoom-out
     [this])
 
+  (set-view!
+    [this v])
+
+  (restore-view!
+    [this])
+
   )
     
 
 (defn drawing [cs]
-  (let [root-group (sgwr.elements.group/group nil :root)
+  (let [root-group (sgwr.elements.group/group nil :id :root)
         background-color* (atom (ucolor/color :black))
         enable-render* (atom true)
         [width height](.canvas-bounds cs)
@@ -125,6 +131,14 @@
 
               (zoom-out [this]
                 (.zoom! cs (/ 1.0 @zoom-ratio*))
+                (.render this))
+
+              (set-view! [this v]
+                (.set-view! cs v)
+                (.render this))
+              
+              (restore-view! [this]
+                (.restore-view! cs)
                 (.render this))
 
               )]

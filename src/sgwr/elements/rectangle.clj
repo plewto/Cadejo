@@ -4,6 +4,7 @@
 
 (ns sgwr.elements.rectangle
   (:require [sgwr.util.math :as math])
+  (:require [sgwr.util.color :as ucolor])
   (:require [sgwr.elements.element])
   (:require [seesaw.graphics :as ssg]))
 
@@ -89,27 +90,19 @@
 
 (def locked-properties [:center :width :height :corner-radius])
 
-(defn rectangle 
-  "(rectangle)
-   (rectangle parent p0 p1)
-   (rectangle parent x0 y0 x1 y1)
-   
-   Constructs rectangle with diagonal points p0 [x0 y0] and p1 [x1 y1]
-
-   The distance between a rectangle and points enclosed by it is
-   defined as 0.  The distance between a rectangle a a point q not
-  enclosed by it is defined as the shortest distance between q and one
-  of the sides of the rectangle."
-
-  ([](rectangle nil [0 0][1 1]))
-  ([parent x0 y0 x1 y1](rectangle parent [x0 y0][x1 y1]))
-  ([parent p0 p1]
-   (let [obj (sgwr.elements.element/create-element :rectangle
-                                                   parent
-                                                   rectangle-function-map
-                                                   locked-properties)]
-     (.put-property! obj :corner-radius 0)
-     (.put-property! obj :id :rectangle)
-     (.set-points! obj [p0 p1])
-     (if parent (.set-parent! obj parent))
-     obj)))
+(defn rectangle [parent p0 p1  & {:keys [id color style width fill]
+                                  :or {id :new-rectangle
+                                       color (ucolor/color :white)
+                                       style 0
+                                       width 1.0
+                                       fill nil}}]
+  (let [obj (sgwr.elements.element/create-element :rectangle parent rectangle-function-map locked-properties)]
+    (if parent (.set-parent! obj parent))
+    (.set-points! obj [p0 p1])
+    (.put-property! obj :id id)
+    (.color! obj :default color)
+    (.style! obj :default style)
+    (.width! obj :default width)
+    (.fill! obj :default fill)
+    (.use-attributes! obj :default)
+    obj))

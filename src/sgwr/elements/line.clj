@@ -4,6 +4,7 @@
 
 (println "--> sgwr.elements.line")
 (ns sgwr.elements.line
+  (:require [sgwr.util.color :as ucolor])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.elements.element])
   (:import java.awt.geom.Line2D))
@@ -49,23 +50,18 @@
 
 (def locked-properties [:midpoint])
 
-(defn line
-  "(line)
-   (line parent p0 p1)
-   (line parent x0 y0 x1 y1)
-   Constructs a finite line segment between points p0 and p1
-   If p0 and p1 specified they should be vectors in the form 
-   [x0 y0] and [x1 y1]
-
-   Line objects never 'contain' points and they ignore the attribute
-   fill value."
-
-
-  ([](line nil [0 0][1 1]))
-  ([parent x0 y0 x1 y1](line parent [x0 y0][x1 y1]))
-  ([parent p0 p1]
-   (let [obj (sgwr.elements.element/create-element :line parent line-function-map locked-properties)]
-     (.put-property! obj :id :line)
-     (.set-points! obj [p0 p1]) 
-     (if parent (.set-parent! obj parent))
-     obj)))
+(defn line [parent p0 p1 & {:keys [id color style width]
+                            :or {id :new-line
+                                 color (ucolor/color :white)
+                                 style 0
+                                 width 1.0}}]
+  (let [obj (sgwr.elements.element/create-element :line parent line-function-map locked-properties)]
+    (if parent (.set-parent! obj parent))
+    (.set-points! obj [p0 p1])
+    (.put-property! obj :id id)
+    (.color! obj :default color)
+    (.style! obj :default style)
+    (.width! obj :default width)
+    (.use-attributes! obj :default)
+    obj))
+                             

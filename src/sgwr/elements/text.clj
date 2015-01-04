@@ -3,6 +3,7 @@
 (ns sgwr.elements.text 
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.element])
+  (:require [sgwr.util.color :as ucolor])
   (:import java.awt.Font
            java.awt.BasicStroke
            java.awt.geom.GeneralPath))
@@ -44,7 +45,6 @@
         style (.getStyle f)
         size (.getSize2D f)]
     (Font. fname style (int (* size ratio)))))
-  
 
 (defn- update-fn [obj points]
   points)
@@ -58,7 +58,7 @@
         pos (first (.points txt-element))
         [u v] (.map-point cs pos)
         sty (.style txt-element)
-        siz (.width txt-element)
+        siz (.size txt-element)
         fnt (scale-font (get-baseline-font sty siz)(/ 1.0 (.zoom-ratio cs)))
         text (str (.get-property txt-element :text))]
     (.setFont g2d fnt)
@@ -73,26 +73,20 @@
 
 (def locked-properties [:text])
 
-(defn text 
-  "(text txt])
-   (text parent p txt)
-  
-   Create text object with left-hand bas-point p [x y].
-  
-   Text objects never 'contain' points and the the distance between a
-   text object and a point q is defined as the distance between q and p. 
-
-   The bounds of a text object is a degenerate rectangle [[x y][x y]]
-
-   The font style and size are determined by the attributes style and
-   width values. Text objects ignore the attributes fill value."
-
-  ([txt](text nil [0 0] txt))
-  ([parent position txt]
-   (let [obj (sgwr.elements.element/create-element :text parent text-function-map locked-properties)]
-     (.set-points! obj [position])
-     (.put-property! obj :id :text)
-     (if parent (.set-parent! obj parent))
-     (.put-property! obj :text (str txt))
-     obj)))
+(defn text [parent p txt & {:keys [id color style size]
+                            :or {id :new-text
+                                 color (ucolor/color :white)
+                                 style 0
+                                 size 6.0}}]
+  (let [obj (sgwr.elements.element/create-element :text parent text-function-map locked-properties)]
+    (.set-points! obj [p])
+    (if parent (.set-parent! obj parent))
+    (.put-property! obj :id :text)
+    (.put-property! obj :text (str txt))
+    (.color! obj :default color)
+    (.style! obj :default style)
+    (.size! obj :default size)
+    (.use-attributes! obj :default)
+    obj))
+                            
                                   

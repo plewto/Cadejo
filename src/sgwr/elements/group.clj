@@ -1,5 +1,6 @@
 (ns sgwr.elements.group
   (:require [sgwr.constants :as constants])
+  (:require [sgwr.util.color :as ucolor])
   (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.elements.rectangle :as rect]))
 
@@ -57,24 +58,46 @@
 
 (def locked-properties [])
 
-(defn group 
-  "(group parent)
-   (group parent id)
+;; (defn group 
+;;   "(group parent)
+;;    (group parent id)
+;;
+;;    Create a group object. Group objects are SgwrElements which contain
+;;    other SgwrElements, possibly other groups. 
+;;
+;;    A group contains a point q if any of its child elements contains
+;;    the point. The distance between a point q and a group is defined as
+;;    the shortest distance between the point and any of the group's
+;;    children."
+;;
+;;   ([parent](group parent :group))
+;;   ([parent id]
+;;    (let [obj (sgwr.elements.element/create-element :group
+;;                                                    parent
+;;                                                    group-function-map
+;;                                                    locked-properties)]
+;;      (.put-property! obj :id id)
+;;      (if parent (.set-parent! obj parent))
+;;      obj)))
 
-   Create a group object. Group objects are SgwrElements which contain
-   other SgwrElements, possibly other groups. 
-
-   A group contains a point q if any of its child elements contains
-   the point. The distance between a point q and a group is defined as
-   the shortest distance between the point and any of the group's
-   children."
-
-  ([parent](group parent :group))
-  ([parent id]
-   (let [obj (sgwr.elements.element/create-element :group
+(defn group [parent & {:keys [id color style size width fill hide]
+                       :or {id :new-group
+                            color (ucolor/color :white)
+                            style 0
+                            size 1.0
+                            width 1.0
+                            fill false
+                            hide false}}]
+  (let [obj (sgwr.elements.element/create-element :group
                                                    parent
                                                    group-function-map
                                                    locked-properties)]
-     (.put-property! obj :id id)
-     (if parent (.set-parent! obj parent))
-     obj)))
+    (if parent (.set-parent! obj parent))
+    (.color! obj :default color)
+    (.style! obj :default style)
+    (.size! obj :default size)
+    (.width! obj :default width)
+    (.fill! obj :default fill)
+    (.hide! obj :default hide)
+    (.use-attributes! obj :default)
+    obj))

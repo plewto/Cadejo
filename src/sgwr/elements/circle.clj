@@ -4,6 +4,7 @@
 ;;     3. define three-point constructor
 
 (ns sgwr.elements.circle
+  (:require [sgwr.util.color :as ucolor])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.elements.element])
   (:require [seesaw.graphics :as ssg]))
@@ -19,17 +20,22 @@
         h (- v1 v0)]
     (ssg/ellipse u0 v0 w h)))
 
-(defn- update-fn [obj points]   ;; points [p0 p1] -> bounding rectangle
+(defn- update-fn [obj points]
   (let [[p0 p1] points
-        [x0 y0] p0
-        [x1 y1] p1
-        xc (math/mean x0 x1)
-        yc (math/mean y0 y1)
-        dx (math/abs (- x1 x0))
+        x0 (apply min (map first [p0 p1]))
+        y0 (apply min (map second [p0 p1]))
+        x1 (apply max (map first [p0 p1]))
+        y1 (apply max (map second [p0 p1]))
+        side (max (- x1 x0)(- y1 y0))
+        x2 (+ x0 side)
+        y2 (+ y0 side)
+        xc (math/mean x0 x2)
+        yc (math/mean y0 y2)
+        dx (math/abs (- x2 x0))
         radius (* 0.5 dx)]
     (.put-property! obj :center [xc yc])
     (.put-property! obj :radius radius)
-    points))
+    [[x0 y0][x2 y2]]))
 
 (defn- distance-helper [obj q]
   (let [pc (.get-property! obj :center)
@@ -65,36 +71,22 @@
 ; circle defined by bounding rectangle
 ; If rectangle is not square, the side with greatest length is used
 
-(defn circle
-  "(circle)
-   (circle parent p0 p1)
-   
-   Create circle with bounding square p0 p1
-   If rectangle [p0 p1] is not square use a square with sides equal to
-   the longest side of [p0 p1].
- 
-   Circle objects 'containe' a point q if the distance between q and
-   the center point is less the or equal to the radius. 
-
-   The distance between all points enclosed by the locus of the
-   circle is defined as 0.  For points q outside the circle's locus the
-   distance is defined as the distance between q and the point of
-   intersection between the circle and a line through q and normal to the
-   circle."  
-
-
-  ([](circle nil [-1 -1][1 1]))         
-  ([parent p0 p1]
-   (let [x0 (apply min (map first [p0 p1]))
-         y0 (apply min (map second [p0 p1]))
-         x1 (apply max (map first [p0 p1]))
-         y1 (apply max (map second [p0 p1]))
-         side (max (- x1 x0)(- y1 y0))
-         obj (sgwr.elements.element/create-element :circle
-                                                   parent
-                                                   circle-function-map
-                                                   locked-properties)]
-     (.set-points! obj [[x0 y0][(+ x0 side)(+ y0 side)]])
-     (.put-property! obj :id :circle)
-     (if parent (.set-parent! obj parent))
-     obj)))
+(defn circle [parent p0 p1  & {:keys [id color style width fill]
+                               :or {id :new-circle
+                                    color (ucolor/color :white)
+                                    style 0
+                                    width 1.0
+                                    fill nil}}]
+  (let [obj (sgwr.elements.element/create-element :circle
+                                                  parent
+                                                  circle-function-map
+                                                  locked-properties)]
+    (if parent (.set-parent! obj parent))
+    (.set-points! obj [p0 p1])
+    (.put-property! obj :id id)
+    (.color! obj :default color)
+    (.style! obj :default style)
+    (.width! obj :default width)
+    (.fill! obj :default fill)
+    (.use-attributes! obj :default)
+    obj))
