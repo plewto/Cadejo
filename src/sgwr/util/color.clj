@@ -17,9 +17,11 @@
 
 ;; As with seesaw.color/color except that if the first argument 
 ;; is an instance of java.awt.Color it becomes the return color.
+;; A nil argument returns nil
 ;;
 (defn color [& args]
   (cond (= (type (first args)) Color) (first args)
+        (nil? (first args)) nil
         (keyword? (first args))(ssc/color (first args))
         (or (list? (first args))(vector? (first args)))
         (apply ssc/color (first args))
@@ -36,13 +38,16 @@
         ar (.getRed a)
         ag (.getGreen a)
         ab (.getBlue a)
+        aa (.getAlpha a)
         br (.getRed b)
         bg (.getGreen b)
         bb (.getBlue b)
+        ba (.getAlpha b)
         cr (int (math/interpolate ar br w))
         cg (int (math/interpolate ag bg w))
-        cb (int (math/interpolate ab bb w))]
-    (ssc/color cr cg cb)))
+        cb (int (math/interpolate ab bb w))
+        ca (int (math/interpolate aa ba w))]
+    (ssc/color cr cg cb ca)))
 
 (defn inversion [c]
   "Return color inversion"

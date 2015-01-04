@@ -16,9 +16,14 @@
 ;;               (int (or q st))))))
 
 (defn map-style [st]
-  (if (number? st)
-    (int (min constants/max-style (max constants/min-style st)))
-    (get constants/style-map st 0)))
+  (cond (number? st)
+        (int (min constants/max-style (max constants/min-style st)))
+
+        (keyword? st)
+        (get constants/style-map st 0)
+
+        :default
+        nil))
 
 
 (defn member? [obj col]

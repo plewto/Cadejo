@@ -9,9 +9,6 @@
 
 (defprotocol SgwrAttributes
 
-  (set-client-element! 
-    [this obj])
-
   (add! 
     [this id])
 
@@ -88,14 +85,26 @@
     [this verbosity]
     [this]))
 
-(defn- create-attributes-map [id]
+(defn- create-attributes-map [id & {:keys [color style width size]
+                                    :or {color nil
+                                         style nil
+                                         width nil
+                                         size nil}}]
   {:id id
-   :color nil
-   :style nil
-   :width nil
-   :size nil
+   :color (ucolor/color color)
+   :style (utilities/map-style style)
+   :width width
+   :size size
    :filled nil
    :hidden nil})
+
+(defn- create-default-attributes-map []
+  (create-attributes-map :default 
+                         :color :white
+                         :style 0
+                         :size 1.0
+                         :width 1.0))
+  
 
 (defn- str-rep-attribute-map [att]
   (format "{:id %-8s :color %-17s :style %4s :width %4s :size %4s :filled %-5s :hidden %-5s}"
@@ -120,13 +129,10 @@
   ([](attributes nil))
 
   ([client]
-   (let [client* (atom nil)
-         maps* (atom nil)
-         current-id* (atom nil)
+   (let [maps* (atom {:default (create-default-attributes-map)})
+         client* (atom nil)
+         current-id* (atom :default)
          sgwratt (reify SgwrAttributes
-                   
-                   (set-client-element! [this obj]
-                     (reset! client* obj))
                    
                    (add! [this id]
                      (let [att (create-attributes-map id)]
@@ -140,8 +146,8 @@
                      (.attribute-keys this))
                    
                    (remove-all! [this]
-                     (reset! maps* nil)
-                     (reset! current-id* nil))
+                     (reset! maps* {:default (create-default-attributes-map)})
+                     (reset! current-id* :defaut))
 
                    (attribute-keys [this]
                      (sort (keys @maps*)))
@@ -154,16 +160,9 @@
 
                    (current-id [this]
                      @current-id*)
-                 
+
                    (use! [this id]
-                     (let [att (.get-attributes this id)]
-                       (if att 
-                         (do 
-                           (reset! current-id* id)
-                           (if @client*
-                             (doseq [k [:color :style :width :size :filled :hidden]]
-                               (.put-property! @client* k (k att))))))
-                       att))
+                     (reset! current-id* id))
                    
                    (color! [this id c]
                      (let [c2 (ucolor/color c)

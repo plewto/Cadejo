@@ -5,6 +5,7 @@
   with different degrees of drawing zoom."
 
   (:require [sgwr.elements.element])
+  (:require [sgwr.util.color :as ucolor])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities])
   (:import java.awt.geom.Line2D
@@ -80,7 +81,7 @@
         sfn (get {0 dot, 1 pixel, 2 dash, 3 bar,
                   4 diag, 5 diag2, 6 box, 7 cross, 
                   8 x-point, 9 triangle} (.style obj) dot)]
-    (sfn u v (.width obj))))
+    (sfn u v (.size obj))))
 
 (defn- distance-fn [obj q]
   (math/distance (first (.points obj)) q))
@@ -100,23 +101,22 @@
 (def locked-properties [])
 
 (defn point 
-  "(point)
-   (point parent p)
-   (point parent x y)
-   
-   Creates point object with given parent and position. 
-   If p is specified it should be a vector [x y].
-   The values of x and y are interpreted by the current coordinate-system.
-
-   Point objects never 'contain' other points even if they have
-   identical coordinates. The point bounds returns a degenerate rectangle 
-   [[x y][x y]]
-   Point objects ignore the attribute fill value."
-  ([](point nil [0 0]))
-  ([parent x y](point parent [x y]))
-  ([parent p]
-   (let [obj (sgwr.elements.element/create-element :point parent point-function-map locked-properties)]
-     (.set-points! obj [p])
-     (.put-property! obj :id :point)
+  ([parent p & {:keys [id color style size]
+                :or {id :new-point
+                     color (ucolor/color :white)
+                     style 0
+                     size 1.0}}]
+   (let [obj (sgwr.elements.element/create-element :point 
+                                                   parent 
+                                                   point-function-map 
+                                                   locked-properties)]
      (if parent (.set-parent! obj parent))
+     (.set-points! obj [p])
+     (.put-property! obj :id id)
+     (.color! obj :default color)
+     (.style! obj :default style)
+     (.size! obj :default size)
+     (.use-attributes! obj :default)
      obj)))
+     
+  

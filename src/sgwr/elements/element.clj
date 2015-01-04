@@ -129,11 +129,7 @@
   ;; Attributes
 
   (get-attributes
-    [this]
-    "(get-attributes this)
-     Returns the attribute object used by this. 
-     The result will either be locally defined or inherited. Care should
-     be used when manipulating inherited attributes.")
+    [this])
 
   (current-attribute-id
     [this]
@@ -287,8 +283,8 @@
 )
 
 
-(def reserved-property-keys '(:id :color :style :width :size :filled 
-                                  :hidden :current-attributes :selected))
+(def reserved-property-keys '[:id :color :style :width :size :filled 
+                              :hidden :selected])
 
 (defn create-element
   "(create-element etype fnmap)
@@ -374,7 +370,6 @@
                (property-keys [this]
                  (.property-keys this false))
                
-               
                (has-property? [this key local-only]
                  (let [klst (.property-keys this local-only)]
                    (utilities/member? key klst)))
@@ -385,7 +380,7 @@
                ;; Attributes
            
                (get-attributes [this] attributes)
-                 
+               
                (current-attribute-id [this]
                  (.current-id (.get-attributes this)))
                
@@ -394,8 +389,12 @@
 
                (use-attributes! [this id]
                  (.use! attributes id)
-                 (doseq [c @children*]
-                   (.use-attributes! c id)))
+                 (let [att (.get-attributes attributes id)
+                       akeys [:color :style :size :width :filled :hidden]]
+                   (doseq [k akeys]
+                     (.put-property! this k (k att)))
+                   (doseq [c (.children this)]
+                     (.use-attributes! c id))))
                
                (remove-attributes! [this id]
                  (.remove! attributes id))
@@ -541,7 +540,6 @@
                            (doseq [c @children*]
                              (.append sb (.to-string c 2 (inc depth) )))
                            (.toString sb)) ))) )]
-     (.set-client-element! attributes elem)
      (.put-property! elem :id etype)
      (.put-property! elem :color nil)
      (.put-property! elem :style nil)
@@ -549,6 +547,5 @@
      (.put-property! elem :size nil)
      (.put-property! elem :filled nil)
      (.put-property! elem :hidden nil)
-     (.put-property! elem :current-attributes nil)
      (.put-property! elem :selected false)
      elem ))) 
