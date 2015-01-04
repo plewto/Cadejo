@@ -283,6 +283,22 @@
 )
 
 
+(defn set-attributes! [obj id & {:keys [color style size width fill hide]
+                                 :or {color nil
+                                      style nil
+                                      size nil
+                                      width nil
+                                      fill nil
+                                      hide nil}}]
+  (.color! obj id color)
+  (.style! obj id style)
+  (.size! obj id size)
+  (.width! obj id width)
+  (.fill! obj id fill)
+  (.hide! obj id hide)
+  (.get-attributes obj))
+
+
 (def reserved-property-keys '[:id :color :style :width :size :filled 
                               :hidden :selected])
 
