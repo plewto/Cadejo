@@ -187,7 +187,12 @@
                        (.style! this id st)))
 
                    (width! [this id w]
-                     (let [w2 (float (max w 0.125))
+                     (let [w2 (cond (number? w)(float (max w 0.1))
+                                     (nil? w) nil
+                                     :default 
+                                     (do 
+                                       (utilities/warning (format "Invalid width attribute: %s" w))
+                                       nil))
                            att1 (get-implicit-attributes this id)
                            att2 (assoc att1 :width w2)]
                        (swap! maps* (fn [q](assoc q id att2)))
@@ -198,7 +203,12 @@
                        (.width! this id w)))
 
                    (size! [this id sz]
-                     (let [sz2 (float (max sz 0.125))
+                     (let [sz2 (cond (number? sz)(float (max sz 0.1))
+                                     (nil? sz) nil
+                                     :default 
+                                     (do 
+                                       (utilities/warning (format "Invalid size attribute: %s" sz))
+                                       nil))
                            att1 (get-implicit-attributes this id)
                            att2 (assoc att1 :size sz2)]
                        (swap! maps* (fn [q](assoc q id att2)))
