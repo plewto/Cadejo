@@ -9,7 +9,7 @@
 (def +VERSION+ "0.2.0-SNAPSHOT")
 
 (def min-style 0)
-(def max-style 9)
+(def max-style 15)
 
 (def point-styles {:default 0
                    :dot 0

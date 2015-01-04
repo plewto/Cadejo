@@ -5,14 +5,21 @@
   (:import java.awt.geom.Line2D
            java.awt.geom.Path2D))
 
-
 (defn warning [msg]
   (println (format "sgwr WARNING: %s" msg))
   nil)
 
+;; (defn map-style [st]
+;;   (let [q (get constants/style-map st 0)]
+;;     (min constants/max-style 
+;;          (max constants/min-style 
+;;               (int (or q st))))))
+
 (defn map-style [st]
-  (let [q (get constants/style-map st 0)]
-    (int (or q st))))
+  (if (number? st)
+    (int (min constants/max-style (max constants/min-style st)))
+    (get constants/style-map st 0)))
+
 
 (defn member? [obj col]
   "Predicate true if obj is = to some element of collection."

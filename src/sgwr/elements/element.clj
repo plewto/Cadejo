@@ -1,13 +1,5 @@
 (println "--> sgwr.elements.element")
 
-;; NOTE:
-;;    By default elements inherit attributes from their parent.
-;;    The set-local-attributes! method is used to establish a local set of
-;;    attributes instead. The following attribute modification methods
-;;    implicitly creates a local attribute set: color!, style!, width!,
-;;    fill! and hide!
-;;
-
 (ns sgwr.elements.element
   "SgwrElement defines the basic interface for drawing elements.
   Each element is a node which automatically inherits properties and
@@ -136,43 +128,12 @@
 
   ;; Attributes
 
-  (attributes-inherited? 
-    [this]
-    "(attributes-inherited? this)
-     Returns true if this node defines it's own attribute set.")
-
-  (set-local-attributes! 
-    [this att]
-    [this]
-    "(set-local-attributes! this att)
-     (set-local-attributes! this)
-     Set attributes att as the local attributes for this. If att is not
-     specified a new attributes object is created and used.
-     Returns instance of sgwr.elements.attributes.Attributes")
-
-  (remove-local-attributes!
-    [this]
-    "(remove-local-attributes! this)
-     Remove local attributes if any, returns nil")
-
   (get-attributes
     [this]
     "(get-attributes this)
      Returns the attribute object used by this. 
      The result will either be locally defined or inherited. Care should
      be used when manipulating inherited attributes.")
-    
-  (add-attributes!
-    [this id]
-    "(add-attributes! this id)
-     Add a named attribute set to this. 
-     A local attributes object is implicitly created.
-     Returns a map")
-
-  (local-attributes-exist? 
-    [this id]
-    "(local-attributes-exist? this id)
-     Returns true if an attribute map with given id is defined for this.")
 
   (current-attribute-id
     [this]
@@ -197,91 +158,54 @@
      Remove the matching attribute map. It is not possible to remove an
     attribute map if the attributes are inherited.")
 
-  (color!
-    [this c]
+  (color! 
     [this id c]
-    "(color! this id c)
-     (color! this c)
-     Set the color for the current attributes. A local attributes object is
-     implicitly created if needed. If id is specified create or use an
-     attribute map with matching id. The color argument c may be either an
-     instance of java.awt.Color or any valid argument to seesaw.color/color 
-     Alpha values are supported. Returns the color object.")
-
-  (style!
-    [this st]
-    [this id st]
-    "(style! this id st)
-     (style! this st)
-     Set the style value for the current attribute. A local attributes
-     object is implicitly created if needed. If id is specified create or use
-     an attribute map with matching id. The style argument may be either
-     numeric or symbolic. See sgwr.constants/style-map for possible
-     symbolic values. Each element type interprets the style value
-     differently. For group elements style is ignored except to serve as an
-     inherited value. Point objects use style to define the point
-     shape. Line, rectangle and circle objects use style as a
-     dash-pattern. For text objects style sets the font.")
-
-  (width!
-    [this w]
-    [this id w]
-    "(width! this id w)
-     (width! this w)
-     Sets width (size) value for current attributes.  A local attributes
-     object is implicitly created if needed. If id is specified create or use
-     an attribute map with matching id. The width argument should be a
-     float value greater then 0.0")
-
-  (fill!
-    [this f]
-    [this id f]
-    "(fill! this id flag)
-     (fill! this flag)
-     Sets the fill flag for the current attributes.  A local attributes
-     object is implicitly created if needed. If id is specified create or use
-     an attribute map with matching id.") 
-
-  (hide!
-    [this f]
-    [this id f]
-    "(hide! this id flag)
-     (hide! this flag)
-     Sets the hide flag for the current attributes.  A local attributes
-     object is implicitly created if needed. If id is specified create or use
-     an attribute map with matching id. Hidden objects are not rendered")
+    [this c])
   
+  (style!
+    [this id st]
+    [this st])
+  
+  (width!
+    [this id w]
+    [this w])
+  
+  (size!
+    [this id sz]
+    [this sz])
+  
+  (fill!
+    [this id flag]
+    [this flag])
+  
+  (hide!
+    [this id flag]
+    [this flag])
+  
+  (color
+    [this])
+  
+  (style 
+    [this])
+  
+  (width
+    [this])
+
+  (size
+    [this])
+
+  (filled? 
+    [this])
+
+  (hidden? 
+    [this])
+ 
   (select! 
     [this f]
     "(select! this flag)
      Sets the selected flag for this. Note that selection status is not
      part of the attributes mechanism.")
-  
-  (color
-    [this]
-    "(color this)
-     Returns the current attribute color")
-
-  (style
-    [this]
-    "(style this)
-     Returns the current attributes style")
-
-  (width
-    [this]
-    "(width this)
-     Returns the current attributes width")
-
-  (filled? 
-    [this]
-    "(filled? this)
-     Returns the current attributes fill flag")
-
-  (hidden?
-    [this]
-    "(hidden? this)
-     Returns the current attributes hide flag")
-  
+ 
   (selected?
     [this]
     "(selected? this)
@@ -363,23 +287,8 @@
 )
 
 
-;; Add local attributes set to element 
-;; If one does not already exist.
-;;
-;; If id specified create attribute map with id
-;;
-(defn- add-implicit-local-attributes! 
-  ([elem]
-   (if (.attributes-inherited? elem)
-     (.set-local-attributes! elem)))
-
-  ([elem id]
-   (add-implicit-local-attributes! elem)
-   (.add-attributes! elem id)
-   (.use-attributes! elem id)))
-
-
-(def reserved-property-keys '(:id :color :style :width :size :filled :hidden :current-attributes :selected))
+(def reserved-property-keys '(:id :color :style :width :size :filled 
+                                  :hidden :current-attributes :selected))
 
 (defn create-element
   "(create-element etype fnmap)
@@ -403,8 +312,7 @@
          children* (atom [])
          locked-properties* (distinct (flatten (merge reserved-property-keys locked)))
          properties* (atom {})
-         attributes* (atom nil)
-         ;selected* (atom false)
+         attributes (att/attributes)
          update-hook* (atom (fn [& _] nil))
          points* (atom [])
          elem (reify SgwrElement
@@ -450,8 +358,9 @@
                  (if (not (get @locked-properties* key))
                    (swap! properties* (fn [q](dissoc q key)))
                    (do
-                     (utilities/warning (format "Can not remove locked property %s from %s element"
-                                                key (.element-type this)))
+                     (utilities/warning 
+                      (format "Can not remove locked property %s from %s element"
+                              key (.element-type this)))
                      nil)))
                
                (property-keys [this local-only]
@@ -474,112 +383,80 @@
                  (.has-property? this key false))
                
                ;; Attributes
-               
-               (attributes-inherited? [this]
-                 (not @attributes*))
-               
-               (set-local-attributes! [this att]
-                 (reset! attributes* att))
-               
-               (set-local-attributes! [this]
-                 (.set-local-attributes! this (att/attributes)))
-               
-               (remove-local-attributes! [this]
-                 (reset! attributes* nil))
-               
-               (get-attributes [this]
-                 (or @attributes*
-                     (and parent (.get-attributes parent))
-                     (do 
-                       ;(utilities/warning "Using global default attributes")
-                       att/default-attribute-set)))
-               
-               (add-attributes! [this id]
-                 (if (.attributes-inherited? this)
-                   (.set-local-attributes! this))
-                 (.add! (.get-attributes this) id))
-
-               (local-attributes-exist? [this id]
-                 (and (.attributes-inherited? this)
-                      (.exist? @attributes* id)))
-
+           
+               (get-attributes [this] attributes)
+                 
                (current-attribute-id [this]
                  (.current-id (.get-attributes this)))
                
                (attribute-keys [this]
                  (.keys (.get-attributes this)))
-               
-               ;; NOTE only update if local attributes defined.
+
                (use-attributes! [this id]
-                 (if @attributes*
-                   (.use! @attributes* id))
+                 (.use! attributes id)
                  (doseq [c @children*]
-                   (.use-attributes! c id))
-                 nil)
+                   (.use-attributes! c id)))
                
                (remove-attributes! [this id]
-                 (if (.attributes-inherited? this)
-                   (utilities/warning (format "can not remove id %s from inherited attributes" id))
-                   (.remove! @attributes* id)))
-
-               (color! [this c]
-                 (add-implicit-local-attributes! this)
-                 (.color! (.get-attributes this) c))
-
+                 (.remove! attributes id))
+         
                (color! [this id c]
-                 (add-implicit-local-attributes! this id)
-                 (.color! (.get-attributes this) c))
-
-               (style! [this st]
-                 (add-implicit-local-attributes! this)
-                 (.style! (.get-attributes this) st))
-
-               (style! [this id st]
-                 (add-implicit-local-attributes! this id)
-                 (.style! (.get-attributes this) st))
+                 (.color! attributes id c))
                
-               (width! [this w]
-                 (add-implicit-local-attributes! this)
-                 (.width! (.get-attributes this) w))
+               (color! [this c]
+                 (.color! attributes c))
+               
+               (style! [this id st]
+                 (.style! attributes id st))
+               
+               (style! [this st]
+                 (.style! attributes st))
                
                (width! [this id w]
-                 (add-implicit-local-attributes! this id)
-                 (.width! (.get-attributes this) w))
-
-               (fill! [this f]
-                 (add-implicit-local-attributes! this)
-                 (.fill! (.get-attributes this) f))
+                 (.width! attributes id w))
                
-               (fill! [this id f]
-                 (add-implicit-local-attributes! this id)
-                 (.fill! (.get-attributes this) f))
-
-               (hide! [this f]
-                 (add-implicit-local-attributes! this)
-                 (.hide! (.get-attributes this) f))
+               (width! [this w]
+                 (.width! attributes w))
                
-               (hide! [this id f]
-                 (add-implicit-local-attributes! this id)
-                 (.hide! (.get-attributes this) f))
+               (size! [this id sz]
+                 (.size! attributes id sz))
+               
+               (size! [this sz]
+                 (.size! attributes sz))
+               
+               (fill! [this id flag]
+                 (.fill! attributes id flag))
+               
+               (fill! [this flag]
+                 (.fill! attributes flag))
+               
+               (hide! [this id flag]
+                 (.hide! attributes id flag))
+               
+               (hide! [this flag]
+                 (.hide! attributes flag))
+               
+               (color [this]
+                 (.get-property this :color att/default-color))
+               
+               (style [this]
+                 (.get-property this :style att/default-style))
+               
+               (width [this]
+                 (.get-property this :width att/default-width))
+               
+               (size [this]
+                 (.get-property this :size att/default-size))
+               
+               (filled? [this]
+                 (.get-property this :filled nil))
+               
+               (hidden? [this]
+                 (.get-property this :hidden nil))
                
                (select! [this f]
                  (.put-property! this :selected f)
                  f)
-               
-               (color [this]
-                 (.color (.get-attributes this)))
-               
-               (style [this]
-                 (.style (.get-attributes this)))
-               
-               (width [this]
-                 (.width (.get-attributes this)))
-               
-               (filled? [this]
-                 (.filled? (.get-attributes this)))
-               
-               (hidden? [this]
-                 (.hidden? (.get-attributes this)))
                
                (selected? [this]
                  (.get-property this :selected))
@@ -631,26 +508,40 @@
                  (.dump this 10))
 
                (to-string [this verbosity depth]
-                 (let [sb (StringBuilder. )
-                       pad1 (utilities/tab depth)
+                 (let [pad1 (utilities/tab depth)
                        pad2 (utilities/tab (inc depth))]
-                   (.append sb (format "%s%s id = %s  points = %s   \n"
-                                       pad1
-                                       (.element-type this)
-                                       (get @properties* :id "")
-                                       @points*))
-                   (if (> verbosity 0)
-                     (do 
-                       (if (.attributes-inherited? this)
-                         (.append sb (format "%sinherited-attributes\n" pad2))
-                         (.append sb (.to-string @attributes* (dec verbosity)(inc depth))))
-                       (doseq [k (.property-keys this :local)]
-                         (.append sb (format "%s[%-12s] --> %s\n" pad2 k (.get-property this k))))
-                       (doseq [c (.children this)]
-                         (.append sb (.to-string c (dec verbosity)(inc depth))))
-                       ))
-                   (.toString sb)))
-               )]
+                   (cond (<= verbosity 0)
+                         (let [et (.element-type this)
+                               id (.get-property this :id)]
+                           (format "-- %s%s element id = %s  %s\n"
+                                   pad1 et id (if (not (= et :group))
+                                                (str "points = " (.points this))
+                                                "")))
+
+                         (= verbosity 1)
+                         (let [head (.to-string this 0 depth)
+                               sb (StringBuilder.)]
+                           (.append sb head)
+                           (.append sb (.to-string attributes 1 (inc depth)))
+                           (.append sb (format "%sProperties %s\n" pad2 (.property-keys this)))
+                           (doseq [c @children*]
+                             (.append sb (.to-string c 1 (inc depth))))
+                           (.toString sb))
+
+                         :default
+                         (let [pad3 (utilities/tab (+ depth 2))
+                               head (.to-string this 0 depth)
+                               sb (StringBuilder.)]
+                           (.append sb head)
+                           (.append sb (format "%scs %s\n" pad2 (.to-string (.coordinate-system this))))
+                           (.append sb (.to-string attributes 2 (inc depth)))
+                           (.append sb (format "%sProperties\n" pad2))
+                           (doseq [k (.property-keys this :local)]
+                             (.append sb (format "%s[%-12s] -> %s\n" pad3 k (.get-property this k))))
+                           (doseq [c @children*]
+                             (.append sb (.to-string c 2 (inc depth) )))
+                           (.toString sb)) ))) )]
+     (.set-client-element! attributes elem)
      (.put-property! elem :id etype)
      (.put-property! elem :color nil)
      (.put-property! elem :style nil)

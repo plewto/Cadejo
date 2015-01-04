@@ -7,10 +7,13 @@
 
 (defn str-rep-color [c]
   "Returns string representation of color as vector of int RGB values"
-  (let [r (.getRed c)
-        g (.getGreen c)
-        b (.getBlue c)]
-    (format "[%3d %3d %3d]" r g b)))
+  (if c
+    (let [r (.getRed c)
+          g (.getGreen c)
+          b (.getBlue c)
+          a (.getAlpha c)]
+      (format "[%3d %3d %3d %3d]" r g b a))
+    "nil"))
 
 ;; As with seesaw.color/color except that if the first argument 
 ;; is an instance of java.awt.Color it becomes the return color.

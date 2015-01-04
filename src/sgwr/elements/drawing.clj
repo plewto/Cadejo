@@ -128,7 +128,7 @@
                 (.render this))
 
               )]
-    (.set-local-attributes! root-group)
+    ;(.set-local-attributes! root-group)
     (reset! cpan* (proxy [JPanel][true]
                     (paint [g]
                       (.drawImage g @image* constants/null-transform-op 0 0))))
