@@ -80,10 +80,12 @@
                            (if (neg? p)(+ p (* 2 Math/PI)) p))]
                  [r (inv-unit-hook phi)]))
 
-             (clip [this q]
-               (let [[u v] q]
-                 [(umath/clamp u 0 (:width @params*))
-                  (umath/clamp v 0 (:height @params*))]))
+             ;; (clip [this q]
+             ;;   (let [[u v] q]
+             ;;     [(umath/clamp u 0 (:width @params*))
+             ;;      (umath/clamp v 0 (:height @params*))]))
+
+             (clip [this q] q)
 
              (distance [this p1 p2]
                (let [[r1 phi1] p1

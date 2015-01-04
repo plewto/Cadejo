@@ -44,7 +44,9 @@
   (clip 
     [this q]
     "Clip 'physical' point q to canvas bounds
-     For point q [u v]  0 <= u < width  and 0 <= v < height")
+     For point q [u v]  0 <= u < width  and 0 <= v < height
+     clip is an optional method, if not requiered it should 
+     at as an identity and return q unchanged.")
 
   (distance 
     [this p1 p2]
@@ -83,7 +85,7 @@
 
     (inv-map [this q] q)
 
-    (clip [this q] [nil nil])
+    (clip [this q] q)
 
     (distance [this p1 p2]
       (math/distance p1 p2))

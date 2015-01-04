@@ -54,17 +54,20 @@
                (let [[x y] p
                      u (int (+ @x-offset* (* @x-scale* x)))
                      v (int (+ @y-offset* (* @y-scale* y)))]
-                 (.clip this [u v])))
+                 ;(.clip this [u v])))
+                 [u v]))
 
              (inv-map [this q]
                (let [[u v] q]
                  [(/ (- u @x-offset*) @x-scale*)
                   (/ (- v @y-offset*) @y-scale*)])) 
 
+             ;; (clip [this q]
+             ;;   (let [[u v] q]
+             ;;     [(math/clamp u 0 w)
+             ;;      (math/clamp v 0 h)]))
              (clip [this q]
-               (let [[u v] q]
-                 [(math/clamp u 0 w)
-                  (math/clamp v 0 h)]))
+               q)
              
              (distance [this p1 p2]
                (math/distance p1 p2))
