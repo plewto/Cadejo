@@ -13,6 +13,8 @@
   (:require [seesaw.core :as ss])
   (:import 
            java.awt.image.BufferedImage
+           java.awt.event.MouseMotionListener
+           java.awt.event.MouseListener
            javax.swing.JPanel
            )
   )
@@ -50,10 +52,34 @@
   (zoom-out
     [this])
 
-  (set-view!
+  (set-view
     [this v])
 
-  (restore-view!
+  (restore-view
+    [this])
+
+  (add-mouse-motion-listener
+    [this mml])
+
+  (remove-mouse-motion-listener
+    [this mml])
+
+  (add-mouse-listener
+    [this ml])
+
+  (remove-mouse-listener
+    [this ml])
+
+  (mouse-where
+    [this raw]
+    [this])
+  
+  (mouse-pressed-where
+    [this raw]
+    [this])
+
+  (mouse-released-where
+    [this raw]
     [this])
 
   )
@@ -66,6 +92,10 @@
         [width height](.canvas-bounds cs)
         image* (atom (BufferedImage. width height BufferedImage/TYPE_INT_ARGB))
         cpan* (atom nil)
+        mouse-dragged* (atom false)            ; true if mouse position results from drag
+        mouse-position* (atom [0 0])           ; as pixel [row col]
+        mouse-pressed-position* (atom [0 0])   ; as pixel [row col]
+        mouse-released-position* (atom [0 0])  ; as pixel [row col]
         drw (reify SgwrDrawing
 
               (root [this] root-group)
@@ -133,21 +163,68 @@
                 (.zoom! cs (/ 1.0 @zoom-ratio*))
                 (.render this))
 
-              (set-view! [this v]
+              (set-view [this v]
                 (.set-view! cs v)
                 (.render this))
               
-              (restore-view! [this]
+              (restore-view [this]
                 (.restore-view! cs)
                 (.render this))
 
+              (add-mouse-motion-listener [this mml]
+                (.addMouseMotionListener @cpan* mml))
+
+              (remove-mouse-motion-listener [this mml]
+                (.removeMoseMotionListener @cpan* mml))
+
+              (add-mouse-listener [this ml]
+                (.addMouseListener @cpan* ml))
+
+              (remove-mouse-listener [this ml]
+                (.removeMouseListener @cpan* ml))
+
+              (mouse-where [this raw]
+                (if raw @mouse-position* (.inv-map cs @mouse-position*)))
+
+              (mouse-where [this]
+                (.mouse-where this false))
+
+              (mouse-pressed-where [this raw]
+                (if raw @mouse-pressed-position* (.inv-map cs @mouse-pressed-position*)))
+
+              (mouse-pressed-where [this]
+                (.mouse-pressed-position this false))
+
+              
+              (mouse-released-where [this raw]
+                (if raw @mouse-released-position* (.inv-map cs @mouse-released-position*)))
+
+              (mouse-released-where [this]
+                (.mouse-released-where this false))
               )]
-    ;(.set-local-attributes! root-group)
+
     (reset! cpan* (proxy [JPanel][true]
                     (paint [g]
                       (.drawImage g @image* constants/null-transform-op 0 0))))
     (ss/config! @cpan* :size [width :by height])
     (.set-coordinate-system! root-group cs)
+    (.addMouseMotionListener @cpan* (proxy [MouseMotionListener][]
+                                      (mouseDragged [ev]
+                                        (reset! mouse-dragged* true)
+                                        (reset! mouse-position* [(.getX ev)(.getY ev)]))
+                                      
+                                      (mouseMoved [ev]
+                                        (reset! mouse-dragged* false)
+                                        (reset! mouse-position* [(.getX ev)(.getY ev)]))))
+    (.addMouseListener @cpan* (proxy [MouseListener][]
+                                (mouseClicked [_])
+                                (mouseEntered [_])
+                                (mouseExited [_])
+                                (mousePressed [ev]
+                                  (reset! mouse-pressed-position* [(.getX ev)(.getY ev)]))
+                                (mouseReleased [ev]
+                                  (reset! mouse-released-position* [(.getX ev)(.getY ev)]))))
+
     drw))
 
 
