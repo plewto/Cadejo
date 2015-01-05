@@ -129,6 +129,6 @@
 
 (ss/show! f)
 
-(defn rl [](use 'sgwr.demos.demo1 :reload))
-(defn rla [](use 'sgwr.demos.demo1 :reload-all))
-(defn exit [](System/exit 0))
+;; (defn rl [](use 'sgwr.demos.demo1 :reload))
+;; (defn rla [](use 'sgwr.demos.demo1 :reload-all))
+;; (defn exit [](System/exit 0))
