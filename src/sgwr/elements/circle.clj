@@ -38,8 +38,8 @@
     [[x0 y0][x2 y2]]))
 
 (defn- distance-helper [obj q]
-  (let [pc (.get-property! obj :center)
-        radius (.get-property! obj :radius)
+  (let [pc (.get-property obj :center)
+        radius (.get-property obj :radius)
         dc (math/distance pc q)
         distance (- dc radius)]
     [(<= dc radius)
@@ -49,7 +49,7 @@
   (first (distance-helper obj q)))
 
 (defn distance-fn [obj q]
-  (second (distance-helper q)))
+  (second (distance-helper obj q)))
 
 (defn- bounds-fn [obj points]
   (let [x (map first points)
