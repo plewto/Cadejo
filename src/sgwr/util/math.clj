@@ -63,6 +63,14 @@
           mb (slope q p0)]
       (= ma mb))))
 
+(defn midpoint [p0 p1]
+  "Returns midpoint of line segment [p0 p1]"
+  (let [[x0 y0] p0
+        [x1 y1] p1
+        xc (mean x0 x1)
+        yc (mean y0 y1)]
+    [xc yc]))
+
 (defn distance [p0 p1]
   "Returns distance between points."
   (let [[x0 y0] p0

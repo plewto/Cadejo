@@ -90,3 +90,34 @@
     (.fill! obj :default fill)
     (.use-attributes! obj :default)
     obj))
+
+;; Create circle by center point and radius
+;;
+(defn circle-r [parent pc radius & args]
+  (let [[xc yc] pc
+        x0 (- xc radius)
+        y0 (- yc radius)
+        x1 (+ xc radius)
+        y1 (+ yc radius)
+        arglst* (atom [parent [x0 y0][x1 y1]])]
+    (doseq [a args]
+      (swap! arglst* (fn [q](conj q a))))
+    (let [obj (apply circle @arglst*)]
+      (.put-property! obj :defined-by :center-plus-radius)
+      obj)))
+
+;; Creatre circle by to opposing points
+;;
+(defn circle-2p [parent p0 p1 & args]
+  (let [pc (math/midpoint p0 p1)
+        r (math/distance p0 pc)
+        arglst* (atom [parent pc r])]
+    (doseq [a args]
+      (swap! arglst* (fn [q](conj q a))))
+    (let [obj (apply circle-r @arglst*)]
+      (.put-property! obj :defined-by :oposing-points)
+      (.put-property! obj :construction-points [p0 p1])
+      obj)))
+
+
+              
