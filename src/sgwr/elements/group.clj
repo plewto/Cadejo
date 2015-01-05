@@ -58,28 +58,6 @@
 
 (def locked-properties [])
 
-;; (defn group 
-;;   "(group parent)
-;;    (group parent id)
-;;
-;;    Create a group object. Group objects are SgwrElements which contain
-;;    other SgwrElements, possibly other groups. 
-;;
-;;    A group contains a point q if any of its child elements contains
-;;    the point. The distance between a point q and a group is defined as
-;;    the shortest distance between the point and any of the group's
-;;    children."
-;;
-;;   ([parent](group parent :group))
-;;   ([parent id]
-;;    (let [obj (sgwr.elements.element/create-element :group
-;;                                                    parent
-;;                                                    group-function-map
-;;                                                    locked-properties)]
-;;      (.put-property! obj :id id)
-;;      (if parent (.set-parent! obj parent))
-;;      obj)))
-
 (defn group [parent & {:keys [id color style size width fill hide]
                        :or {id :new-group
                             color (ucolor/color :white)
