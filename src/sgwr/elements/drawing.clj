@@ -203,6 +203,7 @@
                 (.mouse-released-where this false))
               )]
 
+    (.put-property! root-group :drawing drw)
     (reset! cpan* (proxy [JPanel][true]
                     (paint [g]
                       (.drawImage g @image* constants/null-transform-op 0 0))))

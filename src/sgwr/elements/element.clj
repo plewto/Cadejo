@@ -300,7 +300,7 @@
 
 
 (def reserved-property-keys '[:id :color :style :width :size :filled 
-                              :hidden :selected])
+                              :hidden :selected :drawing])
 
 (defn create-element
   "(create-element etype fnmap)
