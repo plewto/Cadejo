@@ -273,6 +273,11 @@
     "Returns the distance between this object and point q.
      If an object contains the point the the distance is 0.")
 
+  ;; Transformations
+  
+  (translate!
+    [this p])
+
   (to-string 
     [this verbosity depth])
 
@@ -512,6 +517,24 @@
                (distance [this q]
                  (let [dfn (:distance-fn fnmap)]
                    (dfn this q)))
+
+               ;; (translate [this q]
+               ;;   (let [transfn (:translate-fn fnmap)]
+               ;;     (transfn this @points* q)
+               ;;     @points*))
+
+               (translate! [this q]
+                 (let [acc* (atom [])
+                       [xt yt] q]
+                   (doseq [p @points*]
+                     (let [[x0 y0] p]
+                       (swap! acc* (fn [a](conj a [(+ x0 xt)(+ y0 yt)])))))
+                   (reset! points* @acc*)
+                   (doseq [c (.children this)]
+                     (.translate! c q))
+                   @points*))
+                           
+
 
                (dump [this verbosity depth]
                  (println (.to-string this verbosity depth)))

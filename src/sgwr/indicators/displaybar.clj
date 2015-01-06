@@ -1,12 +1,11 @@
 (ns sgwr.indicators.displaybar
   (:require [sgwr.cs.native :as native])
-  (:require [sgwr.elements.group :as group])
+  (:require [sgwr.elements.drawing :as drawing])
   (:require [sgwr.indicators.char])
   (:require [sgwr.indicators.sixteen :as sixteen])
   (:require [sgwr.indicators.basic-char :as basic])
   (:require [sgwr.indicators.dot-matrix :as matrix])
-  ;(:require [sgwr.util.color :as uc])
-)
+  (:require [sgwr.util.utilities :as utilities]))
 
 (def char-width sgwr.indicators.char/char-width)
 (def char-height sgwr.indicators.char/char-height)
@@ -15,6 +14,12 @@
 
 (defprotocol DisplayBar
 
+  (widget-keys
+    [this])
+  
+  (widget
+    [this key])
+  
   (colors! 
     [this inactive active])
 
@@ -27,16 +32,7 @@
 
   (display! 
     [this text render?]
-    [this text])
-
-  (get-group
-    [this])
-  
-  
-
-  
-  )
-
+    [this text]))
 
 (defn- get-char-constructor [selector]
   (if (fn? selector) 
@@ -50,15 +46,19 @@
 
 (defn displaybar 
 
+  ([char-count]
+   (displaybar char-count :matrix))
+
   ([char-count ctype] 
    (let [w (+ (* 2 pad)(* char-count (+ char-width gap)))
          h (+ (* 2 pad) char-height)
-         x-offset pad
+         x-offset (if (= ctype :matrix) (* 2 pad) pad)
          y-offset pad
-         cs (native/native-coordinate-system w h)
-         grp (group/group nil :id :displaybar)]
+         drw (drawing/native-drawing w h)
+         grp (.root drw)]
      (displaybar grp x-offset y-offset char-count ctype)))
 
+  ;; ctype - one of :basic, 16 or :sixteen, :matrix
   ([grp x-offset y-offset char-count ctype]
    (let [elements (let [chr-fn (get-char-constructor ctype)
                         acc* (atom [])
@@ -75,6 +75,16 @@
                               (.render drw))))
          obj (reify DisplayBar
                
+               (widget-keys [this]
+                 [:group :drawing])
+
+               (widget [this key]
+                 (cond (= key :group) grp
+                       (= key :drawing)(.get-property grp :drawing)
+                       :default
+                       (utilities/warning (format "DisplayBar does not have %s widget" key))))
+                 
+
                (colors! [this inactive active]
                  (doseq [e elements]
                    (.colors! e inactive active)))
@@ -100,44 +110,5 @@
                    (render-drawing render?)))
                
                (display! [this text]
-                 (.display! this text true))
-               
-               (get-group [this] grp))]
+                 (.display! this text true)) )]
      obj)))
-                  
-;;; TEST TEST TEST TEST TEST TEST   ;;; TEST TEST TEST TEST TEST TEST   ;;; TEST TEST TEST TEST TEST TEST   
-
-(require '[seesaw.core :as ss])
-(require '[sgwr.elements.drawing :as drw])
-
-(def drw (drw/native-drawing 600 600))
-(def root (.root drw))
-(.background! drw :black)
-
-;; (def dbar1 (displaybar root 20 100 8 :matrix))
-;; (def dbar2 (displaybar root 20 200 8 16))
-;; (def dbar3 (displaybar root 20 300 8 :basic))
-
-
-(def dbar1 (displaybar 8 :matrix))
-
-(.set-parent! (.get-group dbar1) root)
-
-(def barlst [dbar1   ])
-
-(defn foo [text]
-  (doseq [db barlst]
-    (.display! db text))
-  (.render drw))
-
-
-
-(.render drw)
-(def f (ss/frame :content (.canvas drw)
-                 :on-close :dispose
-                 :size [600 :by 600]))
-(ss/show! f)
-
-
-(defn rl [] (use 'sgwr.indicators.displaybar :reload))
-(defn rla [] (use 'sgwr.indicators.displaybar :reload-all))
