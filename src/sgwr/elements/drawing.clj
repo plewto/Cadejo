@@ -7,7 +7,7 @@
   (:require [sgwr.cs.native :as native-cs])
   (:require [sgwr.cs.cartesian :as cartesian-cs])
   (:require [sgwr.cs.polar :as polar-cs])
-  (:require [sgwr.util.color :as ucolor])
+  (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.stroke :as ustroke])
   (:require [sgwr.util.utilities :as utilities])
   (:require [seesaw.core :as ss])
@@ -87,7 +87,7 @@
 
 (defn drawing [cs]
   (let [root-group (sgwr.elements.group/group nil :id :root)
-        background-color* (atom (ucolor/color :black))
+        background-color* (atom (uc/color :black))
         enable-render* (atom true)
         [width height](.canvas-bounds cs)
         image* (atom (BufferedImage. width height BufferedImage/TYPE_INT_ARGB))
@@ -105,7 +105,7 @@
               (canvas [this] @cpan*)
 
               (background! [this bg]
-                (reset! background-color* (ucolor/color bg)))
+                (reset! background-color* (uc/color bg)))
 
               (render [this]
                 (if @enable-render*

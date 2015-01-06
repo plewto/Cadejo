@@ -3,7 +3,7 @@
 (ns sgwr.elements.text 
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.element])
-  (:require [sgwr.util.color :as ucolor])
+  (:require [sgwr.util.color :as uc])
   (:import java.awt.Font
            java.awt.BasicStroke
            java.awt.geom.GeneralPath))
@@ -75,7 +75,7 @@
 
 (defn text [parent p txt & {:keys [id color style size]
                             :or {id :new-text
-                                 color (ucolor/color :white)
+                                 color (uc/color :white)
                                  style 0
                                  size 6.0}}]
   (let [obj (sgwr.elements.element/create-element :text parent text-function-map locked-properties)]

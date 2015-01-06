@@ -4,7 +4,7 @@
 
 (ns sgwr.elements.rectangle
   (:require [sgwr.util.math :as math])
-  (:require [sgwr.util.color :as ucolor])
+  (:require [sgwr.util.color :as uc])
   (:require [sgwr.elements.element])
   (:require [seesaw.graphics :as ssg]))
 
@@ -92,7 +92,7 @@
 
 (defn rectangle [parent p0 p1  & {:keys [id color style width fill]
                                   :or {id :new-rectangle
-                                       color (ucolor/color :white)
+                                       color (uc/color :white)
                                        style 0
                                        width 1.0
                                        fill nil}}]

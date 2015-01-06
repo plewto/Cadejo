@@ -1,6 +1,6 @@
 (ns sgwr.elements.group
   (:require [sgwr.constants :as constants])
-  (:require [sgwr.util.color :as ucolor])
+  (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.elements.rectangle :as rect]))
 
@@ -60,7 +60,7 @@
 
 (defn group [parent & {:keys [id color style size width fill hide]
                        :or {id :new-group
-                            color (ucolor/color :white)
+                            color (uc/color :white)
                             style 0
                             size 1.0
                             width 1.0

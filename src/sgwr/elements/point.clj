@@ -5,7 +5,7 @@
   with different degrees of drawing zoom."
 
   (:require [sgwr.elements.element])
-  (:require [sgwr.util.color :as ucolor])
+  (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities])
   (:import java.awt.geom.Line2D
@@ -103,7 +103,7 @@
 (defn point 
   ([parent p & {:keys [id color style size]
                 :or {id :new-point
-                     color (ucolor/color :white)
+                     color (uc/color :white)
                      style 0
                      size 1.0}}]
    (let [obj (sgwr.elements.element/create-element :point 

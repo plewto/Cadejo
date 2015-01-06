@@ -13,7 +13,7 @@
   (:require [sgwr.elements.circle :as circle])
   (:require [sgwr.elements.text :as text])
   (:require [sgwr.elements.image :as image])
-  (:require [sgwr.util.color :as ucolor])
+  (:require [sgwr.util.color :as uc])
   (:require [seesaw.core :as ss])
   (:import  java.awt.event.MouseMotionListener
             java.awt.event.MouseListener))
@@ -31,9 +31,9 @@
   (text/text group-text pos txt :color nil :style nil :size nil))
 
 ;; Draw grid lines
-(let [c1 (ucolor/color [64 16 196])
-      c2 (ucolor/darker c1 0.35)
-      c3 (ucolor/modify (ucolor/darker c2) :h 0.05)
+(let [c1 (uc/color [64 16 196])
+      c2 (uc/darker c1 0.35)
+      c3 (uc/modify (uc/darker c2) :h 0.05)
       grp (grp/group root :id :axis-group :color c1)]
   (doseq [p (range 10 100 10)]
     (line/line grp [p -95][p 95] :color c2)
@@ -50,7 +50,7 @@
   (line/line grp [0 -100][-100 0] :color c3))
 
 ; Label quadrants
-(let [c1 (ucolor/color [196 100 116 128])
+(let [c1 (uc/color [196 100 116 128])
       st 2
       sz 12
       grp (grp/group root :id :Quadrants)]
@@ -77,9 +77,9 @@
 ;; Mouse Listener 
 ;;
 (def grp2 (grp/group root :id :quad2))
-(let [gray (ucolor/color :gray)
-      yellow (ucolor/color :yellow)
-      yellow2 (ucolor/color [255 255 0 32])
+(let [gray (uc/color :gray)
+      yellow (uc/color :yellow)
+      yellow2 (uc/color [255 255 0 32])
       c1 (circle/circle grp2 [-70 30][-50 50] :color :gray)
       r1 (rect/rectangle grp2 [-50 50][-20 80] :color :gray)
       r2 (rect/rectangle grp2 [-90 10][-10 90] :style :dash :color :gray)
@@ -111,7 +111,7 @@
                        g (min 255 (* p dg))
                        b (min 255 (* p db))
                        a (min 255 (* p da))
-                       c (ucolor/color [r g b a])]
+                       c (uc/color [r g b a])]
                    (swap! acc* (fn [q](conj q c)))))
                @acc*)
       c1 (circle/circle grp3 [-80 -80][-20 -20] :color (nth colors 0) :fill true)

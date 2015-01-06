@@ -1,8 +1,8 @@
 (ns sgwr.elements.attributes
-  (:require [sgwr.util.color :as ucolor])
+  (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.utilities :as utilities]))
 
-(def default-color (ucolor/color :white))
+(def default-color (uc/color :white))
 (def default-style 0)
 (def default-width 1.0)
 (def default-size 1.0)
@@ -91,7 +91,7 @@
                                          width nil
                                          size nil}}]
   {:id id
-   :color (ucolor/color color)
+   :color (uc/color color)
    :style (utilities/map-style style)
    :width width
    :size size
@@ -109,7 +109,7 @@
 (defn- str-rep-attribute-map [att]
   (format "{:id %-8s :color %-17s :style %4s :width %4s :size %4s :filled %-5s :hidden %-5s}"
           (:id att)
-          (ucolor/str-rep-color (:color att))
+          (uc/str-rep-color (:color att))
           (:style att)
           (:width att)
           (:size att)
@@ -165,7 +165,7 @@
                      (reset! current-id* id))
                    
                    (color! [this id c]
-                     (let [c2 (ucolor/color c)
+                     (let [c2 (uc/color c)
                            att1 (get-implicit-attributes this id)
                            att2 (assoc att1 :color c2)]
                        (swap! maps* (fn [q](assoc q id att2)))

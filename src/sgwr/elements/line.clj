@@ -4,7 +4,7 @@
 
 (println "--> sgwr.elements.line")
 (ns sgwr.elements.line
-  (:require [sgwr.util.color :as ucolor])
+  (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.elements.element])
   (:import java.awt.geom.Line2D))
@@ -52,7 +52,7 @@
 
 (defn line [parent p0 p1 & {:keys [id color style width]
                             :or {id :new-line
-                                 color (ucolor/color :white)
+                                 color (uc/color :white)
                                  style 0
                                  width 1.0}}]
   (let [obj (sgwr.elements.element/create-element :line parent line-function-map locked-properties)]
