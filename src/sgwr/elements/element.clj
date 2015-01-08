@@ -21,9 +21,11 @@
   the current attribute for a parent node causes it to send a message
   to all of it's children nodes. If the child nodes defines an
   attribute by the same name the it switches to that attribute."
+
+  (:require [sgwr.constants :as constants])
+  (:require [sgwr.elements.attributes :as att])
  
   (:require [sgwr.util.utilities :as utilities])
-  (:require [sgwr.elements.attributes :as att])
   (:require [sgwr.cs.coordinate-system]))
 
 (defprotocol SgwrElement
@@ -33,6 +35,9 @@
     "(element-type this)
      Returns keyword identification for element type")
 
+  (widget-type
+    [this])
+    
   (parent
     [this]
     "(parent this)
@@ -273,10 +278,14 @@
     "Returns the distance between this object and point q.
      If an object contains the point the the distance is 0.")
 
+
+
   ;; Transformations
   
   (translate!
     [this p])
+
+  
 
   (to-string 
     [this verbosity depth])
@@ -325,6 +334,9 @@
 
   ([etype parent fnmap locked]
    (let [parent* (atom parent)
+         widget-type (if (utilities/member? etype constants/widget-types)
+                       etype
+                       nil)
          coordinate-system* (atom nil)
          children* (atom [])
          locked-properties* (distinct (flatten (merge reserved-property-keys locked)))
@@ -336,6 +348,8 @@
        
                (element-type [this] etype)
                
+               (widget-type [this] widget-type)
+
                (parent [this] @parent*)
 
                (set-parent! [this p]
@@ -517,11 +531,6 @@
                (distance [this q]
                  (let [dfn (:distance-fn fnmap)]
                    (dfn this q)))
-
-               ;; (translate [this q]
-               ;;   (let [transfn (:translate-fn fnmap)]
-               ;;     (transfn this @points* q)
-               ;;     @points*))
 
                (translate! [this q]
                  (let [acc* (atom [])

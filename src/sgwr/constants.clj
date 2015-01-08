@@ -8,6 +8,9 @@
 
 (def +VERSION+ "0.2.0-SNAPSHOT")
 
+(def widget-types '[:button ])
+
+
 (def min-style 0)
 (def max-style 15)
 

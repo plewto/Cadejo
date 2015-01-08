@@ -27,6 +27,9 @@
   (root 
     [this])
 
+  (widget-group 
+    [this])
+
   (canvas-bounds
     [this])
 
@@ -81,12 +84,12 @@
   (mouse-released-where
     [this raw]
     [this])
-
-  )
-    
+)
 
 (defn drawing [cs]
   (let [root-group (sgwr.elements.group/group nil :id :root)
+        widget-group (sgwr.elements.group/widget-group root-group :widget-root :id :widgets)
+        active-widget* (atom nil)
         background-color* (atom (uc/color :black))
         enable-render* (atom true)
         [width height](.canvas-bounds cs)
@@ -99,6 +102,8 @@
         drw (reify SgwrDrawing
 
               (root [this] root-group)
+
+              (widget-group [this] widget-group)
 
               (canvas-bounds [this] (.canvas-bounds cs))
 
@@ -201,6 +206,7 @@
 
               (mouse-released-where [this]
                 (.mouse-released-where this false))
+
               )]
 
     (.put-property! root-group :drawing drw)
@@ -215,17 +221,55 @@
                                         (reset! mouse-position* [(.getX ev)(.getY ev)]))
                                       
                                       (mouseMoved [ev]
-                                        (reset! mouse-dragged* false)
-                                        (reset! mouse-position* [(.getX ev)(.getY ev)]))))
+                                        (let [p [(.getX ev)(.getY ev)]
+                                              cs (.coordinate-system widget-group)
+                                              q (.inv-map cs p)]
+                                          (reset! mouse-dragged* false)
+                                          (reset! mouse-position* p)
+                                          (let [previous @active-widget*
+                                                i* (atom (dec (.child-count widget-group)))]
+                                            (reset! active-widget* nil)
+                                            (while (not (or @active-widget* (neg? @i*)))
+                                              (let [c (nth (.children widget-group) @i*)]
+                                                (if (.contains? c q)
+                                                  (reset! active-widget* c))
+                                                (swap! i* dec)))
+                                            (cond (= previous @active-widget*) ; no change
+                                                  nil 
+
+                                                  (and previous (not @active-widget*)) ; exit
+                                                  (let [exfn (.get-property previous :action-mouse-exited)]
+                                                    (do
+                                                      (exfn previous ev)))
+
+                                                  (and (not previous) @active-widget*) ; enter
+                                                  (let [enfn (.get-property @active-widget* :action-mouse-entered)]
+                                                    (do 
+                                                      (enfn @active-widget* ev)))
+                                                  
+                                                  :default
+                                                  nil))))))
+
     (.addMouseListener @cpan* (proxy [MouseListener][]
-                                (mouseClicked [_])
                                 (mouseEntered [_])
                                 (mouseExited [_])
-                                (mousePressed [ev]
-                                  (reset! mouse-pressed-position* [(.getX ev)(.getY ev)]))
-                                (mouseReleased [ev]
-                                  (reset! mouse-released-position* [(.getX ev)(.getY ev)]))))
 
+                                (mouseClicked [ev]
+                                  (if @active-widget*
+                                    (let [cfn (.get-property @active-widget* :action-mouse-clicked)]
+                                      (cfn @active-widget* ev))))
+
+                                (mousePressed [ev]
+                                  (reset! mouse-pressed-position* [(.getX ev)(.getY ev)])
+                                  (if @active-widget*
+                                    (let [cfn (.get-property @active-widget* :action-mouse-pressed)]
+                                      (cfn @active-widget* ev))))
+
+                                (mouseReleased [ev]
+                                  (reset! mouse-released-position* [(.getX ev)(.getY ev)])
+                                  (if @active-widget*
+                                    (let [cfn (.get-property @active-widget* :action-mouse-released)]
+                                      (cfn @active-widget* ev))))))
     drw))
 
 
