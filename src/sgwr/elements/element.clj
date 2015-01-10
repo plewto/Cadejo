@@ -153,6 +153,12 @@
      attribute map is defined then ignore the change. In either case
      broadcast the change to all child nodes. Returns nil.")
 
+  (use-temp-attributes!
+    [this id])
+
+  (restore-attributes!
+    [this])
+
   (remove-attributes!
     [this id]
     "(remove-attributes! this id)
@@ -339,6 +345,7 @@
                        nil)
          coordinate-system* (atom nil)
          children* (atom [])
+         attribute-history* (atom '())
          locked-properties* (distinct (flatten (merge reserved-property-keys locked)))
          properties* (atom {})
          attributes (att/attributes)
@@ -420,7 +427,7 @@
                  (.current-id (.get-attributes this)))
                
                (attribute-keys [this]
-                 (.keys (.get-attributes this)))
+                 (.keys (.attribute-keys (.get-attributes this))))
 
                (use-attributes! [this id]
                  (.use! attributes id)
@@ -431,6 +438,18 @@
                    (doseq [c (.children this)]
                      (.use-attributes! c id))))
                
+               (use-temp-attributes! [this id]
+                 (swap! attribute-history* (fn [q](conj q (.current-attribute-id this))))
+                 (.use-attributes! this id))
+
+               (restore-attributes! [this]
+                 (if (pos? (count @attribute-history*))
+                   (let [old (first @attribute-history*)]
+                     (.use-attributes! this old)
+                     (swap! attribute-history* (fn [q](pop q)))
+                     old)
+                   nil))
+
                (remove-attributes! [this id]
                  (.remove! attributes id))
          
@@ -542,8 +561,6 @@
                    (doseq [c (.children this)]
                      (.translate! c q))
                    @points*))
-                           
-
 
                (dump [this verbosity depth]
                  (println (.to-string this verbosity depth)))
