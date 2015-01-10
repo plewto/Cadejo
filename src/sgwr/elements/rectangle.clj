@@ -90,7 +90,7 @@
 
 (def locked-properties [:center :width :height :corner-radius])
 
-(defn rectangle [parent p0 p1  & {:keys [id color style width fill]
+(defn rectangle [parent p0 p1 & {:keys [id color style width fill]
                                   :or {id :new-rectangle
                                        color (uc/color :white)
                                        style 0
@@ -106,3 +106,16 @@
     (.fill! obj :default fill)
     (.use-attributes! obj :default)
     obj))
+
+
+;; Rctangle defined by point, width and height
+;;
+(defn rectangle-wh [parent p0 w h & args]
+  (let [[x0 y0] p0
+        x1 (+ x0 w)
+        y1 (+ y0 h)
+        arglst*  (atom [parent p0 [x1 y1]])]
+    (doseq [a args]
+      (swap! arglst* (fn [q](conj q a))))
+    (apply rectangle @arglst*)))
+        
