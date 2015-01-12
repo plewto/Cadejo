@@ -6,6 +6,10 @@
 
 (defprotocol CoordinateSystem
 
+  (cs-type 
+    [this]
+    "Returns keyword for coordinate system type")
+
   (canvas-bounds
     [this]
     "Returns size of 'physical' canvas as pair [width height]")
@@ -65,6 +69,14 @@
      Maps pixel colum to y value
      If not implemented shold display warning message and return it's argument")
 
+  (x-scale 
+    [this]
+    "Returns x scale factor")
+
+  (y-scale
+    [this]
+    "Returns y scale factor")
+
   (clip 
     [this q]
     "Clip 'physical' point q to canvas bounds
@@ -93,6 +105,8 @@
 (def default-coordinate-system 
   (reify CoordinateSystem
 
+    (cs-type [this] :native)
+
     (canvas-bounds [this] 
       (utilities/warning "default-coordinate-system view canvasbounds is nil")
       nil)
@@ -116,6 +130,10 @@
     (map-y [this y] y)
 
     (inv-map-y [this v] v)
+
+    (x-scale [this] 1)
+
+    (y-scale [this] 1)
 
     (clip [this q] q)
 

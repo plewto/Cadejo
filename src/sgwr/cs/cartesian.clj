@@ -18,6 +18,8 @@
         zoom-ratio* (atom 1.0)
         cs (reify cs/CoordinateSystem
 
+             (cs-type [this] :cartesian)
+             
              (canvas-bounds [this] 
                bounds)
 
@@ -73,6 +75,10 @@
 
              (inv-map-y [this v]
                (/ (- v @y-offset*) @y-scale*))
+
+             (x-scale [this] @x-scale*)
+
+             (y-scale [this] @y-scale*)
 
              (clip [this q]
                q)

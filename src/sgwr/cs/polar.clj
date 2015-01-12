@@ -35,6 +35,8 @@
         zoom-ratio* (atom 1.0)
         cs (reify cs/CoordinateSystem
 
+             (cs-type [this] :polar)
+
              (canvas-bounds [this]
                [(:width @params*)(:height @params*)])
 
@@ -96,6 +98,12 @@
              (inv-map-y [this v]
                (utilities/warning "polar-coordinate-system inv-map-y is not defined")
                v)
+
+             (x-scale [this]
+               (:scale @params*))
+
+             (y-scale [this]
+               (:scale @params*))
 
              (clip [this q] q)
 

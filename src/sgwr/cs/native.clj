@@ -14,6 +14,8 @@
 
     (reify cs/CoordinateSystem
 
+      (cs-type [this] :native)
+
       (canvas-bounds [this] 
         bounds)
 
@@ -38,6 +40,10 @@
       (map-y [this y] (int y))
 
       (inv-map-y [this v] (float v))
+
+      (x-scale [this] 1)
+
+      (y-scale [this] 1)
 
       (clip [this q]
         (let [[u v] q]
