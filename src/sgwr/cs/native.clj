@@ -31,6 +31,14 @@
       (inv-map [this q]
         [(float (first q))(float (second q))])
 
+      (map-x [this x] (int x))
+
+      (inv-map-x [this u] (float u))
+
+      (map-y [this y] (int y))
+
+      (inv-map-y [this v] (float v))
+
       (clip [this q]
         (let [[u v] q]
           [(math/clamp u 0 w)

@@ -62,10 +62,18 @@
                  [(/ (- u @x-offset*) @x-scale*)
                   (/ (- v @y-offset*) @y-scale*)])) 
 
-             ;; (clip [this q]
-             ;;   (let [[u v] q]
-             ;;     [(math/clamp u 0 w)
-             ;;      (math/clamp v 0 h)]))
+             (map-x [this x]
+               (int (+ @x-offset* (* @x-scale* x))))
+
+             (inv-map-x [this u]
+               (/ (- u @x-offset*) @x-scale*))
+
+             (map-y [this y]
+               (int (+ @y-offset* (* @y-scale* y))))
+
+             (inv-map-y [this v]
+               (/ (- v @y-offset*) @y-scale*))
+
              (clip [this q]
                q)
              

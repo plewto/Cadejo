@@ -41,12 +41,36 @@
     "Inversion of map-point, converts pixel coordinates [column row]
      to 'real' point [x y]")
 
+  (map-x 
+    [this x]
+    "Optional method 
+    Maps horizontal x value to pixel column
+    If not implemented shold display warning message and return it's argument")
+
+  (inv-map-x
+    [this u]
+    "Optional method
+     Maps pixel row to x value
+     If not implemented shold display warning message and return it's argument")
+
+  (map-y
+    [this y]
+    "Optional method 
+    Maps vertical y value to pixel row
+    If not implemented shold display warning message and return it's argument")
+
+  (inv-map-y
+    [this v]
+    "Optional method
+     Maps pixel colum to y value
+     If not implemented shold display warning message and return it's argument")
+
   (clip 
     [this q]
     "Clip 'physical' point q to canvas bounds
      For point q [u v]  0 <= u < width  and 0 <= v < height
      clip is an optional method, if not requiered it should 
-     at as an identity and return q unchanged.")
+     ct as an identity and return q unchanged.")
 
   (distance 
     [this p1 p2]
@@ -84,6 +108,14 @@
     (map-point [this p] p)
 
     (inv-map [this q] q)
+
+    (map-x [this x] x)
+
+    (inv-map-x [this u] u)
+
+    (map-y [this y] y)
+
+    (inv-map-y [this v] v)
 
     (clip [this q] q)
 

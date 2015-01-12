@@ -1,6 +1,7 @@
 (ns sgwr.cs.polar
   (:require [sgwr.cs.coordinate-system :as cs])
-  (:require [sgwr.util.math :as umath]))
+  (:require [sgwr.util.math :as umath])
+  (:require [sgwr.util.utilities :as utilities]))
 
 (defn polar-coordinate-system [size r & {:keys [units]
                                          :or {units :rad}}]
@@ -80,10 +81,21 @@
                            (if (neg? p)(+ p (* 2 Math/PI)) p))]
                  [r (inv-unit-hook phi)]))
 
-             ;; (clip [this q]
-             ;;   (let [[u v] q]
-             ;;     [(umath/clamp u 0 (:width @params*))
-             ;;      (umath/clamp v 0 (:height @params*))]))
+             (map-x [this x]
+               (utilities/warning "polar-coordinate-system map-x is not defined")
+               x)
+
+             (inv-map-x [this u]
+               (utilities/warning "polar-coordinate-system inv-map-x is not defined")
+               u)
+             
+             (map-y [this y]
+               (utilities/warning "polar-coordinate-system map-y is not defined")
+               y)
+             
+             (inv-map-y [this v]
+               (utilities/warning "polar-coordinate-system inv-map-y is not defined")
+               v)
 
              (clip [this q] q)
 
