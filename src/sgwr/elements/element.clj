@@ -71,6 +71,7 @@
     "(set-parent! this parent)
      Sets the parent node for this. The parent's add-child method is
      automatically called.
+     parent argument may be nil.
      Returns vector of parent's children")
 
   (add-child! 
@@ -80,10 +81,24 @@
      Do not call add-child! directly, use add-parent! instead.
      Returns vector of parent's child node.")
 
+  (remove-children!
+    [this predicate]
+    [this]
+    "(remove-children! this predicate)
+     (remove-children this)
+     Removes all child nodes for which predicate is true
+     If predicate not specified removes all children
+     Sets parent of all removed children to nil
+     Returns resulting list of children")
+  
   (children 
     [this]
+    [this predicate]
     "(children this)
-     Returns vector of child nodes")
+     (children this predicate)
+     If predicate provided return only those child nodes for which 
+     predicate is true.
+     Returns vector")
 
   (child-count 
     [this]
@@ -313,8 +328,6 @@
     [this factors ref-point]
     [this factors])
 
-    
-
   (to-string 
     [this verbosity depth])
 
@@ -383,15 +396,30 @@
 
                (set-parent! [this p]
                  (reset! parent* p)
-                 (.add-child! p this))
+                 (if p 
+                   (.add-child! p this)))
                
                (add-child! [this other]
                  (if (utilities/not-member? other @children*)
                    (do
                      (swap! children* (fn [q](conj q other))))))
                
+               (remove-children! [this predicate]
+                 (let [old (.children this predicate)]
+                   (swap! children* (fn [q](remove predicate q)))
+                   (doseq [c old](.set-parent! c nil))
+                   @children*))
+
+               (remove-children! [this]
+                 (doseq [c @children*]
+                   (.set-parent! c nil))
+                 (reset! children* []))
+
                (children [this]
                  @children*)
+
+               (children [this predicate]
+                 (filter predicate @children*))
 
                (child-count [this] (count @children*))
 
