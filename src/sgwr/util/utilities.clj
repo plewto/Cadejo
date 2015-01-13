@@ -27,6 +27,21 @@
 (defn not-member? [obj col]
   (not (member? obj col)))
 
+
+;; Takes nested list or vector and returns 
+;; list with one level of nesting removed.
+;; (flatten-1 '((a b c)(d e f))   --> (a b c d e f)
+;; (flatten-1 '((a b c)(d (e f))) --> (a b c d (e f))
+;;
+(defn flatten-1 [lst]
+  (let [acc* (atom '())]
+    (doseq [e lst]
+      (if (seq? e)
+        (doseq [f e]
+          (swap! acc* (fn [q](cons f q))))
+        (swap! acc* (fn [q](cons e q)))))
+    (reverse @acc*)))
+
 (defn tab 
   ([n]
      (if (> n 0)

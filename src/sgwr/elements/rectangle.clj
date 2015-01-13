@@ -69,8 +69,6 @@
         width (math/abs (- x0 x1))
         height (math/abs (- y0 y1))]
     (.put-property! obj :center pc)
-    (.put-property! obj :width width)
-    (.put-property! obj :height height)
     points))
 
 (defn- bounds-fn [obj points]
@@ -88,7 +86,7 @@
                                        :update-fn update-fn
                                        :bounds-fn bounds-fn})
 
-(def locked-properties [:center :width :height :corner-radius])
+(def locked-properties [:center :corner-radius])
 
 (defn rectangle [parent p0 p1 & {:keys [id color style width fill]
                                   :or {id :new-rectangle

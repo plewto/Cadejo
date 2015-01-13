@@ -55,6 +55,9 @@
           dy (- (second p0)(second p1))]
       (/ dy dx))))
 
+(defn slope->angle [slope]
+  (Math/atan slope))
+
 (defn colinear? [q p0 p1]
   "Predicate returns true if point q is colinear to segment [p0,p1]"
   (if (vertical? p0 p1)

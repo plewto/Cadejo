@@ -1,7 +1,5 @@
 ;; TODO:
-;;     1. Define two-point (diameter) constructor
-;;     2. Define center, radius constructor
-;;     3. define three-point constructor
+;;     1. define three-point constructor
 
 (ns sgwr.elements.circle
   (:require [sgwr.util.color :as uc])

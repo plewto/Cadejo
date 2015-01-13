@@ -22,11 +22,34 @@
   to all of it's children nodes. If the child nodes defines an
   attribute by the same name the it switches to that attribute."
 
+  (:use [cadejo.util.trace])
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.attributes :as att])
- 
   (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.cs.coordinate-system]))
+
+(defn- default-translation [obj offsets]
+  (let [[tx ty] offsets
+        acc* (atom [])]
+    (doseq [p (.points obj)]
+      (let [[x1 y1] p
+            x2 (+ x1 tx)
+            y2 (+ y1 ty)]
+        (swap! acc* (fn [q](conj q [x2 y2])))))
+    (.set-points! obj @acc*)))
+
+(defn- default-scale [obj factors ref-point]
+  (let [[sx sy] factors
+        [x0 y0] ref-point
+        kx (* x0 (- 1 sx))
+        ky (* y0 (- 1 sy))
+        acc* (atom [])]
+    (doseq [p (.points obj)]
+      (let [[x1 y1] p
+            x2 (+ (* x1 sx) kx)
+            y2 (+ (* y1 sy) ky)]
+        (swap! acc* (fn [q](conj q [x2 y2])))))
+    (.set-points! obj @acc*)))
 
 (defprotocol SgwrElement
 
@@ -147,11 +170,8 @@
      Return list of keywords for all defined attribute maps")
 
   (use-attributes!
-    [this id]
-    "(use-attributes! this id)
-     Make attributes with id the 'current' attributes if no matching
-     attribute map is defined then ignore the change. In either case
-     broadcast the change to all child nodes. Returns nil.")
+    [this id propegate]
+    [this id])
 
   (use-temp-attributes!
     [this id])
@@ -284,14 +304,16 @@
     "Returns the distance between this object and point q.
      If an object contains the point the the distance is 0.")
 
-
-
   ;; Transformations
   
   (translate!
-    [this p])
+    [this offsets])
 
-  
+  (scale!
+    [this factors ref-point]
+    [this factors])
+
+    
 
   (to-string 
     [this verbosity depth])
@@ -427,28 +449,37 @@
                  (.current-id (.get-attributes this)))
                
                (attribute-keys [this]
-                 (.keys (.attribute-keys (.get-attributes this))))
+                 (.attribute-keys (.get-attributes this)))
+
+               (use-attributes! [this id propegate]
+                 (let [attkeys (.attribute-keys this)]
+                   (if (utilities/member? id attkeys)
+                     (let [att (.get-attributes attributes id)
+                           akeys [:color :style :size :width :filled :hidden]]
+                       (.use! attributes id)
+                       (doseq [k akeys]
+                         (let [val (k att)]
+                           (if val (.put-property! this k (k att)))))))
+                   (if propegate
+                     (doseq [c (.children this)]
+                       (.use-attributes! c id)))))
 
                (use-attributes! [this id]
-                 (.use! attributes id)
-                 (let [att (.get-attributes attributes id)
-                       akeys [:color :style :size :width :filled :hidden]]
-                   (doseq [k akeys]
-                     (.put-property! this k (k att)))
-                   (doseq [c (.children this)]
-                     (.use-attributes! c id))))
+                 (.use-attributes! this id true))
                
                (use-temp-attributes! [this id]
                  (swap! attribute-history* (fn [q](conj q (.current-attribute-id this))))
-                 (.use-attributes! this id))
+                 (.use-attributes! this id false)
+                 (doseq [c (.children this)]
+                   (.use-temp-attributes! c id)))
 
                (restore-attributes! [this]
                  (if (pos? (count @attribute-history*))
                    (let [old (first @attribute-history*)]
                      (.use-attributes! this old)
-                     (swap! attribute-history* (fn [q](pop q)))
-                     old)
-                   nil))
+                     (swap! attribute-history* (fn [q](pop q)))))
+                 (doseq [c (.children this)]
+                   (.restore-attributes! c)))
 
                (remove-attributes! [this id]
                  (.remove! attributes id))
@@ -550,17 +581,18 @@
                (distance [this q]
                  (let [dfn (:distance-fn fnmap)]
                    (dfn this q)))
+    
+               (translate! [this offsets]
+                 (let [trfn (get fnmap :translation-fn default-translation)]
+                   (trfn this offsets)))
 
-               (translate! [this q]
-                 (let [acc* (atom [])
-                       [xt yt] q]
-                   (doseq [p @points*]
-                     (let [[x0 y0] p]
-                       (swap! acc* (fn [a](conj a [(+ x0 xt)(+ y0 yt)])))))
-                   (reset! points* @acc*)
-                   (doseq [c (.children this)]
-                     (.translate! c q))
-                   @points*))
+               (scale! [this factors ref-point]
+                 (let [scfn (get fnmap :scale-fn default-scale)]
+                   (scfn this factors ref-point)))
+
+               (scale! [this factors]
+                 (.scale! this factors [0 0]))
+                   
 
                (dump [this verbosity depth]
                  (println (.to-string this verbosity depth)))

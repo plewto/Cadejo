@@ -1,11 +1,15 @@
 (ns sgwr.elements.attributes
+  (:require [sgwr.constants :as constants])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.utilities :as utilities]))
 
-(def default-color (uc/color :white))
+(def default-color (uc/color constants/default-color))
 (def default-style 0)
 (def default-width 1.0)
 (def default-size 1.0)
+
+(def rollover-color (uc/color constants/default-rollover-color))
+
 
 (defprotocol SgwrAttributes
 
@@ -85,7 +89,7 @@
     [this verbosity]
     [this]))
 
-(defn- create-attributes-map [id & {:keys [color style width size]
+(defn- create-attribute-map [id & {:keys [color style width size]
                                     :or {color nil
                                          style nil
                                          width nil
@@ -98,12 +102,14 @@
    :filled nil
    :hidden nil})
 
-(defn- create-default-attributes-map []
-  (create-attributes-map :default 
-                         :color :white
-                         :style 0
-                         :size 1.0
-                         :width 1.0))
+(def default-attribute-map (create-attribute-map :default
+                                                 :color default-color
+                                                 :style 0
+                                                 :size 1.0
+                                                 :width 1.0))
+
+(def rollover-attribute-map (create-attribute-map :rollover
+                                                  :color rollover-color))
   
 
 (defn- str-rep-attribute-map [att]
@@ -129,13 +135,14 @@
   ([](attributes nil))
 
   ([client]
-   (let [maps* (atom {:default (create-default-attributes-map)})
+   (let [maps* (atom {:default default-attribute-map
+                      :rollover rollover-attribute-map})
          client* (atom nil)
          current-id* (atom :default)
          sgwratt (reify SgwrAttributes
                    
                    (add! [this id]
-                     (let [att (create-attributes-map id)]
+                     (let [att (create-attribute-map id)]
                        (swap! maps* (fn [m](assoc m id att)))
                        (.attribute-keys this)))
                    
@@ -146,7 +153,8 @@
                      (.attribute-keys this))
                    
                    (remove-all! [this]
-                     (reset! maps* {:default (create-default-attributes-map)})
+                     (reset! maps* {:default default-attribute-map
+                                    :rollover rollover-attribute-map})
                      (reset! current-id* :defaut))
 
                    (attribute-keys [this]

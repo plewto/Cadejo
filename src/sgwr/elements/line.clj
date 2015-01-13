@@ -1,9 +1,6 @@
-;; TODO
-;;    1. Add orthogonal constructors
-;;    2. Add point-slope constructors
-
 (println "--> sgwr.elements.line")
 (ns sgwr.elements.line
+  (:require [sgwr.constants :as constants])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.elements.element])
@@ -64,4 +61,34 @@
     (.width! obj :default width)
     (.use-attributes! obj :default)
     obj))
-                             
+
+(defn vline [parent p0 length & args]
+  (let [[x0 y0] p0
+        x1 x0
+        y1 (+ y0 length)
+        arglst* (atom [parent p0 [x1 y1]])]
+     (doseq [a args]
+      (swap! arglst* (fn [q](conj q a))))
+    (apply line @arglst*)))
+
+(defn hline [parent p0 length & args]
+  (let [[x0 y0] p0
+        x1 (+ x0 length)
+        y1 y0
+        arglst* (atom [parent p0 [x1 y1]])]
+     (doseq [a args]
+      (swap! arglst* (fn [q](conj q a))))
+    (apply line @arglst*)))
+
+;; Define line given point, length and slope
+;;
+(defn line-ps [parent p0 length slope & args]
+  (let [[x0 y0] p0
+        theta (math/slope->angle slope)
+        x1 (+ x0 (* length (Math/cos theta)))
+        y1 (+ y0 (* length (Math/sin theta)))
+        arglst* (atom [parent p0 [x1 y1]])]
+    (doseq [a args]
+      (swap! arglst* (fn [q](conj q a))))
+    (apply line @arglst*)))
+

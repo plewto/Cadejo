@@ -1,4 +1,5 @@
 (ns sgwr.elements.group
+  (:use [cadejo.util.trace])
   (:require [sgwr.constants :as constants])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.utilities :as utilities])
@@ -49,28 +50,41 @@
       (swap! acc* (fn [q](conj q (.points c)))))
     (partition 2 (flatten @acc*))))
 
+(defn- translation-fn [obj offsets]
+  (doseq [c (.children obj)]
+    (.translate! c offsets)))
+
+(defn- scale-fn [obj factors ref-point]
+  (doseq [c (.children obj)]
+    (.scale! c factors ref-point)))
+
+
 (def ^:private group-function-map {:shape-fn shape-function
                                    :contains-fn contains-fn
                                    :distance-fn distance-fn
                                    :update-fn (fn [& _] [])
                                    :points-fn points-fn
+                                   :translation-fn translation-fn
+                                   :scale-fn scale-fn
                                    :bounds-fn bounds-fn})
 
 (def locked-group-properties [])
 
-(defn group [parent & {:keys [id color style size width fill hide]
-                       :or {id :new-group
+(defn group [parent & {:keys [etype id color style size width fill hide]
+                       :or {etype :group
+                            id :new-group
                             color (uc/color :white)
                             style 0
                             size 1.0
                             width 1.0
                             fill false
                             hide false}}]
-  (let [obj (sgwr.elements.element/create-element :group
+  (let [obj (sgwr.elements.element/create-element etype
                                                    parent
                                                    group-function-map
                                                    locked-group-properties)]
     (if parent (.set-parent! obj parent))
+    (.put-property! obj :id id)
     (.color! obj :default color)
     (.style! obj :default style)
     (.size! obj :default size)
