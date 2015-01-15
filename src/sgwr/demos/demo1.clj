@@ -13,6 +13,7 @@
   (:require [sgwr.elements.circle :as circle])
   (:require [sgwr.elements.text :as text])
   (:require [sgwr.elements.image :as image])
+  (:require [sgwr.util.color :as uc])
   (:require [seesaw.core :as ss]))
 
 
@@ -20,6 +21,7 @@
 
 (def drw (drw/native-drawing 600 600))
 (def root (.root drw))
+(def cs (.coordinate-system root))
 (text/text root [60 20] "Sgwr Demo 1 ~ 600 x 600 Native Coordinate System" :size 8)
 (line/line root [10 30][590 30])
 
@@ -61,15 +63,15 @@
         w (+ 1 (* p 2))]
     (line/line root [x y0][x y1] :width w)))
 
-(text-obj [10 280] "Color with Transparency")
+(text-obj [10 280] "Color Transparency & Gradients")
 (let [y0 290
       y1 (+ y0 64 )
       y2 (+ y0 15)
       y3 (+ y2 64 )]
   (rect/rectangle root [ 20 y1][125 y0] :fill true :color :red)
-  (rect/rectangle root [145 y1][270 y0] :fill true :color :green)
+  (rect/rectangle root [145 y1][270 y0] :fill true :color (uc/gradient [145 y1] :green [160 (+ y1 10)] :yellow cs true))
   (rect/rectangle root [290 y1][415 y0] :fill true :color :blue)
-  (rect/rectangle root [435 y1][560 y0] :fill true :color :gray)
+  (rect/rectangle root [435 y1][560 y0] :fill true :color (uc/gradient [435 y1] :red [560 y0] :blue cs false)) 
   (rect/rectangle root [ 83 y2][187 y3] :fill true :color [255 255   0 128])
   (rect/rectangle root [228 y2][332 y3] :fill true :color [255   0 255 128])
   (rect/rectangle root [373 y2][477 y3] :fill true :color [  0 255 255 128]))
@@ -92,7 +94,7 @@
 (def l2 (line/line       grp2 [400 530][520 490]))
 
 (doseq [e [c2 r2 l2 c1 r1]]
-  (set-attributes! e :alpha :hide false))
+  (set-attributes! e :alpha :hide :no))
 
 (doseq [e [c2 r2 l2] ]
   (set-attributes! e :beta :hide true))
@@ -114,7 +116,6 @@
                                 id (ss/config src :id)]
                             (.use-attributes! grp1 id)
                             (.render drw)))))
-        
 
 (def pan-south (ss/grid-panel :rows 1
                               :items [jb-show-all jb-hide-1 jb-hide-2]))

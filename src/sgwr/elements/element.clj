@@ -303,8 +303,16 @@
     [this]
     "(bounds this)
      Returns vector [[x0 y0][x1 y1]] defining the rectangular bounds for
-     this object. Point and text objects return a single point 
+     this object within current coordinate-system.
+     Point and text objects return a single point 
      [[x y][x y]] regardless for their on screen image.")
+
+  (physical-bounds 
+    [this]
+    "(physical-bounds this)
+     Returns vector [[u0 v0][u1 v1]] defining rectangular bounds
+     of this in pixels.
+     Point and text objects return single point [[u v][u v]]")
 
   (contains?
     [this q]
@@ -601,6 +609,13 @@
                (bounds [this]
                  (let [bf (:bounds-fn fnmap)]
                    (bf this (.points this))))
+
+               (physical-bounds [this]
+                 (let [[p0 p1](.bounds this)
+                       cs (.coordinate-system this)
+                       q0 (.map-point cs p0)
+                       q1 (.map-point cs p1)]
+                   [q0 q1]))
 
                (contains? [this q]
                  (let [cfn (:contains-fn fnmap)]

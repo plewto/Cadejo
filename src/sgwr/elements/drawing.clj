@@ -51,6 +51,7 @@
   ;; Removes all elements from widget group
   ;; Returns BufferedImage
   (flatten!
+    [this include-widgets]
     [this])
 
   (image
@@ -134,7 +135,7 @@
                         (.drawImage g2d @background-image* constants/null-transform-op 0 0)
                         )
                       (do 
-                        (.setColor g2d @background-color*)
+                        (.setPaint g2d @background-color*)
                         (.fillRect g2d 0 0 width height)
                         ))
                     (doseq [e (.children root-group)]
@@ -147,10 +148,12 @@
                   (doseq [c (.children element)]
                     (.render-node this g2d c))
                   
-                  (if (not (.hidden? element))
+                  ;(if (not (.hidden? element))
+                  (if (or (= (.hidden? element) :no)(not (.hidden? element)))
                     (let [etype (.element-type element)
                           shape (.shape element)]
-                    (.setColor g2d (.color element))
+                    ;(.setColor g2d (.color element))
+                      (.setPaint g2d (.color element))
                     (cond (= etype :point)
                           (do (.setStroke g2d ustroke/default-stroke)
                               (.draw g2d shape))
@@ -168,13 +171,15 @@
                                 (.fill g2d shape)
                                 (.draw g2d shape))))))))
 
-              (flatten! [this]
-                (.render this)
+              (flatten! [this include-widgets]
                 (let [bg (.image this)]
                   (.remove-children! root-group (fn [q](not (= (.get-property q :id) :widget-root))))
-                  (.remove-children! widget-root)
+                  (if include-widgets (.remove-children! widget-root))
                   (.background! this bg)
                   bg))
+
+              (flatten! [this]
+                (.flatten! this false))
 
               (image [this]
                 (.render this)

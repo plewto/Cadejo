@@ -51,10 +51,20 @@
     [this id sz]
     [this sz])
 
+  ;; fill value may be
+  ;; false - inherit fill attribute from parent
+  ;; true  - element is filled
+  ;; :no   - element is not to be filled 
+  ;;
   (fill!
     [this id flag]
     [this flag])
-
+  
+  ;; hide value may be
+  ;; false - inhert hidden flag from parent
+  ;; true  - object is hidden
+  ;; :no   - object is NOT hidden
+  ;;
   (hide!
     [this id flag]
     [this flag])

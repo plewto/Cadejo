@@ -3,7 +3,8 @@
   (:require [sgwr.util.math :as math])
   (:require [seesaw.color :as ssc])
   (:import java.awt.Color
-           ;java.awt.GradientPaint
+           java.awt.GradientPaint
+           java.awt.geom.Point2D
            ))
 
 
@@ -19,16 +20,27 @@
 
 ;; As with seesaw.color/color except that if the first argument 
 ;; is an instance of java.awt.Color it becomes the return color.
+;; The first argument may also be an instance of java.awt.GradientPaint
 ;; A nil argument returns nil
 ;;
 (defn color [& args]
-  (cond (= (type (first args)) Color) (first args)
-        ;(= (type (first args)) GradientPaint)(first args)
-        (nil? (first args)) nil
-        (keyword? (first args))(ssc/color (first args))
-        (or (list? (first args))(vector? (first args)))
-        (apply ssc/color (first args))
-        :default (apply ssc/color args)))
+  (let [ct (type (first args))]
+    (cond 
+      (= ct Color) (first args)
+
+      (= ct GradientPaint) (first args)
+
+      (nil? (first args)) nil
+      
+      (keyword? (first args))(ssc/color (first args))
+
+      (or (list? (first args))(vector? (first args)))
+      (apply ssc/color (first args))
+
+      :default (apply ssc/color args)
+
+      )))
+
 
 (defn crossmix [a b mix]
   "Return color mixture
@@ -109,30 +121,25 @@
   ([c]
      (brighter c 1.667)))
 
-(defn gradient-list [a b count]
-  "Returns list of count colors which crossfade between a and b
-   a - Color, initial color
-   b - Color, final color
-   count - int, number of colors"
-  (let [acc* (atom '())]
-    (dotimes [n count]
-      (let [w (/ (float n) count)]
-        (swap! acc* (fn [n](conj n (crossmix a b w))))))
-    (reverse @acc*)))
 
-(defn bi-gradient-list [a1 a2 b1 b2 breakpoint count]
-  "Returns list of count colors defining 2 gradients
-   a1 - Color, initial color of gradient a
-   a2 - Color, final color of gradient a
-   b1 - Color, initial color of gradient b
-   b2 - Color, final color of gradient b
-   breakpoint - float, 0.0 <= breakpoint <= 1.0, relative position of 
-                gradient crossover
-   count - int, total number of colors"
-  (let [bp (float (math/clamp breakpoint 0 1))
-        b-count (int (* count bp))
-        a-count (- count b-count)
-        acc* (atom (gradient-list a1 a2 a-count))]
-    (doseq [b (reverse (gradient-list b1 b2 b-count))]
-        (swap! acc* (fn [n](conj n b))))
-    @acc*))
+;; Produce linear gradient 
+;; p0     - Point vector [x0 y0]
+;; c0     - Color at p0, see color function
+;; p1     - Point 
+;; c1     - Color at p1
+;; cs     - Coordinate system
+;; cyclic - Boolean if true
+;;
+;; Returns instance of java.awt.GradientPaint.
+;; Note gradients are not modified by object transformations
+;; (translation, scale, etc.)
+;;
+(defn gradient 
+  ([p0 c0 p1 c1 cs cyclic]
+   (let [[u0 v0](.map-point cs p0)
+         [u1 v1](.map-point cs p1)
+         q0 (java.awt.geom.Point2D$Double. u0 v0)
+         q1 (java.awt.geom.Point2D$Double. u1 v1)]
+     (GradientPaint. q0 (color c0) q1 (color c1) cyclic))))
+
+
