@@ -8,7 +8,11 @@
 
 (def +VERSION+ "0.2.0-SNAPSHOT")
 
-(def widget-types '[:button ])
+(def widget-types '[:button :radio-button :checkbox])
+
+(def default-color :lightgray)
+(def default-rollover-color :red)
+(def default-pressed-color  :yellow)
 
 
 (def min-style 0)

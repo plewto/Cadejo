@@ -5,10 +5,29 @@
 (def ^:private k-rad (/ Math/PI 180))
 (def ^:private k-deg (/ 1 k-rad))
 
-(defn clamp [n mn mx]
+(defn clamp 
   "Restrict value
    Returns n such that  mn <= n <= mx"
-  (max (min n mx) mn))
+  ([n mn mx]
+   (max (min n mx) mn))
+  ([n minmax]
+   (clamp n (first minmax)(second minmax))))
+
+(defn linear-function [x0 y0 x1 y1]
+  (let [dx (- x0 x1)
+        dy (- y0 y1)
+        a (/ (float dy) dx)
+        b (- y0 (* a x0))]
+    (fn [x](+ (* a x) b))))
+
+(defn clipped-linear-function [x0 y0 x1 y1]
+  (let [dx (- x0 x1)
+        dy (- y0 y1)
+        a (/ (float dy) dx)
+        b (- y0 (* a x0))]
+    (fn [x](clamp (+ (* a x) b)(min y0 y1)(max y0 y1)))))
+
+
 
 (defn mean [& args]
   "Return arithmetic average of arguments"
@@ -111,13 +130,3 @@
         c (point-line-distance q [x1 y1][x1 y0])
         d (point-line-distance q [x0 y0][x1 y0])]
     (min a b c d)))
-
-;; (defn circle-contains? [q pc r]
-;;   (let [d (math/distance q pc)]
-;;     (<= d r)))
-
-;; (defn circle-distance [q pc r]
-;;   (let [d (math/distance q pc)]
-;;     (if (<= d r) 
-;;       0
-;;       (- d r))))

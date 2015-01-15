@@ -14,6 +14,7 @@
         q0 (.map-point cs p0)
         [x y] q0
         img (.get-property iobj :image)]
+    (println (format "DEBUG render-image p0 -> %s  q0 -> %s" p0 q0))
     (.drawImage g2d img constants/null-transform-op (int x)(int y))))
 
 (defn- update-fn [obj points]
@@ -52,11 +53,23 @@
         y1 (apply max y)]
     [[x0 y0][x1 y1]]))
 
+
+(defn- scale-fn [& _] )
+
 (def ^:private image-function-map {:shape-fn (constantly constants/null-shape)
                                    :contains-fn (fn [obj q](first (distance-helper obj q)))
                                    :distance-fn (fn [obj q](second (distance-helper obj q)))
                                    :update-fn update-fn
+                                   :scale-fn scale-fn
                                    :bounds-fn bounds-fn})
+
+
+(defn clone-buffered-image [src]
+  (let [w (.getWidth src)
+        h (.getHeight src)
+        dst (BufferedImage. w h BufferedImage/TYPE_INT_ARGB)]
+    (.setData dst (.getData src))
+    dst))
 
 (def locked-properties [:image]) 
                                   
@@ -70,14 +83,28 @@
     The contains and distance concepts for an image are identical to
     rectangle objects. "
 
-  ([parent p0 w h]
+  ([parent p0 w h & {:keys [id image-src]
+                     :or {id nil
+                          image-src nil
+                          }}]
    (let [obj (sgwr.elements.element/create-element :image
                                                    parent 
                                                    image-function-map
                                                    locked-properties)
-         img (BufferedImage. w h BufferedImage/TYPE_INT_ARGB)]
+         ;img (or image-src (BufferedImage. w h BufferedImage/TYPE_INT_ARGB))]
+         img (if image-src 
+               (clone-buffered-image image-src)
+               (BufferedImage. w h BufferedImage/TYPE_INT_ARGB))]  
      (.put-property! obj :image img)
-     (.put-property! obj :id :image)
+     (.put-property! obj :id (or id :image))
      (.set-points! obj [p0])
      (if parent (.set-parent! obj parent))
      obj)))
+
+;; (defn drawing->image [parent p0 drw & {:keys [id]
+;;                                        :or {id nil }}]
+;;   (.render drw)
+;;   (let [[w h](.canvas-bounds drw)
+;;         iobj (image parent p0 w h :id id)]
+;;     (.put-property! iobj :image (.image drw))
+;;     iobj))
