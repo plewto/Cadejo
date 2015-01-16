@@ -75,7 +75,7 @@
         pos->val (math/clipped-linear-function y0 v0 y1 v1)
         val->pos (math/clipped-linear-function v0 y0 v1 y1)
         grp (group/group parent :etype :slider :id id)]
-    (if box-color
+
       (let [x2 (- x box-gap)
             x3 (+ x box-gap)
             y2 (- (min y0 y1) box-gap)
@@ -87,7 +87,9 @@
                                 :width box-width
                                 :fill fill-box?)]
             (.put-property! box :corner-radius box-radius)
-            (.put-property! grp :box box)))
+            (.put-property! grp :box box)
+            (.hide! box (not box-color)))
+
     (let [track1 (line/line grp [x y0][x y1]
                              :id :track1
                              :color (uc/color track1-color)
@@ -171,19 +173,21 @@
         pos->val (math/clipped-linear-function x0 v0 x1 v1)
         val->pos (math/clipped-linear-function v0 x0 v1 x1)
         grp (group/group parent :etype :slider :id id)]
-    (if box-color
-      (let [x2 (- (min x0 x1) box-gap)
-            x3 (+ (max x0 x1) box-gap)
-            y2 (- y box-gap)
-            y3 (+ y box-gap)
-            box (rect/rectangle grp [x2 y2][x3 y3]
-                                :id :box
-                                :color (uc/color box-color)
-                                :style box-style
-                                :width box-width
-                                :fill fill-box?)]
-            (.put-property! box :corner-radius box-radius)
-            (.put-property! grp :box box)))
+
+    (let [x2 (- (min x0 x1) box-gap)
+          x3 (+ (max x0 x1) box-gap)
+          y2 (- y box-gap)
+          y3 (+ y box-gap)
+          box (rect/rectangle grp [x2 y2][x3 y3]
+                              :id :box
+                              :color (uc/color box-color)
+                              :style box-style
+                              :width box-width
+                              :fill fill-box?)]
+      (.put-property! box :corner-radius box-radius)
+      (.put-property! grp :box box)
+      (.hide! box (not box-color)))
+
     (let [track1 (line/line grp [x0 y][x1 y]
                              :id :track1
                              :color (uc/color track1-color)
