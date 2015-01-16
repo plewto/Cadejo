@@ -333,10 +333,10 @@
   (let [cs (cartesian-cs/cartesian-coordinate-system w h p0 p1)]
     (drawing cs)))
 
-
 (defn polar-drawing 
-  ([w r units]
-   (let [cs (polar-cs/polar-coordinate-system w r :units units)]
-     (drawing cs)))
-  ([w r]
-   (polar-drawing w r :rad)))
+  ([w h r & {:keys [origin unit]
+             :or {origin [nil nil]
+                  unit :rad}}]
+   (let [cs (polar-cs/polar-coordinate-system w h r :origin origin :unit unit)]
+     (drawing cs))))
+

@@ -3,36 +3,33 @@
   (:require [sgwr.util.math :as umath])
   (:require [sgwr.util.utilities :as utilities]))
 
-(defn polar-coordinate-system [size r & {:keys [units]
-                                         :or {units :rad}}]
-  "The polar coordinate system maps points based on their distance 
-   from the origin and their angle of rotation from the polar-axis. 
-   The origin is always placed at the center of the canvas with the 
-   polar-axis extending horizontally to the right. Angles are measured
-   counter-clockwise from the polar-axis in radians (by default) or degrees.
+(defn polar-coordinate-system [w h r & {:keys [origin unit]
+                                         :or {origin [nil nil]
+                                              unit :rad}}]
+  "The polar coordinate systems maps defines points by their distance from
+   and angle relative to the origin. 
 
-   size - 'physical' size of canvas in pixels, canvas is assumed to 
-           be square.
- 
-   r - maximum radius of view as a real number.
+   w      - int, drawing width in pixels
+   h      - int, drawing height in pixels
+   r      - float, maximum amplitude
+   origin - pair [x y], location of polar origin in pixels
+   unit   - keyword, angle unit, either :rad or :deg"                                        
 
-   :units - angular units options, possible values
-            :deg - degrees
-            :rad - radians (default)"
-  (let [params* (atom {:width (int size)
-                       :height (int size)
-                       :offset (* 1/2 (int size))
+  (let [params* (atom {:width (int w)
+                       :height (int h)
+                       :x-offset (or (first origin)(* 1/2 (int w)))
+                       :y-offset (or (second origin)(* 1/2 (int h)))
                        :radius (float r)
                        :scale (float 0.0)})
-        unit-hook (cond (= units :deg)
+        unit-hook (cond (= unit :deg)
                         umath/deg->rad
                         :default
                         identity)
-        inv-unit-hook (cond (= units :deg)
+        inv-unit-hook (cond (= unit :deg)
                             umath/rad->deg
                             :default
                             identity)
-        zoom-ratio* (atom 1.0)
+        zoom-ratio* (atom 1.0) 
         cs (reify cs/CoordinateSystem
 
              (cs-type [this] :polar)
@@ -65,19 +62,21 @@
              (map-point [this p]
                (let [r (first p)
                      phi (unit-hook (second p))
-                     offset (:offset @params*)
+                     x-offset (:x-offset @params*)
+                     y-offset (:y-offset @params*)
                      scale (:scale @params*)
-                     u (+ offset (* scale r (Math/cos phi)))
-                     v (+ offset (* scale r (Math/sin (* -1 phi))))]
+                     u (+ x-offset (* scale r (Math/cos phi)))
+                     v (+ y-offset (* scale r (Math/sin (* -1 phi))))]
                  (.clip this [u v])))
 
              ;; 'physical' point q, pixel [column row] --> [radius phi]
              (inv-map [this q]
                (let [[u v] q
-                     offset (:offset @params*)
+                     x-offset (:x-offset @params*)
+                     y-offset (:y-offset @params*)
                      scale (:scale @params*)
-                     u2 (- u offset)
-                     v2 (- offset v)
+                     u2 (- u x-offset)
+                     v2 (- y-offset v)
                      r (/ (Math/sqrt (+ (Math/pow u2 2)(Math/pow v2 2))) scale)
                      phi (let [p (Math/atan2 v2 u2)]
                            (if (neg? p)(+ p (* 2 Math/PI)) p))]
