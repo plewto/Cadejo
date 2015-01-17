@@ -150,11 +150,11 @@
                    (doseq [e (vals emap)]
                      (if (= e (:dp emap))
                        (do 
-                         (elements/set-attributes! e :inactive :color @inactive* :style :solid :width 1.0 :fill true)
-                         (elements/set-attributes! e :active   :color @active*   :style :solid :width 1.0 :fill true))
+                         (elements/set-attributes! e :inactive :color @inactive* :style :solid :width 1.0 :fill :no :hide :no)
+                         (elements/set-attributes! e :active   :color @active*   :style :solid :width 1.0 :fill :no :hide :no))
                        (do 
-                         (elements/set-attributes! e :inactive :color @inactive* :style :solid :width 1.0 :fill false)
-                         (elements/set-attributes! e :active   :color @active*   :style :solid :width 1.0 :fill false))))
+                         (elements/set-attributes! e :inactive :color @inactive* :style :solid :width 1.0 :fill :no :hide :no)
+                         (elements/set-attributes! e :active   :color @active*   :style :solid :width 1.0 :fill :no :hide :no))))
                    emap)
         all-off (fn []
                   (doseq [p (vals elements)]
@@ -167,8 +167,8 @@
                   (reset! inactive* c1)
                   (reset! active* c2)
                   (doseq [p (vals elements)]
-                    (elements/set-attributes! p :inactive :color c1 :fill true)
-                    (elements/set-attributes! p :active   :color c2 :fill true))
+                    (elements/set-attributes! p :inactive :color c1 :fill :no :hide :no)
+                    (elements/set-attributes! p :active   :color c2 :fill :no :hide :no))
                   [c1 c2]))
               
               (character-set [this]

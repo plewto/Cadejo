@@ -148,11 +148,9 @@
                   (doseq [c (.children element)]
                     (.render-node this g2d c))
                   
-                  ;(if (not (.hidden? element))
                   (if (or (= (.hidden? element) :no)(not (.hidden? element)))
                     (let [etype (.element-type element)
                           shape (.shape element)]
-                    ;(.setColor g2d (.color element))
                       (.setPaint g2d (.color element))
                     (cond (= etype :point)
                           (do (.setStroke g2d ustroke/default-stroke)

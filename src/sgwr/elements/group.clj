@@ -70,7 +70,7 @@
 
 (def locked-group-properties [])
 
-(defn group [parent & {:keys [etype id color style size width fill hide]
+(defn group [parent & {:keys [etype id color style size width fill hide cs]
                        :or {etype :group
                             id :new-group
                             color (uc/color :white)
@@ -78,7 +78,8 @@
                             size 1.0
                             width 1.0
                             fill false
-                            hide false}}]
+                            hide false
+                            cs nil}}]
   (let [obj (sgwr.elements.element/create-element etype
                                                    parent
                                                    group-function-map
@@ -92,4 +93,5 @@
     (.fill! obj :default fill)
     (.hide! obj :default hide)
     (.use-attributes! obj :default)
+    (if cs (.set-coordinate-system! obj cs))
     obj))
