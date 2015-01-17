@@ -7,10 +7,10 @@
   (:require [sgwr.indicators.dot-matrix :as matrix])
   (:require [sgwr.util.utilities :as utilities]))
 
-(def char-width sgwr.indicators.char/char-width)
-(def char-height sgwr.indicators.char/char-height)
-(def gap 5)
-(def pad 4)
+;; (def char-width sgwr.indicators.char/char-width)
+;; (def char-height sgwr.indicators.char/char-height)
+;; (def gap 5)
+;; (def pad 4)
 
 (defprotocol DisplayBar
 
@@ -45,28 +45,22 @@
            basic/basic-char)))
 
 (defn displaybar 
-
-  ([char-count]
-   (displaybar char-count :matrix))
-
-  ([char-count ctype] 
-   (let [w (+ (* 2 pad)(* char-count (+ char-width gap)))
-         h (+ (* 2 pad) char-height)
-         x-offset (if (= ctype :matrix) (* 2 pad) pad)
-         y-offset pad
-         drw (drawing/native-drawing w h)
-         grp (.root drw)]
-     (displaybar grp x-offset y-offset char-count ctype)))
+  
 
   ;; ctype - one of :basic, 16 or :sixteen, :matrix
-  ([grp x-offset y-offset char-count ctype]
+  ([grp x-offset y-offset char-count ctype & {:keys [cell-width cell-height font-size]
+                                              :or {cell-width 25
+                                                   cell-height 35
+                                                   font-size 22}}]
    (let [elements (let [chr-fn (get-char-constructor ctype)
                         acc* (atom [])
-                        w (+ char-width gap)]
+                        pad 4
+                        gap 5
+                        w (+ cell-width gap)]
                     (dotimes [i char-count]
                       (let [x (+ x-offset (* i w))
                             y y-offset
-                            cobj (chr-fn grp x y)]
+                            cobj (chr-fn grp x y :cell-width cell-width :cell-height cell-height :font-size font-size)]
                         (swap! acc* (fn [q](conj q cobj)))))
                     @acc*)
          render-drawing (fn [flag]

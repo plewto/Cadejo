@@ -4,8 +4,8 @@
   (:require [sgwr.elements.element :as elements])
   (:require [sgwr.elements.circle :as circle]))
 
-(def char-width sgwr.indicators.char/char-width)
-(def char-height sgwr.indicators.char/char-height)
+;; (def char-width sgwr.indicators.char/char-width)
+;; (def char-height sgwr.indicators.char/char-height)
 (def ^:private rows 7)
 (def ^:private columns 5)
 (def ^:private dot-radius 2)
@@ -1247,18 +1247,19 @@
   '[ . . . * . ])
 
 
-(defn matrix-char [grp x-offset y-offset]
+(defn matrix-char [grp x-offset y-offset & {:keys [cell-width cell-height]
+                                            :or {cell-width 25
+                                                 cell-height 35}}]
   (let [inactive* (atom (uc/color [32 32 32]))
         active* (atom (uc/color [255 64 64]))
-        ;disabled-color* (atom (uc/darker @active* 0.3))
-        row-height (/ char-height rows)
-        column-width (/ char-width columns)
+        row-height (/ cell-height rows)
+        column-width (/ cell-width columns)
         dots (let [acc* (atom {})]
                (dotimes [r rows]
                    (let [dy (int (+ y-offset (* r row-height)))]
                      (dotimes [c columns]
                        (let [dx (+ x-offset (* c column-width))
-                             p (circle/circle-r grp [dx dy] dot-radius :fill true)]
+                             p (circle/circle-r grp [(int dx) (int dy)] dot-radius :fill true)]
                          (elements/set-attributes! p :inactive :color @inactive* :fill true)
                          (elements/set-attributes! p :active   :color @active*   :fill true)
                          (swap! acc* (fn [q](assoc q (dot-key r c) p)))))))
@@ -1267,6 +1268,10 @@
                   (doseq [p (vals dots)]
                     (.use-attributes! p :inactive)))
         obj (reify sgwr.indicators.char/CharDisplay
+
+              (cell-width [this] cell-width)
+
+              (cell-height [this] cell-height)
 
               (colors! [this inactive active]
                 (let [c1 (uc/color inactive)

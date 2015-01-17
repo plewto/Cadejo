@@ -19,8 +19,8 @@
 ;    ...o...
 ;
 
-(def char-width sgwr.indicators.char/char-width)
-(def char-height sgwr.indicators.char/char-height)
+;; (def char-width sgwr.indicators.char/char-width)
+;; (def char-height sgwr.indicators.char/char-height)
 
 (def ^:private charmap 
   (let [acc* (atom {(int \space) []
@@ -121,14 +121,16 @@
       (swap! acc* (fn [q](assoc q (int low)(get q (int up))))))
     @acc*))
 
-(defn char-16 [grp x-offset y-offset]
+(defn char-16 [grp x-offset y-offset & {:keys [cell-width cell-height]
+                                        :or {cell-width 25
+                                             cell-height 35}}]
   (let [inactive* (atom (uc/color [32 32 32]))
         active* (atom (uc/color [255 64 64]))
         x0 x-offset
-        x1 (+ x-offset char-width)
+        x1 (+ x-offset cell-width)
         xc (math/mean x0 x1)
         y0 y-offset
-        y1 (+ y0 char-height)
+        y1 (+ y0 cell-height)
         yc (math/mean y0 y1)
         elements (let [emap {:a (line/line grp [x0 y0][xc y0] :id :a)
                              :b (line/line grp [xc y0][x1 y0] :id :b)
@@ -161,6 +163,10 @@
                     (.use-attributes! p :inactive)))
         obj (reify sgwr.indicators.char/CharDisplay
              
+              (cell-width [this] cell-width)
+
+              (cell-height [this] cell-height)
+
               (colors! [this inactive active]
                 (let [c1 (uc/color inactive)
                       c2 (uc/color active)]

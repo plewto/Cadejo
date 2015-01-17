@@ -6,28 +6,31 @@
   (:require [sgwr.elements.rectangle :as rect])
   (:require [sgwr.elements.text :as text]))
 
-(def char-width sgwr.indicators.char/char-width)
-(def char-height sgwr.indicators.char/char-height)
 (def set-attributes! elements/set-attributes!)
 
-(defn basic-char [grp x-offset y-offset]
+(defn basic-char [grp x-offset y-offset & {:keys [cell-width cell-height font-size]
+                                           :or {cell-width 25
+                                                cell-height 35
+                                                font-size 22}}]
    (let [inactive* (atom (uc/color [32 32 32]))
          active* (atom (uc/color [255 64 64]))
          x x-offset
-         y (+ y-offset char-height)
+         y (+ y-offset cell-height)
          elements (let [x0 x-offset
-                        y0 (+ y-offset char-height)
-                        x1 (+ x0 char-width)
+                        y0 (+ y-offset cell-height)
+                        x1 (+ x0 cell-width)
                         y1 y-offset
-                        txt-size 22
                         txt (text/text grp [x0 y0] " ")
                         box (rect/rectangle grp [x0 y0][x1 y1])]
-                    (set-attributes! txt :active :color @active* :style 0 :size txt-size :hide :no)
+                    (set-attributes! txt :active :color @active* :style 0 :size font-size :hide :no)
                     (set-attributes! txt :inactive :hide true)
                     (set-attributes! box :active :hide :no)
                     (set-attributes! box :inactive :color @inactive* :style 0 :fill false :hide :no)
                     [txt box])
          obj (reify sgwr.indicators.char/CharDisplay
+
+               (cell-width [this] cell-width)
+               (cell-height [this] cell-height)
 
                (colors! [this inactive active]
                  (let [[txt box] elements
