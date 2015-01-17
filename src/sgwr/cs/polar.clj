@@ -13,22 +13,19 @@
    h      - int, drawing height in pixels
    r      - float, maximum amplitude
    origin - pair [x y], location of polar origin in pixels
-   unit   - keyword, angle unit, either :rad or :deg"                                        
-
+   unit   - keyword, angle unit, either :rad, :deg or :turn, default :rad"                                       
   (let [params* (atom {:width (int w)
                        :height (int h)
                        :x-offset (or (first origin)(* 1/2 (int w)))
                        :y-offset (or (second origin)(* 1/2 (int h)))
                        :radius (float r)
                        :scale (float 0.0)})
-        unit-hook (cond (= unit :deg)
-                        umath/deg->rad
-                        :default
-                        identity)
-        inv-unit-hook (cond (= unit :deg)
-                            umath/rad->deg
-                            :default
-                            identity)
+        unit-hook (cond (= unit :deg) umath/deg->rad
+                        (= unit :turn) umath/turn->rad
+                        :default identity)
+        inv-unit-hook (cond (= unit :deg) umath/rad->deg
+                            (= unit :turn) umath/rad->turn
+                            :default identity)
         zoom-ratio* (atom 1.0) 
         cs (reify cs/CoordinateSystem
 

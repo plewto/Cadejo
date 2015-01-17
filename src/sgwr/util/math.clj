@@ -4,6 +4,7 @@
 
 (def ^:private k-rad (/ Math/PI 180))
 (def ^:private k-deg (/ 1 k-rad))
+(def ^:private pi2 (* 2 Math/PI))
 
 (defn clamp 
   "Restrict value
@@ -48,6 +49,13 @@
 (defn rad->deg [r]
   "Convert radians to degrees"
   (* r k-deg))
+
+(defn rad->turn [r]
+  (/ r pi2))
+
+(defn turn->rad [tr]
+  (* tr pi2))
+
 
 (def expt 
   "(expt x e) --> x^e  Returns x raised to the power e"
