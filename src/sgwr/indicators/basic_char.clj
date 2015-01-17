@@ -33,8 +33,8 @@
                  (let [[txt box] elements
                        c1 (uc/color inactive)
                        c2 (uc/color active)]
-                   (.set-attribtues! txt :active :color c1)
-                   (.set-attributes! box :inactive :color c2)
+                   (elements/set-attributes! txt :active :color c1)
+                   (elements/set-attributes! box :inactive :color c2)
                    (reset! inactive* c1)
                    (reset! active* c2)
                    [c1 c2]))
