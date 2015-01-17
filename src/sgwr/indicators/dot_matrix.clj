@@ -1,5 +1,5 @@
 (ns sgwr.indicators.dot-matrix
-  (:require [sgwr.indicators.char])
+  (:require [sgwr.indicators.cell])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.elements.element :as elements])
   (:require [sgwr.elements.circle :as circle]))
@@ -1247,7 +1247,7 @@
   '[ . . . * . ])
 
 
-(defn matrix-char [grp x-offset y-offset & {:keys [cell-width cell-height]
+(defn matrix-cell [grp x-offset y-offset & {:keys [cell-width cell-height]
                                             :or {cell-width 25
                                                  cell-height 35}}]
   (let [inactive* (atom (uc/color [32 32 32]))
@@ -1267,7 +1267,7 @@
         all-off (fn []
                   (doseq [p (vals dots)]
                     (.use-attributes! p :inactive)))
-        obj (reify sgwr.indicators.char/CharDisplay
+        obj (reify sgwr.indicators.cell/Cell
 
               (cell-width [this] cell-width)
 

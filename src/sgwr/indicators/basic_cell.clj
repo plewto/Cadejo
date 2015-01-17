@@ -1,5 +1,5 @@
-(ns sgwr.indicators.basic-char
-  (:require [sgwr.indicators.char])
+(ns sgwr.indicators.basic-cell
+  (:require [sgwr.indicators.cell])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.elements.element :as elements])
@@ -8,7 +8,7 @@
 
 (def set-attributes! elements/set-attributes!)
 
-(defn basic-char [grp x-offset y-offset & {:keys [cell-width cell-height font-size]
+(defn basic-cell [grp x-offset y-offset & {:keys [cell-width cell-height font-size]
                                            :or {cell-width 25
                                                 cell-height 35
                                                 font-size 22}}]
@@ -27,7 +27,7 @@
                     (set-attributes! box :active :hide :no)
                     (set-attributes! box :inactive :color @inactive* :style 0 :fill false :hide :no)
                     [txt box])
-         obj (reify sgwr.indicators.char/CharDisplay
+         obj (reify sgwr.indicators.cell/Cell
 
                (cell-width [this] cell-width)
                (cell-height [this] cell-height)

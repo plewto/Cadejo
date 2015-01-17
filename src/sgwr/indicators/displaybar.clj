@@ -1,16 +1,11 @@
 (ns sgwr.indicators.displaybar
   (:require [sgwr.cs.native :as native])
   (:require [sgwr.elements.drawing :as drawing])
-  (:require [sgwr.indicators.char])
-  (:require [sgwr.indicators.sixteen :as sixteen])
-  (:require [sgwr.indicators.basic-char :as basic])
+  ;(:require [sgwr.indicators.char])
+  (:require [sgwr.indicators.basic-cell :as basic])
   (:require [sgwr.indicators.dot-matrix :as matrix])
+  (:require [sgwr.indicators.sixteen :as sixteen])
   (:require [sgwr.util.utilities :as utilities]))
-
-;; (def char-width sgwr.indicators.char/char-width)
-;; (def char-height sgwr.indicators.char/char-height)
-;; (def gap 5)
-;; (def pad 4)
 
 (defprotocol DisplayBar
 
@@ -34,15 +29,15 @@
     [this text render?]
     [this text]))
 
-(defn- get-char-constructor [selector]
+(defn- get-cell-constructor [selector]
   (if (fn? selector) 
       selector
-      (get {:basic basic/basic-char
-            :sixteen sixteen/char-16
-            16 sixteen/char-16
-            :matrix matrix/matrix-char}
+      (get {:basic basic/basic-cell
+            :sixteen sixteen/cell-16
+            16 sixteen/cell-16
+            :matrix matrix/matrix-cell}
            selector
-           basic/basic-char)))
+           basic/basic-cell)))
 
 (defn displaybar 
   
@@ -52,7 +47,7 @@
                                               :or {cell-width 25
                                                    cell-height 35
                                                    font-size 22}}]
-   (let [elements (let [chr-fn (get-char-constructor ctype)
+   (let [elements (let [chr-fn (get-cell-constructor ctype)
                         acc* (atom [])
                         pad 4
                         gap 5

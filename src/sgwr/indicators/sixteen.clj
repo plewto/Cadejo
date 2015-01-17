@@ -1,5 +1,5 @@
 (ns sgwr.indicators.sixteen
-  (:require [sgwr.indicators.char])
+  (:require [sgwr.indicators.cell])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.elements.element :as elements])
@@ -121,7 +121,7 @@
       (swap! acc* (fn [q](assoc q (int low)(get q (int up))))))
     @acc*))
 
-(defn char-16 [grp x-offset y-offset & {:keys [cell-width cell-height]
+(defn cell-16 [grp x-offset y-offset & {:keys [cell-width cell-height]
                                         :or {cell-width 25
                                              cell-height 35}}]
   (let [inactive* (atom (uc/color [32 32 32]))
@@ -161,7 +161,7 @@
         all-off (fn []
                   (doseq [p (vals elements)]
                     (.use-attributes! p :inactive)))
-        obj (reify sgwr.indicators.char/CharDisplay
+        obj (reify sgwr.indicators.cell/Cell
              
               (cell-width [this] cell-width)
 

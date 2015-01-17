@@ -1,10 +1,6 @@
-(ns sgwr.indicators.char)
+(ns sgwr.indicators.cell)
 
-;; (def char-width 25)
-;; (def char-height 35)
-
-
-(defprotocol CharDisplay
+(defprotocol Cell
 
   (cell-width 
     [this])
