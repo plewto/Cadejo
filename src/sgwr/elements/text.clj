@@ -8,6 +8,13 @@
            java.awt.BasicStroke
            java.awt.geom.GeneralPath))
 
+;; Estimate functions only valid for plain monospaced font
+;; 
+(defn estimate-monospaced-height [size] (* 1.50 size))
+(defn estimate-monospaced-width [size] (* 1.15 size))
+(defn estimate-monospaced-font-size [width] (/ width 1.5))
+
+
 (def font-stroke (BasicStroke.))
 
 (def ^:private SERIF Font/SERIF)

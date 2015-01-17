@@ -8,10 +8,11 @@
 
 (def set-attributes! elements/set-attributes!)
 
-(defn basic-cell [grp x-offset y-offset & {:keys [cell-width cell-height font-size]
+(defn basic-cell [grp x-offset y-offset & {:keys [cell-width cell-height] ; font-size]
                                            :or {cell-width 25
                                                 cell-height 35
-                                                font-size 22}}]
+                                                ;font-size 22
+                                                }}]
    (let [inactive* (atom (uc/color [32 32 32]))
          active* (atom (uc/color [255 64 64]))
          x x-offset
@@ -20,6 +21,7 @@
                         y0 (+ y-offset cell-height)
                         x1 (+ x0 cell-width)
                         y1 y-offset
+                        font-size (int (text/estimate-monospaced-font-size cell-width))
                         txt (text/text grp [x0 y0] " ")
                         box (rect/rectangle grp [x0 y0][x1 y1])]
                     (set-attributes! txt :active :color @active* :style 0 :size font-size :hide :no)
