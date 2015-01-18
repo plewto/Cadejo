@@ -8,7 +8,7 @@
 
 (def +VERSION+ "0.2.0-SNAPSHOT")
 
-(def widget-types '[:button :radio-button :checkbox :slider :dual-slider])
+(def widget-types '[:button :radio-button :multistate-button :slider ])
 
 (def default-color :lightgray)
 (def default-rollover-color :red)

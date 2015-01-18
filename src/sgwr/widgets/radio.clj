@@ -2,9 +2,7 @@
   (:require [sgwr.elements.circle :as circle])
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.text :as text])
-  (:require [sgwr.util.color :as uc])
-  (:require [sgwr.util.math :as math])
-  )
+  (:require [sgwr.util.color :as uc]))
 
 (defn clear-radio-button-list! [rbl*]
   (doseq [b @rbl*]
@@ -18,7 +16,7 @@
   (.use-attributes! b :selected)
   b)
 
-(defn compose-pressed-action 
+(defn- compose-pressed-action 
   ([](compose-pressed-action (fn [& _])))
   ([pfn]
    (fn [obj ev]
@@ -30,7 +28,7 @@
        (if drw (.render drw))
        (pfn obj ev)))))
 
-(defn compose-exited-action 
+(defn- compose-exited-action 
   ([](compose-exited-action (fn [& _])))
   ([xfn]
    (fn [obj ev]
@@ -41,29 +39,8 @@
        (xfn obj ev)))))
 
 
-;; (defn empty-radio-button [parent id rbl*]
-;;   (let [grp (group/group parent :etype :radio-button :id id)]
-;;     (.put-property! grp :radio-button-list* rbl*)
-;;     (.put-property! grp :action-mouse-dragged  (fn [obj ev] ))
-;;     (.put-property! grp :action-mouse-moved    (fn [obj ev] ))
-;;     (.put-property! grp :action-mouse-entered  (fn [obj ev] ))
-;;     (.put-property! grp :action-mouse-exited   (compose-exited-action))
-;;     (.put-property! grp :action-mouse-pressed  (compose-pressed-action))
-;;     (.put-property! grp :action-mouse-released (fn [obj ev] ))
-;;     (.put-property! grp :action-mouse-clicked  (fn [obj ev] ))
-;;     (swap! rbl* (fn [q](conj q grp)))
-;;     grp))
-
-;; (defn test-radio-button [parent pc id rbl*]
-;;   (let [grp (empty-radio-button parent id rbl*)
-;;         c1 (circle/circle-r grp pc 2 :id (keyword (format "%s-c1" (name id))))]
-;;     (set-attributes! c1 :default  :color :white :style 0 :width 1 :fill :no)
-;;     (set-attributes! c1 :selected :fill true)
-;;     grp))
-
-
-(defn blank-radio-button [parent rbl* id & {:keys  [drag-action move-action enter-action exit-action
-                                                    press-action release-action click-action]
+(defn blank-radio-button [parent rbl* id & {:keys [drag-action move-action enter-action exit-action
+                                                   press-action release-action click-action]
                                             :or {drag-action nil
                                                  move-action nil
                                                  enter-action nil
@@ -74,7 +51,6 @@
   (let [grp (group/group parent :etype :radio-button :id id)
         dummy-action (fn [obj ev] nil)]
     (.put-property! grp :radio-button-list* rbl*)
-    
     (.put-property! grp :action-mouse-dragged  (or drag-action dummy-action))
     (.put-property! grp :action-mouse-moved    (or move-action dummy-action))
     (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
