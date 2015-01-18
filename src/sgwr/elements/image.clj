@@ -5,7 +5,11 @@
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.element])
   (:require [sgwr.util.math :as math])
-  (:import java.awt.image.BufferedImage))
+  (:require [sgwr.util.utilities :as utilities])
+  ;(:require [seesaw.icon])
+  (:import java.awt.image.BufferedImage
+           javax.imageio.ImageIO
+           java.io.File))
 
 
 (defn render-image [iobj g2d]
@@ -14,7 +18,6 @@
         q0 (.map-point cs p0)
         [x y] q0
         img (.get-property iobj :image)]
-    (println (format "DEBUG render-image p0 -> %s  q0 -> %s" p0 q0))
     (.drawImage g2d img constants/null-transform-op (int x)(int y))))
 
 (defn- update-fn [obj points]
@@ -91,7 +94,6 @@
                                                    parent 
                                                    image-function-map
                                                    locked-properties)
-         ;img (or image-src (BufferedImage. w h BufferedImage/TYPE_INT_ARGB))]
          img (if image-src 
                (clone-buffered-image image-src)
                (BufferedImage. w h BufferedImage/TYPE_INT_ARGB))]  
@@ -101,10 +103,30 @@
      (if parent (.set-parent! obj parent))
      obj)))
 
-;; (defn drawing->image [parent p0 drw & {:keys [id]
-;;                                        :or {id nil }}]
-;;   (.render drw)
-;;   (let [[w h](.canvas-bounds drw)
-;;         iobj (image parent p0 w h :id id)]
-;;     (.put-property! iobj :image (.image drw))
-;;     iobj))
+(defn read-image [parent p0 filename & {:keys [id w h]
+                                        :or {id nil
+                                             w nil
+                                             h nil}}]
+  (let [f (File. filename)
+        i (try 
+            (ImageIO/read f)
+            (catch Exception ex
+              (utilities/warning (format "Can not read image file '%s'" filename))
+              nil))]
+    (if i
+      (let [iw (or w (.getWidth i))
+            ih (or h (.getHeight i))
+            img (image parent p0 iw ih :id (or id filename) :image-src i)]
+        img)
+      (image parent p0 1 1 :id (format "DEAD-%s" filename)))))
+  
+        
+(defn read-icon [parent p0 prefix group subgroup]
+  (let [ifn (format "resources/icons/%s_%s%s.png" 
+                    (name prefix)
+                    (name group)
+                    (if subgroup (format "_%s" (name subgroup)) ""))]
+    (read-image parent p0 ifn)))
+
+(defn read-logo [parent p0 logo-file]
+  (read-image parent p0 (format "resources/logos/%s.png" logo-file)))
