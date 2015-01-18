@@ -6,11 +6,34 @@
   (:require [sgwr.elements.rectangle :as rect])
   (:require [sgwr.elements.text :as text])
   (:require [sgwr.util.color :as uc])
-  (:require [sgwr.util.math :as math]))
-            
+  (:require [sgwr.util.math :as math])
+  (:require [sgwr.util.utilities :as utilities]))
 
 
+(defn set-multistate-button-state! 
+  ([msb state-index]
+   (set-multistate-button-state! msb state-index true))
+  ([msb state-index render]
+   (let [states (.get-property msb :states)
+         state-count (count states)]
+     (if (and (integer? state-index)
+              (>= state-index 0)
+              (< state-index state-count))
+       (let [current (nth states state-index)]
+         (.put-property! msb :current-state-index state-index)
+         (.put-property! msb :current-state current)
+         (.use-attributes! msb current)
+         (if render (.render (.get-property msb :drawing))))
+       (utilities/warning (format "Invalid state index %s for multistate-button %s"
+                                  state-index (.get-property msb :id)))))))
 
+;; Returns pair [index keyword] indicating current state
+;;
+(defn current-multistate-button-stae [msb]
+  [(.get-property msb :current-state-index)
+   (.get-property msb :current-state)])
+
+      
 (defn- compose-pressed-action 
   ([](compose-pressed-action (fn [& _])))
   ([pfn]
