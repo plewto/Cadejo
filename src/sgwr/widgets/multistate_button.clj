@@ -88,40 +88,40 @@
 ;;          color may be nil to inherit from text-color argument
 ;;
 (defn text-multistate-button [parent p0 states & {:keys [id
-                                                drag-action move-action enter-action exit-action
-                                                press-action release-action click-action
-                                                text-color text-style text-size
-                                                gap text-x-shift text-y-shift w h
-                                                box-color box-style box-width box-radius fill-box?]
-                                         :or {id nil
-                                              drag-action nil
-                                              move-action nil
-                                              enter-action nil
-                                              exit-action nil
-                                              press-action nil
-                                              release-action nil
-                                              click-action nil
-                                              text-color (uc/color :white)
-                                              text-style 0
-                                              text-size 8
-                                              gap 4
-                                              text-x-shift 0
-                                              text-y-shift 0
-                                              w nil
-                                              h nil
-                                              box-color (uc/color :gray)
-                                              box-style 0
-                                              box-width 1.0
-                                              box-radius 12
-                                              fill-box? :no}}]
+                                                         drag-action move-action enter-action exit-action
+                                                         press-action release-action click-action
+                                                         text-color text-style text-size
+                                                         gap text-x-shift text-y-shift w h
+                                                         box-color box-style box-width box-radius fill-box?]
+                                                  :or {id nil
+                                                       drag-action nil
+                                                       move-action nil
+                                                       enter-action nil
+                                                       exit-action nil
+                                                       press-action nil
+                                                       release-action nil
+                                                       click-action nil
+                                                       text-color (uc/color :white)
+                                                       text-style 0
+                                                       text-size 8
+                                                       gap 4
+                                                       text-x-shift 0
+                                                       text-y-shift 0
+                                                       w nil
+                                                       h nil
+                                                       box-color (uc/color :gray)
+                                                       box-style 0
+                                                       box-width 1.0
+                                                       box-radius 12
+                                                       fill-box? :no}}]
   (let [grp (blank-multistate-button parent (map first states) (or id :multistate-button)
-                            :drag-action drag-action 
-                            :move-action move-action 
-                            :enter-action enter-action 
-                            :exit-action exit-action 
-                            :press-action press-action 
-                            :release-action release-action 
-                            :click-action click-action)
+                                     :drag-action drag-action 
+                                     :move-action move-action 
+                                     :enter-action enter-action 
+                                     :exit-action exit-action 
+                                     :press-action press-action 
+                                     :release-action release-action 
+                                     :click-action click-action)
         state-text (map second states)
         max-text-length (apply max (map count state-text))
         est-tx-width (text/estimate-monospaced-width (* max-text-length text-size))
@@ -152,8 +152,7 @@
                          (.color! txobj :rollover (uc/color (or col text-color)))
                          (.put-property! txobj :active-state attkey)
                          (swap! acc* (fn [q](conj q txobj)))
-                         (swap! i* inc)
-                         ))
+                         (swap! i* inc)))
                      @acc*)]
     (doseq [k (map first states)]
       (doseq [tx txtobj-lst]
@@ -166,3 +165,65 @@
     (.put-property! grp :text-objects txtobj-lst)
     (.use-attributes! grp (first (first states)))
     grp))
+
+;; states a nested list of form 
+;; [[key-0 igroup-0 isubgroup-0][key-1 igroup-1 isubgroup-1] ...]
+;;
+
+(defn icon-multistate-button [parent p0 states  & {:keys [id
+                                                          drag-action move-action enter-action exit-action
+                                                          press-action release-action click-action
+                                                          icon-prefix gap w h
+                                                          box-color box-style box-width box-radius fill-box?]
+                                                  :or {id nil
+                                                       drag-action nil
+                                                       move-action nil
+                                                       enter-action nil
+                                                       exit-action nil
+                                                       press-action nil
+                                                       release-action nil
+                                                       click-action nil
+                                                       icon-prefix :white
+                                                       gap 4
+                                                       w 44
+                                                       h 44
+                                                       box-color (uc/color :gray)
+                                                       box-style 0
+                                                       box-width 2.0
+                                                       box-radius 12
+                                                       fill-box? :no}}]
+  (let [grp (blank-multistate-button parent (map first states) (or id :multistate-button)
+                                     :drag-action drag-action 
+                                     :move-action move-action 
+                                     :enter-action enter-action 
+                                     :exit-action exit-action 
+                                     :press-action press-action 
+                                     :release-action release-action 
+                                     :click-action click-action)
+        [x0 y0] p0
+        x1 (+ x0 gap)
+        y1 (+ y0 gap)
+        box (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :box
+                            :color (uc/color box-color)
+                            :style box-style
+                            :width box-width
+                            :fill fill-box?)
+        iobj-lst (let [acc* (atom [])
+                       i* (atom 0)]
+                   (doseq [[attkey igroup isubgroup] states]
+                     (let [iobj (image/read-icon grp [x1 y1] icon-prefix igroup isubgroup)]
+                       (.put-property! iobj :active-state attkey)
+                       (.hide! iobj :default true)
+                       (swap! acc* (fn [q](conj q iobj)))))
+                   @acc*)]
+    (doseq [k (map first states)]
+      (doseq [iobj iobj-lst]
+        (let [active (.get-property iobj :active-state)]
+          (if (= active k)
+            (.hide! iobj k :no)
+            (.hide! iobj k true)))))
+    (.put-property! box :corner-radius box-radius)
+    (.use-attributes! grp (first (first states)))
+    grp)) 
+                     
+                     
