@@ -3,12 +3,15 @@
   (:use [sgwr.elements.element :only [set-attributes!]])
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.image :as image])
+  (:require [sgwr.elements.point :as point])
   (:require [sgwr.elements.rectangle :as rect])
   (:require [sgwr.elements.text :as text])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities]))
 
+
+(defn- third [col](nth col 2))
 
 (defn set-multistate-button-state! 
   ([msb state-index]
@@ -32,6 +35,18 @@
 (defn current-multistate-button-stae [msb]
   [(.get-property msb :current-state-index)
    (.get-property msb :current-state)])
+
+
+(defn select-checkbox! [cb flag]
+  (if flag
+    (do 
+      (set-multistate-button-state! cb 1)
+      (.select! cb true))
+    (do 
+      (set-multistate-button-state! cb 0)
+      (.select! cb false))))
+
+(def select-toggle-button! select-checkbox!)
 
       
 (defn- compose-pressed-action 
@@ -169,7 +184,6 @@
 ;; states a nested list of form 
 ;; [[key-0 igroup-0 isubgroup-0][key-1 igroup-1 isubgroup-1] ...]
 ;;
-
 (defn icon-multistate-button [parent p0 states  & {:keys [id
                                                           drag-action move-action enter-action exit-action
                                                           press-action release-action click-action
@@ -226,4 +240,246 @@
     (.use-attributes! grp (first (first states)))
     grp)) 
                      
-                     
+
+
+
+;; selected-check & unselected-check arguments are vectors of form
+;; [color style size]
+;;                      
+(defn checkbox [parent p0 txt  & {:keys [id
+                                         drag-action move-action enter-action exit-action
+                                         press-action release-action click-action
+                                         text-color text-style text-size 
+                                         gap text-x-shift text-y-shift
+                                         box-color box-style box-size box-radius
+                                         selected-check unselected-check]
+                                  :or {id nil
+                                       drag-action nil
+                                       move-action nil
+                                       enter-action nil
+                                       exit-action nil
+                                       press-action nil
+                                       release-action nil
+                                       click-action nil
+                                       text-color (uc/color :white)
+                                       text-style 0
+                                       text-size 8
+                                       gap 6
+                                       text-x-shift 0
+                                       text-y-shift 0
+                                       box-color (uc/color :gray)
+                                       box-style 0
+                                       box-size 12 ;; in pixels
+                                       box-radius 0
+                                       selected-check [:white :x 2]
+                                       unselected-check [:gray :pixel 1]}}]
+  (let [states [:unselected :selected]
+        grp (blank-multistate-button parent states 
+                                     (or id (format "checkbox-%s" txt))
+                                    :drag-action drag-action 
+                                    :move-action move-action 
+                                    :enter-action enter-action 
+                                    :exit-action exit-action 
+                                    :press-action press-action 
+                                    :release-action release-action 
+                                    :click-action click-action)
+        [x0 y0] p0
+        x1 (+ x0 box-size)
+        y1 (+ y0 box-size)
+        xc (math/mean x0 x1)
+        yc (math/mean y0 y1)
+        est-tx-height (text/estimate-monospaced-height text-size)
+        x2 (+ x1 gap text-x-shift)
+        y2 (+ yc (* 1/2 est-tx-height) text-y-shift)
+        box (let [bx (rect/rectangle grp p0 [x1 y1] :id :box
+                                     :color box-color
+                                     :style box-style
+                                     :fill :no)]
+              (.put-property! bx :corner-radius box-radius)
+              bx)
+        pnt (let [sc (or (first selected-check) :white)
+                  st (or (second selected-check) :x)
+                  sz (or (third selected-check) 2)
+                  uc (or (first unselected-check) :gray)
+                  ut (or (second unselected-check) :pixel)
+                  uz (or (third unselected-check) 1)
+                  pnt (point/point grp [xc yc] :id :point)]
+              (.color! pnt :selected sc)
+              (.style! pnt :selected st)
+              (.size!  pnt :selected sz)
+              (.color! pnt :unselected uc)
+              (.style! pnt :unselected ut)
+              (.size!  pnt :unselected uz)
+              pnt)
+        txobj (text/text grp [x2 y2] txt
+                         :color text-color
+                         :id :text
+                         :style text-style
+                         :size text-size)]
+    (.put-property! grp :box box)
+    (.put-property! grp :point pnt)
+    (.put-property! grp :text-element txobj)
+    (.use-attributes! grp :unselected)
+    grp))
+    
+                    
+;; selected-box & unselected-box  [color style width]
+;;
+(defn text-toggle-button [parent p0 txt & {:keys [id 
+                                                  drag-action move-action enter-action exit-action
+                                                  press-action release-action click-action
+                                                  selected-text-color unselected-text-color text-style text-size
+                                                  gap text-x-shift text-y-shift w h
+                                                  selected-pad-color unselected-pad-color
+                                                  selected-box unselected-box box-radius]
+                                           :or {id nil
+                                                drag-action nil
+                                                move-action nil
+                                                enter-action nil
+                                                exit-action nil
+                                                press-action nil
+                                                release-action nil
+                                                click-action nil
+                                                selected-text-color :white
+                                                unselected-text-color :white
+                                                text-stye 0
+                                                text-size 8
+                                                gap 4
+                                                text-x-shift 0
+                                                text-y-shift 0
+                                                w nil
+                                                h nil
+                                                selected-pad-color [0 128 128 64]
+                                                unselected-pad-color [0 0 0 0]
+                                                selected-box [:green :solid 2.0]
+                                                unselected-box [:gray :solid 1.0]
+                                                box-radius 12}}]
+  (let [states [:unselected :selected]
+        grp (blank-multistate-button parent states 
+                                     (or id (format "toggle-%s" txt))
+                                     :drag-action drag-action 
+                                     :move-action move-action 
+                                     :enter-action enter-action 
+                                     :exit-action exit-action 
+                                     :press-action press-action 
+                                     :release-action release-action 
+                                     :click-action click-action)
+        est-tx-width (text/estimate-monospaced-width (* (count txt) text-size))
+        est-tx-height (text/estimate-monospaced-height text-size)
+        width (or w (+ (* 2 gap) est-tx-width))
+        height (or h (+ (* 2 gap) est-tx-height))
+        [x0 y0] p0
+        x1 (+ x0 gap text-x-shift)
+        x3 (+ x0 width)
+        y3 (+ y0 height)
+        yc (math/mean y0 y3)
+        y1 (+ yc (* 1/2 est-tx-height) text-y-shift)
+        pad (let [pad (rect/rectangle grp p0 [x3 y3] :id :pad
+                                      :color [0 0 0 0]
+                                      :style 0
+                                      :width 1.0
+                                      :fill true)]
+              (.color! pad :unselected unselected-pad-color)
+              (.color! pad :selected selected-pad-color)
+              (.color! pad :rollover selected-pad-color)
+              (.put-property! pad :corner-radius box-radius)
+              pad)
+        box (let [bx (rect/rectangle grp p0 [x3 y3] :id :box
+                                     :color :gray
+                                     :style 0
+                                     :width 1.0
+                                     :fill :no)]
+              (.color! bx :unselected (or (first unselected-box) [64 64 64]))
+              (.style! bx :unselected (or (second unselected-box) :solid))
+              (.width! bx :unselected (or (third unselected-box) 1.0))
+              (.color! bx :selected (or (first selected-box) :white))
+              (.style! bx :selected (or (second selected-box) :solid))
+              (.width! bx :selected (or (third selected-box) 2.0))
+              (.put-property! bx :corner-radius box-radius)
+              bx)
+        txobj (let [txobj (text/text grp [x1 y1] txt :id :text
+                                     :color :white
+                                     :style text-style
+                                     :size text-size)]
+                (.color! txobj :unselected unselected-text-color)
+                (.color! txobj :selected selected-text-color)
+                (.color! txobj :rollover selected-text-color)
+                txobj)]
+    (.put-property! grp :pad pad)
+    (.put-property! grp :box box)
+    (.put-property! grp :text-element txobj)
+    (.use-attributes! grp :unselected)
+    grp))
+                                      
+
+;; selected-box & unselected-box  [color style width]
+;;
+(defn icon-toggle-button [parent p0 prefix group subgroup  & {:keys [id 
+                                                                     drag-action move-action enter-action exit-action
+                                                                     press-action release-action click-action
+                                                                     gap w h
+                                                                     selected-pad-color unselected-pad-color
+                                                                     selected-box unselected-box box-radius]
+                                                              :or {id nil
+                                                                   drag-action nil
+                                                                    move-action nil
+                                                                    enter-action nil
+                                                                    exit-action nil
+                                                                    press-action nil
+                                                                    release-action nil
+                                                                    click-action nil
+                                                                    gap 7
+                                                                    w 44
+                                                                    h 44
+                                                                    selected-pad-color [0 128 128 64]
+                                                                    unselected-pad-color [0 0 0 0]
+                                                                    selected-box [:green :solid 2.0]
+                                                                    unselected-box [:gray :solid 1.0]
+                                                                    box-radius 12}}]
+  (let [states [:unselected :selected]
+        grp (blank-multistate-button parent states 
+                                     (or id (format "toggle-%s-%s" group subgroup))
+                                     :drag-action drag-action 
+                                     :move-action move-action 
+                                     :enter-action enter-action 
+                                     :exit-action exit-action 
+                                     :press-action press-action 
+                                     :release-action release-action 
+                                     :click-action click-action)
+        [x0 y0] p0
+        x1 (+ x0 gap)
+        y1 (+ y0 gap)
+        x2 (+ x1 w)
+        y2 (+ y1 h)
+        dummy-100 (println (format "DEBUG [x0 y0] -> %s   gap = %s    [x1 y1] -> %s" p0 gap [x1 y1]))
+        pad (let [pad (rect/rectangle grp p0 [x2 y2] :id :pad
+                                      :color [0 0 0 0]
+                                      :style 0
+                                      :width 1.0
+                                      :fill true)]
+              (.color! pad :unselected unselected-pad-color)
+              (.color! pad :selected selected-pad-color)
+              (.color! pad :rollover selected-pad-color)
+              (.put-property! pad :corner-radius box-radius)
+              pad)
+        box (let [bx (rect/rectangle grp p0 [x2 y2] :id :box
+                                     :color :gray
+                                     :style 0
+                                     :width 1.0
+                                     :fill :no)]
+              (.color! bx :unselected (or (first unselected-box) [64 64 64]))
+              (.style! bx :unselected (or (second unselected-box) :solid))
+              (.width! bx :unselected (or (third unselected-box) 1.0))
+              (.color! bx :selected (or (first selected-box) :white))
+              (.style! bx :selected (or (second selected-box) :solid))
+              (.width! bx :selected (or (third selected-box) 2.0))
+              (.put-property! bx :corner-radius box-radius)
+              bx)
+        icon (image/read-icon grp [x1 y1] prefix group subgroup)]
+    (.put-property! grp :pad pad)
+    (.put-property! grp :box box)
+    (.put-property! grp :icon icon)
+    (.use-attributes! grp :unselected)
+    grp))
+
+               

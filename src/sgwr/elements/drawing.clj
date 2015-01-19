@@ -293,7 +293,12 @@
                                 (proxy [MouseListener][]
                                   
                                   (mouseEntered [_])
-                                  (mouseExited [_])
+
+                                  (mouseExited [_]
+                                    ;; HACK clears all 'active' widgets when mouse exits win
+                                    ;(doseq [c (.children widget-root)]
+                                    (.restore-attributes! widget-root)
+                                    (.render drw))
                                 
                                   (mouseClicked [ev]
                                     (let [active @active-widget*]

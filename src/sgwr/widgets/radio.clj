@@ -10,11 +10,12 @@
     (.use-attributes! b :default))
   nil)
 
-(defn select-radio-button! [b rbl*]
-  (clear-radio-button-list! rbl*)
-  (.select! b true)
-  (.use-attributes! b :selected)
-  b)
+(defn select-radio-button! [rb]
+  (let [rbl* (.get-property rb :radio-button-list*)]
+    (clear-radio-button-list! rbl*)
+    (.select! rb true)
+    (.use-attributes! rb :selected)
+    rb))
 
 (defn- compose-pressed-action 
   ([](compose-pressed-action (fn [& _])))
@@ -61,35 +62,35 @@
     (swap! rbl* (fn [q](conj q grp)))
     grp))
 
-(defn text-radio-button [parent p0 txt rbl* & {:keys [id
-                                                      drag-action move-action enter-action exit-action
-                                                      press-action release-action click-action
-                                                      text-color text-style text-size 
-                                                      gap text-x-shift text-y-shift
-                                                      c1-color c1-radius
-                                                      c2-color c2-radius]
-                                               :or {drag-action nil
-                                                    move-action nil
-                                                    enter-action nil
-                                                    exit-action nil
-                                                    press-action nil
-                                                    release-action nil
-                                                    click-action nil
-                                                    text-color (uc/color :white)
-                                                    text-style 0
-                                                    text-size 8
-                                                    gap 4
-                                                    text-x-shift 0
-                                                    text-y-shift 0
-                                                    c1-color (uc/color :gray)
-                                                    c1-radius 8
-                                                    c2-color (uc/color :green)
-                                                    c2-radius 4}}]
+(defn radio-button [parent p0 txt rbl* & {:keys [id
+                                                 drag-action move-action enter-action exit-action
+                                                 press-action release-action click-action
+                                                 text-color text-style text-size 
+                                                 gap text-x-shift text-y-shift
+                                                 c1-color c1-radius
+                                                 c2-color c2-radius]
+                                          :or {drag-action nil
+                                               move-action nil
+                                               enter-action nil
+                                               exit-action nil
+                                               press-action nil
+                                               release-action nil
+                                               click-action nil
+                                               text-color (uc/color :white)
+                                               text-style 0
+                                               text-size 8
+                                               gap 4
+                                               text-x-shift 0
+                                               text-y-shift 0
+                                               c1-color (uc/color :gray)   ;; outer circle
+                                               c1-radius 8
+                                               c2-color (uc/color :green)  ;; inner circle
+                                               c2-radius 4}}]
   (let [grp (blank-radio-button parent rbl* (or id (format "radio-%s" txt))
                                 :drag-action drag-action 
                                 :move-action move-action 
                                 :enter-action enter-action 
-                                :exit-action exit-action 
+                                :exit-action exit-action
                                 :press-action press-action 
                                 :release-action release-action 
                                 :click-action click-action)

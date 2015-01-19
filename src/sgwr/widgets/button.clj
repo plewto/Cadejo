@@ -34,6 +34,7 @@
                                                              drag-action move-action enter-action exit-action
                                                              press-action release-action click-action
                                                              gap w h 
+                                                             pad-color 
                                                              box-color box-style box-width box-radius fill-box?]
                                                        :or {id nil
                                                             drag-action nil
@@ -46,7 +47,8 @@
                                                             gap 4
                                                             w 44
                                                             h 44
-                                                            box-color (uc/color :gray)
+                                                            pad-color [0 0 0 0]
+                                                            box-color :gray
                                                             box-style 0
                                                             box-width 2.0
                                                             box-radius 12
@@ -62,13 +64,21 @@
         [x0 y0] p0
         x1 (+ x0 gap)
         y1 (+ y0 gap)
+        pad (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :pad
+                           :color pad-color
+                           :style 0
+                           :width 1.0
+                           :fill true)
         box (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :box
-                            :color (uc/color box-color)
+                            :color box-color
                             :style box-style
                             :width box-width
                             :fill fill-box?)
         icon (image/read-icon grp [x1 y1] prefix group subgroup)]
+    (.put-property! pad :corner-radius box-radius)
     (.put-property! box :corner-radius box-radius)
+    (.color! pad :rollover pad-color)
+    (.put-property! grp :pad pad)
     (.put-property! grp :box box)
     (.put-property! grp :icon icon)
     (.use-attributes! grp :default)
@@ -79,6 +89,7 @@
                                                             drag-action move-action enter-action exit-action
                                                             press-action release-action click-action
                                                             gap w h 
+                                                            pad-color
                                                             box-color box-style box-width box-radius fill-box?]
                                                      :or {id nil
                                                           drag-action nil
@@ -91,7 +102,8 @@
                                                           gap 4
                                                           w 26
                                                           h 26
-                                                          box-color (uc/color :gray)
+                                                          pad-color [0 0 0 0]
+                                                          box-color :gray
                                                           box-style 0
                                                           box-width 1.0
                                                           box-radius 12
@@ -107,7 +119,8 @@
                :click-action click-action 
                :gap gap 
                :w w 
-               :h h 
+               :h h
+               :pad-color pad-color
                :box-color box-color 
                :box-style box-style 
                :box-width box-width 
@@ -120,6 +133,7 @@
                                            press-action release-action click-action
                                            text-color text-style text-size
                                            gap text-x-shift text-y-shift w h
+                                           pad-color
                                            box-color box-style box-width box-radius fill-box?]
                                     :or {id nil
                                          drag-action nil
@@ -129,7 +143,7 @@
                                          press-action nil
                                          release-action nil
                                          click-action nil
-                                         text-color (uc/color :white)
+                                         text-color :white
                                          text-stye 0
                                          text-size 8
                                          gap 4
@@ -137,7 +151,8 @@
                                          text-y-shift 0
                                          w nil
                                          h nil
-                                         box-color (uc/color :gray)
+                                         pad-color [0 0 0 0]
+                                         box-color :gray
                                          box-style 0
                                          box-width 2.0
                                          box-radius 12
@@ -160,6 +175,11 @@
         y3 (+ y0 height)
         yc (math/mean y0 y3)
         y1 (+ yc (* 1/2 est-tx-height) text-y-shift)
+        pad (rect/rectangle grp p0 [x3 y3] :id :pad
+                            :color pad-color
+                            :style 0
+                            :width 1.0
+                            :fill true)
         box (rect/rectangle grp p0 [x3 y3] :id :box
                             :color box-color
                             :style box-style
@@ -170,7 +190,10 @@
                          :style text-style
                          :size text-size)]
     (.color! txobj :rollover text-color)
+    (.put-property! pad :corner-radius box-radius)
     (.put-property! box :corner-radius box-radius)
+    (.color! pad :rollover pad-color)
+    (.put-property! grp :pad pad)
     (.put-property! grp :box box)
     (.put-property! grp :text-element txobj)
     (.use-attributes! grp :default)
