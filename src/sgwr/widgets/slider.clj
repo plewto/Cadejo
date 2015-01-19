@@ -11,8 +11,10 @@
 (def set-attributes! sgwr.elements.element/set-attributes!)
 
 
-(defn get-dragged-action 
-  ([](get-dragged-action (fn [& _])))
+(defn- dummy-action [obj ev] nil)
+
+(defn- compose-drag-action 
+  ([](compose-drag-action (fn [& _])))
   ([dfn]
    (fn [obj ev]
      (let [orientation (.get-property obj :orientation)
@@ -46,12 +48,23 @@
      (ufn val)
      (if render (.render (.get-property sobj :drawing))))))
 
-(defn vslider [parent p0 p1 v0 v1 id & {:keys [track1-color track1-style track1-width
-                                                track2-color track2-style track2-width
-                                                track3-color track3-style track3-width
-                                                box-color box-gap box-style box-width fill-box? box-radius
-                                                handle-color handle-style handle-size]
-                                        :or {track1-color :gray
+(defn vslider [parent p0 p1 v0 v1 & {:keys [id 
+                                            drag-action move-action enter-action exit-action
+                                            press-action release-action click-action
+                                            track1-color track1-style track1-width
+                                            track2-color track2-style track2-width
+                                            track3-color track3-style track3-width
+                                            box-color box-gap box-style box-width fill-box? box-radius
+                                            handle-color handle-style handle-size]
+                                        :or {id nil
+                                             drag-action nil
+                                             move-action nil
+                                             enter-action nil
+                                             exit-action nil
+                                             press-action nil
+                                             release-action nil
+                                             click-action nil
+                                             track1-color :gray
                                              track1-style :solid
                                              track1-width 1.0
                                              track2-color :yellow
@@ -65,7 +78,7 @@
                                              box-style :solid
                                              box-width 1.0
                                              fill-box? false
-                                             box-radius 0
+                                             box-radius 12
                                              handle-color :white
                                              handle-style :dot
                                              handle-size 2}}]
@@ -74,8 +87,7 @@
         x x1
         pos->val (math/clipped-linear-function y0 v0 y1 v1)
         val->pos (math/clipped-linear-function v0 y0 v1 y1)
-        grp (group/group parent :etype :slider :id id)]
-
+        grp (group/group parent :etype :slider (or id :slider))]
       (let [x2 (- x box-gap)
             x3 (+ x box-gap)
             y2 (- (min y0 y1) box-gap)
@@ -134,45 +146,56 @@
                                           (.set-points! handle [[x pos]])
                                           (if trk2 (.set-points! trk2 [p0 [x pos]]))
                                           (if trk3 (.set-points! trk3 [[x pos] p1])))))
-    (.put-property! grp :action-mouse-dragged  (get-dragged-action))
-    (.put-property! grp :action-mouse-moved    (fn [obj ev] ))
-    (.put-property! grp :action-mouse-entered  (fn [obj ev] ))
-    (.put-property! grp :action-mouse-exited   (fn [obj ev] ))
-    (.put-property! grp :action-mouse-pressed  (fn [obj ev] ))
-    (.put-property! grp :action-mouse-released (fn [obj ev] ))
-    (.put-property! grp :action-mouse-clicked  (fn [obj ev] ))
+    (.put-property! grp :action-mouse-dragged  (compose-drag-action (or drag-action dummy-action)))
+    (.put-property! grp :action-mouse-moved    (or move-action dummy-action))
+    (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
+    (.put-property! grp :action-mouse-exited   (or exit-action dummy-action))
+    (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
+    (.put-property! grp :action-mouse-released (or release-action dummy-action))
+    (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
     (.use-attributes! grp :default)
     grp))
                                              
-(defn hslider [parent p0 p1 v0 v1 id & {:keys [track1-color track1-style track1-width
-                                                track2-color track2-style track2-width
-                                                track3-color track3-style track3-width
-                                                box-color box-gap box-style box-width fill-box? box-radius
-                                                handle-color handle-style handle-size]
-                                        :or {track1-color :gray
-                                             track1-style :solid
-                                             track1-width 1.0
-                                             track2-color :yellow
-                                             track2-style :solid
-                                             track2-width 1.0
-                                             track3-color :green
-                                             track3-style :solid
-                                             track3-width 1.0
-                                             box-color :gray
-                                             box-gap 6
-                                             box-style :solid
-                                             box-width 1.0
-                                             fill-box? false
-                                             box-radius 0
-                                             handle-color :white
-                                             handle-style :dot
-                                             handle-size 2}}]
+(defn hslider [parent p0 p1 v0 v1 & {:keys [id 
+                                            drag-action move-action enter-action exit-action
+                                            press-action release-action click-action
+                                            track1-color track1-style track1-width
+                                            track2-color track2-style track2-width
+                                            track3-color track3-style track3-width
+                                            box-color box-gap box-style box-width fill-box? box-radius
+                                            handle-color handle-style handle-size]
+                                     :or {id nil
+                                          drag-action nil
+                                          move-action nil
+                                          enter-action nil
+                                          exit-action nil
+                                          press-action nil
+                                          release-action nil
+                                          click-action nil
+                                          track1-color :gray
+                                          track1-style :solid
+                                          track1-width 1.0
+                                          track2-color :yellow
+                                          track2-style :solid
+                                          track2-width 1.0
+                                          track3-color :green
+                                          track3-style :solid
+                                          track3-width 1.0
+                                          box-color :gray
+                                          box-gap 6
+                                          box-style :solid
+                                          box-width 1.0
+                                          fill-box? false
+                                          box-radius 12
+                                          handle-color :white
+                                          handle-style :dot
+                                          handle-size 2}}]
   (let [[x0 y0] p0
         [x1 y1] p1
         y y0
         pos->val (math/clipped-linear-function x0 v0 x1 v1)
         val->pos (math/clipped-linear-function v0 x0 v1 x1)
-        grp (group/group parent :etype :slider :id id)]
+        grp (group/group parent :etype :slider :id (or :id :slider))]
 
     (let [x2 (- (min x0 x1) box-gap)
           x3 (+ (max x0 x1) box-gap)
@@ -232,12 +255,12 @@
                                           (.set-points! handle [[pos y]])
                                           (if trk2 (.set-points! trk2 [p0 [pos y]]))
                                           (if trk3 (.set-points! trk3 [[pos y] p1])))))
-    (.put-property! grp :action-mouse-dragged  (get-dragged-action))
-    (.put-property! grp :action-mouse-moved    (fn [obj ev] ))
-    (.put-property! grp :action-mouse-entered  (fn [obj ev] ))
-    (.put-property! grp :action-mouse-exited   (fn [obj ev] ))
-    (.put-property! grp :action-mouse-pressed  (fn [obj ev] ))
-    (.put-property! grp :action-mouse-released (fn [obj ev] ))
-    (.put-property! grp :action-mouse-clicked  (fn [obj ev] ))
+    (.put-property! grp :action-mouse-dragged  (compose-drag-action (or drag-action dummy-action)))
+    (.put-property! grp :action-mouse-moved    (or move-action dummy-action))
+    (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
+    (.put-property! grp :action-mouse-exited   (or exit-action dummy-action))
+    (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
+    (.put-property! grp :action-mouse-released (or release-action dummy-action))
+    (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
     (.use-attributes! grp :default)
     grp))
