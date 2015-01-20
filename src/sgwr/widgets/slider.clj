@@ -5,58 +5,116 @@
   (:require [sgwr.elements.point :as point])
   (:require [sgwr.elements.rectangle :as rect])
   (:require [sgwr.util.color :as uc])
-  (:require [sgwr.util.math :as math])
-)
+  (:require [sgwr.util.math :as math]))
 
-(def set-attributes! sgwr.elements.element/set-attributes!)
+(let [counter* (atom 0)]
+  (defn get-slider-id [id]
+    (let [n @counter*]
+      (swap! counter* inc)
+      (or id (keyword (format "slider-%d" n))))))
 
-
-(defn- dummy-action [obj ev] nil)
-
-(defn- compose-drag-action 
-  ([](compose-drag-action (fn [& _])))
-  ([dfn]
-   (fn [obj ev]
-     (let [orientation (.get-property obj :orientation)
-           cs (.coordinate-system obj)
-           handle (.get-property obj :handle)
-           track1 (.get-property obj :track1)
-           [p0 p1](.points track1)
-           track2 (.get-property obj :track2)
-           track3 (.get-property obj :track3)
-           pos (.inv-map cs [(.getX ev)(.getY ev)])]
-       (if (= orientation :vertical)
-         (let [x (first p0)
-               val ((.get-property obj :fn-pos->val) (second pos))]
-           (.set-points! handle [[x (second pos)]])
-           (.put-property! obj :value (float val))
-           (if track2 (.set-points! track2 [p0 [x (second pos)]]))
-           (if track3 (.set-points! track3 [[x (second pos)] p1])))
-         (let [y (second p0)            ; horizontal
-               val ((.get-property obj :fn-pos->val)(first pos))]
-           (.set-points! handle [[(first pos) y]])
-           (.put-property! obj :value (float val))
-           (if track2 (.set-points! track2 [p0 [(first pos) y]]))
-           (if track3 (.set-points! track3 [[(first pos) y] p1]))))
-       (dfn obj ev)
-       (.render (.get-property obj :drawing))))))
+(defn- dummy-action [& _] nil)
 
 (defn set-slider-value! 
-  ([sobj val](set-slider-value! sobj val true))
-  ([sobj val render]
-   (let [ufn (.get-property sobj :fn-set-value)]
-     (ufn val)
-     (if render (.render (.get-property sobj :drawing))))))
+  ([obj v](set-slider-value! obj v :render))
+  ([obj v render?]
+   (let [vertical? (= (.get-property obj :orientation) :vertical)
+         cs (.coordinate-system obj)
+         vhook (.get-property obj :fn-value-hook)
+         val (vhook v)
+         mapfn (.get-property obj :fn-val->pos)
+         invmap (.get-property obj :fn-pos->val)
+         handle (.get-property obj :handle)
+         track1 (.get-property obj :track1)
+         track2 (.get-property obj :track2)
+         track3 (.get-property obj :track3)
+         [p0 p1](.points track1)]
+     (if vertical?
+       (let [pos (.inv-map cs [(first p0)(mapfn val)])]
+         (.set-points! handle [pos])
+         (.set-points! track2 [p0 pos])
+         (.set-points! track3 [pos p1])
+         (.put-property! obj :value (invmap (second pos))))
+       (let [pos (.inv-map cs [(mapfn val)(second p0)])]
+         (.set-points! handle [pos])
+         (.set-points! track2 [p0 pos])
+         (.set-points! track3 [pos p1])
+         (.put-property! obj :value (invmap (first pos)))))
+      (if render? (.render (.get-property obj :drawing)))
+      (.get-property obj :value))))
 
-(defn vslider [parent p0 p1 v0 v1 & {:keys [id 
-                                            drag-action move-action enter-action exit-action
-                                            press-action release-action click-action
-                                            track1-color track1-style track1-width
-                                            track2-color track2-style track2-width
-                                            track3-color track3-style track3-width
-                                            box-color box-gap box-style box-width fill-box? box-radius
-                                            handle-color handle-style handle-size]
+(defn- compose-drag-action [dfn]
+   (fn [obj ev]
+     (let [vertical? (= (.get-property obj :orientation) :vertical)
+           cs (.coordinate-system obj)
+           vhook (.get-property obj :fn-value-hook)
+           mapfn (.get-property obj :fn-pos->val)
+           handle (.get-property obj :handle)
+           track1 (.get-property obj :track1)
+           track2 (.get-property obj :track2)
+           track3 (.get-property obj :track3)
+           [p0 p1](.points track1)
+           pos (.inv-map cs [(.getX ev)(.getY ev)])]
+       (if vertical?
+         (let [x (first p0)
+               param (second pos)
+               val (vhook (mapfn param))]
+           (.set-points! handle [[x (second pos)]])
+           (.set-points! track2 [p0 [x (second pos)]])
+           (.set-points! track3 [[x (second pos)] p1])
+           (.put-property! obj :value val))
+         (let [y (second p0)
+               param (first pos)
+               val (vhook (mapfn param))]
+           (.set-points! handle [[(first pos) y]])
+           (.set-points! track2 [p0 [(first pos) y]])
+           (.set-points! track3 [[(first pos) y] p1])
+           (.put-property! obj :value val)))
+       (dfn obj ev)
+       (.render (.get-property obj :drawing)))))
+
+(defn- compose-release-action [rfn]
+  (fn [obj ev]
+    (let [vertical? (= (.get-property obj :orientation) :vertical)
+          cs (.coordinate-system obj)
+          val (.get-property obj :value)
+          mapfn (.get-property obj :fn-val->pos)
+          handle (.get-property obj :handle)
+          track1 (.get-property obj :track1)
+          track2 (.get-property obj :track2)
+          track3 (.get-property obj :track3)
+          [p0 p1](.points track1)]
+      (if vertical?
+        (let [pos (.inv-map cs [(first p0)(mapfn val)])]
+          (.set-points! handle [pos])
+          (.set-points! track2 [p0 pos])
+          (.set-points! track3 [pos p1]))
+        (let [pos (.inv-map cs [(mapfn val)(second p0)])]
+          (.set-points! handle [pos])
+          (.set-points! track2 [p0 pos])
+          (.set-points! track3 [pos p1])))
+      (rfn obj ev)
+      (.render (.get-property obj :drawing)))))
+
+
+;; track1 - fixed background
+;; track2 - from botom/left to current handle position
+;; track3 - from top/right to current handle position
+
+(defn slider [parent p0 length v0 v1 & {:keys [id orientation
+                                               drag-action move-action enter-action exit-action
+                                               press-action release-action click-action
+                                               value-hook
+
+                                               track1-color track1-style track1-width
+                                               track2-color track2-style track2-width
+                                               track3-color track3-style track3-width
+                                               gap
+                                               pad-color 
+                                               box-color box-style box-width box-radius
+                                               handle-color handle-style handle-size]
                                         :or {id nil
+                                             orientation :vertical
                                              drag-action nil
                                              move-action nil
                                              enter-action nil
@@ -64,6 +122,7 @@
                                              press-action nil
                                              release-action nil
                                              click-action nil
+                                             value-hook identity
                                              track1-color :gray
                                              track1-style :solid
                                              track1-width 1.0
@@ -73,194 +132,103 @@
                                              track3-color :green
                                              track3-style :solid
                                              track3-width 1.0
+                                             gap 8
+                                             pad-color [0 0 0 0]
                                              box-color :gray
-                                             box-gap 6
                                              box-style :solid
                                              box-width 1.0
-                                             fill-box? false
                                              box-radius 12
                                              handle-color :white
-                                             handle-style :dot
-                                             handle-size 2}}]
-  (let [[x0 y0] p0
-        [x1 y1] p1
-        x x1
-        pos->val (math/clipped-linear-function y0 v0 y1 v1)
-        val->pos (math/clipped-linear-function v0 y0 v1 y1)
-        grp (group/group parent :etype :slider (or id :slider))]
-      (let [x2 (- x box-gap)
-            x3 (+ x box-gap)
-            y2 (- (min y0 y1) box-gap)
-            y3 (+ (max y0 y1) box-gap)
-            box (rect/rectangle grp [x2 y2][x3 y3]
-                                :id :box
-                                :color (uc/color box-color)
-                                :style box-style
-                                :width box-width
-                                :fill fill-box?)]
-            (.put-property! box :corner-radius box-radius)
-            (.put-property! grp :box box)
-            (.hide! box (not box-color)))
-
-    (let [track1 (line/line grp [x y0][x y1]
-                             :id :track1
-                             :color (uc/color track1-color)
-                             :style track1-style
-                             :width track1-width)]
-      (.put-property! grp :track1 track1))
-    (if track2-color
-      (let [c (uc/color track2-color)
-            track2 (line/line grp [x y0][x y0]
-                              :id :track2
-                              :color c
-                              :style track2-style
-                              :width track2-width)]
-        (set-attributes! track2 :rollover :color c :style track2-style :width track2-width)
-        (.put-property! grp :track2 track2)))
-    (if track3-color
-      (let [c (uc/color track3-color)
-            track3 (line/line grp [x y0][x y1]
-                              :id :track3
-                              :color c
-                              :style track3-style
-                              :width track3-width)]
-        (set-attributes! track3 :rollover :color c :style track3-style :width track3-width)
-        (.put-property! grp :track3 track3)))
-    (let [handle (point/point grp [x y0]
-                              :id :handle
-                              :color (uc/color handle-color)
-                              :style handle-style
-                              :size handle-size)]
-      (.put-property! grp :handle handle))
-    (.put-property! grp :value v0)
-    (.put-property! grp :fn-pos->val pos->val)
-    (.put-property! grp :fn-val->pos val->pos)
-    (.put-property! grp :orientation :vertical)
-    (.put-property! grp :fn-set-value (fn [v]
-                                        (let [v2 (math/clamp v (min v0 v1)(max v0 v1))
-                                              pos (val->pos v2)
-                                              handle (.get-property grp :handle)
-                                              trk2 (.get-property grp :track2)
-                                              trk3 (.get-property grp :track3)]
-                                          (.put-property! grp :value v2)
-                                          (.set-points! handle [[x pos]])
-                                          (if trk2 (.set-points! trk2 [p0 [x pos]]))
-                                          (if trk3 (.set-points! trk3 [[x pos] p1])))))
-    (.put-property! grp :action-mouse-dragged  (compose-drag-action (or drag-action dummy-action)))
+                                             handle-style -1
+                                             handle-size 4}}]
+  (let [vertical? (= orientation :vertical)
+        [x0 y0] p0
+        [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 
+        [x2 y2 
+         x3 y3 
+         pos->val val->pos]  (if vertical?
+                               [(- x0 gap)(+ y0 gap)
+                                (+ x0 gap)(- y1 gap)
+                                (math/clipped-linear-function y0 v0 y1 v1)
+                                (math/clipped-linear-function v0 y0 v1 y1)]
+                               [(- x0 gap)(+ y0 gap)
+                                (+ x1 gap)(- y0 gap)
+                                (math/clipped-linear-function x0 v0 x1 v1)
+                                (math/clipped-linear-function v0 x0 v1 x1)])
+         grp (group/group parent :etype :slider :id (get-slider-id id))
+         pad (let [pad (rect/rectangle grp [x2 y2][x3 y3] 
+                                       :id :pad
+                                       :color pad-color
+                                       :fill true)]
+               (.put-property! pad :corner-radius box-radius)
+               (.color! pad :rollover pad-color)
+               pad)
+         box (let [box (rect/rectangle grp [x2 y2][x3 y3]
+                                       :id :box
+                                       :color box-color
+                                       :style box-style
+                                       :width box-width
+                                       :fill :no)]
+               (.put-property! box :corner-radius box-radius)
+               box)
+         track1 (let [t1 (line/line grp [x0 y0][x1 y1] 
+                                    :id :track1
+                                    :color track1-color
+                                    :style track1-style
+                                    :width track1-width)]
+                  (.color! t1 :rollover track1-color)
+                  (.hide! t1 :default :no)
+                  (.fill! t1 :default :no)
+                  t1)
+         track2 (let [t2 (line/line grp [x0 y0][x0 y0]
+                                    :id :track2
+                                    :color track2-color
+                                    :style track2-style
+                                    :width track2-width)]
+                  (.color! t2 :rollover track2-color)
+                  (.hide! t2 :default :no)
+                  (.fill! t2 :default :no)
+                  t2)
+         track3 (let [t3 (line/line grp [x0 y0][x1 y1]
+                                    :id :track3
+                                    :color track3-color
+                                    :style track3-style
+                                    :width track3-width)]
+                  (.color! t3 :rollover track3-color)
+                  (.hide! t3 :default :no)
+                  (.fill! t3 :default :no)
+                  t3)
+         handle (let [hand (point/point grp [x0 y0]
+                                        :id :handle
+                                        :color handle-color
+                                        :style handle-style
+                                        :size handle-size)]
+                  hand)]
+    (.put-property! grp :orientation orientation)
+    (.put-property! grp :pad pad)
+    (.put-property! grp :box box)
+    (.put-property! grp :track1 track1)
+    (.put-property! grp :track2 track2)
+    (.put-property! grp :track3 track3)
+    (.put-property! grp :handle handle)
+    (.put-property! grp :action-mouse-dragged  (compose-drag-action 
+                                                (or drag-action dummy-action)))
     (.put-property! grp :action-mouse-moved    (or move-action dummy-action))
     (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
     (.put-property! grp :action-mouse-exited   (or exit-action dummy-action))
     (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
-    (.put-property! grp :action-mouse-released (or release-action dummy-action))
+    (.put-property! grp :action-mouse-released (compose-release-action 
+                                                (or release-action dummy-action)))
     (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
-    (.use-attributes! grp :default)
-    grp))
-                                             
-(defn hslider [parent p0 p1 v0 v1 & {:keys [id 
-                                            drag-action move-action enter-action exit-action
-                                            press-action release-action click-action
-                                            track1-color track1-style track1-width
-                                            track2-color track2-style track2-width
-                                            track3-color track3-style track3-width
-                                            box-color box-gap box-style box-width fill-box? box-radius
-                                            handle-color handle-style handle-size]
-                                     :or {id nil
-                                          drag-action nil
-                                          move-action nil
-                                          enter-action nil
-                                          exit-action nil
-                                          press-action nil
-                                          release-action nil
-                                          click-action nil
-                                          track1-color :gray
-                                          track1-style :solid
-                                          track1-width 1.0
-                                          track2-color :yellow
-                                          track2-style :solid
-                                          track2-width 1.0
-                                          track3-color :green
-                                          track3-style :solid
-                                          track3-width 1.0
-                                          box-color :gray
-                                          box-gap 6
-                                          box-style :solid
-                                          box-width 1.0
-                                          fill-box? false
-                                          box-radius 12
-                                          handle-color :white
-                                          handle-style :dot
-                                          handle-size 2}}]
-  (let [[x0 y0] p0
-        [x1 y1] p1
-        y y0
-        pos->val (math/clipped-linear-function x0 v0 x1 v1)
-        val->pos (math/clipped-linear-function v0 x0 v1 x1)
-        grp (group/group parent :etype :slider :id (or :id :slider))]
-
-    (let [x2 (- (min x0 x1) box-gap)
-          x3 (+ (max x0 x1) box-gap)
-          y2 (- y box-gap)
-          y3 (+ y box-gap)
-          box (rect/rectangle grp [x2 y2][x3 y3]
-                              :id :box
-                              :color (uc/color box-color)
-                              :style box-style
-                              :width box-width
-                              :fill fill-box?)]
-      (.put-property! box :corner-radius box-radius)
-      (.put-property! grp :box box)
-      (.hide! box (not box-color)))
-
-    (let [track1 (line/line grp [x0 y][x1 y]
-                             :id :track1
-                             :color (uc/color track1-color)
-                             :style track1-style
-                             :width track1-width)]
-      (.put-property! grp :track1 track1))
-    (if track2-color
-      (let [c (uc/color track2-color)
-            track2 (line/line grp [x0 y][x0 y]
-                              :id :track2
-                              :color c
-                              :style track2-style
-                              :width track2-width)]
-        (set-attributes! track2 :rollover :color c :style track2-style :width track2-width)
-        (.put-property! grp :track2 track2)))
-    (if track3-color
-      (let [c (uc/color track3-color)
-            track3 (line/line grp [x0 y][x1 y]
-                              :id :track3
-                              :color c
-                              :style track3-style
-                              :width track3-width)]
-        (set-attributes! track3 :rollover :color c :style track3-style :width track3-width)
-        (.put-property! grp :track3 track3)))
-    (let [handle (point/point grp [x0 y]
-                              :id :handle
-                              :color (uc/color handle-color)
-                              :style handle-style
-                              :size handle-size)]
-      (.put-property! grp :handle handle))
-    (.put-property! grp :value v0)
     (.put-property! grp :fn-pos->val pos->val)
     (.put-property! grp :fn-val->pos val->pos)
-    (.put-property! grp :orientation :horizontal)
-    (.put-property! grp :fn-set-value (fn [v]
-                                        (let [v2 (math/clamp v (min v0 v1)(max v0 v1))
-                                              pos (val->pos v2)
-                                              handle (.get-property grp :handle)
-                                              trk2 (.get-property grp :track2)
-                                              trk3 (.get-property grp :track3)]
-                                          (.put-property! grp :value v2)
-                                          (.set-points! handle [[pos y]])
-                                          (if trk2 (.set-points! trk2 [p0 [pos y]]))
-                                          (if trk3 (.set-points! trk3 [[pos y] p1])))))
-    (.put-property! grp :action-mouse-dragged  (compose-drag-action (or drag-action dummy-action)))
-    (.put-property! grp :action-mouse-moved    (or move-action dummy-action))
-    (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
-    (.put-property! grp :action-mouse-exited   (or exit-action dummy-action))
-    (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
-    (.put-property! grp :action-mouse-released (or release-action dummy-action))
-    (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
+    (.put-property! grp :fn-value-hook value-hook)
     (.use-attributes! grp :default)
     grp))
+        
+                        
+        
+                                        
+         
+        
+                                              
