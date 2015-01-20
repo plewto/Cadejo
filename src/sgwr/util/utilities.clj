@@ -11,7 +11,7 @@
 
 (defn map-style [st]
   (cond (number? st)
-        (int (min constants/max-style (max constants/min-style st)))
+        (int st)
 
         (keyword? st)
         (get constants/style-map st 0)

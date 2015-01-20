@@ -15,8 +15,8 @@
 (def default-pressed-color  :yellow)
 
 
-(def min-style 0)
-(def max-style 15)
+(def min-style -2)
+(def max-style 35)
 
 (def point-styles {:default 0
                    :dot 0
@@ -29,6 +29,16 @@
                    :cross 7
                    :x 8
                    :triangle 9
+                   :right-chevron 10
+                   :right-arrow 11
+                   :left-chevron 12
+                   :left-arrow 13
+                   :up-chevron 14
+                   :up-arrow 15
+                   :down-chevron 16
+                   :done-arrow 17
+                   :filled-dot -1
+                   :filled-box -2
                    })
 
 (def line-styles {:solid 0

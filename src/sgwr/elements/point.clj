@@ -8,6 +8,7 @@
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities])
+  (:require [sgwr.util.math :as math])
   (:import java.awt.geom.Line2D
            java.awt.geom.Rectangle2D
            java.awt.geom.Ellipse2D
@@ -73,6 +74,62 @@
         s2 (line (+ x half) y-base x (- y half))]
     (utilities/fuse base s1 s2)))
 
+(defn- right-chevron [x y size]
+  (let [half (* size half-quant)
+        whole (* size size-quant)
+        x1 (+ x whole)
+        y0 (+ y half)
+        y2 (- y half)
+        s1 (line x y0 x1 y)
+        s2 (line x y2 x1 y)]
+    (utilities/combine-shapes s1 s2)))
+
+(defn- right-arrow [x y size]
+  (let [s1 (right-chevron x y size)
+        s2 (dash x y size)]
+    (utilities/combine-shapes s1 s2)))
+
+(defn- left-chevron [x y size]
+  (let [half (* size half-quant)
+        whole (* size size-quant)
+        x1 (+ x whole)
+        y0 (+ y half)
+        y2 (- y half)
+        s1 (line x y x1 y0)
+        s2 (line x y x1 y2)]
+    (utilities/combine-shapes s1 s2)))
+
+(defn- left-arrow [x y size]
+  (let [s1 (left-chevron x y size)
+        s2 (dash (+ x (* size size-quant)) y size)]
+    (utilities/combine-shapes s1 s2)))
+    
+(defn- up-chevron [x y size]
+  (let [x1 (+ x (* size size-quant))
+        xc (math/mean x x1)
+        y1 (- y (* size size-quant))
+        s1 (line x y xc y1)
+        s2 (line x1 y xc y1)]
+    (utilities/combine-shapes s1 s2)))
+
+(defn- up-arrow [x y size]
+  (let [s1 (up-chevron x y size)
+        s2 (bar (+ x (* size half-quant)) y size)]
+    (utilities/combine-shapes s1 s2)))
+
+(defn- down-chevron [x y size]
+  (let [x1 (+ x (* size size-quant))
+        xc (math/mean x x1)
+        y1 (+ y (* size size-quant))
+        s1 (line x y xc y1)
+        s2 (line x1 y xc y1)]
+    (utilities/combine-shapes s1 s2)))
+
+(defn- down-arrow [x y size]
+  (let [s1 (down-chevron x y size)
+        s2 (bar (+ x (* size half-quant)) y size)]
+    (utilities/combine-shapes s1 s2)))
+
 (defn- shape-fn [obj]
   (let [cs (.coordinate-system obj)
         p (first (.points obj))
@@ -80,7 +137,15 @@
         [u v] q
         sfn (get {0 dot, 1 pixel, 2 dash, 3 bar,
                   4 diag, 5 diag2, 6 box, 7 cross, 
-                  8 x-point, 9 triangle} (.style obj) dot)]
+                  8 x-point, 9 triangle,
+                  10 right-chevron, 11 right-arrow,
+                  12 left-chevron, 13 left-arrow,
+                  14 up-chevron, 15 up-arrow, 
+                  16 down-chevron, 17 down-arrow,
+                  -1 dot, -2 box
+                  }
+
+                 (.style obj) dot)]
     (sfn u v (.size obj))))
 
 (defn- distance-fn [obj q]
