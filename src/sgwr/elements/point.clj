@@ -130,6 +130,20 @@
         s2 (bar (+ x (* size half-quant)) y size)]
     (utilities/combine-shapes s1 s2)))
 
+(defn- dot-cross [x y size]
+  (let [s1 (dot x y size)
+        s2 (bar x y (dec size))
+        s3 (dash x y (dec size))]
+    (utilities/fuse s1 s2 s3)))
+
+(defn- dot-x [x y size]
+  (let [s1 (dot x y size)
+        s2 (diag x y (dec size))
+        s3 (diag2 x y (dec size))]
+    (utilities/fuse s1 s2 s3)))
+
+
+
 (defn- shape-fn [obj]
   (let [cs (.coordinate-system obj)
         p (first (.points obj))
@@ -142,6 +156,7 @@
                   12 left-chevron, 13 left-arrow,
                   14 up-chevron, 15 up-arrow, 
                   16 down-chevron, 17 down-arrow,
+                  18 dot-cross, 19 dot-x
                   -1 dot, -2 box
                   }
 
