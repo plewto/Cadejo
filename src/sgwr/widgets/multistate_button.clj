@@ -11,6 +11,12 @@
   (:require [sgwr.util.utilities :as utilities]))
 
 
+(let [counter* (atom 0)]
+  (defn- get-button-id [prefix id]
+    (let [n @counter*]
+      (swap! counter* inc)
+      (or id (keyword (format "%s-%d" prefix n))))))
+
 (defn- third [col](nth col 2))
 
 (defn set-multistate-button-state! 
@@ -129,7 +135,7 @@
                                                        box-style 0
                                                        box-width 1.0
                                                        box-radius 12}}]
-  (let [grp (blank-multistate-button parent (map first states) (or id :multistate-button)
+  (let [grp (blank-multistate-button parent (map first states) (get-button-id "multistate-button" id)
                                      :drag-action drag-action 
                                      :move-action move-action 
                                      :enter-action enter-action 
@@ -216,7 +222,7 @@
                                                        box-style 0
                                                        box-width 2.0
                                                        box-radius 12}}]
-  (let [grp (blank-multistate-button parent (map first states) (or id :multistate-button)
+  (let [grp (blank-multistate-button parent (map first states) (get-button-id "multistate-button" id)
                                      :drag-action drag-action 
                                      :move-action move-action 
                                      :enter-action enter-action 
@@ -294,7 +300,7 @@
                                        unselected-check [:gray :pixel 1]}}]
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
-                                     (or id (format "checkbox-%s" txt))
+                                     (get-button-id "checkbox" id)
                                     :drag-action drag-action 
                                     :move-action move-action 
                                     :enter-action enter-action 
@@ -375,7 +381,7 @@
                                                 box-radius 12}}]
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
-                                     (or id (format "toggle-%s" txt))
+                                     (get-button-id "toggle-button" id)
                                      :drag-action drag-action 
                                      :move-action move-action 
                                      :enter-action enter-action 
@@ -457,7 +463,7 @@
                                                                     box-radius 12}}]
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
-                                     (or id (format "toggle-%s-%s" group subgroup))
+                                     (get-button-id "toggle-button" id)
                                      :drag-action drag-action 
                                      :move-action move-action 
                                      :enter-action enter-action 

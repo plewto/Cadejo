@@ -4,6 +4,13 @@
   (:require [sgwr.elements.text :as text])
   (:require [sgwr.util.color :as uc]))
 
+(let [counter* (atom 0)]
+  (defn- get-button-id [id]
+    (let [n @counter*]
+      (swap! counter* inc)
+      (or id (keyword (format "radio-button-%d" n))))))
+
+
 (defn clear-radio-button-list! [rbl*]
   (doseq [b @rbl*]
     (.select! b false)
@@ -75,17 +82,17 @@
                                                press-action nil
                                                release-action nil
                                                click-action nil
-                                               text-color (uc/color :white)
+                                               text-color :white
                                                text-style 0
                                                text-size 8
                                                gap 4
                                                text-x-shift 0
                                                text-y-shift 0
-                                               c1-color (uc/color :gray)   ;; outer circle
+                                               c1-color :gray   ;; outer circle
                                                c1-radius 8
-                                               c2-color (uc/color :green)  ;; inner circle
+                                               c2-color [64 191 64]  ;; inner circle
                                                c2-radius 4}}]
-  (let [grp (blank-radio-button parent rbl* (or id (format "radio-%s" txt))
+  (let [grp (blank-radio-button parent rbl* (get-button-id id)
                                 :drag-action drag-action 
                                 :move-action move-action 
                                 :enter-action enter-action 

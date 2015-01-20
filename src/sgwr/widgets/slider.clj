@@ -1,5 +1,4 @@
 (ns sgwr.widgets.slider
-  (:require [sgwr.elements.element])
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.line :as line])
   (:require [sgwr.elements.point :as point])

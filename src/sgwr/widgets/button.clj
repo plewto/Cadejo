@@ -9,6 +9,12 @@
   (:require [sgwr.util.math :as math])
   (:import javax.swing.SwingUtilities))
 
+(let [counter* (atom 0)]
+  (defn- get-button-id [prefix id]
+    (let [n @counter*]
+      (swap! counter* inc)
+      (or id (keyword (format "%s-%d" prefix n))))))
+
 
 (defn blank-button [parent id & {:keys [drag-action move-action enter-action exit-action
                                         press-action release-action click-action]
@@ -52,7 +58,7 @@
                                                             box-style 0
                                                             box-width 2.0
                                                             box-radius 12}}]
-  (let [grp (blank-button parent (keyword (format "%s-%s" (name group) (name subgroup)))
+  (let [grp (blank-button parent (or id (keyword (format "%s-%s" (name group) (name subgroup))))
                           :drag-action drag-action 
                           :move-action move-action 
                           :enter-action enter-action 
@@ -154,7 +160,7 @@
                                          box-style 0
                                          box-width 2.0
                                          box-radius 12}}]
-  (let [grp (blank-button parent txt
+  (let [grp (blank-button parent (get-button-id "text-button" id)
                           :drag-action drag-action 
                           :move-action move-action 
                           :enter-action enter-action 
