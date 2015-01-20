@@ -1,3 +1,5 @@
+;; TODO widget group should always be drawn last
+
 (println "--> sgwr.elements.drawing")
 (ns sgwr.elements.drawing
   (:use [cadejo.util.trace])
@@ -153,8 +155,12 @@
                           shape (.shape element)]
                       (.setPaint g2d (.color element))
                     (cond (= etype :point)
-                          (do (.setStroke g2d ustroke/default-stroke)
-                              (.draw g2d shape))
+                          (let [sty (.style element)]
+                            (.setStroke g2d ustroke/default-stroke)
+                            (if (neg? sty)
+                              (.fill g2d shape)
+                              (.draw g2d shape)))
+
                           (= etype :text)
                           (do
                             (sgwr.elements.text/render-text element g2d)
