@@ -36,7 +36,6 @@
   [(.get-property msb :current-state-index)
    (.get-property msb :current-state)])
 
-
 (defn select-checkbox! [cb flag]
   (if flag
     (do 
@@ -75,14 +74,14 @@
 
 ;; states - an array of keywords - attribute names    
 (defn blank-multistate-button [parent state-keys id  & {:keys [drag-action move-action enter-action exit-action
-                                                      press-action release-action click-action]
-                                               :or {drag-action nil
-                                                    move-action nil
-                                                    enter-action nil
-                                                    exit-action nil
-                                                    press-action nil
-                                                    release-action nil
-                                                    click-action nil}}]
+                                                               press-action release-action click-action]
+                                                        :or {drag-action nil
+                                                             move-action nil
+                                                             enter-action nil
+                                                             exit-action nil
+                                                             press-action nil
+                                                             release-action nil
+                                                             click-action nil}}]
   (let [grp (group/group parent :etype :multistate-button :id id)
         dummy-action (fn [obj ev] nil)]
     (.put-property! grp :states state-keys)
@@ -107,7 +106,8 @@
                                                          press-action release-action click-action
                                                          text-color text-style text-size
                                                          gap text-x-shift text-y-shift w h
-                                                         box-color box-style box-width box-radius fill-box?]
+                                                         pad-color
+                                                         box-color box-style box-width box-radius]
                                                   :or {id nil
                                                        drag-action nil
                                                        move-action nil
@@ -124,11 +124,11 @@
                                                        text-y-shift 0
                                                        w nil
                                                        h nil
+                                                       pad-color [0 0 0 0]
                                                        box-color (uc/color :gray)
                                                        box-style 0
                                                        box-width 1.0
-                                                       box-radius 12
-                                                       fill-box? :no}}]
+                                                       box-radius 12}}]
   (let [grp (blank-multistate-button parent (map first states) (or id :multistate-button)
                                      :drag-action drag-action 
                                      :move-action move-action 
@@ -149,12 +149,18 @@
         y2 (+ y0 height)
         yc (math/mean y0 y2)
         y1 (+ yc (* 1/2 est-tx-height) text-y-shift)
+        pad (rect/rectangle grp p0 [x2 y2]
+                            :id :box
+                            :color pad-color
+                            :style 0
+                            :width 1.0
+                            :fill true)
         box (rect/rectangle grp p0 [x2 y2]
                             :id :box
                             :color box-color
                             :style box-style
                             :width box-width
-                            :fill fill-box?)
+                            :fill :no)
         txtobj-lst (let [acc* (atom [])
                          i* (atom 0)]
                      (doseq [[attkey txt col] states]
@@ -175,7 +181,10 @@
           (if (= actvs k)
             (.hide! tx actvs :no)
             (.hide! tx k true)))))
+    (.color! pad :rollover pad-color)
+    (.put-property! pad :corner-radius box-radius)
     (.put-property! box :corner-radius box-radius)
+    (.put-property! grp :pad pad)
     (.put-property! grp :box box)
     (.put-property! grp :text-objects txtobj-lst)
     (.use-attributes! grp (first (first states)))
@@ -188,7 +197,8 @@
                                                           drag-action move-action enter-action exit-action
                                                           press-action release-action click-action
                                                           icon-prefix gap w h
-                                                          box-color box-style box-width box-radius fill-box?]
+                                                          pad-color
+                                                          box-color box-style box-width box-radius]
                                                   :or {id nil
                                                        drag-action nil
                                                        move-action nil
@@ -201,11 +211,11 @@
                                                        gap 4
                                                        w 44
                                                        h 44
+                                                       pad-color [0 0 0 0]
                                                        box-color (uc/color :gray)
                                                        box-style 0
                                                        box-width 2.0
-                                                       box-radius 12
-                                                       fill-box? :no}}]
+                                                       box-radius 12}}]
   (let [grp (blank-multistate-button parent (map first states) (or id :multistate-button)
                                      :drag-action drag-action 
                                      :move-action move-action 
@@ -217,11 +227,16 @@
         [x0 y0] p0
         x1 (+ x0 gap)
         y1 (+ y0 gap)
+        pad (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :box
+                            :color pad-color
+                            :style 0
+                            :width 1.0
+                            :fill true)
         box (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :box
-                            :color (uc/color box-color)
+                            :color box-color
                             :style box-style
                             :width box-width
-                            :fill fill-box?)
+                            :fill :no)
         iobj-lst (let [acc* (atom [])
                        i* (atom 0)]
                    (doseq [[attkey igroup isubgroup] states]
@@ -236,7 +251,11 @@
           (if (= active k)
             (.hide! iobj k :no)
             (.hide! iobj k true)))))
+    (.color! pad :rollover pad-color)
+    (.put-property! pad :corner-radius box-radius)
     (.put-property! box :corner-radius box-radius)
+    (.put-property! grp :pad pad)
+    (.put-property! grp :box box)
     (.use-attributes! grp (first (first states)))
     grp)) 
                      

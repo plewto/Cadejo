@@ -35,7 +35,7 @@
                                                              press-action release-action click-action
                                                              gap w h 
                                                              pad-color 
-                                                             box-color box-style box-width box-radius fill-box?]
+                                                             box-color box-style box-width box-radius]
                                                        :or {id nil
                                                             drag-action nil
                                                             move-action nil
@@ -51,8 +51,7 @@
                                                             box-color :gray
                                                             box-style 0
                                                             box-width 2.0
-                                                            box-radius 12
-                                                            fill-box? false}}]
+                                                            box-radius 12}}]
   (let [grp (blank-button parent (keyword (format "%s-%s" (name group) (name subgroup)))
                           :drag-action drag-action 
                           :move-action move-action 
@@ -73,7 +72,7 @@
                             :color box-color
                             :style box-style
                             :width box-width
-                            :fill fill-box?)
+                            :fill :no)
         icon (image/read-icon grp [x1 y1] prefix group subgroup)]
     (.put-property! pad :corner-radius box-radius)
     (.put-property! box :corner-radius box-radius)
@@ -90,7 +89,7 @@
                                                             press-action release-action click-action
                                                             gap w h 
                                                             pad-color
-                                                            box-color box-style box-width box-radius fill-box?]
+                                                            box-color box-style box-width box-radius]
                                                      :or {id nil
                                                           drag-action nil
                                                           move-action nil
@@ -106,8 +105,7 @@
                                                           box-color :gray
                                                           box-style 0
                                                           box-width 1.0
-                                                          box-radius 12
-                                                          fill-box? false}}]
+                                                          box-radius 12}}]
   (icon-button parent p0 prefix :mini subgroup
                :id id
                :drag-action drag-action 
@@ -125,7 +123,7 @@
                :box-style box-style 
                :box-width box-width 
                :box-radius box-radius 
-               :fill-box? fill-box?))
+               :fill-box? :no))
 
 
 (defn text-button [parent p0 txt & {:keys [id 
@@ -134,7 +132,7 @@
                                            text-color text-style text-size
                                            gap text-x-shift text-y-shift w h
                                            pad-color
-                                           box-color box-style box-width box-radius fill-box?]
+                                           box-color box-style box-width box-radius]
                                     :or {id nil
                                          drag-action nil
                                          move-action nil
@@ -155,8 +153,7 @@
                                          box-color :gray
                                          box-style 0
                                          box-width 2.0
-                                         box-radius 12
-                                         fill-box? false}}]
+                                         box-radius 12}}]
   (let [grp (blank-button parent txt
                           :drag-action drag-action 
                           :move-action move-action 
@@ -184,7 +181,7 @@
                             :color box-color
                             :style box-style
                             :width box-width
-                            :fill fill-box?)
+                            :fill :no)
         txobj (text/text grp [x1 y1] txt :id :text
                          :color text-color
                          :style text-style

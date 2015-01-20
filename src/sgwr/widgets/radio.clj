@@ -39,7 +39,6 @@
          (.use-attributes! obj :selected))
        (xfn obj ev)))))
 
-
 (defn blank-radio-button [parent rbl* id & {:keys [drag-action move-action enter-action exit-action
                                                    press-action release-action click-action]
                                             :or {drag-action nil
