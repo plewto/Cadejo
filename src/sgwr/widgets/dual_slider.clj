@@ -215,6 +215,7 @@
                                                   current-handle-color :white
                                                   current-handle-style 18
                                                   current-handle-size 4}}]
+  (println (format "DEBUG %s dual-slider executing" orientation))
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 
@@ -295,6 +296,7 @@
                                         :size handle2-size)]
                   (.put-property! hand :value v1)
                   hand)]
+    (println "DEBUG dual-slider post let")
     (.put-property! grp :orientation orientation)
     (.put-property! grp :pad pad)
     (.put-property! grp :box box)
@@ -313,11 +315,12 @@
     (.put-property! grp :action-mouse-entered  (compose-enter-action (or enter-action dummy-action)))
     (.put-property! grp :action-mouse-exited   (compose-exit-action (or exit-action dummy-action)))
     (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
-    (.put-property! grp :action-mouse-released (or release-action dummy-action)
+    (.put-property! grp :action-mouse-released (or release-action dummy-action))
     (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
     (.put-property! grp :fn-pos->val pos->val)
     (.put-property! grp :fn-val->pos val->pos)
     (.put-property! grp :fn-value-hook value-hook)
     (.put-property! grp :values [v0 v1])
     (.use-attributes! grp :default)
-    grp)) 
+    (println "DEBUG dual-slider returns")
+    grp))
