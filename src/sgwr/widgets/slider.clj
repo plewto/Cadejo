@@ -88,7 +88,7 @@
           (.set-points! handle [pos])
           (.set-points! track2 [p0 pos])
           (.set-points! track3 [pos p1]))
-        (let [pos (.inv-map cs [(mapfn val)(second p0)])]
+        (let [pos (.inv-map cs [(mapfn val)(second p0)])] ;; <- BUG null pointer exception ????
           (.set-points! handle [pos])
           (.set-points! track2 [p0 pos])
           (.set-points! track3 [pos p1])))
@@ -99,12 +99,11 @@
 ;; track1 - fixed background
 ;; track2 - from botom/left to current handle position
 ;; track3 - from top/right to current handle position
-
+;;
 (defn slider [parent p0 length v0 v1 & {:keys [id orientation
                                                drag-action move-action enter-action exit-action
                                                press-action release-action click-action
                                                value-hook
-
                                                track1-color track1-style track1-width
                                                track2-color track2-style track2-width
                                                track3-color track3-style track3-width
