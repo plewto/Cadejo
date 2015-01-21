@@ -41,7 +41,7 @@
                                                              press-action release-action click-action
                                                              gap w h 
                                                              pad-color 
-                                                             box-color box-style box-width box-radius]
+                                                             rim-color rim-style rim-width rim-radius]
                                                        :or {id nil
                                                             drag-action nil
                                                             move-action nil
@@ -54,10 +54,10 @@
                                                             w 44
                                                             h 44
                                                             pad-color [0 0 0 0]
-                                                            box-color :gray
-                                                            box-style 0
-                                                            box-width 2.0
-                                                            box-radius 12}}]
+                                                            rim-color :gray
+                                                            rim-style 0
+                                                            rim-width 2.0
+                                                            rim-radius 12}}]
   (let [grp (blank-button parent (or id (keyword (format "%s-%s" (name group) (name subgroup))))
                           :drag-action drag-action 
                           :move-action move-action 
@@ -74,17 +74,17 @@
                            :style 0
                            :width 1.0
                            :fill true)
-        box (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :box
-                            :color box-color
-                            :style box-style
-                            :width box-width
+        rim (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :rim
+                            :color rim-color
+                            :style rim-style
+                            :width rim-width
                             :fill :no)
         icon (image/read-icon grp [x1 y1] prefix group subgroup)]
-    (.put-property! pad :corner-radius box-radius)
-    (.put-property! box :corner-radius box-radius)
+    (.put-property! pad :corner-radius rim-radius)
+    (.put-property! rim :corner-radius rim-radius)
     (.color! pad :rollover pad-color)
     (.put-property! grp :pad pad)
-    (.put-property! grp :box box)
+    (.put-property! grp :rim rim)
     (.put-property! grp :icon icon)
     (.use-attributes! grp :default)
     grp))
@@ -95,7 +95,7 @@
                                                             press-action release-action click-action
                                                             gap w h 
                                                             pad-color
-                                                            box-color box-style box-width box-radius]
+                                                            rim-color rim-style rim-width rim-radius]
                                                      :or {id nil
                                                           drag-action nil
                                                           move-action nil
@@ -108,10 +108,10 @@
                                                           w 26
                                                           h 26
                                                           pad-color [0 0 0 0]
-                                                          box-color :gray
-                                                          box-style 0
-                                                          box-width 1.0
-                                                          box-radius 12}}]
+                                                          rim-color :gray
+                                                          rim-style 0
+                                                          rim-width 1.0
+                                                          rim-radius 12}}]
   (icon-button parent p0 prefix :mini subgroup
                :id id
                :drag-action drag-action 
@@ -125,11 +125,11 @@
                :w w 
                :h h
                :pad-color pad-color
-               :box-color box-color 
-               :box-style box-style 
-               :box-width box-width 
-               :box-radius box-radius 
-               :fill-box? :no))
+               :rim-color rim-color 
+               :rim-style rim-style 
+               :rim-width rim-width 
+               :rim-radius rim-radius 
+               :fill-rim? :no))
 
 
 (defn text-button [parent p0 txt & {:keys [id 
@@ -138,7 +138,7 @@
                                            text-color text-style text-size
                                            gap text-x-shift text-y-shift w h
                                            pad-color
-                                           box-color box-style box-width box-radius]
+                                           rim-color rim-style rim-width rim-radius]
                                     :or {id nil
                                          drag-action nil
                                          move-action nil
@@ -156,10 +156,10 @@
                                          w nil
                                          h nil
                                          pad-color [0 0 0 0]
-                                         box-color :gray
-                                         box-style 0
-                                         box-width 2.0
-                                         box-radius 12}}]
+                                         rim-color :gray
+                                         rim-style 0
+                                         rim-width 2.0
+                                         rim-radius 12}}]
   (let [grp (blank-button parent (get-button-id "text-button" id)
                           :drag-action drag-action 
                           :move-action move-action 
@@ -183,21 +183,21 @@
                             :style 0
                             :width 1.0
                             :fill true)
-        box (rect/rectangle grp p0 [x3 y3] :id :box
-                            :color box-color
-                            :style box-style
-                            :width box-width
+        rim (rect/rectangle grp p0 [x3 y3] :id :rim
+                            :color rim-color
+                            :style rim-style
+                            :width rim-width
                             :fill :no)
         txobj (text/text grp [x1 y1] txt :id :text
                          :color text-color
                          :style text-style
                          :size text-size)]
     (.color! txobj :rollover text-color)
-    (.put-property! pad :corner-radius box-radius)
-    (.put-property! box :corner-radius box-radius)
+    (.put-property! pad :corner-radius rim-radius)
+    (.put-property! rim :corner-radius rim-radius)
     (.color! pad :rollover pad-color)
     (.put-property! grp :pad pad)
-    (.put-property! grp :box box)
+    (.put-property! grp :rim rim)
     (.put-property! grp :text-element txobj)
     (.use-attributes! grp :default)
     grp))

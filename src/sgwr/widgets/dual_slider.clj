@@ -92,12 +92,7 @@
     (efn obj ev)
     (.render (.get-property obj :drawing))))
 
-(defn- compose-exit-action [efn]
-  (fn [obj ev]
-    (.use-attributes! obj :default)
-    (.put-property! obj :current-handle nil)
-    (efn obj ev)
-    (.render (.get-property obj :drawing))))
+
 
 (defn- compose-move-action [mfn]
   (fn [obj ev]
@@ -130,8 +125,7 @@
                   param (first pos)
                   val (vhook (mapfn param))]
               (.set-points! handle [[(first pos) y]])
-              (.put-property! handle :value val)
-              ))
+              (.put-property! handle :value val)))
           (let [h1 (.get-property obj :handle1)
                 h2 (.get-property obj :handle2)
                 ph1 (first (.points h1))
@@ -156,7 +150,47 @@
                 (.set-points! track4 [[x2 y][x3 y]]))))
           (dfn obj ev)
           (.render (.get-property obj :drawing)))) )))
+
+(defn- compose-release-action [rfn]
+  (fn [obj ev]
+    (let [vertical? (= (.get-property obj :orientation) :vertical)
+          cs (.coordinate-system obj)
+          [v1 v2](.get-property obj :values)
+          mapfn (.get-property obj :fn-val->pos)
+          handle1 (.get-property obj :handle1)
+          handle2 (.get-property obj :handle2)
+          track1 (.get-property obj :track1)
+          track2 (.get-property obj :track2)
+          track3 (.get-property obj :track3)
+          track4 (.get-property obj :track4)
+          [p0 p1](.points track1)
+          [x0 y0] p0
+          [x1 y1] p1]
+      (if vertical?
+        (let [y2 (mapfn v1)
+              y3 (mapfn v2)]
+          (.set-points! handle1 [[x0 y2]])
+          (.set-points! handle2 [[x0 y3]])
+          (.set-points! track2 [p0 [x0 y2]])
+          (.set-points! track3 [[x0 y3] p1])
+          (.set-points! track4 [[x0 y3][x0 y2]]))
+        (let [x2 (mapfn v1)
+              x3 (mapfn v2)]
+          (.set-points! handle1 [[x2 y0]])
+          (.set-points! handle2 [[x3 y0]])
+          (.set-points! track2 [p0 [x2 y0]])
+          (.set-points! track3 [[x3 y0] p1])
+          (.set-points! track4 [[x3 y0][x2 y0]])))
+      (rfn obj ev)
+      (.render (.get-property obj :drawing)))))
         
+(defn- compose-exit-action [efn]
+  (fn [obj ev]
+    (.use-attributes! obj :default)
+    (.put-property! obj :current-handle nil)
+    (efn obj ev)
+    (.render (.get-property obj :drawing))))
+
 
 
 ;; track1 - fixed background
@@ -174,7 +208,7 @@
                                                     track4-color track4-style track4-width
                                                     gap
                                                     pad-color 
-                                                    box-color box-style box-width box-radius
+                                                    rim-color rim-style rim-width rim-radius
                                                     handle1-color handle1-style handle1-size 
                                                     handle2-color handle2-style handle2-size 
                                                     current-handle-color current-handle-style current-handle-size]
@@ -202,10 +236,10 @@
                                                   track4-width 1.0
                                                   gap 8
                                                   pad-color [0 0 0 0]
-                                                  box-color :gray
-                                                  box-style :solid
-                                                  box-width 1.0
-                                                  box-radius 12
+                                                  rim-color :gray
+                                                  rim-style :solid
+                                                  rim-width 1.0
+                                                  rim-radius 12
                                                   handle1-color :purple
                                                   handle1-style -1
                                                   handle1-size 4
@@ -234,17 +268,17 @@
                                        :id :pad
                                        :color (uc/color pad-color)
                                        :fill true)]
-               (.put-property! pad :corner-radius box-radius)
+               (.put-property! pad :corner-radius rim-radius)
                (.color! pad :rollover (uc/color pad-color))
                pad)
-         box (let [box (rect/rectangle grp [x2 y2][x3 y3]
-                                       :id :box
-                                       :color (uc/color box-color)
-                                       :style box-style
-                                       :width box-width
+         rim (let [rim (rect/rectangle grp [x2 y2][x3 y3]
+                                       :id :rim
+                                       :color (uc/color rim-color)
+                                       :style rim-style
+                                       :width rim-width
                                        :fill :no)]
-               (.put-property! box :corner-radius box-radius)
-               box)
+               (.put-property! rim :corner-radius rim-radius)
+               rim)
          track1 (let [t1 (line/line grp [x0 y0][x1 y1] 
                                     :id :track1
                                     :color (uc/color track1-color)
@@ -297,7 +331,7 @@
                   hand)]
     (.put-property! grp :orientation orientation)
     (.put-property! grp :pad pad)
-    (.put-property! grp :box box)
+    (.put-property! grp :rim rim)
     (.put-property! grp :track1 track1)
     (.put-property! grp :track2 track2)
     (.put-property! grp :track3 track3)
@@ -313,7 +347,7 @@
     (.put-property! grp :action-mouse-entered  (compose-enter-action (or enter-action dummy-action)))
     (.put-property! grp :action-mouse-exited   (compose-exit-action (or exit-action dummy-action)))
     (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
-    (.put-property! grp :action-mouse-released (or release-action dummy-action))
+    (.put-property! grp :action-mouse-released (compose-release-action (or release-action dummy-action)))
     (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
     (.put-property! grp :fn-pos->val pos->val)
     (.put-property! grp :fn-val->pos val->pos)

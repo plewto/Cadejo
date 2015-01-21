@@ -42,6 +42,9 @@
       (if render? (.render (.get-property obj :drawing)))
       (.get-property obj :value))))
 
+(defn get-slider-value [obj]
+  (.get-property obj :value))
+
 (defn- compose-drag-action [dfn]
    (fn [obj ev]
      (let [vertical? (= (.get-property obj :orientation) :vertical)
@@ -88,13 +91,12 @@
           (.set-points! handle [pos])
           (.set-points! track2 [p0 pos])
           (.set-points! track3 [pos p1]))
-        (let [pos (.inv-map cs [(mapfn val)(second p0)])] ;; <- BUG null pointer exception ????
+        (let [pos (.inv-map cs [(mapfn val)(second p0)])]
           (.set-points! handle [pos])
           (.set-points! track2 [p0 pos])
           (.set-points! track3 [pos p1])))
       (rfn obj ev)
       (.render (.get-property obj :drawing)))))
-
 
 ;; track1 - fixed background
 ;; track2 - from botom/left to current handle position
@@ -109,7 +111,7 @@
                                                track3-color track3-style track3-width
                                                gap
                                                pad-color 
-                                               box-color box-style box-width box-radius
+                                               rim-color rim-style rim-width rim-radius
                                                handle-color handle-style handle-size]
                                         :or {id nil
                                              orientation :vertical
@@ -132,10 +134,10 @@
                                              track3-width 1.0
                                              gap 8
                                              pad-color [0 0 0 0]
-                                             box-color :gray
-                                             box-style :solid
-                                             box-width 1.0
-                                             box-radius 12
+                                             rim-color :gray
+                                             rim-style :solid
+                                             rim-width 1.0
+                                             rim-radius 12
                                              handle-color :white
                                              handle-style -1
                                              handle-size 4}}]
@@ -158,17 +160,17 @@
                                        :id :pad
                                        :color pad-color
                                        :fill true)]
-               (.put-property! pad :corner-radius box-radius)
+               (.put-property! pad :corner-radius rim-radius)
                (.color! pad :rollover pad-color)
                pad)
-         box (let [box (rect/rectangle grp [x2 y2][x3 y3]
-                                       :id :box
-                                       :color box-color
-                                       :style box-style
-                                       :width box-width
+         rim (let [rim (rect/rectangle grp [x2 y2][x3 y3]
+                                       :id :rim
+                                       :color rim-color
+                                       :style rim-style
+                                       :width rim-width
                                        :fill :no)]
-               (.put-property! box :corner-radius box-radius)
-               box)
+               (.put-property! rim :corner-radius rim-radius)
+               rim)
          track1 (let [t1 (line/line grp [x0 y0][x1 y1] 
                                     :id :track1
                                     :color track1-color
@@ -204,19 +206,17 @@
                   hand)]
     (.put-property! grp :orientation orientation)
     (.put-property! grp :pad pad)
-    (.put-property! grp :box box)
+    (.put-property! grp :rim rim)
     (.put-property! grp :track1 track1)
     (.put-property! grp :track2 track2)
     (.put-property! grp :track3 track3)
     (.put-property! grp :handle handle)
-    (.put-property! grp :action-mouse-dragged  (compose-drag-action 
-                                                (or drag-action dummy-action)))
+    (.put-property! grp :action-mouse-dragged  (compose-drag-action (or drag-action dummy-action)))
     (.put-property! grp :action-mouse-moved    (or move-action dummy-action))
     (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
     (.put-property! grp :action-mouse-exited   (or exit-action dummy-action))
     (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
-    (.put-property! grp :action-mouse-released (compose-release-action 
-                                                (or release-action dummy-action)))
+    (.put-property! grp :action-mouse-released (compose-release-action (or release-action dummy-action)))
     (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
     (.put-property! grp :fn-pos->val pos->val)
     (.put-property! grp :fn-val->pos val->pos)
