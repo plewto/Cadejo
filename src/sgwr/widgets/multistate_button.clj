@@ -473,7 +473,6 @@
         y1 (+ y0 gap)
         x2 (+ x1 w)
         y2 (+ y1 h)
-        dummy-100 (println (format "DEBUG [x0 y0] -> %s   gap = %s    [x1 y1] -> %s" p0 gap [x1 y1]))
         pad (let [pad (rect/rectangle grp p0 [x2 y2] :id :pad
                                       :color [0 0 0 0]
                                       :style 0

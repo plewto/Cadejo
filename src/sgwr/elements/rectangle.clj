@@ -141,6 +141,4 @@
         arglst* (atom [parent [x1 y1][x2 y2]])]
     (doseq [a args]
       (swap! arglst* (fn [q](conj q a))))
-    (println (format "DEBUG rect arglist -> %s" @arglst*)) 
-    (apply rectangle @arglst*)
-    ))
+    (apply rectangle @arglst*)))
