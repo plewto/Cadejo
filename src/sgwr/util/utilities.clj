@@ -9,15 +9,17 @@
   (println (format "sgwr WARNING: %s" msg))
   nil)
 
-(defn map-style [st]
-  (cond (number? st)
-        (int st)
-
-        (keyword? st)
-        (get constants/style-map st 0)
-
-        :default
-        nil))
+;; ISSUE DEPRECIATED
+;; (defn map-style [st]
+;;   (cond (number? st)
+;;         (int st)
+;; 
+;;         (keyword? st)
+;;         ;(get constants/style-map st 0)
+;;         nil
+;; 
+;;         :default
+;;         nil))
 
 
 (defn member? [obj col]
@@ -42,6 +44,13 @@
         (swap! acc* (fn [q](cons e q)))))
     (reverse @acc*)))
 
+
+(defn ->seq [obj]
+  (cond (or (vector? obj)(seq? obj)) obj
+        :default (vector obj)))
+            
+        
+
 (defn tab 
   ([n]
      (if (> n 0)
@@ -55,13 +64,14 @@
 (defn combine-shapes 
   "Combine two instances of java.awt.Shape"
   [s1 s2]
-  (let [p1 (java.awt.geom.Path2D$Double. s1)]
-    (.append p1 s2 false)
-    p1))
+  (if s2
+    (let [p1 (java.awt.geom.Path2D$Double. s1)]
+      (.append p1 s2 false)
+      p1)
+    s1))
  
 (defn fuse [& args]
   (reduce combine-shapes args))
-
 
 ;; Predicates
 

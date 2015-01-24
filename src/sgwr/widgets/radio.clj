@@ -108,8 +108,8 @@
         x3 (+ x2 gap text-x-shift)
         yc (+ y0 c1-radius)
         y3 (+ yc (* 1/2 est-tx-height) text-y-shift)
-        c1 (circle/circle-r grp [xc yc] c1-radius :color c1-color :id :c1)
-        c2 (circle/circle-r grp [xc yc] c2-radius :color c2-color :id :c2)
+        c1 (circle/circle-r grp [xc yc] c1-radius :color c1-color :id :c1 :fill false)
+        c2 (circle/circle-r grp [xc yc] c2-radius :color c2-color :id :c2 :fill false)
         txobj (text/text grp [x3 y3] txt 
                          :color text-color
                          :id :text

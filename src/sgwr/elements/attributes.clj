@@ -106,7 +106,7 @@
                                          size nil}}]
   {:id id
    :color (uc/color color)
-   :style (utilities/map-style style)
+   :style style
    :width width
    :size size
    :filled nil
@@ -194,7 +194,7 @@
                        (.color! this id c)))
                    
                    (style! [this id st]
-                     (let [st2 (utilities/map-style st)
+                     (let [st2 st ; (utilities/map-style st)
                            att1 (get-implicit-attributes this id)
                            att2 (assoc att1 :style st2)]
                        (swap! maps* (fn [q](assoc q id att2)))

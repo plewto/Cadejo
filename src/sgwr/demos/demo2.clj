@@ -59,6 +59,7 @@
   (text/text grp [-92 -90] "III" :size sz :style st :color c1) 
   (text/text grp [ 85 -90] "IV"  :size sz :style st :color c1))
 
+
 ;; Quadrant I
 ;; View scale
 ;;
@@ -68,10 +69,14 @@
       linfn (fn [x](+ b (* a x)))]
   (line/line grp1 [30 (linfn 30)][70 (linfn 70)] :color :red)
   (doseq [x (range 30 80 10)]
-    (point/point grp1 [x (linfn x)] :color :yellow :size 2.0))
+    (point/point grp1 [x (linfn x)] :color :yellow :style 0x20 :size 2.0))
   (circle/circle grp1 [50 35][80 65] :color :blue)
   (rect/rectangle grp1 [50 50][80 80] :color :green)
-  (text/text grp1 [43 52] "Point objects are not effected by view changes" :size 2))
+  (text/text grp1 [43 52] "Point sizes are never scalable" :size 2)
+  (text/text grp1 [10 5] "Text may or may not be scalable" :size 6 :lock-size true)
+)
+
+
 
 ;; Quadrant II
 ;; Mouse Listener 
@@ -97,6 +102,7 @@
                                         (.put-property! r2 :color (if (zero? dr2) yellow gray))
                                         (.put-property! c1 :hidden (if (zero? dc) true false))
                                         (.render drw))))))
+
 ;; Quadrant III
 ;; Mouse Listener 
 ;;
@@ -127,6 +133,7 @@
                                             (.put-property! c1 :color (nth (reverse colors) d))
                                             (.render drw))))))))
 
+
 ;; Quadrant IV Attributes
 ;;
 (def grp4 (grp/group root :id :quad4))
@@ -147,9 +154,6 @@
   (set-attributes! tx :beta  :color :red     :style 1          :size 6 :hide true)
   (set-attributes! tx :gamma :color :green   :style 10         :size 12 :hide false)
   (.use-attributes! grp4 :alpha))
-        
-
-
 
 ;; ------------------------------------------------------------
 
@@ -226,8 +230,9 @@
                                       (status (format " %s" p))))
                                   (mouseDragged [_] )))
 
-;; (defn rl [](use 'sgwr.demos.demo2 :reload))
-;; (defn rla [](use 'sgwr.demos.demo2 :reload-all))
-;; (defn exit [](System/exit 0))
+
+(defn rl [](use 'sgwr.demos.demo2 :reload))
+(defn rla [](use 'sgwr.demos.demo2 :reload-all))
+(defn exit [](System/exit 0))
 
 

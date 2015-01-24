@@ -139,8 +139,8 @@
                                              rim-width 1.0
                                              rim-radius 12
                                              handle-color :white
-                                             handle-style -1
-                                             handle-size 4}}]
+                                             handle-style [:fill :dot]
+                                             handle-size 3}}]
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 

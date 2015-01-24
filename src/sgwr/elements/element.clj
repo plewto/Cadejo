@@ -526,11 +526,20 @@
                (color! [this c]
                  (.color! attributes c))
                
-               (style! [this id st]
-                 (.style! attributes id st))
+               ;; (style! [this id st]
+               ;;   (.style! attributes id st))
                
-               (style! [this st]
-                 (.style! attributes st))
+               ;; (style! [this st]
+               ;;   (.style! attributes st))
+
+               (style! [this id sty]
+                 (let [sfn (get fnmap :style-fn (constantly 0))]
+                   (.style! attributes id (apply sfn (utilities/->seq sty)))))
+
+               (style! [this sty]
+                 (let [sfn (get fnmap :style-fn (constantly 0))]
+                   (.style! attributes (apply sfn (utilities/->seq sty)))))
+
                
                (width! [this id w]
                  (.width! attributes id w))

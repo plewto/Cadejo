@@ -66,7 +66,8 @@
                                    :points-fn points-fn
                                    :translation-fn translation-fn
                                    :scale-fn scale-fn
-                                   :bounds-fn bounds-fn})
+                                   :bounds-fn bounds-fn
+                                   :style-fn (constantly 0)})
 
 (def locked-group-properties [])
 

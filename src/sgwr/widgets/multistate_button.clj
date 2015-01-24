@@ -42,7 +42,7 @@
   [(.get-property msb :current-state-index)
    (.get-property msb :current-state)])
 
-(defn select-checkrim! [cb flag]
+(defn select-checkbox! [cb flag]
   (if flag
     (do 
       (set-multistate-button-state! cb 1)
@@ -51,7 +51,7 @@
       (set-multistate-button-state! cb 0)
       (.select! cb false))))
 
-(def select-toggle-button! select-checkrim!)
+(def select-toggle-button! select-checkbox!)
 
       
 (defn- compose-pressed-action 
@@ -218,7 +218,7 @@
                                                        w 44
                                                        h 44
                                                        pad-color [0 0 0 0]
-                                                       rim-color (uc/color :gray)
+                                                       rim-color [0 0 0 0] ; (uc/color :gray)
                                                        rim-style 0
                                                        rim-width 2.0
                                                        rim-radius 12}}]
@@ -257,21 +257,18 @@
           (if (= active k)
             (.hide! iobj k :no)
             (.hide! iobj k true)))))
-    (.color! pad :rollover pad-color)
-    (.put-property! pad :corner-radius rim-radius)
-    (.put-property! rim :corner-radius rim-radius)
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
+    (.color! pad :rollover pad-color)
+    (.put-property! pad :corner-radius rim-radius)
+    (.color! rim :unselected rim-color)
     (.use-attributes! grp (first (first states)))
     grp)) 
-                     
-
-
 
 ;; selected-check & unselected-check arguments are vectors of form
-;; [color style size]
+;; [color [style..] size]
 ;;                      
-(defn checkrim [parent p0 txt  & {:keys [id
+(defn checkbox [parent p0 txt  & {:keys [id
                                          drag-action move-action enter-action exit-action
                                          press-action release-action click-action
                                          text-color text-style text-size 
@@ -296,11 +293,11 @@
                                        rim-style 0
                                        rim-size 12 ;; in pixels
                                        rim-radius 0
-                                       selected-check [:white :x 2]
-                                       unselected-check [:gray :pixel 1]}}]
+                                       selected-check [:white [:diag :diag2] 2]
+                                       unselected-check [[0 0 0 0] [:pixel] 1]}}]
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
-                                     (get-button-id "checkrim" id)
+                                     (get-button-id "checkbox" id)
                                     :drag-action drag-action 
                                     :move-action move-action 
                                     :enter-action enter-action 
@@ -323,7 +320,7 @@
               (.put-property! bx :corner-radius rim-radius)
               bx)
         pnt (let [sc (or (first selected-check) :white)
-                  st (or (second selected-check) :x)
+                  st (or (second selected-check) [:diag :diag2])
                   sz (or (third selected-check) 2)
                   uc (or (first unselected-check) :gray)
                   ut (or (second unselected-check) :pixel)
@@ -435,7 +432,7 @@
     (.put-property! grp :text-element txobj)
     (.use-attributes! grp :unselected)
     grp))
-                                      
+                     
 
 ;; selected-rim & unselected-rim  [color style width]
 ;;
@@ -459,7 +456,7 @@
                                                                     selected-pad-color [0 128 128 64]
                                                                     unselected-pad-color [0 0 0 0]
                                                                     selected-rim [:green :solid 2.0]
-                                                                    unselected-rim [:gray :solid 1.0]
+                                                                    unselected-rim [[0 0 0 0] :solid 1.0]
                                                                     rim-radius 12}}]
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 

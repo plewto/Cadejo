@@ -3,8 +3,12 @@
   (:require [sgwr.constants :as constants])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
+  (:require [sgwr.util.stroke :as ustroke])
   (:require [sgwr.elements.element])
   (:import java.awt.geom.Line2D))
+
+(defn style-fn [& args]
+  (get constants/line-styles (first args) 0))
 
 (defn- shape-fn [obj]
   (let [cs (.coordinate-system obj)
@@ -14,6 +18,10 @@
         [u0 v0] q0
         [u1 v1] q1]
     (java.awt.geom.Line2D$Double. u0 v0 u1 v1)))
+
+(defn render-line [obj g2d]
+  (.setStroke g2d (ustroke/stroke obj))
+  (.draw g2d (shape-fn obj)))
 
 (defn- distance-fn [obj q]
   (let [[p0 p1](.points obj)]
@@ -43,7 +51,8 @@
                                   :contains-fn (constantly false)
                                   :distance-fn distance-fn
                                   :update-fn update-fn
-                                  :bounds-fn bounds-fn})
+                                  :bounds-fn bounds-fn
+                                  :style-fn style-fn})
 
 (def locked-properties [:midpoint])
 

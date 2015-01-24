@@ -4,7 +4,9 @@
 (ns sgwr.elements.circle
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
+  (:require [sgwr.util.stroke :as ustroke])
   (:require [sgwr.elements.element])
+  (:require [sgwr.elements.line])
   (:require [seesaw.graphics :as ssg]))
 
 (defn- shape-fn [obj]
@@ -17,6 +19,14 @@
         w (- u1 u0)
         h (- v1 v0)]
     (ssg/ellipse u0 v0 w h)))
+
+(defn render-circle [obj g2d]
+  (.setStroke g2d (ustroke/stroke obj))
+  (let [shp (shape-fn obj)
+        f (.filled? obj)]
+    (if (and f (not (= f :no)))
+      (.fill g2d shp)
+      (.draw g2d shp))))
 
 (defn- update-fn [obj points]
   (let [[p0 p1] points
@@ -62,7 +72,8 @@
                                     :contains-fn contains-fn
                                     :distance-fn distance-fn
                                     :update-fn update-fn
-                                    :bounds-fn bounds-fn})
+                                    :bounds-fn bounds-fn
+                                    :style-fn sgwr.elements.line/style-fn})
 
 (def locked-properties [:center :radius])
 

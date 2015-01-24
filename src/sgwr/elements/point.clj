@@ -3,12 +3,13 @@
   in any number of shapes depending on the attributes style.  Unlike
   most other elements a point's size remains the same remains the same
   with different degrees of drawing zoom."
-
+  (:use [cadejo.util.trace])
   (:require [sgwr.elements.element])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.util.math :as math])
+  (:require [sgwr.util.stroke :as ustroke])
   (:import java.awt.geom.Line2D
            java.awt.geom.Rectangle2D
            java.awt.geom.Ellipse2D
@@ -17,6 +18,30 @@
 (def ^:private size-quant 3)
 (def ^:private half-quant (* 1/2 size-quant))
 
+(def ^:private point-styles {:default   0x020
+                             :fill      0x00001
+                             :pixel     0x00010
+                             :dot       0x00020
+                             :bar       0x00040
+                             :dash      0x00080
+                             :diag      0x00100
+                             :diag2     0x00200
+                             :triangle  0x00400
+                             :chevron-n 0x00800
+                             :chevron-e 0x01000
+                             :chevron-s 0x02000
+                             :chevron-w 0x04000
+                             :edge-n    0x08000
+                             :edge-e    0x10000
+                             :edge-s    0x20000
+                             :edge-w    0x40000
+                             :box       0x80000
+                             :cross     (bit-or 0x08 0x10)
+                             :x         (bit-or 0x20 0x40)
+                             :arrow-n   (bit-or 0x08 0x100)
+                             :arrow-s   (bit-or 0x08 0x400)
+                             :arrow-e   (bit-or 0x10 0x200)
+                             :arrow-w   (bit-or 0x10 0x800)})
 (defn- line 
   ([x0 y0 x1 y1]
      (java.awt.geom.Line2D$Double. x0 y0 x1 y1))
@@ -56,16 +81,6 @@
     (java.awt.geom.Ellipse2D$Double.
      (- x half)(- y half) width width)))
 
-(defn- cross [x y size]
-  (let [s1 (dash x y size)
-        s2 (bar x y size)]
-    (utilities/combine-shapes s1 s2)))
-
-(defn- x-point [x y size]
-  (let [s1 (diag x y size)
-        s2 (diag2 x y size)]
-    (utilities/combine-shapes s1 s2)))
-
 (defn- triangle [x y size]
   (let [half (* half-quant size)
         y-base (+ y half)
@@ -74,7 +89,11 @@
         s2 (line (+ x half) y-base x (- y half))]
     (utilities/fuse base s1 s2)))
 
-(defn- right-chevron [x y size]
+
+;; ISSUE chevrons are not centered 
+;; ISSUE chevrons are not centered 
+;; ISSUE chevrons are not centered 
+(defn- chevron-e [x y size]
   (let [half (* size half-quant)
         whole (* size size-quant)
         x1 (+ x whole)
@@ -84,84 +103,110 @@
         s2 (line x y2 x1 y)]
     (utilities/combine-shapes s1 s2)))
 
-(defn- right-arrow [x y size]
-  (let [s1 (right-chevron x y size)
-        s2 (dash x y size)]
-    (utilities/combine-shapes s1 s2)))
-
-(defn- left-chevron [x y size]
+(defn- chevron-w [x y size]
   (let [half (* size half-quant)
         whole (* size size-quant)
-        x1 (+ x whole)
+        x1 (- x half)
+        x2 (+ x half)
         y0 (+ y half)
         y2 (- y half)
-        s1 (line x y x1 y0)
-        s2 (line x y x1 y2)]
+        s1 (line x1 y x2 y0)
+        s2 (line x1 y x2 y2)]
     (utilities/combine-shapes s1 s2)))
 
-(defn- left-arrow [x y size]
-  (let [s1 (left-chevron x y size)
-        s2 (dash (+ x (* size size-quant)) y size)]
-    (utilities/combine-shapes s1 s2)))
-    
-(defn- up-chevron [x y size]
-  (let [x1 (+ x (* size size-quant))
-        xc (math/mean x x1)
+(defn- chevron-n [x y size]
+  (let [half (* size half-quant)
+        x1 (- x half)
+        x2 (+ x half)
         y1 (- y (* size size-quant))
-        s1 (line x y xc y1)
-        s2 (line x1 y xc y1)]
+        s1 (line x1 y x y1)
+        s2 (line x2 y x y1)]
     (utilities/combine-shapes s1 s2)))
 
-(defn- up-arrow [x y size]
-  (let [s1 (up-chevron x y size)
-        s2 (bar (+ x (* size half-quant)) y size)]
-    (utilities/combine-shapes s1 s2)))
-
-(defn- down-chevron [x y size]
-  (let [x1 (+ x (* size size-quant))
-        xc (math/mean x x1)
+(defn- chevron-s [x y size]
+  (let [half (* size half-quant)
+        x1 (- x half)
+        x2 (+ x half)
         y1 (+ y (* size size-quant))
-        s1 (line x y xc y1)
-        s2 (line x1 y xc y1)]
+        s1 (line x1 y x y1)
+        s2 (line x2 y x y1)]
     (utilities/combine-shapes s1 s2)))
 
-(defn- down-arrow [x y size]
-  (let [s1 (down-chevron x y size)
-        s2 (bar (+ x (* size half-quant)) y size)]
-    (utilities/combine-shapes s1 s2)))
+(defn- edge-n [x y size]
+  (let [half (* half-quant size)
+        y2 (- y half)]
+    (line (- x half) y2 (+ x half) y2)))
 
-(defn- dot-cross [x y size]
-  (let [s1 (dot x y size)
-        s2 (bar x y (dec size))
-        s3 (dash x y (dec size))]
-    (utilities/fuse s1 s2 s3)))
+(defn edge-s [x y size]
+  (let [half (* half-quant size)
+        y2 (+ y half)]
+    (line (- x half) y2 (+ x half) y2)))
 
-(defn- dot-x [x y size]
-  (let [s1 (dot x y size)
-        s2 (diag x y (dec size))
-        s3 (diag2 x y (dec size))]
-    (utilities/fuse s1 s2 s3)))
+(defn edge-e [x y size]
+  (let [half (* half-quant size)
+        x2 (+ x half)]
+    (line x2 (- y half) x2 (+ y half))))
 
+(defn edge-w [x y size]
+  (let [half (* half-quant size)
+        x2 (- x half)]
+    (line x2 (- y half) x2 (+ y half))))
 
+(def ^:private shape-functions {0x00010    pixel     
+                                0x00020    dot      
+                                0x00040    bar       
+                                0x00080    dash      
+                                0x00100    diag     
+                                0x00200    diag2     
+                                0x00400    triangle  
+                                0x00800    chevron-n 
+                                0x01000    chevron-e 
+                                0x02000    chevron-s 
+                                0x04000    chevron-w 
+                                0x08000    edge-n    
+                                0x10000    edge-e    
+                                0x20000    edge-s    
+                                0x40000    edge-w    
+                                0x80000    box})
 
 (defn- shape-fn [obj]
   (let [cs (.coordinate-system obj)
         p (first (.points obj))
-        q (.map-point cs p)
-        [u v] q
-        sfn (get {0 dot, 1 pixel, 2 dash, 3 bar,
-                  4 diag, 5 diag2, 6 box, 7 cross, 
-                  8 x-point, 9 triangle,
-                  10 right-chevron, 11 right-arrow,
-                  12 left-chevron, 13 left-arrow,
-                  14 up-chevron, 15 up-arrow, 
-                  16 down-chevron, 17 down-arrow,
-                  18 dot-cross, 19 dot-x
-                  -1 dot, -2 box
-                  }
+        [u v](.map-point cs p)
+        sty (.style obj)
+        size (.size obj)
+        acc* (atom [])
+        i* (atom 0x10)]
+    (while (< @i* 0x100000)
+      (if (not (zero? (bit-and @i* sty)))
+        (let [sfn (get shape-functions @i*)]
+          (swap! acc* (fn [q](conj q (sfn u v size))))))
+      (swap! i* (fn [q](* q 2))))
+    (apply utilities/fuse @acc*)))
+    
 
-                 (.style obj) dot)]
-    (sfn u v (.size obj))))
+(defn render-point [pobj g2d]
+  (let [sty (.style pobj)
+        shape (.shape pobj)]
+    (.setStroke g2d ustroke/default-stroke)
+    (if (pos? (bit-and sty 0x1)) 
+      (.fill g2d shape)
+      (.draw g2d shape))))
+
+(defn style-fn [& args]
+  (let [acc* (atom 0)]
+    (doseq [a args]
+      (cond (number? a)
+            (swap! acc* (fn [q](+ q a)))
+
+            (keyword? a)
+            (swap! acc* (fn [q](+ q (get point-styles a 0))))
+
+            :default
+            (utilities/warning (format "Unknown point-style %s" a))))
+    (if (< @acc* 0x10) 
+      (reset! acc* (:default point-styles)))
+    @acc*))
 
 (defn- distance-fn [obj q]
   (math/distance (first (.points obj)) q))
@@ -176,7 +221,8 @@
                                    :contains-fn (constantly false)
                                    :distance-fn distance-fn
                                    :update-fn update-fn
-                                   :bounds-fn bounds-fn})
+                                   :bounds-fn bounds-fn
+                                   :style-fn style-fn})
 
 (def locked-properties [])
 

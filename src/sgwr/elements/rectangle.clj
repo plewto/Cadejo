@@ -1,11 +1,9 @@
-;; TODO 
-;;    1. Add rounded-corner constructor
-
-
 (ns sgwr.elements.rectangle
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.color :as uc])
+  (:require [sgwr.util.stroke :as ustroke])
   (:require [sgwr.elements.element])
+  (:require [sgwr.elements.line])
   (:require [seesaw.graphics :as ssg]))
 
 (defn- shape-function [obj]
@@ -21,6 +19,14 @@
     (if (pos? radius)
       (ssg/rounded-rect u0 v0 w h radius radius)
       (ssg/rect u0 v0 w h))))
+
+(defn render-rectangle [obj g2d]
+  (.setStroke g2d (ustroke/stroke obj))
+  (let [shp (shape-function obj)
+        f (.filled? obj)]
+    (if (and f (not (= f :no)))
+      (.fill g2d shp)
+      (.draw g2d shp))))
 
 (defn- distance-helper [obj q]
   (let [cs (.coordinate-system obj)
@@ -84,16 +90,18 @@
                                        :contains-fn rectangle-contains?
                                        :distance-fn rectangle-distance
                                        :update-fn update-fn
-                                       :bounds-fn bounds-fn})
+                                       :bounds-fn bounds-fn
+                                       :style-fn sgwr.elements.line/style-fn})
 
 (def locked-properties [:center :corner-radius])
 
-(defn rectangle [parent p0 p1 & {:keys [id color style width fill]
+(defn rectangle [parent p0 p1 & {:keys [id color style width fill radius]
                                   :or {id :new-rectangle
                                        color (uc/color :white)
                                        style 0
                                        width 1.0
-                                       fill nil}}]
+                                       fill nil
+                                       radius 0}}]
   (let [obj (sgwr.elements.element/create-element :rectangle parent rectangle-function-map locked-properties)]
     (if parent (.set-parent! obj parent))
     (.set-points! obj [p0 p1])
@@ -102,6 +110,7 @@
     (.style! obj :default style)
     (.width! obj :default width)
     (.fill! obj :default fill)
+    (.put-property! obj :corner-radius radius)
     (.use-attributes! obj :default)
     obj))
 
@@ -116,4 +125,22 @@
     (doseq [a args]
       (swap! arglst* (fn [q](conj q a))))
     (apply rectangle @arglst*)))
-        
+
+
+;; Rectangle defined by center point width and height
+;; If height h is nil, height is same as width.
+;;        
+(defn rectangle-c [parent pc w h & args]
+  (let [[xc yc] pc
+        w2 (* 1/2 w)
+        h2 (* 1/2 (or h w))
+        x1 (int (- xc w2))
+        x2 (int (+ xc w2))
+        y1 (int (- yc h2))
+        y2 (int (+ yc h2))
+        arglst* (atom [parent [x1 y1][x2 y2]])]
+    (doseq [a args]
+      (swap! arglst* (fn [q](conj q a))))
+    (println (format "DEBUG rect arglist -> %s" @arglst*)) 
+    (apply rectangle @arglst*)
+    ))

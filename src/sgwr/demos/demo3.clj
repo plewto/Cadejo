@@ -20,7 +20,7 @@
 (declare status)
 (def set-attributes! sgwr.elements.element/set-attributes!)
 
-(def drw (drw/polar-drawing 600 1.5 :deg))
+(def drw (drw/polar-drawing 600 600 1.5 :unit :deg))
 (def root (.root drw))
 
 ;; NOTE: 

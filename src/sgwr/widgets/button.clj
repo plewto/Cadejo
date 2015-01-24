@@ -193,6 +193,7 @@
                          :style text-style
                          :size text-size)]
     (.color! txobj :rollover text-color)
+    (.color! pad :rollover pad-color)
     (.put-property! pad :corner-radius rim-radius)
     (.put-property! rim :corner-radius rim-radius)
     (.color! pad :rollover pad-color)

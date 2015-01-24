@@ -64,9 +64,8 @@
                                    :distance-fn (fn [obj q](second (distance-helper obj q)))
                                    :update-fn update-fn
                                    :scale-fn scale-fn
-                                   :bounds-fn bounds-fn})
-
-
+                                   :bounds-fn bounds-fn
+                                   :style-fn (constantly 0)})
 (defn clone-buffered-image [src]
   (let [w (.getWidth src)
         h (.getHeight src)

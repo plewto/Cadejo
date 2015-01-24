@@ -4,9 +4,13 @@
 (ns sgwr.elements.drawing
   (:use [cadejo.util.trace])
   (:require [sgwr.constants :as constants])
+  (:require [sgwr.elements.circle])
   (:require [sgwr.elements.group])
-  (:require [sgwr.elements.text])
   (:require [sgwr.elements.image])
+  (:require [sgwr.elements.point])
+  (:require [sgwr.elements.rectangle])
+  (:require [sgwr.elements.text])
+
   (:require [sgwr.cs.native :as native-cs])
   (:require [sgwr.cs.cartesian :as cartesian-cs])
   (:require [sgwr.cs.polar :as polar-cs])
@@ -21,6 +25,7 @@
            javax.swing.JPanel))
 
 
+(trace-reset)
 (def zoom-ratio* (atom 2/3))
 
 (defprotocol SgwrDrawing
@@ -143,37 +148,76 @@
                     (doseq [e (.children root-group)]
                       (.render-node this g2d e))
                     (.repaint @cpan*))))
+                    
+
+              ;; (render-node [this g2d element]
+              ;;   (trace-enter (format "render.node %s" (.element-type element)))
+              ;;   (if (not (.is-leaf? element))
+              ;; 
+              ;;     (doseq [c (.children element)]
+              ;;       (.render-node this g2d c))
+              ;; 
+              ;;     (do  ;; render leaf 
+              ;;       (trace-mark "leaf branch")
+              ;;       (if (or (= (.hidden? element) :no)(not (.hidden? element)))
+              ;;         (let [etype (.element-type element)
+              ;;               shape (.shape element)]
+              ;;           (.setPaint g2d (.color element))
+              ;;           ;; (cond (= etype :point)
+              ;;           ;;       (let [sty (.style element)]
+              ;;           ;;         (.setStroke g2d ustroke/default-stroke)
+              ;;           ;;         (if (neg? sty)
+              ;;           ;;           (.fill g2d shape)
+              ;;           ;;           (.draw g2d shape)))
+              ;; 
+              ;;           (cond (= etype :point)
+              ;;                 (do
+              ;;                           ;(sgwr.elements.point/render-point element g2d)
+              ;;                   )
+              ;;                 (= etype :text)
+              ;;                 (do
+              ;;                   (sgwr.elements.text/render-text element g2d)
+              ;;                   )
+              ;;                 (= etype :image)
+              ;;                 (do
+              ;;                   (sgwr.elements.image/render-image element g2d)
+              ;;                   )
+              ;;                 :default
+              ;;                 (do (.setStroke g2d (ustroke/stroke element))
+              ;;                     (if (and (.filled? element)(not (= (.filled? element) :no)))
+              ;;                       (.fill g2d shape)
+              ;;                       (.draw g2d shape))))
+              ;;           ) ; let
+              ;;         ) ; fi
+              ;;       ) ; od
+              ;;     (trace-exit)
+              ;;     ))
 
               (render-node [this g2d element]
                 (if (not (.is-leaf? element))
-                  
                   (doseq [c (.children element)]
                     (.render-node this g2d c))
-                  
-                  (if (or (= (.hidden? element) :no)(not (.hidden? element)))
-                    (let [etype (.element-type element)
-                          shape (.shape element)]
-                      (.setPaint g2d (.color element))
-                    (cond (= etype :point)
-                          (let [sty (.style element)]
-                            (.setStroke g2d ustroke/default-stroke)
-                            (if (neg? sty)
-                              (.fill g2d shape)
-                              (.draw g2d shape)))
+                  (let [hidden (.hidden? element)
+                        etype (.element-type element)
+                        sfn (get {:group (fn [& _])
+                                  :point sgwr.elements.point/render-point
+                                  :text sgwr.elements.text/render-text
+                                  :image sgwr.elements.image/render-image
+                                  :line sgwr.elements.line/render-line
+                                  :rectangle sgwr.elements.rectangle/render-rectangle
+                                  :circle sgwr.elements.circle/render-circle
+                                  }
+                                 etype
+                                 (fn [obj _]
+                                   (utilities/warning (format "Render function not defined for %s" etype))))]
+                    (.setPaint g2d (.color element))
+                    (if (or (= hidden :no)(not hidden))
+                      (do 
+                        (sfn element g2d)
+                        ))
+                    ))
+                )
 
-                          (= etype :text)
-                          (do
-                            (sgwr.elements.text/render-text element g2d)
-                            )
-                          (= etype :image)
-                          (do
-                            (sgwr.elements.image/render-image element g2d)
-                            )
-                          :default
-                          (do (.setStroke g2d (ustroke/stroke element))
-                              (if (and (.filled? element)(not (= (.filled? element) :no)))
-                                (.fill g2d shape)
-                                (.draw g2d shape))))))))
 
               (flatten! [this include-widgets]
                 (let [bg (.image this)]

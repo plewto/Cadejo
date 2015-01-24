@@ -92,8 +92,6 @@
     (efn obj ev)
     (.render (.get-property obj :drawing))))
 
-
-
 (defn- compose-move-action [mfn]
   (fn [obj ev]
     (select-handle obj ev)
@@ -241,14 +239,14 @@
                                                   rim-width 1.0
                                                   rim-radius 12
                                                   handle1-color :purple
-                                                  handle1-style -1
-                                                  handle1-size 4
+                                                  handle1-style [:fill :dot]
+                                                  handle1-size 3
                                                   handle2-color :cyan
-                                                  handle2-style -1
-                                                  handle2-size 4
+                                                  handle2-style [:fill :dot]
+                                                  handle2-size 3
                                                   current-handle-color :white
-                                                  current-handle-style 18
-                                                  current-handle-size 4}}]
+                                                  current-handle-style [:diag :diag2]
+                                                  current-handle-size 3}}]
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 
@@ -340,7 +338,8 @@
     (.put-property! grp :handle2 handle2)
     (.put-property! grp :current-handle nil)
     (.put-property! grp :current-handle-color (uc/color current-handle-color))
-    (.put-property! grp :current-handle-style current-handle-style)
+    ;(.put-property! grp :current-handle-style current-handle-style)
+    (.put-property! grp :current-handle-style (apply point/style-fn current-handle-style))
     (.put-property! grp :current-handle-size current-handle-size)
     (.put-property! grp :action-mouse-dragged  (compose-drag-action (or drag-action dummy-action)))
     (.put-property! grp :action-mouse-moved    (compose-move-action (or move-action dummy-action)))
