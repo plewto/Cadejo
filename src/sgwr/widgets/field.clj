@@ -1,4 +1,5 @@
 (ns sgwr.widgets.field
+  (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.point :as point])
   (:require [sgwr.elements.rectangle :as rect])
@@ -24,15 +25,61 @@
     (if ball 
       (let [mapx (.get-property fobj :fn-x-val->pos)
             mapy (.get-property fobj :fn-y-val->pos)
+            xpos (mapx (first val))
+            ypos (mapy (second val))
+            xval ((.get-property fobj :fn-x-pos->val) xpos)
+            yval ((.get-property fobj :fn-y-pos->val) ypos)
             p [(mapx (first val))(mapy (second val))]]
         (.set-points! ball [p])
+        (.put-property! ball :value [xval yval])
         (if render? (.render (.get-property fobj :drawing)))
         ball)
       (do (utilities/warning (format "field %s does not have ball with id %s" 
                                      (.get-property fobj :id) id))
           nil)))))
         
-      
+ 
+(defn- select-ball [obj ev]
+  (let [cs (.coordinate-system obj)
+        pos (.inv-map cs [(.getX ev)(.getY ev)])
+        d* (atom constants/infinity)
+        ball* (atom nil)]
+    (doseq [b (vals @(.get-property obj :balls*))]
+      (let [d (.distance b pos)]
+        (.use-attributes! b :default)
+        (if (< d @d*)
+          (do 
+            (reset! d* d)
+            (reset! ball* b)))))
+    (if @ball*
+      (let [b @ball*]
+        (reset! (.get-property obj :current-ball*) b)
+        (.use-attributes! b :selected)
+        b))))
+
+(defn- compose-move-action [mfn]
+  (fn [obj ev]
+    (select-ball obj ev)
+    (mfn obj ev)
+    (.render (.get-property obj :drawing))))
+
+(defn- compose-drag-action [dfn]
+  (fn [obj ev]
+    (select-ball obj ev)
+    (let [b @(.get-property obj :current-ball*)]
+      (if b
+        (let [cs (.coordinate-system obj)
+              pos (.inv-map cs [(.getX ev)(.getY ev)])
+              mapx (.get-property obj :fn-x-pos->val)
+              mapy (.get-property obj :fn-y-pos->val)
+              val [(mapx (first pos))(mapy (second pos))]]
+          (.set-points! b [pos])
+          (.put-property! b :value val)))
+      (dfn obj ev)
+      (.render (.get-property obj :drawing)))))
+          
+
+     
 
 
 (defn field [parent p0 p1 range-x range-y & {:keys [id
@@ -42,7 +89,7 @@
                                                     rim-color rim-style rim-width rim-radius]
                                              :or {id nil
                                                   drag-action nil
-                                                  move-action nil
+                                                  move-action nil 
                                                   enter-action nil
                                                   exit-action nil
                                                   press-action nil
@@ -74,8 +121,9 @@
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :balls* (atom {}))
-    (.put-property! grp :action-mouse-dragged  (or drag-action dummy-action))
-    (.put-property! grp :action-mouse-moved    (or move-action dummy-action))
+    (.put-property! grp :current-ball* (atom nil))
+    (.put-property! grp :action-mouse-dragged  (compose-drag-action (or drag-action dummy-action)))
+    (.put-property! grp :action-mouse-moved    (compose-move-action (or move-action dummy-action)))
     (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
     (.put-property! grp :action-mouse-exited   (or exit-action dummy-action))
     (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
@@ -92,47 +140,38 @@
                                                                      (second range-x)
                                                                      (first p1)))
     (.put-property! grp :fn-y-pos->val (math/clipped-linear-function (second p0)
-                                                                     (first range-y)
-                                                                     (second p1)
-                                                                     (second range-y)))
-    (.put-property! grp :fn-y-val->pos (math/clipped-linear-function (first range-y)
-                                                                     (second p0)
                                                                      (second range-y)
+                                                                     (second p1)
+                                                                     (first range-y)))
+    (.put-property! grp :fn-y-val->pos (math/clipped-linear-function (second range-y)
+                                                                     (second p0)
+                                                                     (first range-y)
                                                                      (second p1)))
     grp))
     
-
-
-;; (defn ball [parent-field id init-value & {:keys [drag-action press-action release-action click-action
-;;                                                  value-hook
-;;                                                  color style size
-;;                                                  selected-color selected-style]
-;;                                           :or {drag-action nil
-;;                                                press-action nil
-;;                                                release-action nil
-;;                                                click-action nil
-;;                                                value-hook identity
-;;                                                color :white
-;;                                                style :x
-;;                                                size 2
-;;                                                selected-color :white
-;;                                                selected-style :dot}}]
-;;   (let [grp (group/group parent-field :etype :ball :id id)
-;;         mapx (.get-property parent-field :fn-x-val->pos)
-;;         mapy (.get-property parent-field :fn-y-val->pos)
-;;         pnt (point/point grp 
-;;                          [(mapx (first init-value))(mapy (second init-value))]
-;;                          ;init-value 
-;;                          :id id
-;;                          :color (uc/color color)
-;;                          :style (utilities/map-style style)
-;;                          :size size)]
-;;     (swap! (.get-property parent-field :balls*)
-;;            (fn [q](assoc q id grp)))
-;;     (.color! pnt :rollover (uc/color color)) 
-;;    
-;;     grp))
     
+(defn ball [parent id init-value & {:keys [color style size 
+                                           selected-color selected-style]
+                                    :or {color :white
+                                         style [:dot]
+                                         size 2
+                                         selected-color constants/default-rollover-color
+                                         selected-style [:fill :dot]}}]
+  (let [mapx (.get-property parent :fn-x-val->pos)
+        mapy (.get-property parent :fn-y-val->pos)
+        pnt (point/point parent [(mapx (first init-value))(mapy (second init-value))]
+                         :id id
+                         :color color
+                         :style style
+                         :size size)]
+    (swap! (.get-property parent :balls*)
+           (fn [q](assoc q id pnt)))
+    (.put-property! pnt :value init-value)
+    (.color! pnt :rollover color)
+    (.color! pnt :selected selected-color)
+    (.style! pnt :selected selected-style)
+    pnt))
+               
     
   
   
