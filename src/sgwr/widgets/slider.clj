@@ -129,7 +129,7 @@
                                              track2-color :yellow
                                              track2-style :solid
                                              track2-width 1.0
-                                             track3-color :green
+                                             track3-color [0 0 0 0]
                                              track3-style :solid
                                              track3-width 1.0
                                              gap 8
@@ -140,7 +140,7 @@
                                              rim-radius 12
                                              handle-color :white
                                              handle-style [:fill :dot]
-                                             handle-size 3}}]
+                                             handle-size 2}}]
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 

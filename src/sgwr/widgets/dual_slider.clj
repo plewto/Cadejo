@@ -225,13 +225,13 @@
                                                   release-action nil
                                                   click-action nil
                                                   value-hook identity
-                                                  track1-color [16 16 16]
+                                                  track1-color :gray
                                                   track1-style :solid
                                                   track1-width 1.0
-                                                  track2-color :red
+                                                  track2-color [0 0 0 0]
                                                   track2-style :solid
                                                   track2-width 1.0
-                                                  track3-color :green
+                                                  track3-color [0 0 0 0]
                                                   track3-style :solid
                                                   track3-width 1.0
                                                   track4-color :yellow
@@ -243,15 +243,15 @@
                                                   rim-style :solid
                                                   rim-width 1.0
                                                   rim-radius 12
-                                                  handle1-color :purple
-                                                  handle1-style [:edge-w :edge-n :edge-s]
-                                                  handle1-size 3
-                                                  handle2-color :cyan
-                                                  handle2-style [:edge-e :edge-n :edge-s]
-                                                  handle2-size 3
+                                                  handle1-color :white
+                                                  handle1-style nil
+                                                  handle1-size 2
+                                                  handle2-color :white
+                                                  handle2-style nil
+                                                  handle2-size 2
                                                   current-handle-color :white
-                                                  current-handle-style [:diag :diag2]
-                                                  current-handle-size 3}}]
+                                                  current-handle-style [:dot]
+                                                  current-handle-size 2}}]
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 
@@ -321,14 +321,20 @@
         handle1 (let [hand (point/point grp [x0 y0]
                                         :id :handle1
                                         :color (uc/color handle1-color)
-                                        :style handle1-style
+                                        :style (or handle1-style 
+                                                   (if (= orientation :vertical)
+                                                     [:edge-w :edge-s :edge-e]
+                                                     [:edge-n :edge-w :edge-s]))
                                         :size handle1-size)]
                   (.put-property! hand :value v0)
                   hand)
         handle2 (let [hand (point/point grp [x1 y1]
                                         :id :handle2
                                         :color (uc/color handle2-color)
-                                        :style handle2-style
+                                        :style (or handle2-style
+                                                   (if (= orientation :vertical)
+                                                     [:edge-w :edge-n :edge-e]
+                                                     [:edge-n :edge-e :edge-s]))
                                         :size handle2-size)]
                   (.put-property! hand :value v1)
                   hand)]
