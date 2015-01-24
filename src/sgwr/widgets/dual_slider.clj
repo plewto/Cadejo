@@ -59,7 +59,6 @@
 
 (defn get-dual-slider-values [obj]
   (.get-property obj :values))
-         
 
 (defn- dummy-action [& _] nil)
 
@@ -104,25 +103,31 @@
           cs (.coordinate-system obj)
           vhook (.get-property obj :fn-value-hook)
           mapfn (.get-property obj :fn-pos->val)
+          invmap (.get-property obj :fn-val->pos)
           handle (.get-property obj :current-handle)
           track1 (.get-property obj :track1)
           track2 (.get-property obj :track2)
           track3 (.get-property obj :track3)
           track4 (.get-property obj :track4)
           [p0 p1](.points track1)
-          pos (.inv-map cs [(.getX ev)(.getY ev)])]
+          minmax (if (= handle (.get-property obj :handle1))
+                   [(first (.get-property obj :minmax))
+                    (.get-property (.get-property obj :handle2) :value)]
+                   [(.get-property (.get-property obj :handle1) :value)
+                    (second (.get-property obj :minmax))])]
       (if handle
-        (do 
+        (let [clamp (fn [x](min (second minmax)(max (first minmax) x)))
+              pos (.inv-map cs [(.getX ev)(.getY ev)])]
           (if vertical?
             (let [x (first p0)
                   param (second pos)
-                  val (vhook (mapfn param))]
-              (.set-points! handle [[x (second pos)]])
+                  val (clamp (vhook (mapfn param)))]
+              (.set-points! handle [[x (invmap val)]])
               (.put-property! handle :value val))
             (let [y (second p0)
                   param (first pos)
-                  val (vhook (mapfn param))]
-              (.set-points! handle [[(first pos) y]])
+                  val (clamp (vhook (mapfn param)))]
+              (.set-points! handle [[(invmap val) y]])
               (.put-property! handle :value val)))
           (let [h1 (.get-property obj :handle1)
                 h2 (.get-property obj :handle2)
@@ -239,10 +244,10 @@
                                                   rim-width 1.0
                                                   rim-radius 12
                                                   handle1-color :purple
-                                                  handle1-style [:fill :dot]
+                                                  handle1-style [:edge-w :edge-n :edge-s]
                                                   handle1-size 3
                                                   handle2-color :cyan
-                                                  handle2-style [:fill :dot]
+                                                  handle2-style [:edge-e :edge-n :edge-s]
                                                   handle2-size 3
                                                   current-handle-color :white
                                                   current-handle-style [:diag :diag2]
@@ -338,7 +343,6 @@
     (.put-property! grp :handle2 handle2)
     (.put-property! grp :current-handle nil)
     (.put-property! grp :current-handle-color (uc/color current-handle-color))
-    ;(.put-property! grp :current-handle-style current-handle-style)
     (.put-property! grp :current-handle-style (apply point/style-fn current-handle-style))
     (.put-property! grp :current-handle-size current-handle-size)
     (.put-property! grp :action-mouse-dragged  (compose-drag-action (or drag-action dummy-action)))
@@ -351,6 +355,7 @@
     (.put-property! grp :fn-pos->val pos->val)
     (.put-property! grp :fn-val->pos val->pos)
     (.put-property! grp :fn-value-hook value-hook)
+    (.put-property! grp :minmax [(min v0 v1)(max v0 v1)])
     (.put-property! grp :values [v0 v1])
     (.use-attributes! grp :default)
     grp))
