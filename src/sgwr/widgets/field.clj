@@ -3,11 +3,8 @@
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.point :as point])
   (:require [sgwr.elements.rectangle :as rect])
-  (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
-  (:require [sgwr.util.utilities :as utilities])
-  
-  )
+  (:require [sgwr.util.utilities :as utilities]))
 
 (let [counter* (atom 0)]
   (defn- get-field-id [id]
@@ -77,9 +74,6 @@
           (.put-property! b :value val)))
       (dfn obj ev)
       (.render (.get-property obj :drawing)))))
-          
-
-     
 
 
 (defn field [parent p0 p1 range-x range-y & {:keys [id
@@ -170,9 +164,7 @@
     (.color! pnt :rollover color)
     (.color! pnt :selected selected-color)
     (.style! pnt :selected selected-style)
-    pnt))
-               
-    
+    pnt))    
   
   
                                 
