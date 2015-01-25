@@ -61,6 +61,9 @@
 (defn turn->rad [tr]
   (* tr pi2))
 
+(defn deg->turn [d]
+  (/ d 360.0))
+
 
 (def expt 
   "(expt x e) --> x^e  Returns x raised to the power e"
