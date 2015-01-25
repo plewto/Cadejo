@@ -50,6 +50,9 @@
           [(math/clamp u 0 w)
            (math/clamp v 0 h)]))
 
+      (units [this]
+        [:pixel :pixel])
+
       (distance [this p1 p2]
         (math/distance p1 p2))
 

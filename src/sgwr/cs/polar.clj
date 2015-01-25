@@ -103,6 +103,9 @@
 
              (clip [this q] q)
 
+             (units [this]
+               [:float unit])
+
              (distance [this p1 p2]
                (let [[r1 phi1] p1
                      [r2 phi2] p2]

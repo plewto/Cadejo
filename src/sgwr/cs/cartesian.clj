@@ -83,6 +83,9 @@
              (clip [this q]
                q)
              
+             (units [this]
+               [:float :float])
+
              (distance [this p1 p2]
                (math/distance p1 p2))
 

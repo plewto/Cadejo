@@ -84,6 +84,11 @@
      clip is an optional method, if not requiered it should 
      ct as an identity and return q unchanged.")
 
+  (units 
+    [this]
+    "Returns vector of dimensional units
+     nil indicates dimension less values")
+
   (distance 
     [this p1 p2]
     "Return distance between points p1 and p2")
@@ -108,7 +113,7 @@
     (cs-type [this] :native)
 
     (canvas-bounds [this] 
-      (utilities/warning "default-coordinate-system view canvasbounds is nil")
+      (utilities/warning "default-coordinate-system view canvas-bounds is nil")
       nil)
 
     (restore-view! [this](.view this))
@@ -136,6 +141,8 @@
     (y-scale [this] 1)
 
     (clip [this q] q)
+
+    (units [this] [nil nil])
 
     (distance [this p1 p2]
       (math/distance p1 p2))
