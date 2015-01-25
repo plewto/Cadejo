@@ -1,282 +1,100 @@
 (ns sgwr.elements.rule
-  (:require [sgwr.cs.native])
-  (:require [sgwr.cs.cartesian])
-  (:require [sgwr.util.math :as math])
-  (:require [sgwr.util.utilities :as utilities])
-  (:require [sgwr.elements.drawing :as drw])
   (:require [sgwr.elements.group :as group])
-  ;(:require [sgwr.elements.image :as image])
   (:require [sgwr.elements.line :as line])
   (:require [sgwr.elements.rectangle :as rect])
-  )
+  (:require [sgwr.util.math :as math]))
+  
+(let [counter* (atom 0)]
+  (defn- get-rule-id [id]
+    (let [n @counter*]
+      (swap! counter* inc)
+      (or id (keyword (format "rule-%d" n))))))
+          
+(defn ruler [parent p0 length  & {:keys [orientation id
+                                         track-color track-style track-width track-offset
+                                         gap pad-color
+                                         rim-color rim-style rim-width rim-radius]
+                                  :or {orientatin :vertical
+                                       id nil
+                                       track-color :red
+                                       track-style :solid
+                                       track-width 1.0
+                                       track-offset 0
+                                       gap nil
+                                       pad-color [0 0 0 0]
+                                       rim-color :gray
+                                       rim-style 1.0
+                                       rim-width 1.0
+                                       rim-radius 0}}]
+  (let [vertical (= orientation :vertical)
+        native (= (.cs-type (.coordinate-system parent)) :native)
+        gap (or gap (if native 12 4))
+        [x0 y0] p0
+        [x1 y1] (if native 
+                  (if vertical 
+                    [x0 (- y0 length)]
+                    [(+ x0 length) y0])
+                  (if vertical
+                    [x0 (+ y0 length)]
+                    [(+ x0 length) y0]))
+        [x2 y2] (if native 
+                  [(- x0 gap)(+ y0 gap)]
+                  [(- x0 gap)(- y0 gap)])
+        [x3 y3] (if native 
+                  [(+ x1 gap)(- y1 gap)]
+                  [(+ x1 gap)(+ y1 gap)])
+        grp (group/group parent :id (get-rule-id id))
+        pad (let [pad (rect/rectangle grp [x2 y2][x3 y3] :id :pad
+                                      :color pad-color
+                                      :fill true)]
+              (.put-property! pad :corner-radius rim-radius)
+              pad)
+        rim (let [rim (rect/rectangle grp [x2 y2][x3 y3] :id :rim
+                                      :color rim-color
+                                      :style rim-style
+                                      :width rim-width
+                                      :fill :no)]
+              (.put-property! rim :corner-radius rim-radius)
+              rim)
+        track (if vertical
+                (let [x (+ x0 track-offset)]
+                  (line/line grp [x y0][x y1] :id :track))
+                (let [y (+ y0 track-offset)]
+                  (line/line grp [x0 y][x1 y] :id :track)))]
+    (.color! track :default track-color)
+    (.style! track :default track-style)
+    (.width! track :default track-width)
+    (.use-attributes! grp :default)
+    (.put-property! grp :orientation orientation)
+    (.put-property! grp :p0 p0)
+    (.put-property! grp :length length)
+    (.put-property! grp :p1 [x1 y1])
+    grp))
+
+(defn ticks [ntvruler step & {:keys [id length offset color style]
+                              :or {id :tick
+                                   length 8
+                                   offset 0
+                                   color :white
+                                   style 0}}]
+  (let [vertical (= (.get-property ntvruler :orientation) :vertical)
+        p0 (.get-property ntvruler :p0)
+        p1 (.get-property ntvruler :p1)
+        [start end] (if vertical
+                      [(second p0)(second p1)]
+                      [(first p0)(first p1)])
+        half (* 1/2 length)]
+    (if vertical
+      
+      (let [x1 (+ offset (- (first p0) half))
+            x2 (+ offset (first p0) half)]
+        (doseq [y (range (min start end)(+ (max start end) step) step)]
+          (if (math/in-range? y start end)
+            (line/line ntvruler [x1 y][x2 y] :id id :color color :style style))))
+      (let [y1 (+ offset (- (second p0) half))
+            y2 (+ offset (second p0) half)]
+        (doseq [x (range (min start end)(+ (max start end) start) step)]
+          (if (math/in-range? x start end)
+            (line/line ntvruler [x y1][x y2] :id id :color color :style style)))))))
             
-
-(defn- vr [parent cs p0 length & {:keys [id
-                                      track-color
-                                      track-style
-                                      track-width
-                                      track-offset
-                                      draw-track?
-                                      box-color
-                                      box-gap 
-                                      box-style
-                                      box-width
-                                      box-fill?
-                                      box-radius
-                                      draw-box?
-                                      major 
-                                      major-length
-                                      major-offset
-                                      major-color
-                                      minor 
-                                      minor-length
-                                      minor-offset
-                                      minor-color]
-                               :or {id :vruler
-                                    track-color :white
-                                    track-style 0
-                                    track-width 1.0
-                                    track-offset 0
-                                    draw-track? true
-                                    box-color :white
-                                    box-gap 4
-                                    box-style 0
-                                    box-width 1.0
-                                    box-fill? false
-                                    box-radius 0
-                                    draw-box? true
-                                    major 4
-                                    major-length 8
-                                    major-offset 0
-                                    major-color :white
-                                    minor 20
-                                    minor-length 4
-                                    minor-offset 0
-                                    minor-color :white}}]
-  (let [grp (group/group parent :etype :rule :id id)
-        [x0 y0] p0
-        x1 x0
-        y1 (+ length y0)
-        p1 [x1 y1]
-        box (let [g1 (/ box-gap (.x-scale cs))
-                  g2 (* 2 g1)
-                  x2 (- x0 g2)
-                  x3 (+ x0 g2)
-                  y2 (- y0 g1)
-                  y3 (+ y1 g1)
-                  box (rect/rectangle grp [x2 y2][x3 y3]
-                                      :id (keyword (format "%s-box" (name id)))
-                                      :color (or box-color track-color)
-                                      :style box-style
-                                      :width box-width
-                                      :fill box-fill?)]
-              (.hide! box (not draw-box?))
-              (.put-property! box :corner-radius box-radius)
-              box)
-        trk (let [offset (/ track-offset (.x-scale cs))
-                  trk (line/line grp 
-                                 [(+ x0 offset) y0]
-                                 [(+ x0 offset) y1]
-                                 :id (keyword (format "%s-track" (name id)))
-                                 :color track-color
-                                 :style track-style
-                                 :width track-width)]
-              (.hide! trk (not draw-track?))
-              trk)]
-    (if (integer? minor)
-      (let [dy (/ (float length) minor)
-            tick-length (/ minor-length (.x-scale cs))
-            offset (/ minor-offset (.x-scale cs))
-            x4 (+ (- x0 tick-length) offset)
-            x6 (+ x0 tick-length offset)]
-        (doseq [y (range y0 (+ y1 dy) dy)]
-          (line/line grp [x4 y][x6 y]
-                     :id (keyword (format "%s-minor" (name id)))
-                     :color (or minor-color track-color)))))
-    (if (integer? major)
-      (let [dy (/ (float length) major)
-            tick-length (/ major-length (.x-scale cs))
-            offset (/ major-offset (.x-scale cs))
-            x4 (+ (- x0 tick-length) offset)
-            x6 (+ x0 tick-length offset)]
-        (doseq [y (range y0 (+ y1 dy) dy)]
-          (line/line grp [x4 y][x6 y]
-                     :id (keyword (format "%s-major" (name id)))
-                     :color (or major-color track-color)))))
-    (.use-attributes! grp :default)
-    grp))
-
-(defn- hr [parent cs p0 length & {:keys [id
-                                      track-color
-                                      track-style
-                                      track-width
-                                      track-offset
-                                      draw-track?
-                                      box-color
-                                      box-gap 
-                                      box-style
-                                      box-width
-                                      box-fill?
-                                      box-radius
-                                      draw-box?
-                                      major 
-                                      major-length
-                                      major-offset
-                                      major-color
-                                      minor 
-                                      minor-length
-                                      minor-offset
-                                      minor-color]
-                               :or {id :vruler
-                                    track-color :white
-                                    track-style 0
-                                    track-width 1.0
-                                    track-offset 0
-                                    draw-track? true
-                                    box-color :white
-                                    box-gap 4
-                                    box-style 0
-                                    box-width 1.0
-                                    box-fill? false
-                                    box-radius 0
-                                    draw-box? true
-                                    major 4
-                                    major-length 8
-                                    major-offset 0
-                                    major-color :white
-                                    minor 20
-                                    minor-length 4
-                                    minor-offset 0
-                                    minor-color :white}}]
-  (let [grp (group/group parent :etype :rule :id id)
-        [x0 y0] p0
-        x1 (+ length x0)
-        y1 y0
-        p1 [x1 y1]
-
-        box (let [g1 (/ box-gap (.x-scale cs))
-                  g2 (/ (* 2 box-gap)(.y-scale cs))
-                  x2 (- x0 g1) 
-                  x3 (+ x1 g1) 
-                  y2 (- y0 g2)
-                  y3 (+ y0 g2)
-                  box (rect/rectangle grp [x2 y2][x3 y3]
-                                      :id (keyword (format "%s-box" (name id)))
-                                      :color (or box-color track-color)
-                                      :style box-style
-                                      :width box-width
-                                      :fill box-fill?)]
-              (.hide! box (not draw-box?))
-              (.put-property! box :corner-radius box-radius)
-              box)
-        
-        trk (let [offset (/ track-offset (.y-scale cs))
-                  trk (line/line grp 
-                                 [x0 (- y0 offset)]
-                                 [x1 (- y1 offset)]
-                                 :id (keyword (format "%s-track" (name id)))
-                                 :color track-color
-                                 :style track-style
-                                 :width track-width)]
-              (.hide! trk (not draw-track?))
-              trk)]
-    (if (integer? minor)
-      (let [dx (/ (float length) minor)
-            tick-length (/ minor-length (.y-scale cs))
-            offset (- (/ minor-offset (.y-scale cs)))
-            y4 (+ (- y0 tick-length) offset)
-            y6 (+ y0 tick-length offset)]
-        (doseq [x (range x0 (+ x1 dx) dx)]
-          (line/line grp [x y4][x y6]
-                     :id (keyword (format "%s-minor" (name id)))
-                     :color (or minor-color track-color)))))
-    (if (integer? major)
-      (let [dx (/ (float length) major)
-            tick-length (/ major-length (.y-scale cs))
-            offset (- (/ major-offset (.y-scale cs)))
-            y4 (+ (- y0 tick-length) offset)
-            y6 (+ y0 tick-length offset)]
-        (doseq [x (range x0 (+ x1 dx) dx)]
-          (line/line grp [x y4][x y6]
-                     :id (keyword (format "%s-major" (name id)))
-                     :color (or major-color track-color)))))
-    (.use-attributes! grp :default)
-    grp))
-
-;; (defn ruler->drawing [robj]
-;;   (let [cs (.coordinate-system robj)
-;;         m0 (.inv-map cs [0 0])
-;;         offsets m0 ; [(- (first m0))(- (second m0))]
-;;         ]
-;;     (println (format "DEBUG cs            -> %s " (.to-string cs)))
-;;     (println (format "DEBUG m0            -> %s " m0))
-;;     (println (format "DEBUG offsets       -> %s " offsets))
-;;     (.translate! robj offsets)
-;;     (.render (.get-property robj :drawing))
-;;     ))
-
-
-(defn ruler [parent p0 length & {:keys [id
-                                        as-image
-                                        orientation
-                                        track-color
-                                        track-style
-                                        track-width
-                                        track-offset
-                                        draw-track?
-                                        box-color
-                                        box-gap 
-                                        box-style
-                                        box-width
-                                        box-fill?
-                                        box-radius
-                                        draw-box?
-                                        major 
-                                        major-length
-                                        major-offset
-                                        major-color
-                                        minor 
-                                        minor-length
-                                        minor-offset
-                                        minor-color]
-                                 :or {id :ruler
-                                      as-image false
-                                      orientation :vertical
-                                      track-color :red
-                                      track-style 0
-                                      track-width 1.0
-                                      track-offset 0
-                                      draw-track? true
-                                      box-color :white
-                                      box-gap 4
-                                      box-style 0
-                                      box-width 1.0
-                                      box-fill? false
-                                      box-radius 0
-                                      draw-box? true
-                                      major 4
-                                      major-length 8
-                                      major-offset 0
-                                      major-color :yellow
-                                      minor 20
-                                      minor-length 4
-                                      minor-offset 0
-                                      minor-color :cyan}}]
-  (let [cs (.coordinate-system parent)
-        robj (let [rfn (cond (= orientation :vertical) vr
-                             (= orientation :horizontal) hr
-                             :default vr)]
-               (rfn parent
-                    cs
-                    p0 length :id id
-                    :track-color track-color :track-style track-style
-                    :track-width track-width :track-offset track-offset
-                    :draw-track? draw-track?
-                    :box-color box-color :box-gap box-gap :box-style box-style
-                    :box-width box-width :box-radius box-radius 
-                    :box-fill? box-fill? :draw-box? draw-box? 
-                    :major major :major-length major-length 
-                    :major-offset major-offset :major-color major-color 
-                    :minor minor :minor-length minor-length 
-                    :minor-offset minor-offset :minor-color minor-color))]
-    robj)) 
+     

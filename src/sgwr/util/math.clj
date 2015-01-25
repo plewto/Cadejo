@@ -14,6 +14,11 @@
   ([n minmax]
    (clamp n (first minmax)(second minmax))))
 
+(defn in-range? [n a b]
+  (let [mn (min a b)
+        mx (max a b)]
+    (and (<= mn n)(<= n mx))))
+
 (defn linear-function [x0 y0 x1 y1]
   (let [dx (- x0 x1)
         dy (- y0 y1)
