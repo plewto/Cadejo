@@ -1,7 +1,6 @@
 (ns sgwr.indicators.displaybar
   (:require [sgwr.cs.native :as native])
   (:require [sgwr.elements.drawing :as drawing])
-  ;(:require [sgwr.indicators.char])
   (:require [sgwr.indicators.basic-cell :as basic])
   (:require [sgwr.indicators.dot-matrix :as matrix])
   (:require [sgwr.indicators.sixteen :as sixteen])
@@ -40,14 +39,10 @@
            basic/basic-cell)))
 
 (defn displaybar 
-  
-
   ;; ctype - one of :basic, 16 or :sixteen, :matrix
-  ([grp x-offset y-offset char-count ctype & {:keys [cell-width cell-height] ; font-size]
+  ([grp x-offset y-offset char-count ctype & {:keys [cell-width cell-height] 
                                               :or {cell-width 25
-                                                   cell-height 35
-                                                   ;font-size 22
-                                                   }}]
+                                                   cell-height 35}}]
    (let [elements (let [chr-fn (get-cell-constructor ctype)
                         acc* (atom [])
                         pad 4
@@ -56,7 +51,7 @@
                     (dotimes [i char-count]
                       (let [x (+ x-offset (* i w))
                             y y-offset
-                            cobj (chr-fn grp x y :cell-width cell-width :cell-height cell-height)]  ; :font-size font-size)]
+                            cobj (chr-fn grp x y :cell-width cell-width :cell-height cell-height)] 
                         (swap! acc* (fn [q](conj q cobj)))))
                     @acc*)
          render-drawing (fn [flag]
