@@ -45,7 +45,7 @@
     (reverse @acc*)))
 
 
-(defn ->seq [obj]
+(defn ->vec [obj]
   (cond (or (vector? obj)(seq? obj)) obj
         :default (vector obj)))
             

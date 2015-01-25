@@ -534,11 +534,11 @@
 
                (style! [this id sty]
                  (let [sfn (get fnmap :style-fn (constantly 0))]
-                   (.style! attributes id (apply sfn (utilities/->seq sty)))))
+                   (.style! attributes id (apply sfn (utilities/->vec sty)))))
 
                (style! [this sty]
                  (let [sfn (get fnmap :style-fn (constantly 0))]
-                   (.style! attributes (apply sfn (utilities/->seq sty)))))
+                   (.style! attributes (apply sfn (utilities/->vec sty)))))
 
                
                (width! [this id w]

@@ -75,6 +75,15 @@
 (defn sqrt [n]
   (Math/sqrt n))
 
+(defn sin [n]
+  (Math/sin n))
+
+(defn cos [n]
+  (Math/cos n))
+
+(defn tan [n]
+  (Math/tan n))
+
 (defn sqr [x](* x x))
 
 (defn vertical? [p0 p1]
