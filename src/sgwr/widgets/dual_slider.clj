@@ -1,8 +1,10 @@
 (ns sgwr.widgets.dual-slider
+  (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.line :as line])
   (:require [sgwr.elements.point :as point])
   (:require [sgwr.elements.rectangle :as rect])
+  (:require [sgwr.elements.rule :as rule])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math]))
 
@@ -365,3 +367,113 @@
     (.put-property! grp :values [v0 v1])
     (.use-attributes! grp :default)
     grp))
+
+(defn dual-slider-rule [drawing p0 length v0 v1 & {:keys [id orientation
+                                                          drag-action move-action enter-action exit-action
+                                                          press-action release-action click-action
+                                                          value-hook
+                                                          track1 track2 track3 track4
+                                                          gap
+                                                          pad-color 
+                                                          rim-color rim-style rim-width rim-radius
+                                                          handle1-color handle1-style handle1-size 
+                                                          handle2-color handle2-style handle2-size 
+                                                          current-handle-color current-handle-style current-handle-size
+                                                          major minor]
+                                                 :or {id nil
+                                                      orientation :vertical
+                                                       drag-action dummy-action
+                                                      move-action dummy-action
+                                                      enter-action dummy-action
+                                                      exit-action dummy-action
+                                                      press-action dummy-action
+                                                      release-action dummy-action
+                                                      click-action dummy-action
+                                                      value-hook identity
+                                                      track1 [:gray :solid 1.0]
+                                                      track2 [[0 0 0 0] :solid 1.0]
+                                                      track3 [[0 0 0 0] :solid 1.0]
+                                                      track4 [[128 0 255 64] :solid 6.0]
+                                                      gap 12
+                                                      pad-color [12 12 12 54]
+                                                      rim-color :gray
+                                                      rim-style  0
+                                                      rim-width 1.0
+                                                      rim-radius 12
+                                                      handle1-color :white
+                                                      handle1-style nil
+                                                      handle1-size 2
+                                                      handle2-color :white
+                                                      handle2-style nil
+                                                      handle2-size 2
+                                                      current-handle-color constants/default-rollover-color
+                                                      current-handle-style [:dot]
+                                                      current-handle-size 2
+                                                      major [50 8 :gray 0]
+                                                      minor [10 6 [128 32 32] 0]}}]
+  (let [root (.root drawing)
+        widgets (.widget-root drawing)
+        rule (let [[c sty w] track1
+                   r (rule/ruler root p0 length 
+                                 :orientation orientation
+                                 :track-color c
+                                 :track-style sty
+                                 :track-width w
+                                 :gap gap
+                                 :pad-color pad-color
+                                 :rim-color [0 0 0 0]
+                                 :rim-radius rim-radius)]
+                   r)
+        slide (let [[c2 sty2 w2] track2
+                    [c3 sty3 w3] track3
+                    [c4 sty4 w4] track4                     
+                    s (dual-slider widgets p0 length v0 v1
+                                   :id id
+                                   :orientation orientation
+                                   :drag-action drag-action
+                                   :move-action move-action
+                                   :exit-action exit-action
+                                   :enter-action enter-action
+                                   :press-action press-action
+                                   :release-action release-action
+                                   :click-action click-action
+                                   :value-hook value-hook
+                                   :track1-color [0 0 0 0]
+                                   :track2-color c2
+                                   :track2-style sty2
+                                   :track2-width w2
+                                   :track3-color c3
+                                   :track3-style sty3
+                                   :track3-width w3
+                                   :track4-color c4
+                                   :track4-style sty4
+                                   :track4-width w4
+                                   :gap gap
+                                   :pad-color pad-color
+                                   :rim-color rim-color
+                                   :rim-style rim-style
+                                   :rim-width rim-width
+                                   :rim-radius rim-radius
+                                   :handle1-color handle1-color
+                                   :handle1-style handle1-style
+                                   :handle1-size handle1-size
+                                   :handle2-color handle2-color
+                                   :handle2-style handle2-style
+                                   :handle2-size handle2-size
+                                   :current-handle-color current-handle-color
+                                   :current-handle-style current-handle-style
+                                   :current-handle-size current-handle-size)]
+                s)]
+    (if (first minor)
+      (let [[step length color offset] minor]
+        (rule/ticks rule step 
+                    :length (or length 6) 
+                    :color (uc/color (or color :gray))
+                    :offset (or offset 0))))
+    (if (first major)
+      (let [[step length color offset] major]
+        (rule/ticks rule step 
+                    :length (or length 8)
+                    :color (uc/color (or color :gray))
+                    :offset (or offset 0))))
+    slide))

@@ -16,7 +16,7 @@
                                          rim-color rim-style rim-width rim-radius]
                                   :or {orientatin :vertical
                                        id nil
-                                       track-color :red
+                                       track-color :gray
                                        track-style :solid
                                        track-width 1.0
                                        track-offset 0
