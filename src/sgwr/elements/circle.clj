@@ -28,22 +28,37 @@
       (.fill g2d shp)
       (.draw g2d shp))))
 
+;; (defn- update-fn [obj points]
+;;   (let [[p0 p1] points
+;;         x0 (apply min (map first [p0 p1]))
+;;         y0 (apply min (map second [p0 p1]))
+;;         x1 (apply max (map first [p0 p1]))
+;;         y1 (apply max (map second [p0 p1]))
+;;         side (max (- x1 x0)(- y1 y0))
+;;         x2 (+ x0 side)
+;;         y2 (+ y0 side)
+;;         xc (math/mean x0 x2)
+;;         yc (math/mean y0 y2)
+;;         dx (math/abs (- x2 x0))
+;;         radius (* 0.5 dx)]
+;;     (println (format "DEBUG circle update-fn  points = %s" points))
+;;     (.put-property! obj :center [xc yc])
+;;     (.put-property! obj :radius radius)
+;;     [[x0 y0][x2 y2]]))
+
+
 (defn- update-fn [obj points]
   (let [[p0 p1] points
         x0 (apply min (map first [p0 p1]))
         y0 (apply min (map second [p0 p1]))
         x1 (apply max (map first [p0 p1]))
         y1 (apply max (map second [p0 p1]))
-        side (max (- x1 x0)(- y1 y0))
-        x2 (+ x0 side)
-        y2 (+ y0 side)
-        xc (math/mean x0 x2)
-        yc (math/mean y0 y2)
-        dx (math/abs (- x2 x0))
-        radius (* 0.5 dx)]
+        xc (math/mean x0 x1)
+        yc (math/mean y0 y1)
+        radius (math/distance [xc yc][x0 yc])]
     (.put-property! obj :center [xc yc])
     (.put-property! obj :radius radius)
-    [[x0 y0][x2 y2]]))
+    [[x0 y0][x1 y1]]))
 
 (defn- distance-helper [obj q]
   (let [pc (.get-property obj :center)
@@ -78,7 +93,7 @@
 (def locked-properties [:center :radius])
 
 ; circle defined by bounding rectangle
-; If rectangle is not square, the side with greatest length is used
+;
 
 (defn circle [parent p0 p1  & {:keys [id color style width fill]
                                :or {id :new-circle
