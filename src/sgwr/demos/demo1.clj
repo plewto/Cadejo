@@ -15,8 +15,9 @@
   (:require [sgwr.elements.image :as image])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.demos.demo2])
-  ;; (:require [sgwr.demos.demo3])
-  ;; (:require [sgwr.demos.demo4])
+  (:require [sgwr.demos.demo3])
+  (:require [sgwr.demos.demo4])
+  (:require [sgwr.demos.demo5])
   (:require [seesaw.core :as ss]))
 
 

@@ -1,4 +1,3 @@
-(println "--> sgwr.util.math")
 (ns sgwr.util.math
   (:require [clojure.math.numeric-tower]))
 
@@ -15,11 +14,13 @@
    (clamp n (first minmax)(second minmax))))
 
 (defn in-range? [n a b]
+  "Predicate true iff a <= n <= b or b <= n <= a"
   (let [mn (min a b)
         mx (max a b)]
     (and (<= mn n)(<= n mx))))
 
 (defn linear-function [x0 y0 x1 y1]
+  "Returns linear function through points [x0 y0][x1 y1]"
   (let [dx (- x0 x1)
         dy (- y0 y1)
         a (/ (float dy) dx)
@@ -27,13 +28,13 @@
     (fn [x](+ (* a x) b))))
 
 (defn clipped-linear-function [x0 y0 x1 y1]
+  "Returns linear function through points [x0 y0][x1 y1]
+   where y is restricted to y0 <= y <= y1   or  y1 <= y <= y0"
   (let [dx (- x0 x1)
         dy (- y0 y1)
         a (/ (float dy) dx)
         b (- y0 (* a x0))]
     (fn [x](clamp (+ (* a x) b)(min y0 y1)(max y0 y1)))))
-
-
 
 (defn mean [& args]
   "Return arithmetic average of arguments"
@@ -56,14 +57,16 @@
   (* r k-deg))
 
 (defn rad->turn [r]
+  "Convert radians to turns"
   (/ r pi2))
 
 (defn turn->rad [tr]
+  "Convert turns to radians"
   (* tr pi2))
 
 (defn deg->turn [d]
+  "Convert degrees to turns"
   (/ d 360.0))
-
 
 (def expt 
   "(expt x e) --> x^e  Returns x raised to the power e"
@@ -100,6 +103,7 @@
       (/ dy dx))))
 
 (defn slope->angle [slope]
+  "Returns angle of slope in radians"
   (Math/atan slope))
 
 (defn colinear? [q p0 p1]
@@ -126,7 +130,6 @@
         dy (- y1 y0)]
     (sqrt (+ (sqr dx)(sqr dy)))))
 
-
 ;; Returns distance between point q and finit line segment [p0,p1]
 ;;
 (defn point-line-distance [q p0 p1]
@@ -145,7 +148,6 @@
         dx (sqr (- x4 x))
         dy (sqr (- y4 y))]
     (sqrt (+ dx dy))))
-           
         
 (defn point-rectangle-distance [q p0 p1]
   (let [[x0 y0] p0

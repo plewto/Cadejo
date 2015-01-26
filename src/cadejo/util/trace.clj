@@ -16,6 +16,9 @@
                   (subs n 0 (- (count n) 4))
                   ""))))
 
+(defn trace-reset []
+  (reset! depth* 0))
+
 (defn trace-enable [flag]
   (reset! enable* flag))
 

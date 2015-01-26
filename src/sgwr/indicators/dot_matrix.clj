@@ -1,11 +1,10 @@
 (ns sgwr.indicators.dot-matrix
+  "Defines displaybar cell in terms of 5x7 matrix"
   (:require [sgwr.indicators.cell])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.elements.element :as elements])
   (:require [sgwr.elements.circle :as circle]))
 
-;; (def char-width sgwr.indicators.char/char-width)
-;; (def char-height sgwr.indicators.char/char-height)
 (def ^:private rows 7)
 (def ^:private columns 5)
 (def ^:private dot-radius 2)

@@ -1,5 +1,12 @@
-(println "--> sgwr.elements.line")
 (ns sgwr.elements.line
+  "Defines line elements
+   Attributes:
+       color - 
+       style - dash pattern
+       width - line width
+       size  - ignored
+       fill  - ignored
+       hide  -"
   (:require [sgwr.constants :as constants])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
@@ -61,6 +68,8 @@
                                  color (uc/color :white)
                                  style 0
                                  width 1.0}}]
+  "(line parent p0 p1 :id :color :style :width)
+   Create segmen twith end-points p0 and p1." 
   (let [obj (sgwr.elements.element/create-element :line parent line-function-map locked-properties)]
     (if parent (.set-parent! obj parent))
     (.set-points! obj [p0 p1])
@@ -71,33 +80,33 @@
     (.use-attributes! obj :default)
     obj))
 
-(defn vline [parent p0 length & args]
-  (let [[x0 y0] p0
-        x1 x0
-        y1 (+ y0 length)
-        arglst* (atom [parent p0 [x1 y1]])]
-     (doseq [a args]
-      (swap! arglst* (fn [q](conj q a))))
-    (apply line @arglst*)))
+;; (defn vline [parent p0 length & args]
+;;   (let [[x0 y0] p0
+;;         x1 x0
+;;         y1 (+ y0 length)
+;;         arglst* (atom [parent p0 [x1 y1]])]
+;;      (doseq [a args]
+;;       (swap! arglst* (fn [q](conj q a))))
+;;     (apply line @arglst*)))
 
-(defn hline [parent p0 length & args]
-  (let [[x0 y0] p0
-        x1 (+ x0 length)
-        y1 y0
-        arglst* (atom [parent p0 [x1 y1]])]
-     (doseq [a args]
-      (swap! arglst* (fn [q](conj q a))))
-    (apply line @arglst*)))
+;; (defn hline [parent p0 length & args]
+;;   (let [[x0 y0] p0
+;;         x1 (+ x0 length)
+;;         y1 y0
+;;         arglst* (atom [parent p0 [x1 y1]])]
+;;      (doseq [a args]
+;;       (swap! arglst* (fn [q](conj q a))))
+;;     (apply line @arglst*)))
 
-;; Define line given point, length and slope
-;;
-(defn line-ps [parent p0 length slope & args]
-  (let [[x0 y0] p0
-        theta (math/slope->angle slope)
-        x1 (+ x0 (* length (Math/cos theta)))
-        y1 (+ y0 (* length (Math/sin theta)))
-        arglst* (atom [parent p0 [x1 y1]])]
-    (doseq [a args]
-      (swap! arglst* (fn [q](conj q a))))
-    (apply line @arglst*)))
+;; ;; Define line given point, length and slope
+;; ;;
+;; (defn line-ps [parent p0 length slope & args]
+;;   (let [[x0 y0] p0
+;;         theta (math/slope->angle slope)
+;;         x1 (+ x0 (* length (Math/cos theta)))
+;;         y1 (+ y0 (* length (Math/sin theta)))
+;;         arglst* (atom [parent p0 [x1 y1]])]
+;;     (doseq [a args]
+;;       (swap! arglst* (fn [q](conj q a))))
+;;     (apply line @arglst*)))
 

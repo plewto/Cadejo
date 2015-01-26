@@ -1,16 +1,17 @@
-;; TODO
-;;    1. Add image creation from file
-
 (ns sgwr.elements.image
+  "Defines element for rendering BufferedImage.
+   Unlike most drawing elements images do not scale with changes to
+   the coordinate system view.
+
+   Images may be read from a file or extracted from the resource
+   directory. All source images must have an alpha layer."    
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.element])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities])
-  ;(:require [seesaw.icon])
   (:import java.awt.image.BufferedImage
            javax.imageio.ImageIO
            java.io.File))
-
 
 (defn render-image [iobj g2d]
   (let [cs (.coordinate-system iobj)
@@ -56,7 +57,6 @@
         y1 (apply max y)]
     [[x0 y0][x1 y1]]))
 
-
 (defn- scale-fn [& _] )
 
 (def ^:private image-function-map {:shape-fn (constantly constants/null-shape)
@@ -79,7 +79,7 @@
   "(image parent p w h)
 
     Creates an initially blank image element. Images are rectangular
-    bit maps which ignore most attribute values. Images also do not
+    bit maps which ignore most attribute values. Images do not
     scale 
 
     The contains and distance concepts for an image are identical to
@@ -106,6 +106,19 @@
                                         :or {id nil
                                              w nil
                                              h nil}}]
+  "(read-image parent p0 filename :id :w :h)
+   Create image element from external file.
+   The default width and height of the element is determined by the image
+   but may be explicitly specified.
+
+   The image file must contain an alpha layer.
+
+   parent - SgwrElement, 
+   p0     - vector, coordinate of lower left corner (coordinate system dependent) 
+            [x0 y0]
+   :id    - keyword, element id
+   :w     - int, explicit width, defaults to image width
+   :h     - int, explicit height, defaults to image height"
   (let [f (File. filename)
         i (try 
             (ImageIO/read f)
@@ -121,6 +134,13 @@
   
         
 (defn read-icon [parent p0 prefix group subgroup]
+  "(read-icon parent p0 prefix group subgroup)
+   Create image image from resource icon.
+   parent - SgwrElement
+   p0     - vector [x,y] position
+   prefix - string, resource icon prefix, either 'black', 'gray' or 'white'
+   group    - string icon group 
+   subgroup - string icon subgroup"
   (let [ifn (format "resources/icons/%s_%s%s.png" 
                     (name prefix)
                     (name group)

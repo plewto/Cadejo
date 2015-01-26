@@ -2,6 +2,14 @@
 ;;     1. define three-point constructor
 
 (ns sgwr.elements.circle
+  "Defines circle element
+   attributes:
+     color
+     style - dash patten
+     width - line width
+     size  - ignored
+     fill  - 
+     hide  -"
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.stroke :as ustroke])
@@ -27,25 +35,6 @@
     (if (and f (not (= f :no)))
       (.fill g2d shp)
       (.draw g2d shp))))
-
-;; (defn- update-fn [obj points]
-;;   (let [[p0 p1] points
-;;         x0 (apply min (map first [p0 p1]))
-;;         y0 (apply min (map second [p0 p1]))
-;;         x1 (apply max (map first [p0 p1]))
-;;         y1 (apply max (map second [p0 p1]))
-;;         side (max (- x1 x0)(- y1 y0))
-;;         x2 (+ x0 side)
-;;         y2 (+ y0 side)
-;;         xc (math/mean x0 x2)
-;;         yc (math/mean y0 y2)
-;;         dx (math/abs (- x2 x0))
-;;         radius (* 0.5 dx)]
-;;     (println (format "DEBUG circle update-fn  points = %s" points))
-;;     (.put-property! obj :center [xc yc])
-;;     (.put-property! obj :radius radius)
-;;     [[x0 y0][x2 y2]]))
-
 
 (defn- update-fn [obj points]
   (let [[p0 p1] points
@@ -90,10 +79,8 @@
                                     :bounds-fn bounds-fn
                                     :style-fn sgwr.elements.line/style-fn})
 
-(def locked-properties [:center :radius])
+(def ^:private locked-properties [:center :radius])
 
-; circle defined by bounding rectangle
-;
 
 (defn circle [parent p0 p1  & {:keys [id color style width fill]
                                :or {id :new-circle
@@ -101,6 +88,18 @@
                                     style 0
                                     width 1.0
                                     fill nil}}]
+  "(circle parent p0 p1 [:id :color :style :fill])
+   Create circle element defined by opposing points of bounding rectangle
+   parent - SgwrElement, most often parent will be a group element
+   p0     - pair [x0 y0] first vertex of bounding rectangle
+   p1     - pair [x1 y1] second (opposing) vertex of bounding rectangle
+   :id    - keyword, if not specified a unique id is created
+   :color - See sgwr.util.color/color, color for default attributes
+   :style - Integer or keyword, Sets dash pattern for default attributes
+            see constants/line-style
+   :width - float, line width for default attributes width > 0.
+   :fill  - flag, fill state for default attributes, flag may be false, true 
+            or :no"
   (let [obj (sgwr.elements.element/create-element :circle
                                                   parent
                                                   circle-function-map
@@ -115,9 +114,10 @@
     (.use-attributes! obj :default)
     obj))
 
-;; Create circle by center point and radius
-;;
 (defn circle-r [parent pc radius & args]
+  "(circle-r parent pc radius [args....])
+   Defines circle by center point pc and radius
+   All optional arguments identical to circle."
   (let [[xc yc] pc
         x0 (- xc radius)
         y0 (- yc radius)
@@ -130,9 +130,10 @@
       (.put-property! obj :defined-by :center-plus-radius)
       obj)))
 
-;; Creatre circle by to opposing points
-;;
 (defn circle-2p [parent p0 p1 & args]
+  "(circle-2p parent p0 p1 [args....])
+   Defines circle by opposing points on locus p0 and p1
+   Optional arguments identical to circle"
   (let [pc (math/midpoint p0 p1)
         r (math/distance p0 pc)
         arglst* (atom [parent pc r])]
@@ -142,6 +143,3 @@
       (.put-property! obj :defined-by :oposing-points)
       (.put-property! obj :construction-points [p0 p1])
       obj)))
-
-
-              

@@ -1,4 +1,5 @@
 (ns sgwr.elements.rule
+  "Defines orthogonal rulers as pseudo-elements"
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.line :as line])
   (:require [sgwr.elements.rectangle :as rect])
@@ -26,6 +27,37 @@
                                        rim-style 1.0
                                        rim-width 1.0
                                        rim-radius 0}}]
+  "(ruler parent p0 length 
+          :id :orientation 
+          :track-color :track-style :track-width :track-offset
+          :gap :pad-color
+          :rim-color :rim-style :rim-width :rim-radius)
+   
+   Creates orthogonal ruler (sans tick marks) The ruler consist of a
+   centerl line (the 'track'), A surrounding box (the 'rim') and a
+   background (the 'pad')
+
+   See the ticks function to add tick marks.
+
+   parent        - SgwrElement, the parent group
+   p0            - vector [x y] lower/left coordinates of ruler
+   length        - float, length of ruler
+   :id           - keyword, automatically crated if not specified
+   :orientation  - keyword, either :vertical or :horizontal
+                   defaults to :vertical
+   :track-color  - centerl track color
+   :track-style  - track dash pattern
+   :track-width  - track line width
+   :track-offset - float, value which shifts track from central position
+                   default 0
+   :gap          - float, amount of space between track and rim
+   :pad-color    - color,
+   :rim-color    - color
+   :rim-style    - rim line dash pattern
+   :rim-width    - rim line width
+   :rim-radius   - int, corner radius of pad and rim, default 0
+   
+   Returns new group object"
   (let [vertical (= orientation :vertical)
         native (= (.cs-type (.coordinate-system parent)) :native)
         gap (or gap (if native 12 4))
@@ -77,6 +109,20 @@
                                    offset 0
                                    color :white
                                    style 0}}]
+  "(ticks ntvruler step :id :length :offset :color :style)
+
+   Add tick marks to ruler
+   ntvruler - SgwrElement, a group element as defined by ruler
+   step     - float, tick spacing
+   :id      - keyword
+   :length  - float, length of tick marks
+   :offset  - float, value added to position of each tick mark to shift it
+              from from center, default 0
+   :color   -
+   :style   - line dash pattern.
+   
+   Returns ntvruler"
+
   (let [vertical (= (.get-property ntvruler :orientation) :vertical)
         p0 (.get-property ntvruler :p0)
         p1 (.get-property ntvruler :p1)
@@ -95,6 +141,6 @@
             y2 (+ offset (second p0) half)]
         (doseq [x (range (min start end)(+ (max start end) start) step)]
           (if (math/in-range? x start end)
-            (line/line ntvruler [x y1][x y2] :id id :color color :style style)))))))
-            
-     
+            (line/line ntvruler [x y1][x y2] :id id :color color :style
+            style)))))
+    ntvruler))

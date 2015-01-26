@@ -1,4 +1,12 @@
 (ns sgwr.elements.rectangle
+  "Defines rectangular elements.
+   attributes
+      color - 
+      style - line dash pattern
+      width - line width
+      size  - ignore
+      fill  -
+      hide"
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.stroke :as ustroke])
@@ -102,6 +110,17 @@
                                        width 1.0
                                        fill nil
                                        radius 0}}]
+  "(rectangle parent p0 p1 :id :color :style :width :fill :radius)
+   Create rectangle element by opposing points 
+   parent  - SgwrElement, parent group
+   p0      - vector, vertex 0 p0 -> [x0 y0]
+   p1      - vector, opposing vertex p1 -> [x1 y1]
+   :id     - keyword
+   :color  - 
+   :style  - int or keyword, line dash pattern
+   :width  - float, line width
+   :fill   - true, false or :no
+   :radius - int, corner radius, default 0"
   (let [obj (sgwr.elements.element/create-element :rectangle parent rectangle-function-map locked-properties)]
     (if parent (.set-parent! obj parent))
     (.set-points! obj [p0 p1])
@@ -114,10 +133,10 @@
     (.use-attributes! obj :default)
     obj))
 
-
-;; Rctangle defined by point, width and height
-;;
 (defn rectangle-wh [parent p0 w h & args]
+  "(rectangle-wh parent p0 w h args...)
+   Define rectangle by point, width and height.
+   All optional arguments same as for rectangle."
   (let [[x0 y0] p0
         x1 (+ x0 w)
         y1 (+ y0 h)
@@ -131,6 +150,9 @@
 ;; If height h is nil, height is same as width.
 ;;        
 (defn rectangle-c [parent pc w h & args]
+  "(rectangle-c parent pc w h args....)
+   Define rectangle by center point pc, width and height.
+   All optional arguments same as rectangle"
   (let [[xc yc] pc
         w2 (* 1/2 w)
         h2 (* 1/2 (or h w))

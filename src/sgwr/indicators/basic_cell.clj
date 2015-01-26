@@ -1,4 +1,5 @@
 (ns sgwr.indicators.basic-cell
+  "Defines displaybar cell in terms of text objects."
   (:require [sgwr.indicators.cell])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
@@ -8,11 +9,16 @@
 
 (def set-attributes! elements/set-attributes!)
 
-(defn basic-cell [grp x-offset y-offset & {:keys [cell-width cell-height] ; font-size]
+(defn basic-cell [grp x-offset y-offset & {:keys [cell-width cell-height]
                                            :or {cell-width 25
-                                                cell-height 35
-                                                ;font-size 22
-                                                }}]
+                                                cell-height 35}}]
+   "(basic-cell grp x-offset y-offset :cell-width :cell-height)
+    Creates displaybar cell using text object.
+    grp         - parent group
+    x-offset    - float, horizontal offset of cell in grp
+    y-offset    - float, vertical offset of cell in grp
+    cell-width  - int, default 25
+    cell-height - int, default 35"
    (let [inactive* (atom (uc/color [32 32 32]))
          active* (atom (uc/color [255 64 64]))
          x x-offset
@@ -32,6 +38,7 @@
          obj (reify sgwr.indicators.cell/Cell
 
                (cell-width [this] cell-width)
+
                (cell-height [this] cell-height)
 
                (colors! [this inactive active]
@@ -45,7 +52,7 @@
                    (reset! inactive* c1)
                    (reset! active* c2)
                    [c1 c2]))
-               
+
                (character-set [this]
                  (range 32 128))
 
@@ -59,5 +66,5 @@
                         (do 
                           (.use-attributes! txt :active)
                           (.put-property! txt :text (str (char c)))
-                          (.use-attributes! box :inactive))))))]
+                          (.use-attributes! box :inactive))))) )]
      obj))

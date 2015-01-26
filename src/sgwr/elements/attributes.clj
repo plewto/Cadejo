@@ -1,4 +1,9 @@
 (ns sgwr.elements.attributes
+  "Each drawing element has a set of named attributes which define how
+  the element is to be rendered. The use! method instructs the element
+  to use a specific attribute set. The attributes include color, style,
+  width, size, fill and hide. Not all elements make use of all
+  attribute values."
   (:require [sgwr.constants :as constants])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.utilities :as utilities]))
@@ -14,82 +19,159 @@
 (defprotocol SgwrAttributes
 
   (add! 
-    [this id])
+    [this id]
+    "(add! this id)
+     Create a new attributes map with given id name and add it to this.
+     Returns list of attribute keys.")
 
   (remove!
-    [this id])
+    [this id]
+    "(remove! this id)
+     Removes the indicated attribute map from this.
+     It is not possible to remove the 'current' attribute map.
+     Returns list of attribute keys")
 
   (remove-all!
-    [this])
+    [this]
+    "(remove-all! this)
+     Removes all attribute maps from this. 
+     New attributes maps with id's :default and :rollover are automatically
+     added back to this.
+     Returns the current attribute map")
 
   (attribute-keys 
-    [this])
+    [this]
+    "(attribute-keys this)
+    Returns list of all defined attribute id keys.")
 
   (get-attributes
     [this id]
-    [this])
+    [this]
+    "(get-attributes this id)
+     (get-attributes this)
+     Returns the attribute map with matching id or nil if no attributes
+     matches.  If id not specified returns the current attribute map")
 
   (current-id
-    [this])
+    [this]
+    "(current-id this)
+     Returns the id of the current attribute map")
 
   (use!
-    [this id])
+    [this id]
+    "(use! this id)
+     Indicate that attribute map with matching id is now the 'current' map.")
 
   (color! 
     [this id c]
-    [this c])
+    [this c]
+    "(color! this id c)
+     (color! this c)
+     Sets color value for indicated attribute map.
+     If id does not match any existing attribute map create a new map
+     If id is not specified use the current map
+     See sgwr.util.color/color for valid color argument types
+     Returns java.awt.Color")
 
   (style!
     [this id st]
-    [this st])
+    [this st]
+    "(style! this id st)
+     (style! this st)
+     Sets the style value for indicated attribute map
+     If id does not match any existing attribute map create a new map.
+     If id not specified use the current map.
+     style argument st is interpreted differently for each element type
+     Returns st")
 
   (width!
     [this id w]
-    [this w])
+    [this w]
+    "(width! this id w)
+     (width! this w)
+     Sets width value for indicated attribute map
+     If id does not match any existing attribute map create a new map.
+     If id not specified use the current map.
+     Returns w")
 
   (size!
     [this id sz]
-    [this sz])
+    [this sz]
+    "(size! this id sz)
+     (size! this sz)
+     Sets size value for indicated attribute map
+     If id does not match any existing attribute map create a new map.
+     If id not specified use the current map.
+     Returns sz")
 
-  ;; fill value may be
-  ;; false - inherit fill attribute from parent
-  ;; true  - element is filled
-  ;; :no   - element is not to be filled 
-  ;;
   (fill!
     [this id flag]
-    [this flag])
-  
-  ;; hide value may be
-  ;; false - inhert hidden flag from parent
-  ;; true  - object is hidden
-  ;; :no   - object is NOT hidden
-  ;;
+    [this flag]
+    "(fill! this id flag)
+     (fill! this flag)
+     Sets fill value for indicated attribute map
+     If id does not match any existing attribute map create a new map.
+     If id not specified use current map.
+     flag may have one of three values
+        false - inherit fill value from parent object
+        true  - object is to be filled
+        :no   - object is not filled.
+    Returns flag")
+
   (hide!
     [this id flag]
-    [this flag])
+    [this flag]
+     "(hide! this id flag)
+      (hide! this flag)
+      Sets hide value for indicated attribute map
+      If id does not match any existing attribute map create a new map.
+      If id not specified use current map.
+      flag may have one of three values
+         false - inherit hide value from parent object
+         true  - object is to be hidden
+         :no   - object is not hidden
+     Returns flag")
 
   (color
-    [this])
+    [this]
+    "(color this)
+     Returns java.awt.Color of current attribute map")
 
   (style 
-    [this])
+    [this]
+    "(style this)
+     Returns style value of current attribute map")
 
   (width
-    [this])
+    [this]
+    "(width this)
+     Returns width value of current attribute map")
 
   (size
-    [this])
+    [this]
+    "(size this)
+     Returns size value of current attribute map")
 
   (filled? 
-    [this])
+    [this]
+    "(filled? this)
+     Returns fill value of current attribute map
+     Value will either be true, false or :no")
 
   (hidden? 
-    [this])
+    [this]
+    "(hidden? this)
+     Returns hidden value of current attribute map
+     Value will either be true, false or :no")
 
   (copy! 
     [this other id]
-    [this other])
+    [this other]
+    "(copy! other id)
+     (copy! other)
+     Copy attribute values from this to other
+     If id specified copy only values for specified map
+     Returns other")
 
   (to-string
     [this verbosity depth])
@@ -132,6 +214,9 @@
           (:filled att)
           (:hidden att)))
 
+;; Returns the indicated attribute map 
+;; If no such map exist create it.
+;;
 (defn- get-implicit-attributes [sgwratt id]
   (let [att (.get-attributes sgwratt id)]
     (if (not att)
@@ -165,7 +250,7 @@
                    (remove-all! [this]
                      (reset! maps* {:default default-attribute-map
                                     :rollover rollover-attribute-map})
-                     (reset! current-id* :defaut))
+                     (reset! current-id* :default))
 
                    (attribute-keys [this]
                      (sort (keys @maps*)))
@@ -194,7 +279,7 @@
                        (.color! this id c)))
                    
                    (style! [this id st]
-                     (let [st2 st ; (utilities/map-style st)
+                     (let [st2 st 
                            att1 (get-implicit-attributes this id)
                            att2 (assoc att1 :style st2)]
                        (swap! maps* (fn [q](assoc q id att2)))
@@ -285,7 +370,8 @@
                    (copy! [this other]
                      (.remove-all! this)
                      (doseq [k (.attribute-keys other)]
-                       (.copy! this other k)))
+                       (.copy! this other k))
+                     other)
 
                    (to-string [this verbosity depth]
                      (let [pad1 (utilities/tab depth)

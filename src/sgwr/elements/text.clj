@@ -1,6 +1,13 @@
-;; TODO: Add text rotation
-
 (ns sgwr.elements.text 
+  "Defines basic text elements.
+   Text elements may optionally be scalable or non-scalable
+   Attributes
+   color -
+   style - font
+   width - ignore
+   size  - font size
+   fill  - ignore
+   hide -"
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.element])
   (:require [sgwr.util.color :as uc])
@@ -8,12 +15,11 @@
            java.awt.BasicStroke
            java.awt.geom.GeneralPath))
 
-;; Estimate functions only valid for plain monospaced font
+;; Estimate functions only valid for plain mono-spaced font
 ;; 
 (defn estimate-monospaced-height [size] (* 1.50 size))
 (defn estimate-monospaced-width [size] (* 1.25 size))
 (defn estimate-monospaced-font-size [width] (/ width 1.5))
-
 
 (def ^:private size-quant 2)
 (def ^:private font-stroke (BasicStroke.))
@@ -120,7 +126,7 @@
                                   :bounds-fn bounds-fn
                                   :style-fn style-fn})
 
-(def locked-properties [:text :lock-size])
+(def ^:private locked-properties [:text :lock-size])
 
 (defn text [parent p txt & {:keys [id color style size lock-size]
                             :or {id :new-text
@@ -128,6 +134,20 @@
                                  style 0
                                  size 6.0
                                  lock-size false}}]
+  "(text parent p txt :id :color :style :size :lock-size)
+   Create text element.
+   For the moment text elements are always horizontal
+   parent - SgwrElement, parent group
+   p      - vector [x y], lower left baseline position
+   txt    - String, the text to display
+   :id    - keyword
+   :color -
+   :style - keyword, sets font there are 4 possible fonts  :mono :sans :serif 
+            and :dialog . Each font may be modified with bold and.or italic
+            :mono-bold, mono-t=italic, mono-bold-italic etc...
+   :size  - 
+   :lock-size - Boolean if true text object size is not effected by changes
+                to the coordinate-system view."
   (let [obj (sgwr.elements.element/create-element :text parent text-function-map locked-properties)]
     (.set-points! obj [p])
     (if parent (.set-parent! obj parent))

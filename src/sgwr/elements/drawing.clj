@@ -1,4 +1,15 @@
 (ns sgwr.elements.drawing
+  "Defines SgwrDrawing protocol 
+  A drawing is an extension of javax.swing.JPanel onto which 
+  elements are rendered. All drawings contain a 'root' and a
+  'widget' group (See sgwr.elements.group) which then contain all
+  other drawing elements. 
+
+  The segregation between widget and non-widget elements is to reduce
+  the overhead of rendering complex drawings. Once a drawing has been
+  rendered all static elements may be flattened into a single image
+  which greatly reduces future render times."
+ 
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.circle])
   (:require [sgwr.elements.group])
@@ -13,8 +24,7 @@
   (:require [sgwr.util.stroke :as ustroke])
   (:require [sgwr.util.utilities :as utilities])
   (:require [seesaw.core :as ss])
-  (:import 
-           java.awt.image.BufferedImage
+  (:import java.awt.image.BufferedImage
            java.awt.event.MouseMotionListener
            java.awt.event.MouseListener
            javax.swing.JPanel))
@@ -25,70 +35,129 @@
 (defprotocol SgwrDrawing
 
   (root 
-    [this])
+    [this]
+    "(root this)
+     Returns the 'root' group all elements are ultimately placed into the
+    root group.")
 
   (widget-root
-    [this])
+    [this]
+    "(widget-root this)
+     Returns the group used for active widgets.")
 
   (canvas-bounds
-    [this])
+    [this]
+    "(canvas-bounds this)
+     Returns a vector holding the dimensions of the canvas in pixels
+     [width height]")
 
   (canvas 
-    [this])
+    [this]
+    "(canvas this)
+     Returns the JPanel onto which drawings are rendered.")
 
-  ;; bg arg may be either color or BufferedImage
-  ;;
   (background!
-    [this bg])
+    [this bg]
+    "(background! this bg)
+     Sets the drawing background
+     The bg argument may be a color or gradient (see sgwr.util.color) or
+     may be an instance of java.awt.image.BufferedImage. If a BufferedImage
+     is used it's size must match that of the drawing.")
 
   (render
-    [this])
+    [this]
+    "(render this)
+     Render all objects to the drawing. 
+     This method is ignored is rendering is not enabled.")
+     
 
   (render-node 
-    [this g2d element])
+    [this g2d element]
+    "(render-node this g2d element)
+     g2d - an instance of java.awt.Graphics2D
+     Render specific element. 
+     Do not call this method directly, instead use the render method.")
 
-  ;; Forces render and replaces background with current image 
-  ;; Removes all elements from root group with exception of widget-group
-  ;; Removes all elements from widget group
-  ;; Returns BufferedImage
   (flatten!
     [this include-widgets]
-    [this])
+    [this]
+    "(flatten! this include-widgets)
+     (flatten! this)
+     Replace all drawing elements with a single BufferedImage 
+     By default the widgets group is not included.
+     render is implicitly called.
+     Returns java.awt.image.BufferedImage")
 
   (image
-    [this])
+    [this]
+    "(image this)
+     Returns instance of java.awt.image.BufferedImage
+     with a static image of the drawing.
+     The render method is implicitly called.")
 
   (zoom-in
-    [this])
+    [this]
+    "(zoom-in this) 
+     Increase the drawing zoom level.
+     Note not all coordinate systems support zoom.")
 
   (zoom-out
-    [this])
+    [this]
+    "(zoom-out this)
+     Decrease the drawing zoom level.
+     Note not all coordinate systems support zoom.")
 
   (set-view
-    [this v])
+    [this v]
+    "(set-view this v)
+     Sets the current view to v [[x0 y0][x1 y1]]
+     Not all coordinate systems support changeable views.")
 
   (restore-view
-    [this])
+    [this]
+    "(restore-view this)
+     Return view to default.")
 
   (add-mouse-motion-listener
-    [this mml])
+    [this mml]
+    "(add-mouse-motion-listener this mml)
+     Adds a new MouseMotionListener to the canvas.
+     Note that a MouseMotionListener is automatically added to the canvas.
+     See mouse-where method.")
 
   (remove-mouse-motion-listener
-    [this mml])
+    [this mml]
+    "(remove-mouse-motion-listener this mml)")
 
   (add-mouse-listener
-    [this ml])
+    [this ml]
+    "(add-mouse-listener this ml)
+     Adds a new MouseListener to the canvas
+     Note that a MouseListener is automatically added.
+     See mouse-pressed-where and mouse-release-where methods")
 
   (remove-mouse-listener
-    [this ml])
+    [this ml]
+    "(remove-mouse-listener this ml)")
 
   (mouse-where
     [this raw]
-    [this])
+    [this]
+    "(mouse-where this raw)
+     (mouse-where this)
+     Returns the most recent coordinates of the mouse pointer on this.
+     The result is a vector [a b].
+     If raw is true the values a b are the pixel row and column 
+     If raw is false the values a b are determined by the coordinate-system.")
   
   (mouse-pressed-where
     [this raw]
-    [this])
+    [this]
+    "(mouse-pressed-where this raw)
+     (mouse-pressed-where this)
+     Returns coordinates of where the mouse was button was pressed.
+     If raw is true return pixel [row column]
+     If raw is false the coordinates are mapped by the coordinate system.")
 
   (mouse-released-where
     [this raw]
@@ -96,6 +165,8 @@
 )
 
 (defn drawing [cs]
+  "(drawing cs)
+   Create new drawing using coordinate-system cs"
   (let [root-group (sgwr.elements.group/group nil :id :root)
         widget-root (sgwr.elements.group/group root-group :id :widget-root)
         active-widget* (atom nil)
@@ -324,15 +395,32 @@
 
 
 (defn native-drawing [w h]
+  "(native-drawing w h)
+   Create new drawing with native coordinate-system"
   (let [cs (native-cs/native-coordinate-system w h)]
     (drawing cs)))
 
 
 (defn cartesian-drawing [w h p0 p1]
+  "(Cartesian-drawing w h p0 p1)
+   Create new drawing with Cartesian coordinate system
+   The points p0 --> [x0 y0] and p1 --> [x1 y1] define the range and domain 
+   of the drawing. Typically x0 < x1 and y0 < y1 but inverted values are
+   also possible."
   (let [cs (cartesian-cs/cartesian-coordinate-system w h p0 p1)]
     (drawing cs)))
 
 (defn polar-drawing 
+  "(polar-drawing w h r :origin :unit)
+   Create drawing with polar coordinate system
+   w, h - drawing size in pixels
+   r     - maximum amplitude
+   :origin - point [x0 y0] Set location of polar origin on canvas,
+             default [0 0]
+   :unit   - Sets angular unit, may be either
+             :rad  -> radians (the default)
+             :deg  -> degrees
+             :turn"
   ([w h r & {:keys [origin unit]
              :or {origin [nil nil]
                   unit :rad}}]

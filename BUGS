@@ -77,3 +77,8 @@ java.lang.ClassCastException: java.lang.Long cannot be cast to java.lang.Integer
 Exception thrown by sync-ui! method of bend-panel in cadejo.ui.midi.properties-editor
 
 Fixed, cast band-range to int.
+
+# ---------------------------------------------------------- BUG 0008 OPEN
+BUG 0008 2015.01.20 STATUS OPEN
+NullPointerException when clicking around on a sgwr slider
+The error is occuring in relationship to the mouse-released event.

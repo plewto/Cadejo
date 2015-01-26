@@ -1,6 +1,5 @@
-;; General utilities
-;;
 (ns sgwr.util.utilities
+  "Defines general utility functions"
   (:require [sgwr.constants :as constants])
   (:import java.awt.geom.Line2D
            java.awt.geom.Path2D))
@@ -8,19 +7,6 @@
 (defn warning [msg]
   (println (format "sgwr WARNING: %s" msg))
   nil)
-
-;; ISSUE DEPRECIATED
-;; (defn map-style [st]
-;;   (cond (number? st)
-;;         (int st)
-;; 
-;;         (keyword? st)
-;;         ;(get constants/style-map st 0)
-;;         nil
-;; 
-;;         :default
-;;         nil))
-
 
 (defn member? [obj col]
   "Predicate true if obj is = to some element of collection."
@@ -44,12 +30,9 @@
         (swap! acc* (fn [q](cons e q)))))
     (reverse @acc*)))
 
-
 (defn ->vec [obj]
   (cond (or (vector? obj)(seq? obj)) obj
         :default (vector obj)))
-            
-        
 
 (defn tab 
   ([n]

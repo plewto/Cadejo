@@ -1,4 +1,6 @@
 (ns sgwr.indicators.displaybar
+  "Defines general display bar in terms of 'cells'
+   Where each cell implements sgwr.indicators.cell/Cell"
   (:require [sgwr.cs.native :as native])
   (:require [sgwr.elements.drawing :as drawing])
   (:require [sgwr.indicators.basic-cell :as basic])
@@ -8,11 +10,11 @@
 
 (defprotocol DisplayBar
 
-  (widget-keys
-    [this])
+  ;; (widget-keys
+  ;;   [this])
   
-  (widget
-    [this key])
+  ;; (widget
+  ;;   [this key])
   
   (colors! 
     [this inactive active])
@@ -60,15 +62,14 @@
                               (.render drw))))
          obj (reify DisplayBar
                
-               (widget-keys [this]
-                 [:group :drawing])
+               ;; (widget-keys [this]
+               ;;   [:group :drawing])
 
-               (widget [this key]
-                 (cond (= key :group) grp
-                       (= key :drawing)(.get-property grp :drawing)
-                       :default
-                       (utilities/warning (format "DisplayBar does not have %s widget" key))))
-                 
+               ;; (widget [this key]
+               ;;   (cond (= key :group) grp
+               ;;         (= key :drawing)(.get-property grp :drawing)
+               ;;         :default
+               ;;         (utilities/warning (format "DisplayBar does not have %s widget" key))))
 
                (colors! [this inactive active]
                  (doseq [e elements]

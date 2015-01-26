@@ -4,8 +4,7 @@
   (:require [seesaw.color :as ssc])
   (:import java.awt.Color
            java.awt.GradientPaint
-           java.awt.geom.Point2D
-           ))
+           java.awt.geom.Point2D))
 
 
 (defn str-rep-color [c]

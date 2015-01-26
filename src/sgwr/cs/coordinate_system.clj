@@ -1,6 +1,5 @@
-(println "--> sgwr.cs.coordinate-system")
 (ns sgwr.cs.coordinate-system
-  "Defines genralized mapping scheme between 'real' points and pixel coordinates"
+  "Defines generalized mapping scheme between 'real' points and pixel coordinates"
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities]))
 
@@ -8,98 +7,118 @@
 
   (cs-type 
     [this]
-    "Returns keyword for coordinate system type")
+    "(cs-type this)
+     Returns keyword for coordinate system type")
 
   (canvas-bounds
     [this]
-    "Returns size of 'physical' canvas as pair [width height]")
+    "(canvas-bounds this)
+    Returns size of 'physical' canvas as pair [width height]")
 
   (view
     [this]
-    "Returns the current 'view' as a vector.
+    "(view this)
+     Returns the current 'view' as a vector.
      The exact format of the result is implementation dependent.")
 
   (set-view!
     [this v]
-    "Set current view to v
-    The exact format of v is implementation dependent.
-    Use this method instead of view!
-    Returns the current view.")
+    "(set-view! this v)
+     Set current view to v
+     The exact format of v is implementation dependent.
+     Use this method instead of view!
+     Returns the current view.")
 
   (view!
     [this v]
-    "Set the current view to v 
+    "(view! this v) 
+     Set the current view to v 
      The exact format of v is implementation dependent.
-     Do not call view! directly, instead use set-view!
+     DO NOT CALL VIEW! DIRECTLY, instead use set-view!
      Returns the current view.")
 
   (restore-view!
-    [this])
+    [this]
+    "(restore-view! this v)
+     Return to the initial default view")
 
   (map-point
     [this p]
-    "Convert 'real' point p [x y] to pixel coordinates [column row]")
+    "(map-point this p)
+     Convert 'real' point p [x y] to pixel coordinates [column row]")
 
   (inv-map
     [this q]
-    "Inversion of map-point, converts pixel coordinates [column row]
+    "(inv-map this q)
+     Inversion of map-point, converts pixel coordinates [column row]
      to 'real' point [x y]")
 
   (map-x 
     [this x]
-    "Optional method 
-    Maps horizontal x value to pixel column
-    If not implemented shold display warning message and return it's argument")
+    "(map-x this x)
+     Optional method 
+     Maps horizontal x value to pixel column
+     If not implemented should display warning message and return it's argument")
 
   (inv-map-x
     [this u]
-    "Optional method
+    "(inv-map-x this u)
+     Optional method
      Maps pixel row to x value
-     If not implemented shold display warning message and return it's argument")
+     If not implemented should display warning message and return it's argument")
 
   (map-y
     [this y]
-    "Optional method 
-    Maps vertical y value to pixel row
-    If not implemented shold display warning message and return it's argument")
+    "(map-y this y)
+     Optional method 
+     Maps vertical y value to pixel row
+     If not implemented should display warning message and return it's argument")
 
   (inv-map-y
     [this v]
-    "Optional method
-     Maps pixel colum to y value
-     If not implemented shold display warning message and return it's argument")
+    "(inv-map-y this v)
+     Optional method
+     Maps pixel column to y value
+     If not implemented should display warning message and return it's argument")
 
   (x-scale 
     [this]
-    "Returns x scale factor")
+    "(x-scale this)
+     Returns x scale factor")
 
   (y-scale
     [this]
-    "Returns y scale factor")
+    "(y-scale this)
+     Returns y scale factor")
 
   (clip 
     [this q]
-    "Clip 'physical' point q to canvas bounds
+    "(clip this q)
+     Clip 'physical' point q to canvas bounds
      For point q [u v]  0 <= u < width  and 0 <= v < height
-     clip is an optional method, if not requiered it should 
+     clip is an optional method, if not required it should 
      ct as an identity and return q unchanged.")
 
   (units 
     [this]
-    "Returns vector of dimensional units
+    "(units this)
+     Returns vector of dimensional units
      nil indicates dimension less values")
 
   (distance 
-    [this p1 p2]
-    "Return distance between points p1 and p2")
+    [this pa pa]
+    "(distance pa pa)
+     Return distance between points pa and pa")
 
   (zoom!
     [this ratio]
-    "Zoom into view by fixed ratio")
+    "(zoom! this ratio)
+     Zoom into view by fixed ratio")
 
   (zoom-ratio 
     [this]
-    "Returns the zoom ratio")
+    "(zoom-ratio this)
+     Returns the zoom ratio")
 
   (to-string
     [this])
@@ -144,8 +163,8 @@
 
     (units [this] [nil nil])
 
-    (distance [this p1 p2]
-      (math/distance p1 p2))
+    (distance [this pa pa]
+      (math/distance pa pa))
 
     (zoom! [this _] (.view this))
 

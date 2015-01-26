@@ -1,5 +1,12 @@
 (ns sgwr.elements.group
-  (:use [cadejo.util.trace])
+  "Defines group elements
+   A group is an element (implements sgwr.elements.SgwrElement) which
+   holds other elements, possibly other groups. 
+
+   Each group may have it's own coordinate system which makes it
+   possible to overlay multiple coordinate systems onto a single
+   drawing. The only restriction is that all coordinates systems in a
+   drawing must match the canvas bounds of the drawing."
   (:require [sgwr.constants :as constants])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.utilities :as utilities])

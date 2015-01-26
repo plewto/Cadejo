@@ -1,4 +1,5 @@
 (ns sgwr.indicators.sixteen
+  "Defines displaybar cell as 16-elemets display"
   (:require [sgwr.indicators.cell])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])

@@ -1,5 +1,3 @@
-(println "--> sgwr.elements.element")
-
 (ns sgwr.elements.element
   "SgwrElement defines the basic interface for drawing elements.
   Each element is a node which automatically inherits properties and
@@ -20,7 +18,7 @@
   properties, attributes are inherited from parent to child. Changing
   the current attribute for a parent node causes it to send a message
   to all of it's children nodes. If the child nodes defines an
-  attribute by the same name the it switches to that attribute."
+  attribute by the same name it switches to that attribute."
 
   (:use [cadejo.util.trace])
   (:require [sgwr.constants :as constants])
@@ -59,7 +57,10 @@
      Returns keyword identification for element type")
 
   (widget-type
-    [this])
+    [this]
+    "(widget-type this)
+     Returns the element type if this happens to be a 'widget' 
+     Returns nil if this is not a widget")
     
   (parent
     [this]
@@ -185,14 +186,29 @@
      Return list of keywords for all defined attribute maps")
 
   (use-attributes!
-    [this id propegate]
-    [this id])
+    [this id propagate]
+    [this id]
+    "(use-attributes! this id propagate)
+     (use-attributes! this id)
+     Make the indicated attribute map as the current attributes.
+     When this is rendered the current attribute set is used. 
+     Ignore if this does not contain a matching attribute id.
+     If propagate is true call the use-attribute! method on all
+     children elements of this. propagate is true by default")
 
   (use-temp-attributes!
-    [this id])
+    [this id]
+    "(use-temp-attributes! this id)
+     Marks indicated attributes for temporary use. 
+     The current attributes are first pushed to a stack and then then new
+     attributes are swapped in. See restore-attributes!
+     This feature is mostly used to implement mouse rollover behavior")
 
   (restore-attributes!
-    [this])
+    [this]
+    "(restore-attributes! this)
+     Return to the attribute map in place before the most recent call to
+     use-temp-attributes!")
 
   (remove-attributes!
     [this id]
@@ -202,42 +218,68 @@
 
   (color! 
     [this id c]
-    [this c])
+    [this c]
+    "(color! this id c)
+     (color! this c)
+     See SgwrAttributes color! method")
   
   (style!
     [this id st]
-    [this st])
+    [this st]
+    "(style! this id st)
+     (style! this id)
+     See SgwrAttributes style! method")
   
   (width!
     [this id w]
-    [this w])
+    [this w]
+    "(width! this id st)
+     (width! this id)
+     See SgwrAttributes width! method")
   
   (size!
     [this id sz]
-    [this sz])
+    [this sz]
+    "(size! this id st)
+     (size! this id)
+     See SgwrAttributes size! method")
   
   (fill!
     [this id flag]
-    [this flag])
+    [this flag]
+    "(fill! this id st)
+     (fill! this id)
+     See SgwrAttributes fill! method")
   
   (hide!
     [this id flag]
-    [this flag])
+    [this flag]
+    "(hide! this id st)
+     (hide! this id)
+     See SgwrAttributes hide! method")
   
   (color
-    [this])
+    [this]
+    "Returns java.awt.Color of value of current attribute map.")
   
   (style 
     [this])
+
+  (hide 
+    [this]
+    "Returns hide flag of current attribute map.")
   
   (width
-    [this])
+    [this]
+    "Returns width value of current attribute map.")
 
   (size
-    [this])
+    [this]
+    "Returns size value of current attributes map.")
 
   (filled? 
-    [this])
+    [this]
+    "Returns fill flag of current attributes map")
 
   (hidden? 
     [this])
@@ -330,11 +372,18 @@
   ;; Transformations
   
   (translate!
-    [this offsets])
+    [this offsets]
+    "(translate! this offsets)
+     Translate this by given attributes. 
+     The exact effect is coordinate-system dependent.")
 
   (scale!
     [this factors ref-point]
-    [this factors])
+    [this factors]
+    "(scale! factors ref-point)
+     (scale! factors)
+     Scale this by scale factors 
+     If ref-point is specified it is not effected.")
 
   (to-string 
     [this verbosity depth])
@@ -353,6 +402,9 @@
                                       width nil
                                       fill nil
                                       hide nil}}]
+  "(set-attributes! obj id [:color :style :width :fill :hide])
+   Set values of given attribute map of object obj.
+   If attribute map matching id does not exist, create it."
   (.color! obj id color)
   (.style! obj id style)
   (.size! obj id size)
@@ -526,12 +578,6 @@
                (color! [this c]
                  (.color! attributes c))
                
-               ;; (style! [this id st]
-               ;;   (.style! attributes id st))
-               
-               ;; (style! [this st]
-               ;;   (.style! attributes st))
-
                (style! [this id sty]
                  (let [sfn (get fnmap :style-fn (constantly 0))]
                    (.style! attributes id (apply sfn (utilities/->vec sty)))))

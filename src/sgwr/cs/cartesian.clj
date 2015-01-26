@@ -56,7 +56,6 @@
                (let [[x y] p
                      u (int (+ @x-offset* (* @x-scale* x)))
                      v (int (+ @y-offset* (* @y-scale* y)))]
-                 ;(.clip this [u v])))
                  [u v]))
 
              (inv-map [this q]

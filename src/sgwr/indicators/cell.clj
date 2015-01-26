@@ -1,23 +1,30 @@
-(ns sgwr.indicators.cell)
+(ns sgwr.indicators.cell
+  "Defines displaybar Cell protocol")
 
 (defprotocol Cell
 
   (cell-width 
-    [this])
+    [this]
+    "(cell-width this)
+     Returns width of cell in pixels")
 
   (cell-height 
-    [this])
+    [this]
+    "(cell-height this)
+     Returns width of cell in pixels")
 
   (colors!
-    [this inactive active])
+    [this inactive active]
+    "(colors! this inactive active)
+     Sets color scheme.")
 
   (character-set
-    [this])
+    [this]
+    "(character-set this)
+     Returns vector of supported characters.")
 
   (display!
-    [this c]) )
-
-
- 
-    
-
+    [this c]
+    "(display! this c)
+     Set c as the display character.")
+  )

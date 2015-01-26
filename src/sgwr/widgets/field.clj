@@ -3,6 +3,7 @@
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.point :as point])
   (:require [sgwr.elements.rectangle :as rect])
+  (:require [sgwr.elements.mesh :as mesh])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities]))
 
@@ -167,4 +168,58 @@
     pnt))    
   
   
-                                
+;; mesh [spacing color style force-final]
+;;                                
+(defn field-mesh [drawing p0 p1 range-x range-y & {:keys [id
+                                                          drag-action move-action enter-action exit-action
+                                                          press-action release-action click-action
+                                                          pad-color 
+                                                          rim-color rim-style rim-width rim-radius
+                                                          mesh]
+                                                   :or {id nil
+                                                        drag-action nil
+                                                        move-action nil 
+                                                        enter-action nil
+                                                        exit-action nil
+                                                        press-action nil
+                                                        release-action nil
+                                                        click-action nil
+                                                        pad-color [0 0 0 0]
+                                                        rim-color :gray
+                                                        rim-style 0
+                                                        rim-width 1.0
+                                                        rim-radius 0
+                                                        mesh [[10 10] :gray 0 true]}}]
+  (let [root (.root drawing)
+        widgets (.widget-root drawing)
+        pad (let [p (rect/rectangle root p0 p1 :id :mesh-pad
+                                    :color pad-color
+                                    :fill true)]
+              (.put-property! p :corner-radius rim-radius)
+              p)
+        msh (let [[spacing color style force] mesh
+                  m (mesh/mesh root p0 p1 spacing 
+                               :color color
+                               :style style
+                               :width 1.0
+                               :forfce-final force)]
+              m)
+        fld (let [f (field widgets p0 p1 range-x range-y 
+                           :drag-action drag-action
+                           :move-action move-action
+                           :enter-action enter-action
+                           :exit-action exit-action
+                           :press-action press-action
+                           :release-action release-action
+                           :click-action click-action
+                           :pad-color [0 0 0 0]
+                           :rim-color rim-color
+                           :rim-style rim-style
+                           :rim-width rim-width
+                           :rim-radius rim-radius
+                           )]
+              f)]
+        fld))
+                                    
+                                    
+  

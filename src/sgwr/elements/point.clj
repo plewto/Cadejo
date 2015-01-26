@@ -1,9 +1,28 @@
 (ns sgwr.elements.point
-  "Sgwr points are the most basic drawing element. They are rendered
-  in any number of shapes depending on the attributes style.  Unlike
-  most other elements a point's size remains the same remains the same
-  with different degrees of drawing zoom."
-  (:use [cadejo.util.trace])
+  "Defines point drawing elements.
+   Despite being called 'points', point objects may take any number of shapes.
+   The key concept for point objects is that they have no
+   dimension. Their shape and size are not effected by the
+   coordinate-system view. 
+   attributes:
+       color -
+       style - additive list of components
+       width - ignored
+       size  - fixed size as some multiple of pixels
+       fill  - ignored 
+       hide  -
+
+       Point shapes are specified by adding together fundamental shapes
+
+           :pixel :dot :bar :dash :diag :diag2 :triangle 
+           :chevron-n :chevron-e :chevron-s :chevron-w 
+           :edge-n :edge-e :edge-s :edge-w :box 
+
+       in a vector, to define a 'cross' use [:bar :dash]
+       
+       The dot and box shapes may be filled by including :fill
+       Note that if :fill is used with any shape besides :dot 
+       and :box the point will not be rendered."
   (:require [sgwr.elements.element])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
@@ -15,7 +34,7 @@
            java.awt.geom.Ellipse2D
            java.awt.BasicStroke))
 
-(def ^:private size-quant 3)
+(def ^:private size-quant 2)
 (def ^:private half-quant (* 1/2 size-quant))
 
 (def ^:private point-styles {:default   0x020
@@ -89,10 +108,6 @@
         s2 (line (+ x half) y-base x (- y half))]
     (utilities/fuse base s1 s2)))
 
-
-;; ISSUE chevrons are not centered 
-;; ISSUE chevrons are not centered 
-;; ISSUE chevrons are not centered 
 (defn- chevron-e [x y size]
   (let [half (* size half-quant)
         whole (* size size-quant)
@@ -227,6 +242,14 @@
 (def locked-properties [])
 
 (defn point 
+  "(point parent p :id :color :style :size)
+   Create point object
+   parent - SgwrElement, the parent group
+   p      - vector, the position [x y]
+   :id    - keyword
+   :color - 
+   :style - vector of basic shapes
+   :size  - int."
   ([parent p & {:keys [id color style size]
                 :or {id :new-point
                      color (uc/color :white)
@@ -244,5 +267,3 @@
      (.size! obj :default size)
      (.use-attributes! obj :default)
      obj)))
-     
-  
