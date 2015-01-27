@@ -1,4 +1,5 @@
 (ns sgwr.widgets.radio
+   "Defines sets of mutually exclusive buttons"
   (:require [sgwr.elements.circle :as circle])
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.text :as text])
@@ -10,14 +11,23 @@
       (swap! counter* inc)
       (or id (keyword (format "radio-button-%d" n))))))
 
-
 (defn clear-radio-button-list! [rbl*]
+  "(clear-radio-button-list! rbl*)
+   Sets all buttons in button list as 'unselected'
+   
+   rbl* - atom holding list of radio-buttons
+   Returns nil"
   (doseq [b @rbl*]
     (.select! b false)
     (.use-attributes! b :default))
   nil)
 
 (defn select-radio-button! [rb]
+  "(select-radio-button! rb)
+   Set radio-button rb state to 'selected'
+   Extract radiobutton-list to which rb belongs from rb 
+   and set all other buttons in the list to unselected.
+   Returns rb"
   (let [rbl* (.get-property rb :radio-button-list*)]
     (clear-radio-button-list! rbl*)
     (.select! rb true)
@@ -46,15 +56,15 @@
          (.use-attributes! obj :selected))
        (xfn obj ev)))))
 
-(defn blank-radio-button [parent rbl* id & {:keys [drag-action move-action enter-action exit-action
-                                                   press-action release-action click-action]
-                                            :or {drag-action nil
-                                                 move-action nil
-                                                 enter-action nil
-                                                 exit-action nil
-                                                 press-action nil
-                                                 release-action nil
-                                                 click-action nil}}]
+(defn- blank-radio-button [parent rbl* id & {:keys [drag-action move-action enter-action exit-action
+                                                    press-action release-action click-action]
+                                             :or {drag-action nil
+                                                  move-action nil
+                                                  enter-action nil
+                                                  exit-action nil
+                                                  press-action nil
+                                                  release-action nil
+                                                  click-action nil}}]
   (let [grp (group/group parent :etype :radio-button :id id)
         dummy-action (fn [obj ev] nil)]
     (.put-property! grp :radio-button-list* rbl*)
@@ -92,6 +102,43 @@
                                                c1-radius 8
                                                c2-color [64 191 64]  ;; inner circle
                                                c2-radius 4}}]
+  "(radio-button parent p0 txt rbl* :id
+       :drag-action :move-action :enter-action :exit-action 
+       :press-action :release-action :click-action 
+       :text-color :text-style :text-size
+       :text-x-shift :text-y-shift :gap
+       :c1-color :c1-radius
+       :c2-color :c2-radius
+
+   parent - SgwrElement, parent group
+   p0     - vector [x y], position of button
+   txt    - String, button text
+   rbl*   - Atom holding button list, Only one button in list may be
+            selected at any given time.
+   :id    - keyword, if not specified a unique id will be generated.
+   
+    Actions
+
+      :drag-action, :move-action, :enter-action, :exit-action,
+      :press-action, :release-action, :click-action
+       
+       Function of form (fn [obj ev] ...) where obj is this widget
+       and ev is an instance of java.awt.event.MouseEvent 
+
+   :text-color - Color, keyword or vector, see swr.util.color
+   :text-style - keyword, Text font, default :mono
+   :text-size  - float, font size, default 8
+   :gap          - float, space between text and 'button', default 4
+   :text-x-shift - float, value added to text horizontal position, default 0
+   :text-y-shift - float, value added to text vertical position, default 0
+
+   :c1-color  - Color of outer circle
+   :c1-radius - Radius of outer circle, default 8
+   :c2-color  - Color of inner 'selected' circle
+   :c2-radius - Radius of inner 'selected' circle, default 4
+
+   Returns SgwrElement group holding radio-button components"
+     
   (let [grp (blank-radio-button parent rbl* (get-button-id id)
                                 :drag-action drag-action 
                                 :move-action move-action 

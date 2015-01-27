@@ -1,4 +1,10 @@
 (ns sgwr.widgets.field
+  "Defines 2-dimensional widget for controlling values on 2-axis 
+  simultaneously.
+
+  Each field is a rectangular area which contains any number of 
+  'balls'. Balls are used to display/alter specific values."
+  
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.point :as point])
@@ -16,6 +22,19 @@
 (defn- dummy-action [& _] nil)
 
 (defn set-ball-value! 
+  "(set-ball-value! fobj id val)
+   (set-ball-value! fobj id val render?)
+
+   Set the value of a specific ball
+
+   fobj - SgwrElement group which contains the field.
+   id   - keyword, the unique ball id to be altered
+   val  - vector [x y], the new value for ball id
+   render? - boolean if true render drawing after update,
+             default true
+
+   Returns either the indicated ball or nil."
+
   ([fobj id val]
    (set-ball-value! fobj id val :render))
   ([fobj id val render?]
@@ -95,6 +114,38 @@
                                                   rim-style 0
                                                   rim-width 1.0
                                                   rim-radius 0}}]
+  "(field parent p0 p1 range-x range-y 
+          :id :drag-action :move-action :enter-action :exit-action 
+          :press-action :release-action :click-action 
+          :pad-color 
+          :rim-color :rim-style :rim-width :rim-radius)
+
+   Creates field widget. The field is initially empty and does not 
+   contain control 'balls'. Use the ball function to add control elements
+   
+   parent  - SgwrElement, the parent group
+   p0      - vector [x0 y0], coordinates of bounding vertex
+   p1      - vector [x1 y1], coordinate of opposing vertex
+   range-x - vector [v1 v2], horizontal field value range
+   range-y - vector [u1 u2], vertical field value range
+   :id     - keyword, if not specified a unique id will be generated.
+
+   Actions 
+
+   :drag-action, :move-action, :enter-action, :exit-action,
+   :press-action, :release-action, :click-action
+       
+   Function of form (fn [obj ev] ...) where obj is this widget
+   and ev is an instance of java.awt.event.MouseEvent 
+
+   :pad-color - Color, keyword or vector, background color
+   :rim-color  - Outer rim color
+   :rim-style  - Rim dash pattern, default :solid
+   :rim-width  - Rim line width, default 1.0
+   :rim-radius - int, Rim/pad corner radius, default 12
+
+   Returns SgwrElement group containing field elements."
+           
   (let [grp (group/group parent 
                          :etype :field
                          :id (get-field-id id))
@@ -149,9 +200,28 @@
                                            selected-color selected-style]
                                     :or {color :white
                                          style [:dot]
-                                         size 2
+                                         size 3
                                          selected-color constants/default-rollover-color
                                          selected-style [:fill :dot]}}]
+  "(ball parent id init-value
+         :color :style :size
+         :selected-color :selected-style
+
+   Create control 'ball' object and add it to parent fie;d.
+
+   parent     - SgwrElement, a group holding field widget
+   id         - keyword, each ball within any given field must have a unique id.
+   init-value - vector [x y], the initial value/position of the ball.
+   
+  :color - Color, keyword or vector, see sgwr.util.color/color
+  :style - vector, point style, see sgwr.element.point, default [:dot]
+  :size  - float, point size, default 3
+
+  :selected-color - Color when ball is active, default to rollover color
+  :selected-style - Shape when ball is active, defaults to [:fill :dot]
+
+  Returns SgwrElement, the point element."
+
   (let [mapx (.get-property parent :fn-x-val->pos)
         mapy (.get-property parent :fn-y-val->pos)
         pnt (point/point parent [(mapx (first init-value))(mapy (second init-value))]
@@ -190,6 +260,35 @@
                                                         rim-width 1.0
                                                         rim-radius 0
                                                         mesh [[10 10] :gray 0 true]}}]
+  "(filed-mesh drawing p0 p1 range-x range-y 
+          :id :drag-action :move-action :enter-action :exit-action 
+          :press-action :release-action :click-action 
+          :pad-color 
+          :rim-color :rim-style :rim-width :rim-radius
+          :mesh)
+
+   Creates field widget with integrated mesh. See sgwr.elements.mesh
+      
+   Arguments are nearly identical to field function with the following
+   exceptions
+
+   The first argument should be a drawing instead of a group.
+   The field components are placed in the drawing's widget group.
+   The mesh elements are placed in the drawing's root group.
+
+   The :mesh argument is a vector with form 
+        
+       [[dx dy] color style force]  where
+
+       dx    - float, horizontal mesh line separation, default 10 
+       dy    - float, vertical mesh line separation, default 10
+       color - Color, see sgwr.util.color/color, default :gray
+       style - int or keyword, mesh line dash pattern, default :solid
+       force - boolean, if true force creation of final mesh lines, 
+              default true
+               
+   Returns the field group"
+
   (let [root (.root drawing)
         widgets (.widget-root drawing)
         pad (let [p (rect/rectangle root p0 p1 :id :mesh-pad
@@ -202,7 +301,7 @@
                                :color color
                                :style style
                                :width 1.0
-                               :forfce-final force)]
+                               :force-final force)]
               m)
         fld (let [f (field widgets p0 p1 range-x range-y 
                            :drag-action drag-action

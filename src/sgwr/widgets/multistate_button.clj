@@ -1,4 +1,8 @@
 (ns sgwr.widgets.multistate-button
+  
+  "Defines button widgets which may assume any number of states.
+   The button advances to the next state upon being clicked."
+
   (:require [sgwr.constants :as constants])  
   (:use [sgwr.elements.element :only [set-attributes!]])
   (:require [sgwr.elements.group :as group])
@@ -20,6 +24,21 @@
 (defn- third [col](nth col 2))
 
 (defn set-multistate-button-state! 
+  "(set-multistate-button-state! msb state-index)
+   (set-multistate-button-state! msb state-index render?)
+
+   Set multistate-button to to state indicated by state-index
+
+   msb         - SgwrElement group containing multistate-button
+   state-index - int, the new state, 0 <= index < max
+                 The number maximum index value may be determined
+                 by (count (.get-property msb :states))
+                 A warning message is displayed if index is out of range
+      
+   render?     - Boolean, if true render drawing containing, 
+                 default true
+
+   Returns button-index if index is valid, nil if index is out of range."
   ([msb state-index]
    (set-multistate-button-state! msb state-index true))
   ([msb state-index render]
@@ -32,27 +51,18 @@
          (.put-property! msb :current-state-index state-index)
          (.put-property! msb :current-state current)
          (.use-attributes! msb current)
-         (if render (.render (.get-property msb :drawing))))
+         (if render (.render (.get-property msb :drawing)))
+         state-index)
        (utilities/warning (format "Invalid state index %s for multistate-button %s"
                                   state-index (.get-property msb :id)))))))
 
-;; Returns pair [index keyword] indicating current state
-;;
-(defn current-multistate-button-stae [msb]
+(defn current-multistate-button-sate [msb]
+  "(current-multistate-button-state msb)
+   
+    Returns vector [index keyword] of the current button state"   
+
   [(.get-property msb :current-state-index)
    (.get-property msb :current-state)])
-
-(defn select-checkbox! [cb flag]
-  (if flag
-    (do 
-      (set-multistate-button-state! cb 1)
-      (.select! cb true))
-    (do 
-      (set-multistate-button-state! cb 0)
-      (.select! cb false))))
-
-(def select-toggle-button! select-checkbox!)
-
       
 (defn- compose-pressed-action 
   ([](compose-pressed-action (fn [& _])))
@@ -79,15 +89,15 @@
        (xfn obj ev)))))
 
 ;; states - an array of keywords - attribute names    
-(defn blank-multistate-button [parent state-keys id  & {:keys [drag-action move-action enter-action exit-action
-                                                               press-action release-action click-action]
-                                                        :or {drag-action nil
-                                                             move-action nil
-                                                             enter-action nil
-                                                             exit-action nil
-                                                             press-action nil
-                                                             release-action nil
-                                                             click-action nil}}]
+(defn- blank-multistate-button [parent state-keys id  & {:keys [drag-action move-action enter-action exit-action
+                                                                press-action release-action click-action]
+                                                         :or {drag-action nil
+                                                              move-action nil
+                                                              enter-action nil
+                                                              exit-action nil
+                                                              press-action nil
+                                                              release-action nil
+                                                              click-action nil}}]
   (let [grp (group/group parent :etype :multistate-button :id id)
         dummy-action (fn [obj ev] nil)]
     (.put-property! grp :states state-keys)
@@ -102,11 +112,6 @@
     (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
     grp))
 
-
-;; states - a nested array of form 
-;;          [[keyword-0 text-0 color-0][keyword-1 text-1 color-1] ... [keyword-n text-n color-n]]
-;;          color may be nil to inherit from text-color argument
-;;
 (defn text-multistate-button [parent p0 states & {:keys [id
                                                          drag-action move-action enter-action exit-action
                                                          press-action release-action click-action
@@ -135,6 +140,56 @@
                                                        rim-style 0
                                                        rim-width 1.0
                                                        rim-radius 12}}]
+  "(text-multistate-button parent p0 states :id
+      :drag-action :move-action :enter-action :exit-action 
+      :press-action :release-action :click-action 
+      :text-color :text-style :text-size
+      :text-x-shift :text-y-shift
+      :gap :w :H
+      :pad-color
+      :rim-color :rim-style :rim-width :rim-radius)
+
+   Create multistate-button with text content
+
+   parent - SgwrElement, the parent group
+   p0     - vector [x0 y0], the buttons position
+   states - nested vector, [[key-0 text-0 color-0][key-1 text-1 color-1]...[key-n text-n color-n]]
+            Defines the possible states the button may be in.  Where
+
+            key-i   - Unique keyword
+            text-i  - String
+            color-i - Color, keyword or vector, see sgwr.util.color
+
+   :id    - keyword, if not specified a unique id will be created
+
+    Actions
+
+      :drag-action, :move-action, :enter-action, :exit-action,
+      :press-action, :release-action, :click-action
+       
+       Function of form (fn [obj ev] ...) where obj is this widget
+       and ev is an instance of java.awt.event.MouseEvent 
+
+    :text-color - Color, keyword or vector
+    :text-style - Text font, default :mono
+    :text-size  - float, text font size, default 8
+    :text-x-shift - float, value added to horizontal text position, default 0 
+    :text-y-shift - float, value added to vertical text position, default 0
+    
+    :gap - float, amount of space between text and rim 
+    :w   - float, button width. If not specified the width is guessed using 
+           text-size and maximum character count
+    :h   - float, button height. If not specified the height is guessed 
+           using text-size.
+
+    :pad-color  - Color, keyword or vector
+    :rim-color  - Color, keyword or vector
+    :rim-style  - int or keyword, the rim line dash pattern, default :solid
+    :rim-width  - float, the rim line width, default 1.0
+    :rim-radius - int, rim/pad corner radius, default 12
+
+    Returns SgwrElement group"
+
   (let [grp (blank-multistate-button parent (map first states) (get-button-id "multistate-button" id)
                                      :drag-action drag-action 
                                      :move-action move-action 
@@ -222,6 +277,21 @@
                                                        rim-style 0
                                                        rim-width 2.0
                                                        rim-radius 12}}]
+  "(icon-multistate-button parent p0 states :id
+      :drag-action :move-action :enter-action :exit-action 
+      :press-action :release-action :click-action 
+      :icon-prefix
+      :gap :w :h 
+      :pad-color
+      :rim-color :rim-style :rim-width :rim-radius)
+
+   Creates multistate button using icons from resource directory
+
+   states - a nested vector of form
+
+            [[key-0 igroup-0 isub-0][key-1 igroup-1 isub-1]...[key-n igroup-n isub-n]]
+
+   :icon-prefix - keyword, either :black, :gray or :white"
   (let [grp (blank-multistate-button parent (map first states) (get-button-id "multistate-button" id)
                                      :drag-action drag-action 
                                      :move-action move-action 
@@ -265,6 +335,24 @@
     (.use-attributes! grp (first (first states)))
     grp)) 
 
+
+; ---------------------------------------------------------------------- 
+;                       Checkboxes and Toggle buttons
+
+
+(defn select-checkbox! [cb flag]
+  "(select-checkbox! cb flag)
+   Sets selection state of checkbox to flag"
+  (if flag
+    (do 
+      (set-multistate-button-state! cb 1)
+      (.select! cb true))
+    (do 
+      (set-multistate-button-state! cb 0)
+      (.select! cb false))))
+
+(def select-toggle-button! select-checkbox!)
+
 ;; selected-check & unselected-check arguments are vectors of form
 ;; [color [style..] size]
 ;;                      
@@ -295,6 +383,38 @@
                                        rim-radius 0
                                        selected-check [:white [:diag :diag2] 2]
                                        unselected-check [[0 0 0 0] [:pixel] 1]}}]
+  "(checkbox parent p0 txt :id
+      :drag-action :move-action :enter-action :exit-action 
+      :press-action :release-action :click-action 
+      :text-color :text-style :text-size
+      :text-x-shift :text-y-shift
+      :gap :pad-color
+      :rim-color :rim-style :rim-width :rim-radius)
+  
+   parent - SgwrElement, the parent group
+   p0     - vector [x0 y0], the buttons position
+   txt    - String, the text
+   :id    - keyword, if not specified a unique id will be generated
+   
+    Actions
+
+      :drag-action, :move-action, :enter-action, :exit-action,
+      :press-action, :release-action, :click-action
+       
+       Function of form (fn [obj ev] ...) where obj is this widget
+       and ev is an instance of java.awt.event.MouseEvent 
+
+    :text-color - Color, keyword or vector
+    :text-style - Text font, default :mono
+    :text-size  - float, text font size, default 8
+    :text-x-shift - float, value added to horizontal text position, default 0 
+    :text-y-shift - float, value added to vertical text position, default 0
+
+    :gap - float, amount of space between text and rim 
+    :rim-color  - Color, keyword or vector
+    :rim-style  - int or keyword, the rim line dash pattern, default :solid
+    :rim-width  - float, the rim line width, default 1.0
+    :rim-radius - int, rim/pad corner radius, default 12"
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
                                      (get-button-id "checkbox" id)
@@ -364,7 +484,7 @@
                                                 click-action nil
                                                 selected-text-color :white
                                                 unselected-text-color :white
-                                                text-stye 0
+                                                text-style 0
                                                 text-size 8
                                                 gap 4
                                                 text-x-shift 0
@@ -376,6 +496,13 @@
                                                 selected-rim [:green :solid 2.0]
                                                 unselected-rim [:gray :solid 1.0]
                                                 rim-radius 12}}]
+  "(text-toggle-button parent p0 text
+      :drag-action :move-action :enter-action :exit-action 
+      :press-action :release-action :click-action 
+      :text-color :text-style :text-size
+      :gap :text-x-shift :text-y-shift
+      :selected-pad-color :unselected-pad-color
+      :selected-rim-color :unselected-rim-color :rim-radius)"
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
                                      (get-button-id "toggle-button" id)

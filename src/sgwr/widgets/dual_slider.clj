@@ -1,4 +1,5 @@
 (ns sgwr.widgets.dual-slider
+  "Defines a slider with 2 heads, useful for setting value ranges"
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.line :as line])
@@ -15,6 +16,14 @@
       (or id (keyword (format "dual-slider-%d" n))))))
 
 (defn set-dual-slider-values! 
+  "(set-dual-slider-value! obj v1 v2 render?)
+   (set-dual-slider-value! obj v1 v2)
+
+   obj - SgwrElement, group containing dual-slider
+   v1  - float, minimum value 
+   v2  - float, maximum value
+   render?  - boolean if true render drawing containing slider, default true
+   Returns vector [v1 v2]"
   ([obj v1 v2](set-dual-slider-values! obj v1 v2 :render))
   ([obj v1 v2 render?]
    (let [vertical? (= (.get-property obj :orientation) :vertical)
@@ -60,6 +69,10 @@
      [val1 val2])))
 
 (defn get-dual-slider-values [obj]
+  "(get-dual-slider-value obj)
+   obj - SgwrElement, the group containing the slider
+   Returns current slider value as vector [v1 v2] where 
+   v1 <= v2"
   (.get-property obj :values))
 
 (defn- dummy-action [& _] nil)
@@ -196,11 +209,9 @@
     (efn obj ev)
     (.render (.get-property obj :drawing))))
 
-
-
 ;; track1 - fixed background
-;; track2 - from botom/left to current bottom/left handle position
-;; track3 - from top/right to current top/right handle position
+;; track2 - from bottom|left to current bottom|left handle position
+;; track3 - from top|right to current top|right handle position
 ;; track4 - track between two handles
 ;;
 (defn dual-slider [parent p0 length v0 v1 & {:keys [id orientation
@@ -254,6 +265,74 @@
                                                   current-handle-color :white
                                                   current-handle-style [:dot]
                                                   current-handle-size 2}}]
+  "(dual-slider parent p0 length v0 v1
+         :id :orientation
+         :drag-action :move-action :enter-action :exit-action 
+         :press-action :release-action :click-action 
+         :value-hook
+         :track1-color :track1-style :track1-width
+         :track2-color :track2-style :track2-width
+         :track3-color :track3-style :track3-width
+         :track4-color :track4-style :track4-width
+         :handle1-color :handle1-style :handle1-size 
+         :handle2-color :handle2-style :handle2-size 
+         :current-handle-color :current-handle-style :current-handle-size
+         :gap :pad-color
+         :rim-color :rim-style :rim-width :rim-radius)
+
+    Creates dual-slider 
+
+    parent  - SgwrElement, the parent group
+    p0      - vector [x y] bottom or left hand position of slider
+    length  - float, length of slider
+    v0      - float, minimum value
+    v1      - float, maximum value
+    :id     - keyword, if not specified id will be generated automatically    
+    :orientation - keyword, either :vertical or :horizontal, default :vertical
+    :value-hook  - function applied to value when slider is updated.
+                   (fn [v] ...) v - float, returns float, default identity
+    Tracks
+
+    There are four tracks, 
+    track1 is a static line background between v0 and v1
+    track2 is a dynamic line between v0 and the current low value
+    track3 is a dynamic line between current high value and v1
+    track4 is a dynamic line between current low and high values
+
+    :track(i)-color - Color, keyword, vector, see sgwr.util.color
+    :track(i)-style - int or keyword, line dash pattern, default :solid
+    :track(i)-width - float, line width, default 1.0
+
+    Handles
+
+    There are two handle which set|display current low and high values.
+    The handles are implemented by point elements.
+
+    :handle(i)-color - Color, keyword or vector
+    :handle(i)-style - vector, sets handle shape, see sgwr.elements.point
+    :handle(i)-size  - float, handle point size
+
+   :current-handle-color -   Sets color, style and size
+   :current-handle-style -   of active handle
+   :current-handle-size  - 
+
+   :gap       - float, space between track and outer rim
+   :pad-color - Color, keyword or vector, background color
+   :rim-color  - Outer rim color
+   :rim-style  - Rim dash pattern, default :solid
+   :rim-width  - Rim line width, default 1.0
+   :rim-radius - int, Rim|pad corner radius, default 12
+
+   Actions
+
+   :drag-action, :move-action, :enter-action, :exit-action,
+   :press-action, :release-action, :click-action
+       
+   Function of form (fn [obj ev] ...) where obj is this widget
+   and ev is an instance of java.awt.event.MouseEvent 
+
+   Returns SgwrElement group"
+
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 
@@ -368,6 +447,7 @@
     (.use-attributes! grp :default)
     grp))
 
+
 (defn dual-slider-rule [drawing p0 length v0 v1 & {:keys [id orientation
                                                           drag-action move-action enter-action exit-action
                                                           press-action release-action click-action
@@ -411,6 +491,46 @@
                                                       current-handle-size 2
                                                       major [50 8 :gray 0]
                                                       minor [10 6 [128 32 32] 0]}}]
+  "(dual-slider-rule  drawing p0 length
+         :id :orientation
+         :drag-action :move-action :enter-action :exit-action 
+         :press-action :release-action :click-action 
+         :value-hook
+         :track1-color :track1-style :track1-width
+         :track2-color :track2-style :track2-width
+         :track3-color :track3-style :track3-width
+         :track4-color :track4-style :track4-width
+         :handle1-color :handle1-style :handle1-size 
+         :handle2-color :handle2-style :handle2-size 
+         :current-handle-color :current-handle-style :current-handle-size
+         :gap :pad-color
+         :rim-color :rim-style :rim-width :rim-radius
+         :major :minor)
+
+  Creates dual slider with integrated ruler
+  See sgwr.elements.rule
+
+  Arguments are nearly identical to dual-slider with following exceptions
+
+  The first argument should be a drawing instead of a group. 
+  The slider components are placed in the drawing widget group, the ruler 
+  components in the drawing's root group.
+
+  Tick marks
+
+  The two additional optional arguments :minor and :major control the ruler 
+  tick marks. Both take a vector of the form 
+
+      [step length color offset]  where
+
+  step   - number, tick mark spacing,
+  length - number, length of tick mark
+  color  - Color, keyword or vector
+  offset - number, a value add to the ticks to shift them from the track 
+           center. 
+
+  Returns SgwrElement group holding slider components."
+
   (let [root (.root drawing)
         widgets (.widget-root drawing)
         rule (let [[c sty w] track1

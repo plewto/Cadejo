@@ -16,6 +16,18 @@
 (defn- dummy-action [& _] nil)
 
 (defn set-slider-value! 
+  "(set-slider-value! obj v)
+   (set-slider-value! obj v render?)
+
+    Sets value of slider
+
+    obj     - SgwrElement group containing slider
+    v       - float, the new slider value
+    render? - boolean, if true render drawing containing the slider, 
+              default true
+
+    Returns actual value slider was set to which may be different 
+    from v argument."
   ([obj v](set-slider-value! obj v :render))
   ([obj v render?]
    (let [vertical? (= (.get-property obj :orientation) :vertical)
@@ -44,6 +56,8 @@
       (.get-property obj :value))))
 
 (defn get-slider-value [obj]
+  "(get-slider-value obj)
+   Returns value of slider"
   (.get-property obj :value))
 
 (defn- compose-drag-action [dfn]
@@ -141,7 +155,59 @@
                                              rim-radius 12
                                              handle-color :white
                                              handle-style [:fill :dot]
-                                             handle-size 2}}]
+                                             handle-size 3}}]
+  "(slider parent p0 length v0 v1 
+       :id :orientation
+       :drag-action :move-action :enter-action :exit-action
+       :press-action :release-action :click-action
+       :value-hook
+       :track1-color :track1-style :track1-width
+       :track2-color :track2-style :track2-width
+       :track3-color :track3-style :track3-width
+       :gap :pad-color
+       :rim-color :rim-style :rim-width :rim-radius
+       :handle-color :handle-style :handle-size)
+
+    parent  - SgwrElement, the parent group
+    p0      - vector [x y] bottom or left hand position of slider
+    length  - float, length of slider
+    v0      - float, minimum value
+    v1      - float, maximum value
+    :id     - keyword, if not specified id will be generated automatically    
+    :orientation - keyword, either :vertical or :horizontal, default :vertical
+    :value-hook  - function applied to value when slider is updated.
+                   (fn [v] ...) v - float, returns float, default identity
+   Actions
+
+      :drag-action, :move-action, :enter-action, :exit-action,
+      :press-action, :release-action, :click-action
+       
+       Function of form (fn [obj ev] ...) where obj is this widget
+       and ev is an instance of java.awt.event.MouseEvent 
+
+   Tracks
+
+    There are three tracks, 
+    track1 is a static line background between v0 and v1
+    track2 is a dynamic line between v0 and the current low value
+    track3 is a dynamic line between current high value and v1
+
+    :track(i)-color - Color, keyword, vector, see sgwr.util.color
+    :track(i)-style - int or keyword, line dash pattern, default :solid
+    :track(i)-width - float, line width, default 1.0
+
+   :gap       - float, space between track and outer rim
+   :pad-color - Color, keyword or vector, background color
+   :rim-color  - Outer rim color
+   :rim-style  - Rim dash pattern, default :solid
+   :rim-width  - Rim line width, default 1.0
+   :rim-radius - int, Rim|pad corner radius, default 12
+
+   :handle-color - Color, keyword or vector
+   :handle-style - vector, sets handle shape, see sgwr.elements.point
+   :handle-size  - float, handle point size
+
+   Returns SgwrElement group containing slider components"
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 
@@ -225,14 +291,6 @@
     (.use-attributes! grp :default)
     grp))
 
-
-;; major minor ticks 
-;;    [steps length color offset]
-;;        steps nil -> do not render
-;;
-;; tracki
-;;    [color style width]
-;;
 (defn slider-rule [drawing p0 length v0 v1 & {:keys [id orientation
                                                      drag-action move-action enter-action exit-action
                                                      press-action release-action click-action
@@ -267,6 +325,34 @@
                                                    handle-color :white
                                                    handle-style [:dot :fill]
                                                    handle-size 3}}]
+  "(slider-rule drawing p0 length 
+       :id :orientation
+       :drag-action :move-action :enter-action :exit-action
+       :press-action :release-action :click-action
+       :value-hook
+       :track1-color :track1-style :track1-width
+       :track2-color :track2-style :track2-width
+       :track3-color :track3-style :track3-width
+       :gap :pad-color
+       :rim-color :rim-style :rim-width :rim-radius
+       :handle-color :handle-style :handle-size
+       :major :minor)
+
+   Creates slider with integrated ruler, see sgwr.elements.rule
+
+   Arguments are identical to slider with exception that the first argument 
+   should be a drawing The slider components are placed into the drawing's
+   widget group while the ruler components are placed in the drawing's root 
+   group.
+
+   The two optional arguments :minor and :major define ruler tick marks
+   and have the vector form [steps length color offset] where
+       steps  - float, interval between tick marks
+       length - float, length of tick marks
+       color  - Color, keyword or vector, 
+       offset - float, value added to tick mark position to shift them 
+                away from the center.
+   Returns SgwrElement group holding slider components."
   (let [root (.root drawing)
         widgets (.widget-root drawing)
         rule (let [[c sty w] track1

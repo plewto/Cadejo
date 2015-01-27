@@ -16,7 +16,7 @@
       (or id (keyword (format "%s-%d" prefix n))))))
 
 
-(defn blank-button [parent id & {:keys [drag-action move-action enter-action exit-action
+(defn- blank-button [parent id & {:keys [drag-action move-action enter-action exit-action
                                         press-action release-action click-action]
                                  :or {drag-action nil
                                       move-action nil
@@ -25,6 +25,7 @@
                                       press-action nil
                                       release-action nil
                                       click-action nil}}]
+  "(blank-button parent id :drag-action :move-action :enter-action :exit-action :press-action :release-action :click-action)"
   (let [grp (group/group parent :etype :button :id id)
         dummy-action (fn [obj ev] nil)]
     (.put-property! grp :action-mouse-dragged  (or drag-action dummy-action))
@@ -58,6 +59,38 @@
                                                             rim-style 0
                                                             rim-width 2.0
                                                             rim-radius 12}}]
+  "(icon-button parent p0 prefix group subgroup
+         :id :drag-action :move-action :enter-action :exit-action 
+         :press-action :release-action :click-action
+         :gap :w :h :pad-color :rim-color :rim-style :rim-width :rim-radius)
+
+   Creates button with icon from resource directory.
+
+   parent     - SgwrElement, the parent group
+   p0         - vector [x0 y0] position of button
+   prefix     - keyword, icon name prefix, one of :black :gray or :white
+   group      - keyword, icon name main-group, :general :wave, :filter etc...
+   subgroup   - keyword, icon specific icon, :skin, :open, :save etc...
+   :id        - keyword, button id, if not specified an id is automatically generated
+   :gap       - number, space around icon, default 4
+   :w         - number, button width default 44
+   :h         - number, button height default 44
+   :pad-color - Color, keyword, vector, see sgwr.util.color/color
+   :rim-color - Color, keyword, vector, see sgwr.util.color/color
+   :rim-style - int, keyword, rim line style, default :solid
+   :rim-width - float, rim line width, default 1.0
+   :rim-radius - int, rim/pad corner radius, default 12
+
+    Actions
+
+       :drag-action, :move-action, :enter-action, :exit-action, 
+       :press-action, :release-action, :click-action     
+
+       Function of form (fn [obj ev] ...) where obj is this widget
+       and ev is an instance of java.awt.event.MouseEvent 
+
+   Returns SgwrElement group"   
+   
   (let [grp (blank-button parent (or id (keyword (format "%s-%s" (name group) (name subgroup))))
                           :drag-action drag-action 
                           :move-action move-action 
@@ -112,6 +145,16 @@
                                                           rim-style 0
                                                           rim-width 1.0
                                                           rim-radius 12}}]
+  "(mini-icon-button parent p0 prefix subgroup 
+         :id :drag-action :move-action :enter-action :exit-action 
+         :press-action :release-action :click-action
+         :gap :w :h :pad-color :rim-color :rim-style :rim-width :rim-radius)
+ 
+   Convenience function for creating 'mini' icons. Same as calling 
+   (icon-button parent p0 prefix :mini subgroup :w 24 :h 24)
+
+   Returns SgwrElement group"
+                                        
   (icon-button parent p0 prefix :mini subgroup
                :id id
                :drag-action drag-action 
@@ -148,7 +191,7 @@
                                          release-action nil
                                          click-action nil
                                          text-color :white
-                                         text-stye 0
+                                         text-style 0
                                          text-size 8
                                          gap 4
                                          text-x-shift 0
@@ -160,6 +203,48 @@
                                          rim-style 0
                                          rim-width 2.0
                                          rim-radius 12}}]
+  "(text-button parent p0 txt 
+         :id :drag-action :move-action :enter-action :exit-action
+         :press-action :release-action :click-action
+         :text-color :text-style :text-size 
+         :text-x-shift :text-y-shift :gap :w :h
+         :pad-color :rim-color :rim-style :rim-width :rim-radius)
+
+    Creates text button
+
+    parent - SgwrElement, the parent group
+    p0     - vector [x0 y0], position of button
+    txt    - String, the text
+
+    :text-color   - Color, keyword or vector, see sgwr.util.color/color
+    :text-style   - int or keyword, sets font, default :mono
+    :text-size    - float, sets text size, default 8
+    :text-x-shift - float, value added to text x coordinate, default 0
+    :text-y-shift - float, value added to text y coordinate, default 0
+    
+    :gap - float, space around text, default 4
+    :w   - float, button width. Unless specified button width is 
+           guessed using font size and character count, default nil
+    :h   - float, button height. Unless specified button height
+           is guessed using font size, default nil
+
+    :pad-color  - Color, keyword or vector
+    :rim-color  - Color, keyword or vector
+    :rim-style  - int or keyword, the rim line dash pattern, default :solid
+    :rim-width  - float, the rim line width, default 1.0
+    :rim-radius - int, rim/pad corner radius, default 12
+
+    Actions
+
+      :drag-action, :move-action, :enter-action, :exit-action,
+      :press-action, :release-action, :click-action
+       
+       Function of form (fn [obj ev] ...) where obj is this widget
+       and ev is an instance of java.awt.event.MouseEvent 
+
+   Returns SgwrElement group"    
+
+
   (let [grp (blank-button parent (get-button-id "text-button" id)
                           :drag-action drag-action 
                           :move-action move-action 
@@ -202,9 +287,3 @@
     (.put-property! grp :text-element txobj)
     (.use-attributes! grp :default)
     grp))
-                         
-                            
-        
-        
-        
-
