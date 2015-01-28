@@ -86,7 +86,8 @@
      Replace all drawing elements with a single BufferedImage 
      By default the widgets group is not included.
      render is implicitly called.
-     Returns java.awt.image.BufferedImage")
+     Returns java.awt.image.BufferedImage
+     SEE BUG 0009")
 
   (image
     [this]

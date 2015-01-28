@@ -81,4 +81,21 @@ Fixed, cast band-range to int.
 # ---------------------------------------------------------- BUG 0008 OPEN
 BUG 0008 2015.01.20 STATUS OPEN
 NullPointerException when clicking around on a sgwr slider
-The error is occuring in relationship to the mouse-released event.
+Not sure of the exact conditions this error occurs, possibly it is related 
+to the mouse-released event.
+
+# ---------------------------------------------------------- BUG 0009 OPEN
+BUG 0009 2015.01.27 STATUS OPEN
+After a sgwr drawing has been flattened widgets are not being repainted 
+correctly. 
+
+A) Radio button once selected continue to display as selected even
+   after they have been deselected. 
+
+B) Multistate buttons act similar to radio buttons
+   The previous state is not cleared when the state changes causing 
+   the images to stack  on top of one another
+
+C) slider tracks leave "trails"
+
+D) Roolover color is not being cleared
