@@ -340,18 +340,24 @@
 ;                       Checkboxes and Toggle buttons
 
 
-(defn select-checkbox! [cb flag]
-  "(select-checkbox! cb flag)
-   Sets selection state of checkbox to flag"
-  (if flag
-    (do 
-      (set-multistate-button-state! cb 1)
-      (.select! cb true))
-    (do 
-      (set-multistate-button-state! cb 0)
-      (.select! cb false))))
-
-(def select-toggle-button! select-checkbox!)
+(defn select-checkbox! 
+  "(select-checkbox! cb flag render?)
+   (select-checkbox! cb flag)
+   Sets selection state of checkbox to flag
+   If render? true render drawing containing button
+   render? is true by default"
+  ([cb flag]
+   (select-checkbox! cb flag :render))
+  ([cb flag render?]
+   (if flag
+     (do 
+       (set-multistate-button-state! cb 1 render?)
+       (.select! cb true))
+     (do 
+       (set-multistate-button-state! cb 0 render?)
+       (.select! cb false)))))
+  
+  (def select-toggle-button! select-checkbox!)
 
 ;; selected-check & unselected-check arguments are vectors of form
 ;; [color [style..] size]
@@ -381,7 +387,7 @@
                                        rim-style 0
                                        rim-size 12 ;; in pixels
                                        rim-radius 0
-                                       selected-check [:white [:diag :diag2] 2]
+                                       selected-check [:white [:diag :diag2] 4]
                                        unselected-check [[0 0 0 0] [:pixel] 1]}}]
   "(checkbox parent p0 txt :id
       :drag-action :move-action :enter-action :exit-action 
