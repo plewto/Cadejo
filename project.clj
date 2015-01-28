@@ -11,7 +11,3 @@
  ;:main cadejo.core
  :main sgwr.demos.demo1
   )
-
-
-
-

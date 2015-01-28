@@ -17,7 +17,6 @@
   (:require [sgwr.demos.demo2])
   (:require [sgwr.demos.demo3])
   (:require [sgwr.demos.demo4])
-  (:require [sgwr.demos.demo5])
   (:require [seesaw.core :as ss]))
 
 
@@ -94,14 +93,18 @@
   (let [y0 (+ y 10)
         y1 (+ y0 64 )
         y2 (+ y0 15)
-        y3 (+ y2 64 )]
-    (rect/rectangle root [ 20 y1][125 y0] :fill true :color :red)
-    (rect/rectangle root [145 y1][270 y0] :fill true :color (uc/gradient [145 y1] :green [160 (+ y1 10)] :yellow cs true))
-    (rect/rectangle root [290 y1][415 y0] :fill true :color :blue)
-    (rect/rectangle root [435 y1][560 y0] :fill true :color (uc/gradient [435 y1] :red [560 y0] :blue cs false)) 
-    (rect/rectangle root [ 83 y2][187 y3] :fill true :color [255 255   0 128])
-    (rect/rectangle root [228 y2][332 y3] :fill true :color [255   0 255 128])
-    (rect/rectangle root [373 y2][477 y3] :fill true :color [  0 255 255 128])))
+        y3 (+ y2 64 )
+        r1 (rect/rectangle root [ 20 y1][125 y0] :fill true :color :red)
+        r2 (rect/rectangle root [145 y1][270 y0] :fill true :color :gray) ;(uc/gradient [145 y1] :green [160 (+ y1 10)] :yellow cs true))
+        r3 (rect/rectangle root [290 y1][415 y0] :fill true :color :blue)
+        r4 (rect/rectangle root [435 y1][560 y0] :fill true :color :gray) ;(uc/gradient [435 y1] :red [560 y0] :blue cs false)) 
+        r5 (rect/rectangle root [ 83 y2][187 y3] :fill true :color [255 255   0 128])
+        r6 (rect/rectangle root [228 y2][332 y3] :fill true :color [255   0 255 128])
+        r7 (rect/rectangle root [373 y2][477 y3] :fill true :color [  0 255 255 128])]
+    (uc/set-gradient! r2 :green :yellow :stretch 0.1 :cyclic true :direction :diagonal)
+    (uc/set-gradient! r4 :blue :red :direction :diagonal)
+    (.use-attributes! r2 :default)
+    (.use-attributes! r4 :default)))
   
 ;; Nested groups
 (let [y 490
