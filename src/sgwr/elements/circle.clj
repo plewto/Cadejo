@@ -12,6 +12,7 @@
      hide  -"
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
+  (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.util.stroke :as ustroke])
   (:require [sgwr.elements.element])
   (:require [sgwr.elements.line])
@@ -114,10 +115,11 @@
     (.use-attributes! obj :default)
     obj))
 
-(defn circle-r [parent pc radius & args]
-  "(circle-r parent pc radius [args....])
-   Defines circle by center point pc and radius
-   All optional arguments identical to circle."
+
+;; Helper function called by circle-r
+;; Define circle by center point and radius 
+;; for cartesain like coordinate systems
+(defn- rectangle-circle-r [parent pc radius args]
   (let [[xc yc] pc
         x0 (- xc radius)
         y0 (- yc radius)
@@ -126,20 +128,57 @@
         arglst* (atom [parent [x0 y0][x1 y1]])]
     (doseq [a args]
       (swap! arglst* (fn [q](conj q a))))
-    (let [obj (apply circle @arglst*)]
-      (.put-property! obj :defined-by :center-plus-radius)
-      obj)))
+    (apply circle @arglst*)))
 
-(defn circle-2p [parent p0 p1 & args]
-  "(circle-2p parent p0 p1 [args....])
-   Defines circle by opposing points on locus p0 and p1
-   Optional arguments identical to circle"
-  (let [pc (math/midpoint p0 p1)
-        r (math/distance p0 pc)
-        arglst* (atom [parent pc r])]
+
+;; Helper function called by curcle-r
+;; Define circle by center point and radius
+;; for polar coordinate systems
+(defn- polar-circle-r [parent radius args]
+  (let [[xc yc] [0 0]
+        [a45 a225](let [cs (.coordinate-system parent)
+                        au (second (.units cs))
+                        amap (cond (= au :rad) math/deg->rad
+                                   (= au :turn) math/deg->turn
+                                   (= au :deg) identity
+                                   :default
+                                   (do 
+                                     (utilities/warning (str "Unknown angular unit " au))
+                                     identity))]
+                    [(amap 45)(amap 225)])
+        rsqr (math/sqr radius)
+        hyp (math/sqrt (+ rsqr rsqr))
+        p0 [hyp a225]
+        p1 [hyp a45]
+        arglst* (atom [parent p0 p1])]
     (doseq [a args]
       (swap! arglst* (fn [q](conj q a))))
-    (let [obj (apply circle-r @arglst*)]
-      (.put-property! obj :defined-by :oposing-points)
-      (.put-property! obj :construction-points [p0 p1])
-      obj)))
+    (apply circle @arglst*)))
+
+
+(defn circle-r [parent pc radius & args]
+ "(circle-r parent pc radius [args....])
+   Defines circle by center point pc and radius
+   All optional arguments identical to circle."
+  (let [cs (.coordinate-system parent)
+        cs-type (.cs-type cs)]
+    (cond (= cs-type :polar)
+          (polar-circle-r parent radius args)
+          :default
+          (rectangle-circle-r parent pc radius args))))
+    
+
+
+;; (defn circle-2p [parent p0 p1 & args]
+;;   "(circle-2p parent p0 p1 [args....])
+;;    Defines circle by opposing points on locus p0 and p1
+;;    Optional arguments identical to circle"
+;;   (let [pc (math/midpoint p0 p1)
+;;         r (math/distance p0 pc)
+;;         arglst* (atom [parent pc r])]
+;;     (doseq [a args]
+;;       (swap! arglst* (fn [q](conj q a))))
+;;     (let [obj (apply circle-r @arglst*)]
+;;       (.put-property! obj :defined-by :oposing-points)
+;;       (.put-property! obj :construction-points [p0 p1])
+;;       obj)))
