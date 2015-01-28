@@ -12,8 +12,10 @@
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.config :as config])
   (:require [seesaw.core :as ss])
-  (:require [sgwr.drawing])
+  (:require [sgwr.elements.drawing])
+  (:require [sgwr.elements.point])
   (:require [sgwr.indicators.displaybar])
+  (:require [sgwr.widgets.button :as sb])
   (:require [clojure.string])
   (:import javax.swing.Box))
 
@@ -39,49 +41,64 @@
 (defn program-bar [performance]
   (let [prognum* (atom 0)
         bank (.bank performance)
-        ;; jb-init (factory/button "Init" :general :reset "Initialize program")
-        ;; jb-dice (factory/button "Random" :general :dice "Generate random program")
-        jb-inc (factory/icon-button :mini :up1 "Increment program number")
-        jb-dec (factory/icon-button :mini :down1 "Decrement program number")
-        jb-inc-page (factory/icon-button :mini :up2 "Increment program number page")
-        jb-dec-page (factory/icon-button :mini :down2 "Decrement program number page")
-        jb-store (factory/button "Store" :general :bankstore "Store current program")
         [bg inactive active alt](config/displaybar-colors)
-        drawing (let [drw (sgwr.drawing/native-drawing 570 65)]
-                  (.paper! drw bg)
-                  (.color! drw inactive)
-                  (.style! drw 8)
+        drawing (let [drw (sgwr.elements.drawing/native-drawing 611 65)]
+                  (.background! drw bg)
                   drw)
-        modified-marker (.point! drawing [140 16])
-        dbar-name (sgwr.indicators.displaybar/displaybar drawing name-length :matrix 150 8)
-        dbar-prognum (sgwr.indicators.displaybar/displaybar drawing 3 :matrix 8 8)
+        root (.root drawing)
+        widget-root (.widget-root drawing)
+        modified-marker (let [pnt (sgwr.elements.point/point root [234 16] 
+                                                             :color inactive
+                                                             :style [:bar :dash :diag :diag2]
+                                                             :size 3)]
+                          (.color! pnt :dirty active)
+                          (.color! pnt :clean inactive)
+                          (.use-attributes! pnt :clean)
+                          pnt)
 
-        pan-buttons (ss/grid-panel :rows 2 :columns 2
-                                   :items [jb-inc jb-inc-page 
-                                           jb-dec jb-dec-page])
-        pan-west (ss/horizontal-panel :items [;; jb-init jb-dice 
-                                              ;; (Box/createHorizontalStrut 16)
-                                              pan-buttons jb-store]
-                                      :border (factory/padding))
-
-        pan-center (ss/horizontal-panel :items [(.drawing-canvas drawing)]
+        dbar-prognum (sgwr.indicators.displaybar/displaybar root 6 16 3 :matrix)
+        dbar-name (sgwr.indicators.displaybar/displaybar root 250 16 name-length :matrix)
+       
+        pan-center (ss/horizontal-panel :items [(.canvas drawing)]
                                         :border (factory/padding))
-   
-        pan-main (ss/border-panel :west pan-west
-                                  :center pan-center)
-        display-prognum (fn []
-                          (.display! dbar-prognum (format "%03d" @prognum*)))
-        
+        pan-main (ss/border-panel :center pan-center)
+        display-prognum (fn [render?]
+                          (.display! dbar-prognum (format "%03d" @prognum*) render?))
+
         inc-prognum (fn [n]
                       (swap! prognum* (fn [p](min (+ p n) 127)))
-                      (display-prognum))
+                      (display-prognum :render))
         
         dec-prognum (fn [n]
                       (swap! prognum* (fn [p](max (- p n) 0)))
-                      (display-prognum))
+                      (display-prognum :render))
+
+        store-program (fn [& _]
+                        (let [bank-ed (.editor bank)
+                              prog (.current-program bank)
+                              slot @prognum*]
+                          (.push-undo-state! bank-ed
+                                             (format "Store program %s" slot))
+                          (.store! bank slot (.clone prog))
+                          (.sync-ui! bank-ed)
+                          (.status! (.get-editor performance)
+                                    (format "Stored program %s" slot))))
+
+        sb-prefix :gray
+        sb-inc (sb/mini-icon-button widget-root [107 4] sb-prefix :up1 
+                                    :click-action (fn [& _](inc-prognum 1)))
+        sb-dec (sb/mini-icon-button widget-root [107 34] sb-prefix :down1
+                                    :click-action (fn [& _](dec-prognum 1)))
+        sb-inc-page (sb/mini-icon-button widget-root [137 4] sb-prefix :up2
+                                         :click-action (fn [& _](inc-prognum 8)))
+        sb-dec-page (sb/mini-icon-button widget-root [137 34] sb-prefix :down2
+                                         :click-action (fn [& _](dec-prognum 8)))
+        sb-store (sb/icon-button widget-root [170 10] sb-prefix :general :bankstore
+                                 :click-action store-program)
+        
 
         cpb (reify ProgramBar
-              
+
               (widgets [this]
                 {:pan-main pan-main})
 
@@ -95,48 +112,42 @@
                       pname (clojure.string/upper-case (or (and prog (.program-name prog)) "---"))
                       name-limit (min name-length (count pname))]
                   (reset! prognum* (or (.current-slot bank) 0))
-                  (.color! (.attributes modified-marker)
-                           (if modified active inactive))
-                  (display-prognum)
-                  (.display! dbar-name (subs pname 0 name-limit))
-                  (.pad! dbar-name))))
+                  (display-prognum false)
+                  (.display! dbar-name (subs pname 0 name-limit) false)
+                  (.render drawing))))
 
         update-thread (proxy [Thread][]
                              (run []
                                (while true
                                  (let [modified (.modified? bank)
-                                       att (.attributes modified-marker)
-                                       new-color (cutil/color (if modified active inactive))
-                                       old-color (cutil/color (.color att))]
-                                   (if (not (= old-color new-color))
-                                     (do 
-                                       (.color! att new-color)
-                                       (.render drawing)))
-                                 (Thread/sleep update-period))))) ]
-
-    (ss/listen jb-inc :action (fn [_](inc-prognum 1)))
-    (ss/listen jb-inc-page :action (fn [_](inc-prognum 8)))
-    (ss/listen jb-dec :action (fn [_](dec-prognum 1)))
-    (ss/listen jb-dec-page :action (fn [_](dec-prognum 8)))
-    (ss/listen jb-store :action
-               (fn [_]
-                 (let [bank-ed (.editor bank)
-                       prog (.current-program bank)
-                       slot @prognum*]
-                   (.push-undo-state! bank-ed
-                                      (format "Store program %s" slot))
-                   (.store! bank slot (.clone prog))
-                   (.sync-ui! bank-ed)
-                   (.status! (.get-editor performance) (format "Stored program %s" slot)))))
-    ;; (ss/listen jb-init :action (fn [_]
-    ;;                              (.init-program (.get-editor performance))))
-    ;; (ss/listen jb-dice :action (fn [_]
-    ;;                              (.random-program (.get-editor performance))))
+                                       current-color (.color modified-marker)]
+                                   (if modified
+                                     (.use-attributes! modified-marker :dirty)
+                                     (.use-attributes! modified-marker :clean))
+                                   (if (not (= (.color modified-marker) current-color))
+                                     (.render drawing))
+                                   (Thread/sleep update-period)))))
+        ]
+ 
+    ;; (ss/listen jb-inc :action (fn [_](inc-prognum 1)))
+    ;; (ss/listen jb-inc-page :action (fn [_](inc-prognum 8)))
+    ;; (ss/listen jb-dec :action (fn [_](dec-prognum 1)))
+    ;; (ss/listen jb-dec-page :action (fn [_](dec-prognum 8)))
+    ;; (ss/listen jb-store :action
+    ;;            (fn [_]
+    ;;              (let [bank-ed (.editor bank)
+    ;;                    prog (.current-program bank)
+    ;;                    slot @prognum*]
+    ;;                (.push-undo-state! bank-ed
+    ;;                                   (format "Store program %s" slot))
+    ;;                (.store! bank slot (.clone prog))
+    ;;                (.sync-ui! bank-ed)
+    ;;                (.status! (.get-editor performance) (format "Stored program %s" slot)))))
     (let [[bg inactive active alt](config/displaybar-colors)]
-      (.colors! dbar-name bg inactive active)
-      (.colors! dbar-prognum bg inactive active))
-    (.setName update-thread "ProgramBar-update")
-    (.setPriority update-thread 1)
-    (.setDaemon update-thread true)
-    (.start update-thread)
-    cpb))
+      (.colors! dbar-name inactive active)
+      (.colors! dbar-prognum inactive active)
+      (.setName update-thread "ProgramBar-update")
+      (.setPriority update-thread 1)
+      (.setDaemon update-thread true)
+      (.start update-thread)
+      cpb)))
