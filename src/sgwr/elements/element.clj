@@ -395,23 +395,7 @@
 )
 
 
-(defn set-attributes! [obj id & {:keys [color style size width fill hide]
-                                 :or {color nil
-                                      style nil
-                                      size nil
-                                      width nil
-                                      fill nil
-                                      hide nil}}]
-  "(set-attributes! obj id [:color :style :width :fill :hide])
-   Set values of given attribute map of object obj.
-   If attribute map matching id does not exist, create it."
-  (.color! obj id color)
-  (.style! obj id style)
-  (.size! obj id size)
-  (.width! obj id width)
-  (.fill! obj id fill)
-  (.hide! obj id hide)
-  (.get-attributes obj))
+
 
 
 (def reserved-property-keys '[:id :color :style :width :size :filled 
@@ -744,3 +728,22 @@
      (.put-property! elem :hidden nil)
      (.put-property! elem :selected false)
      elem ))) 
+
+(defn set-attributes! [obj id & {:keys [color style size width fill hide]
+                                 :or {color nil
+                                      style nil
+                                      size nil
+                                      width nil
+                                      fill nil
+                                      hide nil}}]
+  "(set-attributes! obj id [:color :style :width :fill :hide])
+   Set values of given attribute map of object obj.
+   If attribute map matching id does not exist, create it."
+  (.color! obj id color)
+  (.style! obj id style)
+  (.size! obj id size)
+  (.width! obj id width)
+  (.fill! obj id fill)
+  (.hide! obj id hide)
+  (.get-attributes obj))
+

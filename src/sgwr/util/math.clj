@@ -157,3 +157,19 @@
         c (point-line-distance q [x1 y1][x1 y0])
         d (point-line-distance q [x0 y0][x1 y0])]
     (min a b c d)))
+
+(defn translate-point [p offsets]
+  [(+ (first p)(first offsets))
+   (+ (second p)(second offsets))])
+
+(defn scale-point 
+  ([p factors ref-point]
+   (let [[sx sy] factors
+         [x0 y0] ref-point
+         [x1 y1] p
+         kx (* x0 (- 1 sx))
+         ky (* y0 (- 1 sy))]
+     [(+ (* x1 (first factors)) kx)
+      (+ (* y1 (second factors)) ky)]))
+  ([p factors]
+   (scale-point p factors [0 0])))

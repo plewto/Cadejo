@@ -7,15 +7,33 @@
            java.awt.geom.Point2D))
 
 
+;; (defn str-rep-color [c]
+;;   "Returns string representation of color as vector of int RGB values"
+;;   (println (type c)) ;; DEBUG
+;;   (if c
+;;     (let [r (.getRed c)
+;;           g (.getGreen c)
+;;           b (.getBlue c)
+;;           a (.getAlpha c)]
+;;       (format "[%3d %3d %3d %3d]" r g b a))
+;;     "nil"))
+
 (defn str-rep-color [c]
-  "Returns string representation of color as vector of int RGB values"
-  (if c
-    (let [r (.getRed c)
-          g (.getGreen c)
-          b (.getBlue c)
-          a (.getAlpha c)]
-      (format "[%3d %3d %3d %3d]" r g b a))
-    "nil"))
+  (let [ct (type c)]
+    (cond (= c java.awt.GradientPaint)
+          "Gradient"
+
+          (= c java.awt.Color)
+          (let [r (.getRed c)
+                g (.getGreen c)
+                b (.getBlue c)
+                a (.getAlpha c)]
+            (format "[%3d %3d %3d %3d]" r g b a))
+
+          :default
+          "?")))
+
+
 
 ;; As with seesaw.color/color except that if the first argument 
 ;; is an instance of java.awt.Color it becomes the return color.
@@ -120,7 +138,15 @@
   ([c]
      (brighter c 1.667)))
 
+;; convert vector point [x y] to java.awt.geom.Point2D
+;;
+(defn- p2d 
+  ([p]
+   (p2d (first p)(second p)))
+  ([x y]
+   (java.awt.geom.Point2D$Double. x y)))
 
+;; DEPRECIATED
 ;; Produce linear gradient 
 ;; p0     - Point vector [x0 y0]
 ;; c0     - Color at p0, see color function
@@ -133,12 +159,57 @@
 ;; Note gradients are not modified by object transformations
 ;; (translation, scale, etc.)
 ;;
-(defn gradient 
-  ([p0 c0 p1 c1 cs cyclic]
-   (let [[u0 v0](.map-point cs p0)
-         [u1 v1](.map-point cs p1)
-         q0 (java.awt.geom.Point2D$Double. u0 v0)
-         q1 (java.awt.geom.Point2D$Double. u1 v1)]
-     (GradientPaint. q0 (color c0) q1 (color c1) cyclic))))
+;; (defn gradient 
+;;   ([p0 c0 p1 c1 cs cyclic]
+;;    (let [[u0 v0](.map-point cs p0)
+;;          [u1 v1](.map-point cs p1)
+;;          q0 (p2d u0 v0)
+;;          q1 (p2d u1 v1)] 
+;;      (GradientPaint. q0 (color c0) q1 (color c1) cyclic))))
 
 
+  
+;; Create gradient realtive to object's position and size
+;; obj - SgwrElement
+;; c0  - First color
+;; c1  - Second color
+;; :strech - gradient scale factor 
+;;           stretch < 1 shortens transition
+;;           stretch > 1 extends transition
+(defn obj-gradient [obj c0 c1 & {:keys [stretch direction cyclic]
+                                 :or {stretch 1.0
+                                      swap false
+                                      cyclic false}}]
+  (let [[p0 p1] (.physical-bounds obj)
+        [x2 y2 x3 y3] (cond 
+                        (= direction :horizontal)
+                        [(first p1)(second p0)(first p0)(second p0)]
+
+                        (= direction :vertical)
+                        [(first p1)(second p1)(first p1)(second p0)]
+
+                        (= direction :diagonal)
+                        [(first p1)(second p0)(first p0)(second p1)]
+
+                        :default
+                        [(first p0)(second p0)(first p1)(second p1)])
+        p2 (p2d (math/scale-point [x2 y2] [stretch stretch]))
+        p3 (p2d (math/scale-point [x3 y3] [stretch stretch]))]
+    (GradientPaint. p2 (color c0) p3 (color c1) cyclic)))
+
+(defn set-gradient! [obj c0 c1 & {:keys [attribute stretch direction cyclic]
+                                  :or {attribtue nil
+                                       stretch 1.0
+                                       direction :vertical
+                                       cyclic false}}]
+  (let [grad (obj-gradient obj c0 c1 
+                           :stretch stretch 
+                           :direction direction
+                           :stretch stretch
+                           :cyclic cyclic)]
+    (if attribute
+      (.color! obj attribute grad)
+      (.color! obj grad))
+    grad))
+                                         
+                                  
