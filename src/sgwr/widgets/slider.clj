@@ -154,7 +154,7 @@
                                              rim-radius 12
                                              handle-color :white
                                              handle-style [:fill :dot]
-                                             handle-size 3}}]
+                                             handle-size 4}}]
   "(slider parent p0 length v0 v1 
        :id :orientation
        :drag-action :move-action :enter-action :exit-action

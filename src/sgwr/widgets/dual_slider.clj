@@ -257,13 +257,13 @@
                                                   rim-radius 12
                                                   handle1-color :white
                                                   handle1-style nil
-                                                  handle1-size 2
+                                                  handle1-size 3
                                                   handle2-color :white
                                                   handle2-style nil
-                                                  handle2-size 2
+                                                  handle2-size 3
                                                   current-handle-color :white
                                                   current-handle-style [:dot]
-                                                  current-handle-size 2}}]
+                                                  current-handle-size 3}}]
   "(dual-slider parent p0 length v0 v1
          :id :orientation
          :drag-action :move-action :enter-action :exit-action 
