@@ -15,7 +15,7 @@
                                          track-color track-style track-width track-offset
                                          gap pad-color
                                          rim-color rim-style rim-width rim-radius]
-                                  :or {orientatin :vertical
+                                  :or {orientation :vertical
                                        id nil
                                        track-color :gray
                                        track-style :solid
