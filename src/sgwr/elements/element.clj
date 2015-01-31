@@ -101,6 +101,10 @@
      predicate is true.
      Returns vector")
 
+  (children-by-id
+    [this id]
+    "Convenience method returns list of children with matching id")
+
   (child-count 
     [this]
     "(child-count this)
@@ -464,6 +468,9 @@
 
                (children [this predicate]
                  (filter predicate @children*))
+
+               (children-by-id [this id]
+                 (.children this (fn [q](= (.get-property q :id) id))))
 
                (child-count [this] (count @children*))
 
