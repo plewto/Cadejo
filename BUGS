@@ -99,3 +99,9 @@ B) Multistate buttons act similar to radio buttons
 C) slider tracks leave "trails"
 
 D) Roolover color is not being cleared
+
+2015.01.29  Possibly related to transparency. 
+If drawing background is set to solid color with transparency 
+the same sort of trials are observed.
+Each time the drawing is re-rendered the trials become slightly
+less visible until, after a few renders, they disappear.
