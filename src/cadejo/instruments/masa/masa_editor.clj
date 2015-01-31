@@ -1,6 +1,7 @@
 (println "-->    masa editor")
 
 (ns cadejo.instruments.masa.masa-editor
+  (:use [cadejo.util.trace])
   (:require [cadejo.instruments.masa.gamut-editor])
   (:require [cadejo.instruments.masa.efx-editor])
   (:require [cadejo.util.user-message :as umsg])
@@ -315,7 +316,9 @@
                  (.setSelected jb7 pr7)
                  (.setSelected jb8 pr8)
                  (.setSelected jb9 pr9)
-                 (reset! enable-change-listener* true) )))
+                 (reset! enable-change-listener* true) )
+               )
+             )
 
         change-listener (proxy [ChangeListener][]
                           (stateChanged [ev]
@@ -333,7 +336,6 @@
                         (let [b (.getSource ev)
                               param (.getClientProperty b :param)
                               val (if (.isSelected b) 1.0 0.0)]
-                          ;(.status! ied (format "[%s] --> %s" param (if (zero? val) "off" "on ")))
                           (.set-param! ied param val))))]
              
     (.putClientProperty slider-decay :param :decay) ;; [0.0 ... 1.0]
