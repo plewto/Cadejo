@@ -56,7 +56,7 @@
        (utilities/warning (format "Invalid state index %s for multistate-button %s"
                                   state-index (.get-property msb :id)))))))
 
-(defn current-multistate-button-sate [msb]
+(defn current-multistate-button-state [msb]
   "(current-multistate-button-state msb)
    
     Returns vector [index keyword] of the current button state"   
@@ -275,7 +275,7 @@
                                                        pad-color [0 0 0 0]
                                                        rim-color [0 0 0 0] ; (uc/color :gray)
                                                        rim-style 0
-                                                       rim-width 2.0
+                                                       rim-width 1.0
                                                        rim-radius 12}}]
   "(icon-multistate-button parent p0 states :id
       :drag-action :move-action :enter-action :exit-action 
