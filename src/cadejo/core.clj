@@ -1,5 +1,7 @@
 (println "--> Loading Cadejo")
  (ns cadejo.core
+   (:require [sgwr.util.color])
+   (:require [sgwr.elements.element])
    (:require [cadejo.config :as config])  
    (:require [overtone.core :as ot])
    (:require [cadejo.midi.scene])
@@ -9,8 +11,7 @@
    (:require [cadejo.midi.mono-mode])
    (:require [cadejo.midi.poly-mode])
    (:require [cadejo.instruments.descriptor])
-   ;; (:require [sgwr.coordinate-system])
-   ;; (:require [sgwr.drawing])
+   
 )
 
 ;; (require '[cadejo.instruments.algo.algo-engine :as algo])

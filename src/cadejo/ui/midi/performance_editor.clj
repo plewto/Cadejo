@@ -112,12 +112,14 @@
                                       (run []
                                         (let [ied (.create-editor descriptor performance)]
                                           (reset! instrument-editor* ied)
+                                          (.instrument-editor! bank-ed ied)
                                           (.add pan-cards (.widget ied :pan-main) "EDIT"))
                                         (.working basic-ed false)
                                         (.status! basic-ed "")
                                         (ss/show-card! pan-cards "EDIT")))))
                                (try
                                  (ss/show-card! pan-cards "EDIT")
+                                 (.sync-ui! @instrument-editor*)
                                  (catch NullPointerException ex
                                    (.warning! basic-ed "Editor not defined"))))))
       (.add toolbar b))

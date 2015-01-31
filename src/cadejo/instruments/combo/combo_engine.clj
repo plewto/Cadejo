@@ -10,7 +10,7 @@
   (:require [cadejo.instruments.combo.program])
   (:require [cadejo.instruments.combo.pp])
   (:require [cadejo.instruments.combo.data])
-  ;(:require [cadejo.instruments.combo.combo-editor])
+  (:require [cadejo.instruments.combo.editor.combo-editor :as combo-ed])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance]))
@@ -21,7 +21,7 @@
   (let [d (cadejo.instruments.descriptor/instrument-descriptor :combo "Combo Organ" clipboard*)]
     (.add-controller! d :cc1 "Vibrato" 1)
     (.initial-program! d (cadejo.instruments.combo.program/combo))
-    ;(.set-editor-constructor! d cadejo.instruments.combo.combo-editor/combo-editor)
+    (.set-editor-constructor! d combo-ed/combo-editor)
     (.initial-program! d {:amp1 1.0 :amp2 0.0 :amp3 0.0 :amp4 0.0
                           :wave1 0.0 :wave2 0.0 :wave3 0.0 :wave4 0.0
                           :chorus 0.0 :filter 8.0 :filter-type 0 :amp 0.2

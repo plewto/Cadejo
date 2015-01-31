@@ -65,7 +65,7 @@
            :chorus  0.010
            :vibrato [:freq 5.675 :sens 0.010]
            :filter  [:freq  6    :type    low]
-           :flanger [:rate 0.094 :depth 0.239 :fb +0.69 :mix 0.000]
+           :flanger [:rate 0.100 :depth 0.239 :fb +0.69 :mix 0.000]
            :reverb  0.000  :amp 0.200))
 
 (save-program 6 "Eta" 
@@ -98,7 +98,7 @@
            :chorus  0.639
            :vibrato [:freq 4.736 :sens 0.010]
            :filter  [:freq  4    :type bypass]
-           :flanger [:rate 0.077 :depth 0.173 :fb -0.59 :mix 0.275]
+           :flanger [:rate 0.100 :depth 0.173 :fb -0.59 :mix 0.275]
            :reverb  0.834  :amp 0.200))
 
 (save-program 9 "Kappa"
@@ -131,7 +131,7 @@
            :chorus  0.001
            :vibrato [:freq 4.833 :sens 0.010]
            :filter  [:freq  8    :type  notch]
-           :flanger [:rate 0.074 :depth 0.937 :fb +0.62 :mix 0.100]
+           :flanger [:rate 0.100 :depth 0.937 :fb +0.62 :mix 0.100]
            :reverb  1.000  :amp 0.400))
 
 (save-program 12 "Nu"
