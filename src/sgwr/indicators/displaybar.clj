@@ -1,29 +1,30 @@
+
 (ns sgwr.indicators.displaybar
   "Defines general display bar in terms of 'cells'
    Where each cell implements sgwr.indicators.cell/Cell"
   (:require [sgwr.cs.native :as native])
-  (:require [sgwr.elements.drawing :as drawing])
   (:require [sgwr.indicators.basic-cell :as basic])
   (:require [sgwr.indicators.dot-matrix :as matrix])
   (:require [sgwr.indicators.sixteen :as sixteen])
-  (:require [sgwr.util.utilities :as utilities]))
+  (:require [sgwr.util.utilities :as utilities])
+  (:import javax.swing.JOptionPane))
 
 (defprotocol DisplayBar
 
-  ;; (widget-keys
-  ;;   [this])
-  
-  ;; (widget
-  ;;   [this key])
+  (parent 
+    [this])
   
   (colors! 
     [this inactive active])
-
+ 
   (character-count
     [this])
 
   (all-off!
     [this render?]
+    [this])
+
+  (current-display
     [this])
 
   (display! 
@@ -56,25 +57,19 @@
                             cobj (chr-fn grp x y :cell-width cell-width :cell-height cell-height)] 
                         (swap! acc* (fn [q](conj q cobj)))))
                     @acc*)
+         current-value* (atom "")
          render-drawing (fn [flag]
                           (let [drw (.get-property grp :drawing)]
                             (if (and drw flag)
                               (.render drw))))
          obj (reify DisplayBar
                
-               ;; (widget-keys [this]
-               ;;   [:group :drawing])
-
-               ;; (widget [this key]
-               ;;   (cond (= key :group) grp
-               ;;         (= key :drawing)(.get-property grp :drawing)
-               ;;         :default
-               ;;         (utilities/warning (format "DisplayBar does not have %s widget" key))))
+               (parent [this] grp)
 
                (colors! [this inactive active]
                  (doseq [e elements]
                    (.colors! e inactive active)))
-               
+         
                (character-count [this]
                  (count elements))
                
@@ -86,15 +81,74 @@
                (all-off! [this]
                  (.all-off! this true))
                
+               (current-display [this]
+                 @current-value*)
+
                (display! [this text render?]
                  (.all-off! this false)
                  (let [i* (atom 0)
                        limit (min (count text)(.character-count this))]
+                   (reset! current-value* "")
                    (while (< @i* limit)
-                     (.display! (nth elements @i*)(nth text @i*))
-                     (swap! i* inc))
+                     (let [c (nth text @i*)]
+                       (.display! (nth elements @i*)c)
+                       (swap! current-value* (fn [q](str q c)))
+                       (swap! i* inc)))
                    (render-drawing render?)))
                
                (display! [this text]
                  (.display! this text true)) )]
      obj)))
+
+
+
+
+(defn displaybar-dialog [dbar message & {:keys [validator callback]
+                                         :or {validator (constantly true)
+                                              callback (fn [src] nil)}}]
+  (let [jop (JOptionPane.)
+        dflt (.current-display dbar)
+        rs (JOptionPane/showInputDialog jop message dflt)]
+    (if rs
+      (if (validator rs)
+        (do
+          (.display! dbar (str rs) :render)
+          (callback dbar))
+        (do ;; invalid input
+          (displaybar-dialog dbar message :validator validator :callback callback)))
+      nil)))
+
+
+;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 
+
+(require '[seesaw.core :as ss])
+(require '[sgwr.elements.drawing :as drawing])
+(require '[sgwr.widgets.button :as button])
+
+(def drw (drawing/native-drawing 600 600))
+(def dbar (displaybar (.root drw) 100 100 4 :basic))
+
+(defn callback [obj]
+  (println (format "Callback executed: %s" (.current-display obj))))
+
+(defn validator [q]
+  (not (= q "ERROR")))
+
+(def b1 (button/text-button (.widget-root drw) [100 200] "Edit"
+                            :click-action (fn [src _]
+                                            (let [dia (displaybar-dialog dbar "Why Ask?"
+                                                                         :callback callback
+                                                                         :validator validator)
+                                                  ]
+                                              ))))
+(.render drw)
+(def pan-main (ss/horizontal-panel :items [(.canvas drw)]))
+
+(def f (ss/frame
+        :content pan-main
+        :on-close :dispose
+        :size [600 :by 600]))
+
+(ss/show! f)
+         
+(defn rl [](use 'sgwr.indicators.displaybar :reload))
