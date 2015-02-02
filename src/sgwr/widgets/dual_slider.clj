@@ -331,7 +331,6 @@
    and ev is an instance of java.awt.event.MouseEvent 
 
    Returns SgwrElement group"
-
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 

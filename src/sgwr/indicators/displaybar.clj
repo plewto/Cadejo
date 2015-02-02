@@ -12,24 +12,47 @@
 (defprotocol DisplayBar
 
   (parent 
-    [this])
+    [this]
+    "(parent this)
+     Returns parent group of this")
   
   (colors! 
-    [this inactive active])
+    [this inactive active]
+    "(colors! this active inactive)
+     Sets active and inactive element colors
+     Color arguments may be Color, keyword or vector, see sgwr.util.color")
  
   (character-count
-    [this])
+    [this]
+    "(character-count this)
+     Returns the character count")
+
+  (disable! 
+    [this flag render?]
+    [this flag])
 
   (all-off!
     [this render?]
-    [this])
+    [this]
+    "(all-off! this render?)
+     (all-off! this)
+     Sets all display elements to inactive color
+     If render? true render containing drawing
+     render? is true by default")
 
   (current-display
-    [this])
+    [this]
+    "(current-display this)
+     Returns current display content as string")
 
   (display! 
     [this text render?]
-    [this text]))
+    [this text]
+    "(display! this text render?)
+     (display! this text)
+     Sets display to text, If length of text is greater then character count
+     truncate text. 
+     If render? is true render drawing containing this, render? is true by default"))
 
 (defn- get-cell-constructor [selector]
   (if (fn? selector) 
@@ -73,6 +96,12 @@
                (character-count [this]
                  (count elements))
                
+               (disable! [this flag render?]
+                 (utilities/warning "sgwr displaybar disable is not implemented"))
+
+               (disable! [this flag]
+                 (.disable! this flag :render))
+
                (all-off! [this render?]
                  (doseq [e elements]
                    (.display! e \space))
@@ -106,6 +135,18 @@
 (defn displaybar-dialog [dbar message & {:keys [validator callback]
                                          :or {validator (constantly true)
                                               callback (fn [src] nil)}}]
+  "(displaybar-dialog dbar msg :validator :callback)
+   Show pop up modal dialog to set displaybar's contents
+   
+   dbar       - DisplayBar
+   msg        - String, user prompt text
+   :validator - Predicate, (fn q) --> Boolean 
+                Returns true if entered text is valid,
+                If text is not valid the dialog is redisplayed.
+   :callback  - Function (fn src), callback is called after text has been entered to 
+                inform any interested parties, the single src argument is
+                set to dbar"
+
   (let [jop (JOptionPane.)
         dflt (.current-display dbar)
         rs (JOptionPane/showInputDialog jop message dflt)]
@@ -117,38 +158,3 @@
         (do ;; invalid input
           (displaybar-dialog dbar message :validator validator :callback callback)))
       nil)))
-
-
-;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 
-
-(require '[seesaw.core :as ss])
-(require '[sgwr.elements.drawing :as drawing])
-(require '[sgwr.widgets.button :as button])
-
-(def drw (drawing/native-drawing 600 600))
-(def dbar (displaybar (.root drw) 100 100 4 :basic))
-
-(defn callback [obj]
-  (println (format "Callback executed: %s" (.current-display obj))))
-
-(defn validator [q]
-  (not (= q "ERROR")))
-
-(def b1 (button/text-button (.widget-root drw) [100 200] "Edit"
-                            :click-action (fn [src _]
-                                            (let [dia (displaybar-dialog dbar "Why Ask?"
-                                                                         :callback callback
-                                                                         :validator validator)
-                                                  ]
-                                              ))))
-(.render drw)
-(def pan-main (ss/horizontal-panel :items [(.canvas drw)]))
-
-(def f (ss/frame
-        :content pan-main
-        :on-close :dispose
-        :size [600 :by 600]))
-
-(ss/show! f)
-         
-(defn rl [](use 'sgwr.indicators.displaybar :reload))
