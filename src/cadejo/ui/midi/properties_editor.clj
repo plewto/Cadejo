@@ -1,3 +1,4 @@
+;; DEPRECIATED
 (ns cadejo.ui.midi.properties-editor
   "Provides GUI for common node properties: bend, pressure, velocity, 
    dbscale, transpose, key-range and scale-id"
@@ -6,6 +7,9 @@
   (:require [cadejo.ui.midi.curve-panel])
   (:require [seesaw.core :as ss])
   (:import javax.swing.event.ChangeListener))
+
+
+(umsg/warning "ui.midi.properties-editor is DEPRECIATED")
 
 (defprotocol PropertyEditor 
 
