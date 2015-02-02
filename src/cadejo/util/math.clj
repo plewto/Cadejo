@@ -16,6 +16,11 @@
 (def sqrt
   clojure.math.numeric-tower/sqrt)
 
+
+(defn mean [& args]
+  (let [sum (apply + args)]
+    (/ sum (count args))))
+
 (defn logn [n base]
   "Return logarithm of n in the given base"
   (/ (Math/log n)(Math/log base)))
@@ -38,7 +43,6 @@
 (defn transpose [f n]
   (let [r (expt cent n)]
     (* r f)))
-        
 
 (defn amp->db [amp]
   (* 20 (logn amp 10)))
@@ -52,7 +56,6 @@
 (defn interpolate [a b w]
   (+ (* a w)
      (* b (- 1 w))))
-
 
 (defn- wrap-up-octaves [f lower-limit]
   (let [ll (float lower-limit)
@@ -206,7 +209,6 @@
     ([n range] (+ n (* (coin 0.5 -1 +1)(* n range)(rand))))
     ([n](approx n 0.01)))
 
-
 (defn closest [n lst]
   "Return element of lst wich is closest to n"
   (let [diff (map (fn [q](abs (- q n))) lst)
@@ -214,3 +216,18 @@
         i (.indexOf diff mn)]
     (nth lst i)))
         
+(defn str->int [s]
+  "Convert string to int
+   If invalid return nil"
+  (try
+    (Integer/parseInt s)
+    (catch NumberFormatException ex
+      nil)))
+
+(defn str->float [s]
+  "Convert string to float
+   If invalid return nil"
+  (try
+    (Float/parseFloat s)
+    (catch NumberFormatException ex
+    nil)))
