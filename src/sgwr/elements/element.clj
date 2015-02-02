@@ -303,6 +303,25 @@
      selected. Conversely this may be selected  while the ancestors are not
      selected.")
 
+  (disable! 
+    [this render?]
+    [this]
+    "(disable! this render?)
+     (disable! this)
+     Set this as disabled
+     Implementing objects should provide function  to define enable/disable state
+     ISSUE: Currently disable! is not implemented")
+
+  (enable! 
+    [this render?]
+    [this]
+    "(enable! this render?)
+     (enable! this)
+     Set this as enabled
+      Implementing objects should provide function to define enable/enable state
+     ISSUE: Currently enable! is not implemented")
+
+
   (set-coordinate-system!
     [this cs]
     "(set-coordinate-system! this cs)
@@ -627,6 +646,23 @@
                (selected? [this]
                  (.get-property this :selected))
                
+               (disable! [this render?]
+                 (utilities/warning "ISSUE sgwr.elements disable! method is not implemented")
+                 (if render? (.render (.get-property this :drawing)))
+                 )
+               
+               (disable! [this]
+                 (.disable! this :render))
+
+
+               (enable! [this render?]
+                 (utilities/warning "ISSUE sgwr.elements enable! method is not implemented")
+                 (if render? (.render (.get-property this :drawing)))
+                 )
+               
+               (enable! [this]
+                 (.enable! this :render))
+
                (set-coordinate-system! [this cs]
                  (reset! coordinate-system* cs))
 
