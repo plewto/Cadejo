@@ -9,6 +9,7 @@
   (:require [sgwr.elements.group :as group])
   (:require [sgwr.elements.point :as point])
   (:require [sgwr.elements.rectangle :as rect])
+  (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities]))
 
@@ -18,7 +19,6 @@
       (swap! counter* inc))
     (or id (keyword (format "field-%d" @counter*)))))
     
-(defn- dummy-action [& _] nil)
 
 (defn set-ball-value! 
   "(set-ball-value! fobj id val)
@@ -73,26 +73,37 @@
         (.use-attributes! b :selected)
         b))))
 
+(defn- dummy-action [& _] nil)
+
+(defn- compose-action [afn]
+  (fn [obj ev]
+    (if (.local-property obj :enabled)
+      (afn obj ev))))
+
 (defn- compose-move-action [mfn]
   (fn [obj ev]
-    (select-ball obj ev)
-    (mfn obj ev)
-    (.render (.get-property obj :drawing))))
+    (if (.local-property obj :enabled)
+      (do 
+        (select-ball obj ev)
+        (mfn obj ev)
+        (.render (.get-property obj :drawing))))))
 
 (defn- compose-drag-action [dfn]
   (fn [obj ev]
-    (select-ball obj ev)
-    (let [b @(.get-property obj :current-ball*)]
-      (if b
-        (let [cs (.coordinate-system obj)
-              pos (.inv-map cs [(.getX ev)(.getY ev)])
-              mapx (.get-property obj :fn-x-pos->val)
-              mapy (.get-property obj :fn-y-pos->val)
-              val [(mapx (first pos))(mapy (second pos))]]
-          (.set-points! b [pos])
-          (.put-property! b :value val)))
-      (dfn obj ev)
-      (.render (.get-property obj :drawing)))))
+    (if (.local-property obj :enabled)
+      (do 
+        (select-ball obj ev)
+        (let [b @(.get-property obj :current-ball*)]
+          (if b
+            (let [cs (.coordinate-system obj)
+                  pos (.inv-map cs [(.getX ev)(.getY ev)])
+                  mapx (.get-property obj :fn-x-pos->val)
+                  mapy (.get-property obj :fn-y-pos->val)
+                  val [(mapx (first pos))(mapy (second pos))]]
+              (.set-points! b [pos])
+              (.put-property! b :value val)))
+          (dfn obj ev)
+          (.render (.get-property obj :drawing)))))))
 
 
 (defn field [parent p0 p1 range-x range-y & {:keys [id
@@ -101,13 +112,13 @@
                                                     pad-color 
                                                     rim-color rim-style rim-width rim-radius]
                                              :or {id nil
-                                                  drag-action nil
-                                                  move-action nil 
-                                                  enter-action nil
-                                                  exit-action nil
-                                                  press-action nil
-                                                  release-action nil
-                                                  click-action nil
+                                                  drag-action dummy-action
+                                                  move-action dummy-action 
+                                                  enter-action dummy-action
+                                                  exit-action dummy-action
+                                                  press-action dummy-action
+                                                  release-action dummy-action
+                                                  click-action dummy-action
                                                   pad-color [0 0 0 0]
                                                   rim-color :gray
                                                   rim-style 0
@@ -153,6 +164,7 @@
                                       :color pad-color
                                       :fill true)]
               (.put-property! pad :corner-radius rim-radius)
+              (.color! pad :disabled [32 32 32])
               (.color! pad :rollover pad-color)
               pad)
         rim (let [rim (rect/rectangle grp p0 p1
@@ -162,18 +174,27 @@
                                       :width rim-width
                                       :fill :no)]
               (.put-property! rim :corner-radius rim-radius)
-              rim)]
+              rim)
+        occluder (let [occ (rect/rectangle grp p0 [(+ (first p1) 3)(+ (second p1) 3)]
+                                           :id :occluder
+                                           :fill true
+                                           :color [0 0 0 0])]
+                   (.color! occ :enabled [0 0 0 0])
+                   (.color! occ :rollover [0 0 0 0])
+                   (.color! occ :disabled (uc/transparent :black 190))
+                   occ)]
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
+    (.put-property! grp :occluder occluder)
     (.put-property! grp :balls* (atom {}))
     (.put-property! grp :current-ball* (atom nil))
-    (.put-property! grp :action-mouse-dragged  (compose-drag-action (or drag-action dummy-action)))
-    (.put-property! grp :action-mouse-moved    (compose-move-action (or move-action dummy-action)))
-    (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
-    (.put-property! grp :action-mouse-exited   (or exit-action dummy-action))
-    (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
-    (.put-property! grp :action-mouse-released (or release-action dummy-action))
-    (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
+    (.put-property! grp :action-mouse-dragged  (compose-drag-action drag-action))
+    (.put-property! grp :action-mouse-moved    (compose-move-action move-action))
+    (.put-property! grp :action-mouse-entered  (compose-action enter-action))
+    (.put-property! grp :action-mouse-exited   (compose-action exit-action))
+    (.put-property! grp :action-mouse-pressed  (compose-action press-action))
+    (.put-property! grp :action-mouse-released (compose-action release-action))
+    (.put-property! grp :action-mouse-clicked  (compose-action click-action))
     (.put-property! grp :range-x range-x)
     (.put-property! grp :range-y range-y)
     (.put-property! grp :fn-x-pos->val (math/clipped-linear-function (first p0)
@@ -192,6 +213,8 @@
                                                                      (second p0)
                                                                      (first range-y)
                                                                      (second p1)))
+    (.use-attributes! grp :default)
+    (.use-attributes! occluder :enabled)
     grp))
     
     

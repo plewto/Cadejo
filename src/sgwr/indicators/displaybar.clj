@@ -2,10 +2,13 @@
 (ns sgwr.indicators.displaybar
   "Defines general display bar in terms of 'cells'
    Where each cell implements sgwr.indicators.cell/Cell"
+  (:use [cadejo.util.trace])
   (:require [sgwr.cs.native :as native])
+  (:require [sgwr.elements.rectangle :as rect])
   (:require [sgwr.indicators.basic-cell :as basic])
   (:require [sgwr.indicators.dot-matrix :as matrix])
   (:require [sgwr.indicators.sixteen :as sixteen])
+  (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.utilities :as utilities])
   (:import javax.swing.JOptionPane))
 
@@ -28,8 +31,12 @@
      Returns the character count")
 
   (disable! 
-    [this flag render?]
-    [this flag])
+    [this render?]
+    [this])
+
+  (enable!
+    [this render?]
+    [this])
 
   (all-off!
     [this render?]
@@ -69,10 +76,11 @@
   ([grp x-offset y-offset char-count ctype & {:keys [cell-width cell-height] 
                                               :or {cell-width 25
                                                    cell-height 35}}]
-   (let [elements (let [chr-fn (get-cell-constructor ctype)
+   (let [pad 4
+         gap 5
+         bar-width (+ (* char-count (+ cell-width gap)))
+         elements (let [chr-fn (get-cell-constructor ctype)
                         acc* (atom [])
-                        pad 4
-                        gap 5
                         w (+ cell-width gap)]
                     (dotimes [i char-count]
                       (let [x (+ x-offset (* i w))
@@ -80,6 +88,13 @@
                             cobj (chr-fn grp x y :cell-width cell-width :cell-height cell-height)] 
                         (swap! acc* (fn [q](conj q cobj)))))
                     @acc*)
+         colors* (atom [:black :gray])
+         occluder (let [occ (rect/rectangle grp [(- x-offset pad) (- y-offset pad)][(+ x-offset bar-width (- pad))(+ y-offset cell-height pad)]
+                                            :color [0 0 0 0]
+                                            :fill true)]
+                    (.color! occ :disabled (uc/transparent :black 190))
+                    (.color! occ :enabled [0 0 0 0])
+                    occ)
          current-value* (atom "")
          render-drawing (fn [flag]
                           (let [drw (.get-property grp :drawing)]
@@ -90,17 +105,26 @@
                (parent [this] grp)
 
                (colors! [this inactive active]
+                 (reset! colors* [inactive active])
                  (doseq [e elements]
                    (.colors! e inactive active)))
          
                (character-count [this]
                  (count elements))
-               
-               (disable! [this flag render?]
-                 (utilities/warning "sgwr displaybar disable is not implemented"))
+            
+               (disable! [this render?]
+                 (.use-attributes! occluder :disabled)
+                 (render-drawing render?))
 
-               (disable! [this flag]
-                 (.disable! this flag :render))
+               (disable! [this]
+                 (.disable! this :render))
+
+               (enable! [this render?]
+                 (.use-attributes! occluder :enabled)
+                 (render-drawing render?))
+
+               (enable! [this]
+                 (.enable! this :render))
 
                (all-off! [this render?]
                  (doseq [e elements]

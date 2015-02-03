@@ -15,26 +15,30 @@
       (swap! counter* inc)
       (or id (keyword (format "%s-%d" prefix n))))))
 
+(defn- dummy-action [& _])
+
+(defn- compose-action [afn]
+  (fn [button ev]
+    (let [flag (.local-property button :enabled)]
+      (if flag (afn button ev)))))
 
 (defn- blank-button [parent id & {:keys [drag-action move-action enter-action exit-action
                                         press-action release-action click-action]
-                                 :or {drag-action nil
-                                      move-action nil
-                                      enter-action nil
-                                      exit-action nil
-                                      press-action nil
-                                      release-action nil
-                                      click-action nil}}]
-  "(blank-button parent id :drag-action :move-action :enter-action :exit-action :press-action :release-action :click-action)"
-  (let [grp (group/group parent :etype :button :id id)
-        dummy-action (fn [obj ev] nil)]
-    (.put-property! grp :action-mouse-dragged  (or drag-action dummy-action))
-    (.put-property! grp :action-mouse-moved    (or move-action dummy-action))
-    (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
-    (.put-property! grp :action-mouse-exited   (or exit-action dummy-action))
-    (.put-property! grp :action-mouse-pressed  (or press-action dummy-action))
-    (.put-property! grp :action-mouse-released (or release-action dummy-action))
-    (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
+                                  :or {drag-action dummy-action
+                                       move-action dummy-action
+                                       enter-action dummy-action
+                                       exit-action dummy-action
+                                       press-action dummy-action
+                                       release-action dummy-action
+                                       click-action dummy-action}}]
+  (let [grp (group/group parent :etype :button :id id)]
+    (.put-property! grp :action-mouse-dragged  (compose-action drag-action))
+    (.put-property! grp :action-mouse-moved    (compose-action move-action))
+    (.put-property! grp :action-mouse-entered  (compose-action enter-action))
+    (.put-property! grp :action-mouse-exited   (compose-action exit-action))
+    (.put-property! grp :action-mouse-pressed  (compose-action press-action))
+    (.put-property! grp :action-mouse-released (compose-action release-action))
+    (.put-property! grp :action-mouse-clicked  (compose-action click-action))
     grp))
 
 (defn icon-button [parent p0 prefix group subgroup & {:keys [id
@@ -44,13 +48,13 @@
                                                              pad-color 
                                                              rim-color rim-style rim-width rim-radius]
                                                        :or {id nil
-                                                            drag-action nil
-                                                            move-action nil
-                                                            enter-action nil
-                                                            exit-action nil
-                                                            press-action nil
-                                                            release-action nil
-                                                            click-action nil
+                                                            drag-action dummy-action
+                                                            move-action dummy-action
+                                                            enter-action dummy-action
+                                                            exit-action dummy-action
+                                                            press-action dummy-action
+                                                            release-action dummy-action
+                                                            click-action dummy-action
                                                             gap 4
                                                             w 44
                                                             h 44
@@ -112,14 +116,23 @@
                             :style rim-style
                             :width rim-width
                             :fill :no)
-        icon (image/read-icon grp [x1 y1] prefix group subgroup)]
+        icon (image/read-icon grp [x1 y1] prefix group subgroup)
+        occluder (let [occ (rect/rectangle grp p0  [(+ x0 w)(+ y0 h)] :id :occulder
+                                           :fill true)]
+                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :enabled [0 0 0 0])
+                   (.color! occ :rollover [0 0 0 0])
+                   (.use-attributes! occ :enabled)
+                   occ)]
     (.put-property! pad :corner-radius rim-radius)
     (.put-property! rim :corner-radius rim-radius)
     (.color! pad :rollover pad-color)
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :icon icon)
+    (.put-property! grp :occluder occluder)
     (.use-attributes! grp :default)
+    (.use-attributes! occluder :enabled)
     grp))
                             
   
@@ -130,13 +143,13 @@
                                                             pad-color
                                                             rim-color rim-style rim-width rim-radius]
                                                      :or {id nil
-                                                          drag-action nil
-                                                          move-action nil
-                                                          enter-action nil
-                                                          exit-action nil
-                                                          press-action nil
-                                                          release-action nil
-                                                          click-action nil
+                                                          drag-action dummy-action
+                                                          move-action dummy-action
+                                                          enter-action dummy-action
+                                                          exit-action dummy-action
+                                                          press-action dummy-action
+                                                          release-action dummy-action
+                                                          click-action dummy-action
                                                           gap 4
                                                           w 26
                                                           h 26
@@ -183,13 +196,13 @@
                                            pad-color
                                            rim-color rim-style rim-width rim-radius]
                                     :or {id nil
-                                         drag-action nil
-                                         move-action nil
-                                         enter-action nil
-                                         exit-action nil
-                                         press-action nil
-                                         release-action nil
-                                         click-action nil
+                                         drag-action dummy-action
+                                         move-action dummy-action
+                                         enter-action dummy-action
+                                         exit-action dummy-action
+                                         press-action dummy-action
+                                         release-action dummy-action
+                                         click-action dummy-action
                                          text-color :white
                                          text-style 0
                                          text-size 8
@@ -276,7 +289,14 @@
         txobj (text/text grp [x1 y1] txt :id :text
                          :color text-color
                          :style text-style
-                         :size text-size)]
+                         :size text-size)
+        occluder (let [occ (rect/rectangle grp p0 [(inc x3) (inc y3)] :id :occluder
+                                           :fill true)]
+                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :enabled [0 0 0 0])
+                   (.color! occ :rollover [0 0 0 0])
+                   (.use-attributes! occ :enabled)
+                   occ)]
     (.color! txobj :rollover text-color)
     (.color! pad :rollover pad-color)
     (.put-property! pad :corner-radius rim-radius)
@@ -285,5 +305,7 @@
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :text-element txobj)
+    (.put-property! grp :occluder occluder)
     (.use-attributes! grp :default)
+    (.use-attributes! occluder :enabled)
     grp))

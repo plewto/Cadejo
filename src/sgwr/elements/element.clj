@@ -140,11 +140,23 @@
     [this key default]
     [this key]
     "(get-property this key default)
-     (get-property this key) Returns value for property key. If the
-     property is not defined by this node then return the value from the
-     parent node. If the property is not defined by any of the ancestor
-    nodes return default. Unless otherwise specified the default return
-    value is nil")
+     (get-property this key) 
+
+     Returns value for property key. If the property is not defined by this
+     node then return the value from the parent node. If the property is
+     not defined by any of the ancestor nodes return default. Unless
+     otherwise specified the default return value is nil")
+
+  (local-property
+    [this key default]
+    [this key]
+    "(local-property this key default)
+     (local-property this key)
+     Returns local value for property key.
+     If key is not assigned to a local value return default
+     Unlike get-property which returns property values from ancestor nodes
+     if the key is not defined locally, local-property does not check
+     ancestor nodes.")
 
   (remove-property!
     [this key]
@@ -422,7 +434,8 @@
 
 
 (def reserved-property-keys '[:id :color :style :width :size :filled 
-                              :hidden :selected :drawing])
+                              :hidden :selected :drawing
+                              :enabled])
 
 (defn create-element
   "(create-element etype fnmap)
@@ -449,7 +462,7 @@
          children* (atom [])
          attribute-history* (atom '())
          locked-properties* (distinct (flatten (merge reserved-property-keys locked)))
-         properties* (atom {})
+         properties* (atom {:enabled true})
          attributes (att/attributes)
          update-hook* (atom (fn [& _] nil))
          points* (atom [])
@@ -510,6 +523,12 @@
                (get-property [this key]
                  (.get-property this key nil))
                
+               (local-property [this key default]
+                 (get @properties* key default))
+
+               (local-property [this key]
+                 (local-property this key nil))
+
                (locked-properties [this](.keys @locked-properties*))
 
                (remove-property! [this key]
@@ -647,18 +666,21 @@
                  (.get-property this :selected))
                
                (disable! [this render?]
-                 (utilities/warning "ISSUE sgwr.elements disable! method is not implemented")
-                 (if render? (.render (.get-property this :drawing)))
-                 )
-               
+                 (let [occ (.get-property this :occluder)]
+                   (.put-property! this :enabled false)
+                   (if occ
+                     (.use-attributes! occ :disabled))
+                   (if render? (.render (.get-property this :drawing)))))
+
                (disable! [this]
                  (.disable! this :render))
 
-
                (enable! [this render?]
-                 (utilities/warning "ISSUE sgwr.elements enable! method is not implemented")
-                 (if render? (.render (.get-property this :drawing)))
-                 )
+                 (let [occ (.get-property this :occluder)]
+                   (.put-property! this :enabled true)
+                   (if occ 
+                     (.use-attributes! occ :enabled))
+                   (if render? (.render (.get-property this :drawing)))))
                
                (enable! [this]
                  (.enable! this :render))

@@ -11,6 +11,8 @@
       (swap! counter* inc)
       (or id (keyword (format "radio-button-%d" n))))))
 
+(defn- dummy-action [& _])
+
 (defn clear-radio-button-list! [rbl*]
   "(clear-radio-button-list! rbl*)
    Sets all buttons in button list as 'unselected'
@@ -34,47 +36,53 @@
     (.use-attributes! rb :selected)
     rb))
 
+(defn- compose-action [afn]
+  (fn [rb ev]
+    (let [flag (.local-property rb :enabled)]
+      (if flag (afn rb ev)))))
+
 (defn- compose-pressed-action 
   ([](compose-pressed-action (fn [& _])))
   ([pfn]
    (fn [obj ev]
-     (let [rbl* (.get-property obj :radio-button-list* (atom []))
-           drw (.get-property obj :drawing)]
-       (clear-radio-button-list! rbl*)
-       (.select! obj true)
-       (.use-attributes! obj :selected)
-       (if drw (.render drw))
-       (pfn obj ev)))))
+     (if (.local-property obj :enabled)
+       (let [rbl* (.get-property obj :radio-button-list* (atom []))
+             drw (.get-property obj :drawing)]
+         (clear-radio-button-list! rbl*)
+         (.select! obj true)
+         (.use-attributes! obj :selected)
+         (if drw (.render drw))
+         (pfn obj ev))))))
 
 (defn- compose-exited-action 
   ([](compose-exited-action (fn [& _])))
   ([xfn]
    (fn [obj ev]
+   (if (.local-property obj :enabled)
      (let [flag (.selected? obj)
            drw (.get-property obj :drawing)]
        (if flag
          (.use-attributes! obj :selected))
-       (xfn obj ev)))))
+       (xfn obj ev))))))
 
 (defn- blank-radio-button [parent rbl* id & {:keys [drag-action move-action enter-action exit-action
                                                     press-action release-action click-action]
-                                             :or {drag-action nil
-                                                  move-action nil
-                                                  enter-action nil
-                                                  exit-action nil
-                                                  press-action nil
-                                                  release-action nil
-                                                  click-action nil}}]
-  (let [grp (group/group parent :etype :radio-button :id id)
-        dummy-action (fn [obj ev] nil)]
+                                             :or {drag-action dummy-action
+                                                  move-action dummy-action
+                                                  enter-action dummy-action
+                                                  exit-action dummy-action
+                                                  press-action dummy-action
+                                                  release-action dummy-action
+                                                  click-action dummy-action}}]
+  (let [grp (group/group parent :etype :radio-button :id id)]
     (.put-property! grp :radio-button-list* rbl*)
-    (.put-property! grp :action-mouse-dragged  (or drag-action dummy-action))
-    (.put-property! grp :action-mouse-moved    (or move-action dummy-action))
-    (.put-property! grp :action-mouse-entered  (or enter-action dummy-action))
-    (.put-property! grp :action-mouse-exited   (compose-exited-action (or exit-action dummy-action)))
-    (.put-property! grp :action-mouse-pressed  (compose-pressed-action (or press-action dummy-action)))
-    (.put-property! grp :action-mouse-released (or release-action dummy-action))
-    (.put-property! grp :action-mouse-clicked  (or click-action dummy-action))
+    (.put-property! grp :action-mouse-dragged  (compose-action drag-action))
+    (.put-property! grp :action-mouse-moved    (compose-action move-action))
+    (.put-property! grp :action-mouse-entered  (compose-action enter-action))
+    (.put-property! grp :action-mouse-exited   (compose-exited-action exit-action))
+    (.put-property! grp :action-mouse-pressed  (compose-pressed-action press-action))
+    (.put-property! grp :action-mouse-released (compose-action release-action))
+    (.put-property! grp :action-mouse-clicked  (compose-action click-action))
     (swap! rbl* (fn [q](conj q grp)))
     grp))
 
@@ -85,13 +93,13 @@
                                                  gap text-x-shift text-y-shift
                                                  c1-color c1-radius
                                                  c2-color c2-radius]
-                                          :or {drag-action nil
-                                               move-action nil
-                                               enter-action nil
-                                               exit-action nil
-                                               press-action nil
-                                               release-action nil
-                                               click-action nil
+                                          :or {drag-action dummy-action
+                                               move-action dummy-action
+                                               enter-action dummy-action
+                                               exit-action dummy-action
+                                               press-action dummy-action
+                                               release-action dummy-action
+                                               click-action dummy-action
                                                text-color :white
                                                text-style 0
                                                text-size 8
@@ -161,11 +169,21 @@
                          :color text-color
                          :id :text
                          :style text-style
-                         :size text-size)]
+                         :size text-size)
+        occluder (let [occ (circle/circle-r grp [xc yc] c1-radius 
+                                            :id :occluder 
+                                            :fill true)]
+                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :enabled [0 0 0 0])
+                   (.color! occ :default [0 0 0 0])
+                   (.color! occ :rollover [0 0 0 0])
+                   (.use-attributes! occ :enabled)
+                   occ)]
         (.put-property! grp :c1 c1)
         (.put-property! grp :c2 c2)
         (.put-property! grp :text-element txobj)
         (.fill! c2 :default :no)
         (.fill! c2 :selected true)
+        (.put-property! grp :occluder occluder)
         (.use-attributes! grp :default)
         grp))

@@ -33,8 +33,6 @@
           :default
           "?")))
 
-
-
 ;; As with seesaw.color/color except that if the first argument 
 ;; is an instance of java.awt.Color it becomes the return color.
 ;; The first argument may also be an instance of java.awt.GradientPaint
@@ -138,6 +136,19 @@
   ([c]
      (brighter c 1.667)))
 
+;; Set color's alpha channel
+;;
+(defn transparent
+  ([c] (transparent c 128))
+  ([c alpha]
+   (let [c2 (color c)
+         r (.getRed c2)
+         g (.getGreen c2)
+         b (.getBlue c2)
+         rs (Color. r g b alpha)]
+     rs)))
+
+
 ;; convert vector point [x y] to java.awt.geom.Point2D
 ;;
 (defn- p2d 
@@ -166,6 +177,8 @@
 ;;          q0 (p2d u0 v0)
 ;;          q1 (p2d u1 v1)] 
 ;;      (GradientPaint. q0 (color c0) q1 (color c1) cyclic))))
+
+
 
 
   

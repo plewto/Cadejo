@@ -78,15 +78,15 @@
                              :click-action (fn [& _](display "beta"))))
 
 (def rbl* (atom []))
-(def rb1 (radio/radio-button widgets [160  90] "Ape" rbl*))
-(def rb2 (radio/radio-button widgets [160 115] "Bat" rbl*))
-(def rb3 (radio/radio-button widgets [160 140] "Cat" rbl*))
+(def rb1 (radio/radio-button widgets [160  90] "Ape" rbl* :click-action (fn [& _](display "Ape"))))
+(def rb2 (radio/radio-button widgets [160 115] "Bat" rbl* :click-action (fn [& _](display "Bat"))))
+(def rb3 (radio/radio-button widgets [160 140] "Cat" rbl* :click-action (fn [& _](display "Cat"))))
 (radio/select-radio-button! rb3)
 
 
-(def cb1 (msb/checkbox widgets [280  90] "Alpha"))
-(def cb2 (msb/checkbox widgets [280 115] "Beta"))
-(def cb3 (msb/checkbox widgets [280 140] "Gamma"))
+(def cb1 (msb/checkbox widgets [280  90] "Alpha" :click-action (fn [& _](display "Alpha"))))
+(def cb2 (msb/checkbox widgets [280 115] "Beta" :click-action (fn [& _](display "Beta"))))
+(def cb3 (msb/checkbox widgets [280 140] "Gamma" :click-action (fn [& _](display "Gamma"))))
 (msb/select-checkbox! cb2 true)
 
 (def tb1 (msb/text-toggle-button widgets [280 200] "Dog"))
@@ -140,11 +140,33 @@
 (def ball2 (field/ball f1 :b2 [0.0 0.0] :color :green))
 (def sbv field/set-ball-value!)
 
+
+(def widget-list [b1 b2 b3 b4 b5 b6 b7 b8 b9 b10
+                  rb1 rb2 rb3 cb1 cb2 cb3
+                  tb1 tb2 tb3 ms1 ms2
+                  sl1 sl2 f1
+                  dbar1 dbar2 dbar3])
+
+
+
+(def cb-enable (msb/checkbox widgets [400 550] "Enable Widgets"
+                             :click-action (fn [cb _]
+                                             (let [flag (msb/checkbox-selected? cb)]
+                                               (if flag
+                                                 (doseq [w widget-list]
+                                                   (.enable! w false))
+                                                 (doseq [w widget-list]
+                                                   (.disable! w false)))
+                                               (.render drw)))))
+(msb/select-checkbox! cb-enable true)
+
 (defn display [text]
   (let [txt (.toUpperCase (str text))]
     (.display! dbar1 txt false)
     (.display! dbar2 txt false) 
-    (.display! dbar3 txt false)))
+    (.display! dbar3 txt false)
+    (.render drw)))
+    
 
 (.display! dbar1  "Basic")
 (.display! dbar2  "16-element")
