@@ -84,8 +84,8 @@ NullPointerException when clicking around on a sgwr slider
 Not sure of the exact conditions this error occurs, possibly it is related 
 to the mouse-released event.
 
-# ---------------------------------------------------------- BUG 0009 OPEN
-BUG 0009 2015.01.27 STATUS OPEN
+# ---------------------------------------------------------- BUG 0009 CLOSED
+BUG 0009 2015.01.27 STATUS CLOSED
 After a sgwr drawing has been flattened widgets are not being repainted 
 correctly. 
 
@@ -105,3 +105,16 @@ If drawing background is set to solid color with transparency
 the same sort of trials are observed.
 Each time the drawing is re-rendered the trials become slightly
 less visible until, after a few renders, they disappear.
+
+
+2015.02.04 Failed attempt at resolving 0009, 
+Explicitly placing an image object as the background of a drawing works as
+expected.  However when the drawing is 'flattend' the above mentioned trials
+appear. I changed how drawing treats background images. Instead of having
+a dedicated field for backgrounds the background image is now treated as
+any other drawing element in the root group.  This eliminated the trailing
+bug but flatten still does not work, which leads to a new bug re[port 0010 
+
+# ---------------------------------------------------------- BUG 0010 OPEN
+BUG 0010 2015.02.04 sgwr drawing flatten not implemented.
+

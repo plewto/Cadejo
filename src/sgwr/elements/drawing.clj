@@ -12,8 +12,8 @@
  
   (:require [sgwr.constants :as constants])
   (:require [sgwr.elements.circle])
-  (:require [sgwr.elements.group])
-  (:require [sgwr.elements.image])
+  (:require [sgwr.elements.group :as group])
+  (:require [sgwr.elements.image :as image])
   (:require [sgwr.elements.point])
   (:require [sgwr.elements.rectangle])
   (:require [sgwr.elements.text])
@@ -27,7 +27,9 @@
   (:import java.awt.image.BufferedImage
            java.awt.event.MouseMotionListener
            java.awt.event.MouseListener
-           javax.swing.JPanel))
+           javax.swing.JPanel
+           javax.swing.SwingUtilities)
+  )
 
 
 (def zoom-ratio* (atom 2/3))
@@ -60,9 +62,7 @@
     [this bg]
     "(background! this bg)
      Sets the drawing background
-     The bg argument may be a color or gradient (see sgwr.util.color) or
-     may be an instance of java.awt.image.BufferedImage. If a BufferedImage
-     is used it's size must match that of the drawing.")
+     The bg argument may be a color or gradient (see sgwr.util.color)")
 
   (render
     [this]
@@ -168,11 +168,11 @@
 (defn drawing [cs]
   "(drawing cs)
    Create new drawing using coordinate-system cs"
-  (let [root-group (sgwr.elements.group/group nil :id :root)
-        widget-root (sgwr.elements.group/group root-group :id :widget-root)
+  (let [root-group (group/group nil :id :root)
+        widget-root (group/group root-group :id :widget-root)
         active-widget* (atom nil)
         background-color* (atom (uc/color :black))
-        background-image* (atom nil)
+        ;background-image* (atom nil)
         enable-render* (atom true)
         [width height](.canvas-bounds cs)
         image* (atom (BufferedImage. width height BufferedImage/TYPE_INT_ARGB))
@@ -191,26 +191,22 @@
 
               (canvas [this] @cpan*)
 
+              ;; (background! [this bg]
+              ;;   (let [bgt (type bg)]
+              ;;     (cond (= bgt java.awt.image.BufferedImage)
+              ;;           (reset! background-image* bg)
+              ;;           :default
+              ;;           (reset! background-color* (uc/color bg)))))
+
               (background! [this bg]
-                (let [bgt (type bg)]
-                  (cond (= bgt java.awt.image.BufferedImage)
-                        (reset! background-image* bg)
-                        
-                        :default
-                        (reset! background-color* (uc/color bg)))))
+                (reset! background-color* (uc/color bg)))
 
               (render [this]
                 (if @enable-render*
                   (let [image @image*
                         g2d (.createGraphics image)]
-                    (if @background-image*
-                      (do
-                        (.drawImage g2d @background-image* constants/null-transform-op 0 0)
-                        )
-                      (do 
-                        (.setPaint g2d @background-color*)
-                        (.fillRect g2d 0 0 width height)
-                        ))
+                    (.setPaint g2d @background-color*)
+                    (.fillRect g2d 0 0 width height)
                     (doseq [e (.children root-group)]
                       (if (not (= e widget-root))(.render-node this g2d e)))
                     (.render-node this g2d widget-root)
@@ -225,7 +221,7 @@
                         sfn (get {:group (fn [& _])
                                   :point sgwr.elements.point/render-point
                                   :text sgwr.elements.text/render-text
-                                  :image sgwr.elements.image/render-image
+                                  :image image/render-image
                                   :line sgwr.elements.line/render-line
                                   :rectangle sgwr.elements.rectangle/render-rectangle
                                   :circle sgwr.elements.circle/render-circle}
@@ -236,13 +232,10 @@
                     (if (or (= hidden :no)(not hidden))
                       (do 
                         (sfn element g2d))) )))
+          
 
               (flatten! [this include-widgets]
-                (let [bg (.image this)]
-                  (.remove-children! root-group (fn [q](not (= (.get-property q :id) :widget-root))))
-                  (if include-widgets (.remove-children! widget-root))
-                  (.background! this bg)
-                  bg))
+                (utilities/warning "drawing flatten! is not implemented"))
 
               (flatten! [this]
                 (.flatten! this false))

@@ -15,7 +15,7 @@
   (:require [sgwr.widgets.radio :as radio :reload false])
   (:require [sgwr.widgets.slider :as slider :reload true])
   (:require [sgwr.widgets.dual-slider :as dual-slider :reload true])
-  (:require [sgwr.widgets.field :as field :reload true])
+  (:require [sgwr.widgets.field :as field :reload false])
   (:require [seesaw.core :as ss]))
 
 (declare display)

@@ -427,6 +427,11 @@
     [this verbosity depth]
     [this verbosity]
     [this])
+
+  (tree
+    [this depth]
+    [this])
+
 )
 
 
@@ -486,7 +491,7 @@
                
                (remove-children! [this predicate]
                  (let [old (.children this predicate)]
-                   (swap! children* (fn [q](remove predicate q)))
+                   (swap! children* (fn [q](into [] (remove predicate q))))
                    (doseq [c old](.set-parent! c nil))
                    @children*))
 
@@ -749,6 +754,16 @@
 
                (dump [this]
                  (.dump this 10))
+
+               (tree [this depth]
+                 (let [pad (utilities/tab depth)
+                       et (.element-type this)
+                       id (.get-property this :id)]
+                   (println (format "%s%s id %s" pad et id))
+                   (doseq [c @children*]
+                     (tree c (inc depth)))))
+
+               (tree [this](.tree this 0))
 
                (to-string [this verbosity depth]
                  (let [pad1 (utilities/tab depth)
