@@ -10,20 +10,20 @@
   (:require [sgwr.components.rule :as rule])
   (:require [sgwr.components.mesh :as mesh])
   (:require [sgwr.indicators.displaybar :as dbar])
-  (:require [sgwr.widgets.button :as button :reload false])
-  (:require [sgwr.widgets.multistate-button :as msb :reload false])
-  (:require [sgwr.widgets.radio :as radio :reload false])
-  (:require [sgwr.widgets.slider :as slider :reload true])
-  (:require [sgwr.widgets.dual-slider :as dual-slider :reload true])
-  (:require [sgwr.widgets.field :as field :reload false])
+  (:require [sgwr.tools.button :as button :reload false])
+  (:require [sgwr.tools.multistate-button :as msb :reload false])
+  (:require [sgwr.tools.radio :as radio :reload false])
+  (:require [sgwr.tools.slider :as slider :reload true])
+  (:require [sgwr.tools.dual-slider :as dual-slider :reload true])
+  (:require [sgwr.tools.field :as field :reload false])
   (:require [seesaw.core :as ss]))
 
 (declare display)
 
 (def drw (sgwr.components.drawing/native-drawing 600 600))
 (def root (.root drw))
-(def widgets (.widget-root drw))
-(text/text root [195 20] "Sgwr Demo 4 ~ Widgets" :size 8)
+(def tools (.tool-root drw))
+(text/text root [195 20] "Sgwr Demo 4 ~ Tools" :size 8)
 (line/line root [10 30][590 30]) 
 (def group-text (group/group root :color [64 196 16] :size 7 :style 1))
 
@@ -56,51 +56,51 @@
 (mesh/point-field root [480 290][560 200] [10 10] :color [128 0 255 128] :size 3)
 (mesh/radial-mesh root [500 380](range 20 80 10) (range 0 360 15) :ray-gap 5)
 
-(def b1 (button/icon-button widgets [ 30  80] :white :general :add :rim-color [0 0 0 0]
+(def b1 (button/icon-button tools [ 30  80] :white :general :add :rim-color [0 0 0 0]
                             :click-action (fn [& _](display "add"))))
-(def b2 (button/icon-button widgets [ 30 130] :white :general :bank  :rim-color [0 0 0 0]
+(def b2 (button/icon-button tools [ 30 130] :white :general :bank  :rim-color [0 0 0 0]
                             :click-action (fn [& _](display "bank"))))
-(def b3 (button/icon-button widgets [ 80  80] :white :general :exchange :rim-color [0 0 0 0]
+(def b3 (button/icon-button tools [ 80  80] :white :general :exchange :rim-color [0 0 0 0]
                             :click-action (fn [& _](display "exchange"))))
-(def b4 (button/icon-button widgets [ 80 130] :white :general :matrix :rim-color [0 0 0 0]
+(def b4 (button/icon-button tools [ 80 130] :white :general :matrix :rim-color [0 0 0 0]
                             :click-action (fn [& _](display "matrix"))))
-(def b5 (button/mini-icon-button widgets [ 30 183] :white :reset :rim-color :gray
+(def b5 (button/mini-icon-button tools [ 30 183] :white :reset :rim-color :gray
                                        :click-action (fn [& _](display "reset"))))
-(def b6 (button/mini-icon-button widgets [ 60 183] :white :up1   :rim-color :gray
+(def b6 (button/mini-icon-button tools [ 60 183] :white :up1   :rim-color :gray
                                  :click-action (fn [& _](display "UP 1"))))
-(def b7 (button/mini-icon-button widgets [ 90 183] :white :up2   :rim-color :gray
+(def b7 (button/mini-icon-button tools [ 90 183] :white :up2   :rim-color :gray
                                  :click-action (fn [& _](display "UP 2"))))
-(def b8 (button/mini-icon-button widgets [120 183] :white :help  :rim-color :gray
+(def b8 (button/mini-icon-button tools [120 183] :white :help  :rim-color :gray
                                  :click-action (fn [& _](display "help"))))
-(def b9 (button/text-button widgets [ 30 225] "Alpha"
+(def b9 (button/text-button tools [ 30 225] "Alpha"
                             :click-action (fn [& _](display "alpha"))))
-(def b10 (button/text-button widgets [95  225] "Beta"
+(def b10 (button/text-button tools [95  225] "Beta"
                              :click-action (fn [& _](display "beta"))))
 
 (def rbl* (atom []))
-(def rb1 (radio/radio-button widgets [160  90] "Ape" rbl* :click-action (fn [& _](display "Ape"))))
-(def rb2 (radio/radio-button widgets [160 115] "Bat" rbl* :click-action (fn [& _](display "Bat"))))
-(def rb3 (radio/radio-button widgets [160 140] "Cat" rbl* :click-action (fn [& _](display "Cat"))))
+(def rb1 (radio/radio-button tools [160  90] "Ape" rbl* :click-action (fn [& _](display "Ape"))))
+(def rb2 (radio/radio-button tools [160 115] "Bat" rbl* :click-action (fn [& _](display "Bat"))))
+(def rb3 (radio/radio-button tools [160 140] "Cat" rbl* :click-action (fn [& _](display "Cat"))))
 (radio/select-radio-button! rb3)
 
 
-(def cb1 (msb/checkbox widgets [280  90] "Alpha" :click-action (fn [& _](display "Alpha"))))
-(def cb2 (msb/checkbox widgets [280 115] "Beta" :click-action (fn [& _](display "Beta"))))
-(def cb3 (msb/checkbox widgets [280 140] "Gamma" :click-action (fn [& _](display "Gamma"))))
+(def cb1 (msb/checkbox tools [280  90] "Alpha" :click-action (fn [& _](display "Alpha"))))
+(def cb2 (msb/checkbox tools [280 115] "Beta" :click-action (fn [& _](display "Beta"))))
+(def cb3 (msb/checkbox tools [280 140] "Gamma" :click-action (fn [& _](display "Gamma"))))
 (msb/select-checkbox! cb2 true)
 
-(def tb1 (msb/text-toggle-button widgets [280 200] "Dog"))
-(def tb2 (msb/text-toggle-button widgets [280 230] "Eel"))
-(def tb3 (msb/icon-toggle-button widgets [330 200] :white :wave :am :rim-color :green))
+(def tb1 (msb/text-toggle-button tools [280 200] "Dog"))
+(def tb2 (msb/text-toggle-button tools [280 230] "Eel"))
+(def tb3 (msb/icon-toggle-button tools [330 200] :white :wave :am :rim-color :green))
 
-(def ms1 (msb/text-multistate-button widgets 
+(def ms1 (msb/text-multistate-button tools 
                                      [400 80]
                                      [[:red "Red" [255 0 0]]
                                       [:yellow "Yellow" [255 255 0]]
                                       [:green "Green" [0 255 0]]
                                       [:cyan "Cyan" [0 255 255]]]))
 
-(def ms2 (msb/icon-multistate-button widgets
+(def ms2 (msb/icon-multistate-button tools
                                      [400 120]
                                      [[:sine :wave :sine]
                                       [:tri :wave :triangle]
@@ -112,13 +112,13 @@
                                       [:noise :wave :noise]]))
 
 
-(def sl1 (slider/slider widgets [60 300] 200 0 100 
+(def sl1 (slider/slider tools [60 300] 200 0 100 
                         :orientation :horizontal
                         :drag-action (fn [obj ev]
                                        (let [v (.get-property obj :value)]
                                          (display (int v))))))
 
-(def sl2 (dual-slider/dual-slider widgets [60 330] 200 0 100 
+(def sl2 (dual-slider/dual-slider tools [60 330] 200 0 100 
                                   :orientation :horizontal
                                   :drag-action (fn [obj ev]
                                                  (let [v (.get-property obj :values)]
@@ -126,7 +126,7 @@
 
 (line/line root [300 340][400 340])
 (line/line root [350 290][350 390])
-(def f1 (field/field widgets [300 290][400 390] [-1 1][-1 1]
+(def f1 (field/field tools [300 290][400 390] [-1 1][-1 1]
                      :pad-color [64 32 64 200]
                      :drag-action (fn [obj ev]
                                     (let [ball @(.get-property obj :current-ball*)
@@ -141,7 +141,7 @@
 (def sbv field/set-ball-value!)
 
 
-(def widget-list [b1 b2 b3 b4 b5 b6 b7 b8 b9 b10
+(def tool-list [b1 b2 b3 b4 b5 b6 b7 b8 b9 b10
                   rb1 rb2 rb3 cb1 cb2 cb3
                   tb1 tb2 tb3 ms1 ms2
                   sl1 sl2 f1
@@ -149,13 +149,13 @@
 
 
 
-(def cb-enable (msb/checkbox widgets [400 550] "Enable Widgets"
+(def cb-enable (msb/checkbox tools [400 550] "Enable Tools"
                              :click-action (fn [cb _]
                                              (let [flag (msb/checkbox-selected? cb)]
                                                (if flag
-                                                 (doseq [w widget-list]
+                                                 (doseq [w tool-list]
                                                    (.enable! w false))
-                                                 (doseq [w widget-list]
+                                                 (doseq [w tool-list]
                                                    (.disable! w false)))
                                                (.render drw)))))
 (msb/select-checkbox! cb-enable true)

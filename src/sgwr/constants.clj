@@ -7,7 +7,7 @@
 
 (def +VERSION+ "0.2.0-SNAPSHOT")
 
-(def widget-types '[:button :radio-button :multistate-button :slider :dual-slider
+(def tool-types '[:button :radio-button :multistate-button :slider :dual-slider
                     :field :ball])
 
 (def default-color :lightgray)

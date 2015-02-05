@@ -1,4 +1,4 @@
-(ns sgwr.widgets.slider
+(ns sgwr.tools.slider
   (:require [sgwr.components.group :as group])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.point :as point])
@@ -190,7 +190,7 @@
       :drag-action, :move-action, :enter-action, :exit-action,
       :press-action, :release-action, :click-action
        
-       Function of form (fn [slider ev] ...) where slider is this widget
+       Function of form (fn [slider ev] ...) where slider is this tool
        and ev is an instance of java.awt.event.MouseEvent 
 
    Tracks

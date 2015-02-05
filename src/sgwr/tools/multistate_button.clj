@@ -1,6 +1,6 @@
-(ns sgwr.widgets.multistate-button
+(ns sgwr.tools.multistate-button
   
-  "Defines button widgets which may assume any number of states.
+  "Defines button tools which may assume any number of states.
    The button advances to the next state upon being clicked."
 
   (:require [sgwr.constants :as constants])  
@@ -186,7 +186,7 @@
       :drag-action, :move-action, :enter-action, :exit-action,
       :press-action, :release-action, :click-action
        
-       Function of form (fn [obj ev] ...) where obj is this widget
+       Function of form (fn [obj ev] ...) where obj is this tool
        and ev is an instance of java.awt.event.MouseEvent 
 
     :text-color - Color, keyword or vector
@@ -452,7 +452,7 @@
       :drag-action, :move-action, :enter-action, :exit-action,
       :press-action, :release-action, :click-action
        
-       Function of form (fn [obj ev] ...) where obj is this widget
+       Function of form (fn [obj ev] ...) where obj is this tool
        and ev is an instance of java.awt.event.MouseEvent 
 
     :text-color - Color, keyword or vector

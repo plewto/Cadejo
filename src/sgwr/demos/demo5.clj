@@ -8,11 +8,11 @@
   (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.components.circle :as circle])
 
-  (:require [sgwr.widgets.multistate-button :as msb :reload false])
-  (:require [sgwr.widgets.radio :as radio :reload false])
-  (:require [sgwr.widgets.slider :as slider :reload true])
-  (:require [sgwr.widgets.dual-slider :as dslider :reload true])
-  (:require [sgwr.widgets.field :as field :reload false])
+  (:require [sgwr.tools.multistate-button :as msb :reload false])
+  (:require [sgwr.tools.radio :as radio :reload false])
+  (:require [sgwr.tools.slider :as slider :reload true])
+  (:require [sgwr.tools.dual-slider :as dslider :reload true])
+  (:require [sgwr.tools.field :as field :reload false])
   (:require [seesaw.core :as ss]))
 
 ; ---------------------------------------------------------------------- 
@@ -20,7 +20,7 @@
 
 (def drw1 (sgwr.components.drawing/native-drawing 400 400))
 (def root1 (.root drw1))
-(def widgets1 (.widget-root drw1))
+(def tools1 (.tool-root drw1))
 
 (rect/rectangle root1 [100 100][300 300])
 (circle/circle root1 [100 150][200 250] :color :green)
@@ -32,7 +32,7 @@
 
 (def drw2 (sgwr.components.drawing/native-drawing 400 400))
 (def root2 (.root drw2))
-(def widgets2 (.widget-root drw2))
+(def tools2 (.tool-root drw2))
 
 
 (.background! drw2 [32 32 32])

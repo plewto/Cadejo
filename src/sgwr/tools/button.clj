@@ -1,4 +1,4 @@
-(ns sgwr.widgets.button
+(ns sgwr.tools.button
   (:require [sgwr.constants :as constants])  
   (:use [sgwr.components.component :only [set-attributes!]])
   (:require [sgwr.components.group :as group])
@@ -90,7 +90,7 @@
        :drag-action, :move-action, :enter-action, :exit-action, 
        :press-action, :release-action, :click-action     
 
-       Function of form (fn [obj ev] ...) where obj is this widget
+       Function of form (fn [obj ev] ...) where obj is this tool
        and ev is an instance of java.awt.event.MouseEvent 
 
    Returns SgwrComponent group"   
@@ -252,7 +252,7 @@
       :drag-action, :move-action, :enter-action, :exit-action,
       :press-action, :release-action, :click-action
        
-       Function of form (fn [obj ev] ...) where obj is this widget
+       Function of form (fn [obj ev] ...) where obj is this tool
        and ev is an instance of java.awt.event.MouseEvent 
 
    Returns SgwrComponent group"    

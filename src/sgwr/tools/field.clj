@@ -1,5 +1,5 @@
-(ns sgwr.widgets.field
-  "Defines 2-dimensional widget for controlling values on 2-axis 
+(ns sgwr.tools.field
+  "Defines 2-dimensional tool for controlling values on 2-axis 
   simultaneously.
 
   Each field is a rectangular area which contains any number of 
@@ -130,7 +130,7 @@
           :pad-color 
           :rim-color :rim-style :rim-width :rim-radius)
 
-   Creates field widget. The field is initially empty and does not 
+   Creates field tool. The field is initially empty and does not 
    contain control 'balls'. Use the ball function to add control components
    
    parent  - SgwrComponent, the parent group
@@ -145,7 +145,7 @@
    :drag-action, :move-action, :enter-action, :exit-action,
    :press-action, :release-action, :click-action
        
-   Function of form (fn [obj ev] ...) where obj is this widget
+   Function of form (fn [obj ev] ...) where obj is this tool
    and ev is an instance of java.awt.event.MouseEvent 
 
    :pad-color - Color, keyword or vector, background color
@@ -231,7 +231,7 @@
 
    Create control 'ball' object and add it to parent fie;d.
 
-   parent     - SgwrComponent, a group holding field widget
+   parent     - SgwrComponent, a group holding field tool
    id         - keyword, each ball within any given field must have a unique id.
    init-value - vector [x y], the initial value/position of the ball.
    

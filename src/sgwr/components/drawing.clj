@@ -2,10 +2,10 @@
   "Defines SgwrDrawing protocol 
   A drawing is an extension of javax.swing.JPanel onto which 
   components are rendered. All drawings contain a 'root' and a
-  'widget' group (See sgwr.components.group) which then contain all
+  'tool' group (See sgwr.components.group) which then contain all
   other drawing components. 
 
-  The segregation between widget and non-widget components is to reduce
+  The segregation between tool and non-tool components is to reduce
   the overhead of rendering complex drawings. Once a drawing has been
   rendered all static components may be flattened into a single image
   which greatly reduces future render times."
@@ -42,10 +42,10 @@
      Returns the 'root' group all components are ultimately placed into the
     root group.")
 
-  (widget-root
+  (tool-root
     [this]
-    "(widget-root this)
-     Returns the group used for active widgets.")
+    "(tool-root this)
+     Returns the group used for active tools.")
 
   (canvas-bounds
     [this]
@@ -79,12 +79,12 @@
      Do not call this method directly, instead use the render method.")
 
   (flatten!
-    [this include-widgets]
+    [this include-tools]
     [this]
-    "(flatten! this include-widgets)
+    "(flatten! this include-tools)
      (flatten! this)
      Replace all drawing components with a single BufferedImage 
-     By default the widgets group is not included.
+     By default the tools group is not included.
      render is implicitly called.
      Returns java.awt.image.BufferedImage
      SEE BUG 0009")
@@ -169,8 +169,8 @@
   "(drawing cs)
    Create new drawing using coordinate-system cs"
   (let [root-group (group/group nil :id :root)
-        widget-root (group/group root-group :id :widget-root)
-        active-widget* (atom nil)
+        tool-root (group/group root-group :id :tool-root)
+        active-tool* (atom nil)
         background-color* (atom (uc/color :black))
         ;background-image* (atom nil)
         enable-render* (atom true)
@@ -185,7 +185,7 @@
 
               (root [this] root-group)
 
-              (widget-root [this] widget-root)
+              (tool-root [this] tool-root)
 
               (canvas-bounds [this] (.canvas-bounds cs))
 
@@ -208,8 +208,8 @@
                     (.setPaint g2d @background-color*)
                     (.fillRect g2d 0 0 width height)
                     (doseq [e (.children root-group)]
-                      (if (not (= e widget-root))(.render-node this g2d e)))
-                    (.render-node this g2d widget-root)
+                      (if (not (= e tool-root))(.render-node this g2d e)))
+                    (.render-node this g2d tool-root)
                     (.repaint @cpan*))))
 
               (render-node [this g2d component]
@@ -234,7 +234,7 @@
                         (sfn component g2d))) )))
           
 
-              (flatten! [this include-widgets]
+              (flatten! [this include-tools]
                 (utilities/warning "drawing flatten! is not implemented"))
 
               (flatten! [this]
@@ -303,34 +303,34 @@
      @cpan* 
      (let [not-neg? (fn [n](>= n 0))
            motion-handler (fn [ev drag-flag]
-                            (let [cs (.coordinate-system widget-root)
+                            (let [cs (.coordinate-system tool-root)
                                   p [(.getX ev)(.getY ev)]
                                   q (.inv-map cs p)]
                               (reset! mouse-dragged* drag-flag)
                               (reset! mouse-position* p)
-                              (let [previous @active-widget*
-                                    i* (atom (dec (.child-count widget-root)))]
-                                (reset! active-widget* nil)
+                              (let [previous @active-tool*
+                                    i* (atom (dec (.child-count tool-root)))]
+                                (reset! active-tool* nil)
                                 
-                                (while (and (not @active-widget*)(not-neg? @i*))
-                                  (let [c (nth (.children widget-root) @i*)]
+                                (while (and (not @active-tool*)(not-neg? @i*))
+                                  (let [c (nth (.children tool-root) @i*)]
                                     (if (.contains? c q)
-                                      (reset! active-widget* c))
+                                      (reset! active-tool* c))
                                     (swap! i* dec)))
                                 
-                                (cond (= previous @active-widget*) ; no change
+                                (cond (= previous @active-tool*) ; no change
                                       nil
                                       
-                                      (and previous (not @active-widget*)) ; mouse exited widget
+                                      (and previous (not @active-tool*)) ; mouse exited tool
                                       (let [exfn (.get-property previous :action-mouse-exited)]
                                         (.restore-attributes! previous)
                                         (exfn previous ev)
                                         (.render drw))
                                       
-                                      (and (not previous) @active-widget*) ; mouse entered widget
-                                      (let [enfn (.get-property @active-widget* :action-mouse-entered)]
-                                        (.use-temp-attributes! @active-widget* :rollover)
-                                        (enfn @active-widget* ev)
+                                      (and (not previous) @active-tool*) ; mouse entered tool
+                                      (let [enfn (.get-property @active-tool* :action-mouse-entered)]
+                                        (.use-temp-attributes! @active-tool* :rollover)
+                                        (enfn @active-tool* ev)
                                         (.render drw)
                                         
                                         :default ; no change
@@ -338,14 +338,14 @@
        (proxy [MouseMotionListener][]
          (mouseDragged [ev]
            (motion-handler ev true)
-           (let [active @active-widget*]
+           (let [active @active-tool*]
              (if active
                (let [mfn (.get-property active :action-mouse-dragged (fn [& _]))]
                  (mfn active ev)))))
          
          (mouseMoved [ev]
            (motion-handler ev false)
-           (let [active @active-widget*]
+           (let [active @active-tool*]
              (if active
                (let [mfn (.get-property active :action-mouse-moved (fn [& _]))]
                  (mfn active ev))))) )))
@@ -356,13 +356,13 @@
                                   (mouseEntered [_])
 
                                   (mouseExited [_]
-                                    ;; HACK clears all 'active' widgets when mouse exits win
-                                    ;(doseq [c (.children widget-root)]
-                                    (.restore-attributes! widget-root)
+                                    ;; HACK clears all 'active' tools when mouse exits win
+                                    ;(doseq [c (.children tool-root)]
+                                    (.restore-attributes! tool-root)
                                     (.render drw))
                                 
                                   (mouseClicked [ev]
-                                    (let [active @active-widget*]
+                                    (let [active @active-tool*]
                                       (if active
                                         (let [cfn (.get-property active
                                                                  :action-mouse-clicked
@@ -370,7 +370,7 @@
                                           (cfn active ev)))))
                                   
                                   (mousePressed [ev]
-                                    (let [active @active-widget*]
+                                    (let [active @active-tool*]
                                       (if active
                                         (let [cfn (.get-property active
                                                                  :action-mouse-pressed
@@ -378,7 +378,7 @@
                                           (cfn active ev)))))
 
                                   (mouseReleased [ev]
-                                    (let [active @active-widget*]
+                                    (let [active @active-tool*]
                                       (if active
                                         (let [cfn (.get-property active
                                                                  :action-mouse-released

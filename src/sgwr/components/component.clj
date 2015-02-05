@@ -56,11 +56,11 @@
     "(component-type this)
      Returns keyword identification for component type")
 
-  (widget-type
+  (tool-type
     [this]
-    "(widget-type this)
-     Returns the component type if this happens to be a 'widget' 
-     Returns nil if this is not a widget")
+    "(tool-type this)
+     Returns the component type if this happens to be a 'tool' 
+     Returns nil if this is not a tool")
     
   (parent
     [this]
@@ -460,7 +460,7 @@
 
   ([etype parent fnmap locked]
    (let [parent* (atom parent)
-         widget-type (if (utilities/member? etype constants/widget-types)
+         tool-type (if (utilities/member? etype constants/tool-types)
                        etype
                        nil)
          coordinate-system* (atom nil)
@@ -475,7 +475,7 @@
        
                (component-type [this] etype)
                
-               (widget-type [this] widget-type)
+               (tool-type [this] tool-type)
 
                (parent [this] @parent*)
 

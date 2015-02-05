@@ -1,4 +1,4 @@
-(ns sgwr.widgets.radio
+(ns sgwr.tools.radio
    "Defines sets of mutually exclusive buttons"
   (:require [sgwr.components.circle :as circle])
   (:require [sgwr.components.group :as group])
@@ -130,7 +130,7 @@
       :drag-action, :move-action, :enter-action, :exit-action,
       :press-action, :release-action, :click-action
        
-       Function of form (fn [obj ev] ...) where obj is this widget
+       Function of form (fn [obj ev] ...) where obj is this tool
        and ev is an instance of java.awt.event.MouseEvent 
 
    :text-color - Color, keyword or vector, see swr.util.color
