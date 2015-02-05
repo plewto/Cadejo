@@ -12,10 +12,10 @@
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.config :as config])
   (:require [seesaw.core :as ss])
-  (:require [sgwr.elements.drawing])
-  (:require [sgwr.elements.point])
+  (:require [sgwr.components.drawing])
+  (:require [sgwr.components.point])
   (:require [sgwr.indicators.displaybar])
-  (:require [sgwr.widgets.button :as sb])
+  (:require [sgwr.tools.button :as sb])
   (:require [clojure.string])
   (:import javax.swing.Box))
 
@@ -42,12 +42,12 @@
   (let [prognum* (atom 0)
         bank (.bank performance)
         [bg inactive active alt](config/displaybar-colors)
-        drawing (let [drw (sgwr.elements.drawing/native-drawing 611 65)]
+        drawing (let [drw (sgwr.components.drawing/native-drawing 611 65)]
                   (.background! drw bg)
                   drw)
         root (.root drawing)
-        widget-root (.widget-root drawing)
-        modified-marker (let [pnt (sgwr.elements.point/point root [234 16] 
+        tool-root (.tool-root drawing)
+        modified-marker (let [pnt (sgwr.components.point/point root [234 16] 
                                                              :color inactive
                                                              :style [:bar :dash :diag :diag2]
                                                              :size 3)]
@@ -85,15 +85,15 @@
                                     (format "Stored program %s" slot))))
 
         sb-prefix :gray
-        sb-inc (sb/mini-icon-button widget-root [107 4] sb-prefix :up1 
+        sb-inc (sb/mini-icon-button tool-root [107 4] sb-prefix :up1 
                                     :click-action (fn [& _](inc-prognum 1)))
-        sb-dec (sb/mini-icon-button widget-root [107 34] sb-prefix :down1
+        sb-dec (sb/mini-icon-button tool-root [107 34] sb-prefix :down1
                                     :click-action (fn [& _](dec-prognum 1)))
-        sb-inc-page (sb/mini-icon-button widget-root [137 4] sb-prefix :up2
+        sb-inc-page (sb/mini-icon-button tool-root [137 4] sb-prefix :up2
                                          :click-action (fn [& _](inc-prognum 8)))
-        sb-dec-page (sb/mini-icon-button widget-root [137 34] sb-prefix :down2
+        sb-dec-page (sb/mini-icon-button tool-root [137 34] sb-prefix :down2
                                          :click-action (fn [& _](dec-prognum 8)))
-        sb-store (sb/icon-button widget-root [170 10] sb-prefix :general :bankstore
+        sb-store (sb/icon-button tool-root [170 10] sb-prefix :general :bankstore
                                  :click-action store-program)
         
 

@@ -1,7 +1,7 @@
 (println "--> Loading Cadejo")
  (ns cadejo.core
    (:require [sgwr.util.color])
-   (:require [sgwr.elements.element])
+   (:require [sgwr.components.component])
    (:require [cadejo.config :as config])  
    (:require [overtone.core :as ot])
    (:require [cadejo.midi.scene])

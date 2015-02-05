@@ -1,14 +1,14 @@
 (ns cadejo.instruments.combo.editor.panel
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.util.math :as math])
-  (:require [sgwr.elements.drawing])
-  (:require [sgwr.elements.line :as line])
-  (:require [sgwr.elements.rectangle :as rect])
-  (:require [sgwr.elements.rule :as rule])
-  (:require [sgwr.elements.text :as text])
-  (:require [sgwr.widgets.field :as field])
-  (:require [sgwr.widgets.slider :as slider])
-  (:require [sgwr.widgets.multistate-button :as msb])
+  (:require [sgwr.components.drawing])
+  (:require [sgwr.components.line :as line])
+  (:require [sgwr.components.rectangle :as rect])
+  (:require [sgwr.components.rule :as rule])
+  (:require [sgwr.components.text :as text])
+  (:require [sgwr.tools.field :as field])
+  (:require [sgwr.tools.slider :as slider])
+  (:require [sgwr.tools.multistate-button :as msb])
   (:require [sgwr.util.color :as uc]))
 
 (def ^:private ed-width 620)
@@ -121,7 +121,7 @@
         [x7 x8] (range 500 600 50)
         y1 200
         y2 400
-        drw (let [d (sgwr.elements.drawing/native-drawing ed-width ed-height)
+        drw (let [d (sgwr.components.drawing/native-drawing ed-width ed-height)
                   root (.root d)
                   y3 (+ y2 30)
                   r1 (rect/rectangle root [40   12][240 438])
@@ -156,12 +156,12 @@
         slider (fn [id p0 v0 v1 drag-action & {:keys [length]
                                                   :or {length 150}}]
                  (let [root (.root drw)
-                       wroot (.widget-root drw)
+                       troot (.tool-root drw)
                        mj-step 50
                        mn-step 10
                        r (rule/ruler root p0 length
                                      :rim-color [0 0 0 0])
-                       s (slider/slider wroot p0 length v0 v1 :id id
+                       s (slider/slider troot p0 length v0 v1 :id id
                                         :drag-action drag-action)]
                    (rule/ticks r mn-step :length 4 :color :gray)
                    (rule/ticks r mj-step :length 12 :color :green)
@@ -169,7 +169,7 @@
                    s))
         detune-coarse* (atom 0.0)
         detune-fine* (atom 0.0)
-        wroot (.widget-root drw)
+        troot (.tool-root drw)
         s-amp1 (slider :amp1 [x1 y1] 1 100 default-drag-action) 
         s-amp2 (slider :amp2 [x2 y1] 1 100 default-drag-action) 
         s-amp3 (slider :amp3 [x3 y1] 1 100 default-drag-action) 
@@ -194,14 +194,14 @@
                                        [:bp :filter :band]
                                        [:br :filter :notch]]
                                b (msb/icon-multistate-button 
-                                  wroot [270 50] states 
+                                  troot [270 50] states 
                                   :click-action filter-curve-click-action)]
                            (.put-property! b :editor ied)
                            b)
         msb-filter-freq (let [states [[:1 " 1 "], [:2 " 2 "], [:3 " 3 "],
                                       [:4 " 4 "], [:6 " 6 "], [:8 " 8 "]]
                               b (msb/text-multistate-button 
-                                 wroot [272 100] states
+                                 troot [272 100] states
                                  :w 36 :h 36 :rim-radius 0
                                  :click-action filter-freq-click-action)]
                           (.put-property! b :editor ied)
@@ -212,7 +212,7 @@
         s-amp (slider :amp [x8 y1] 0 100 db-amp-action)
         s-flanger-depth (slider :flanger-depth [x7 y2] 0 100 default-drag-action :length 120)
         s-flanger-mix (slider :flanger-mix [x8 y2] 0 100 default-drag-action :length 120)
-        field-flanger (let [f (field/field wroot [360 280][460 380][-1 1][0 1]
+        field-flanger (let [f (field/field troot [360 280][460 380][-1 1][0 1]
                                            :drag-action flanger-drag-action)]
                         (.put-property! f :editor ied)
                         f)

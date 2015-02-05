@@ -5,12 +5,12 @@
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])
-  (:require [sgwr.widgets.field :as field])
-  (:require [sgwr.widgets.multistate-button :as msb])
-  (:require [sgwr.widgets.slider]))
+  (:require [sgwr.tools.field :as field])
+  (:require [sgwr.tools.multistate-button :as msb])
+  (:require [sgwr.tools.slider]))
 
 
-(def ^:private msg1 "Combo editor does not have %s widget")
+(def ^:private msg1 "Combo editor does not have %s tool")
 
 (def ^:private vibrato-freq->pos 
   (math/linear-function min-vibrato-frequency 0
@@ -30,10 +30,10 @@
                                                      max-flanger-fb 1))
 
 (defn- slider-value! [s v]
-  (sgwr.widgets.slider/set-slider-value! s v nil))
+  (sgwr.tools.slider/set-slider-value! s v nil))
 
 (defn- slider-value [s]
-  (sgwr.widgets.slider/get-slider-value s))
+  (sgwr.tools.slider/get-slider-value s))
 
 (def ^:private filter-freq-index-map {1 0, 2 1, 3 2, 4 3, 6 4, 8 5})
 
