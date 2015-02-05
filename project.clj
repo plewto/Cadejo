@@ -10,5 +10,5 @@
                  [overtone "0.9.1"]]
   ;:main cadejo.core
   ;:main cadejo.ui.midi.properties-panel
-  :main sgwr.demos.demo1
+  :main sgwr.demos.demo4
   )

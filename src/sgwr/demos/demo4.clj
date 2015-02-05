@@ -20,14 +20,15 @@
 
 (declare display)
 
+(def temp-drw (sgwr.components.drawing/native-drawing 600 600))
 (def drw (sgwr.components.drawing/native-drawing 600 600))
+(def temp-root (.root temp-drw))
 (def root (.root drw))
 (def tools (.tool-root drw))
 (text/text root [195 20] "Sgwr Demo 4 ~ Tools" :size 8)
 (line/line root [10 30][590 30]) 
-(def group-text (group/group root :color [64 196 16] :size 7 :style 1))
 
-
+(def group-text (group/group temp-root :color [64 196 16] :size 7 :style 1))
 (defn- text-obj [pos txt]
   (text/text group-text pos txt :color nil :style nil :size nil))
 
@@ -41,20 +42,24 @@
 (text-obj [20 420] "Display bars")
 (text-obj [420 180] "Rulers and Meshes")
 
-(def dbar1 (dbar/displaybar root 20 440 7 :basic))
-(def dbar2 (dbar/displaybar root 20 490 12 :sixteen :cell-width 15 :cell-height 20))
-(def dbar3 (dbar/displaybar root 20 530 12 :matrix :cell-height 20 :cell-height 30))
-(.display! dbar2 "16-SEGMENT")
-(.display! dbar3 "5X7 MATRIX")
-(.colors! dbar2 [30 30 30] [255 192 192])
-
-(def ru1 (rule/ruler root [440 280] 80 :orientation :vertical
+(def ru1 (rule/ruler temp-root [440 280] 80 :orientation :vertical
                      :pad-color [128 0 0 64]))
 (rule/ticks ru1 20 :color :white :offset 4)
 (rule/ticks ru1 5 :color :green :length 4 :offset -4)
-(mesh/mesh root [470 290][560 190] [10 10] :color [64 64 64])
-(mesh/point-field root [480 290][560 200] [10 10] :color [128 0 255 128] :size 3)
-(mesh/radial-mesh root [500 380](range 20 80 10) (range 0 360 15) :ray-gap 5)
+(mesh/mesh temp-root [470 290][560 190] [10 10] :color [64 64 64])
+(mesh/point-field temp-root [480 290][560 200] [10 10] :color [128 0 255 128] :size 3)
+(mesh/radial-mesh temp-root [500 380](range 20 80 10) (range 0 360 15) :ray-gap 5)
+(def img1 (let [bufimg (.image temp-drw)
+                iobj (image/image root [0 0] 600 600)]
+            (.put-property! iobj :image bufimg)
+            iobj))
+
+;(def dbar1 (dbar/displaybar root 20 440 7 :basic))
+(def dbar2 (dbar/displaybar root 20 490 7 :sixteen :cell-width 15 :cell-height 20))
+(def dbar3 (dbar/displaybar root 20 530 7 :matrix :cell-height 20 :cell-height 30))
+(.display! dbar2 "16-SEG")
+(.display! dbar3 "MATRIX")
+(.colors! dbar2 [30 30 30] [255 192 192])
 
 (def b1 (button/icon-button tools [ 30  80] :white :general :add :rim-color [0 0 0 0]
                             :click-action (fn [& _](display "add"))))
@@ -145,7 +150,7 @@
                   rb1 rb2 rb3 cb1 cb2 cb3
                   tb1 tb2 tb3 ms1 ms2
                   sl1 sl2 f1
-                  dbar1 dbar2 dbar3])
+                  dbar2 dbar3])
 
 
 
@@ -162,13 +167,13 @@
 
 (defn display [text]
   (let [txt (.toUpperCase (str text))]
-    (.display! dbar1 txt false)
+    ;(.display! dbar1 txt false)
     (.display! dbar2 txt false) 
     (.display! dbar3 txt false)
     (.render drw)))
     
 
-(.display! dbar1  "Basic")
+;(.display! dbar1  "Basic")
 (.display! dbar2  "16-element")
 (.display! dbar3  "DOT-MATRIX")
 
