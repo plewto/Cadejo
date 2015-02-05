@@ -1,5 +1,5 @@
-(ns sgwr.elements.point
-  "Defines point drawing elements.
+(ns sgwr.components.point
+  "Defines point drawing components.
    Despite being called 'points', point objects may take any number of shapes.
    The key concept for point objects is that they have no
    dimension. Their shape and size are not effected by the
@@ -23,7 +23,7 @@
        The dot and box shapes may be filled by including :fill
        Note that if :fill is used with any shape besides :dot 
        and :box the point will not be rendered."
-  (:require [sgwr.elements.element])
+  (:require [sgwr.components.component])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities])
@@ -244,7 +244,7 @@
 (defn point 
   "(point parent p :id :color :style :size)
    Create point object
-   parent - SgwrElement, the parent group
+   parent - SgwrComponent, the parent group
    p      - vector, the position [x y]
    :id    - keyword
    :color - 
@@ -255,7 +255,7 @@
                      color (uc/color :white)
                      style 0
                      size 1.0}}]
-   (let [obj (sgwr.elements.element/create-element :point 
+   (let [obj (sgwr.components.component/create-component :point 
                                                    parent 
                                                    point-function-map 
                                                    locked-properties)]

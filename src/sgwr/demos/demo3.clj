@@ -3,14 +3,14 @@
 ;;
 
 (ns sgwr.demos.demo3
-  (:require [sgwr.elements.element])
-  (:require [sgwr.elements.drawing :as drw])
-  (:require [sgwr.elements.group :as grp])
-  (:require [sgwr.elements.point :as point])
-  (:require [sgwr.elements.line :as line])
-  (:require [sgwr.elements.rectangle :as rect])
-  (:require [sgwr.elements.circle :as circle])
-  (:require [sgwr.elements.text :as text])
+  (:require [sgwr.components.component])
+  (:require [sgwr.components.drawing :as drw])
+  (:require [sgwr.components.group :as grp])
+  (:require [sgwr.components.point :as point])
+  (:require [sgwr.components.line :as line])
+  (:require [sgwr.components.rectangle :as rect])
+  (:require [sgwr.components.circle :as circle])
+  (:require [sgwr.components.text :as text])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.cs.native])
   (:require [seesaw.core :as ss])
@@ -18,13 +18,13 @@
             java.awt.event.MouseListener))
 
 (declare status)
-(def set-attributes! sgwr.elements.element/set-attributes!)
+(def set-attributes! sgwr.components.component/set-attributes!)
 
 (def drw (drw/polar-drawing 600 600 1.5 :unit :deg))
 (def root (.root drw))
 
 ;; NOTE: 
-;; Coordinate system may be set at element level, here text is displayed 
+;; Coordinate system may be set at component level, here text is displayed 
 ;; using native coordinates on what is otherwise a polar drawing.
 ;;
 (def grp1 (grp/group root :id :grp1))

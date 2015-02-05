@@ -1,10 +1,10 @@
 (ns sgwr.widgets.dual-slider
   "Defines a slider with 2 heads, useful for setting value ranges"
   (:require [sgwr.constants :as constants])
-  (:require [sgwr.elements.group :as group])
-  (:require [sgwr.elements.line :as line])
-  (:require [sgwr.elements.point :as point])
-  (:require [sgwr.elements.rectangle :as rect])
+  (:require [sgwr.components.group :as group])
+  (:require [sgwr.components.line :as line])
+  (:require [sgwr.components.point :as point])
+  (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math]))
 
@@ -18,7 +18,7 @@
   "(set-dual-slider-value! obj v1 v2 render?)
    (set-dual-slider-value! obj v1 v2)
 
-   obj - SgwrElement, group containing dual-slider
+   obj - SgwrComponent, group containing dual-slider
    v1  - float, minimum value 
    v2  - float, maximum value
    render?  - boolean if true render drawing containing slider, default true
@@ -69,7 +69,7 @@
 
 (defn get-dual-slider-values [obj]
   "(get-dual-slider-value obj)
-   obj - SgwrElement, the group containing the slider
+   obj - SgwrComponent, the group containing the slider
    Returns current slider value as vector [v1 v2] where 
    v1 <= v2"
   (.get-property obj :values))
@@ -295,7 +295,7 @@
 
     Creates dual-slider 
 
-    parent  - SgwrElement, the parent group
+    parent  - SgwrComponent, the parent group
     p0      - vector [x y] bottom or left hand position of slider
     length  - float, length of slider
     v0      - float, minimum value
@@ -319,10 +319,10 @@
     Handles
 
     There are two handle which set|display current low and high values.
-    The handles are implemented by point elements.
+    The handles are implemented by point components.
 
     :handle(i)-color - Color, keyword or vector
-    :handle(i)-style - vector, sets handle shape, see sgwr.elements.point
+    :handle(i)-style - vector, sets handle shape, see sgwr.components.point
     :handle(i)-size  - float, handle point size
 
    :current-handle-color -   Sets color, style and size
@@ -344,7 +344,7 @@
    Function of form (fn [obj ev] ...) where obj is this widget
    and ev is an instance of java.awt.event.MouseEvent 
 
-   Returns SgwrElement group"
+   Returns SgwrComponent group"
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 

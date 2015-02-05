@@ -1,11 +1,11 @@
 (ns sgwr.indicators.sixteen
-  "Defines displaybar cell as 16-elemets display"
+  "Defines displaybar cell as 16-element display"
   (:require [sgwr.indicators.cell])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
-  (:require [sgwr.elements.element :as elements])
-  (:require [sgwr.elements.circle :as circle])
-  (:require [sgwr.elements.line :as line]))
+  (:require [sgwr.components.component :as components])
+  (:require [sgwr.components.circle :as circle])
+  (:require [sgwr.components.line :as line]))
             
 
 ; ---------------------------------------------------------------------- 
@@ -153,11 +153,11 @@
                    (doseq [e (vals emap)]
                      (if (= e (:dp emap))
                        (do 
-                         (elements/set-attributes! e :inactive :color @inactive* :style :solid :width 1.0 :fill :no :hide :no)
-                         (elements/set-attributes! e :active   :color @active*   :style :solid :width 1.0 :fill :no :hide :no))
+                         (components/set-attributes! e :inactive :color @inactive* :style :solid :width 1.0 :fill :no :hide :no)
+                         (components/set-attributes! e :active   :color @active*   :style :solid :width 1.0 :fill :no :hide :no))
                        (do 
-                         (elements/set-attributes! e :inactive :color @inactive* :style :solid :width 1.0 :fill :no :hide :no)
-                         (elements/set-attributes! e :active   :color @active*   :style :solid :width 1.0 :fill :no :hide :no))))
+                         (components/set-attributes! e :inactive :color @inactive* :style :solid :width 1.0 :fill :no :hide :no)
+                         (components/set-attributes! e :active   :color @active*   :style :solid :width 1.0 :fill :no :hide :no))))
                    emap)
         all-off (fn []
                   (doseq [p (vals elements)]
@@ -174,8 +174,8 @@
                   (reset! inactive* c1)
                   (reset! active* c2)
                   (doseq [p (vals elements)]
-                    (elements/set-attributes! p :inactive :color c1 :fill :no :hide :no)
-                    (elements/set-attributes! p :active   :color c2 :fill :no :hide :no))
+                    (components/set-attributes! p :inactive :color c1 :fill :no :hide :no)
+                    (components/set-attributes! p :active   :color c2 :fill :no :hide :no))
                   [c1 c2]))
               
               (character-set [this]

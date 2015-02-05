@@ -1,10 +1,10 @@
 (ns sgwr.widgets.button
   (:require [sgwr.constants :as constants])  
-  (:use [sgwr.elements.element :only [set-attributes!]])
-  (:require [sgwr.elements.group :as group])
-  (:require [sgwr.elements.image :as image])
-  (:require [sgwr.elements.rectangle :as rect])
-  (:require [sgwr.elements.text :as text])
+  (:use [sgwr.components.component :only [set-attributes!]])
+  (:require [sgwr.components.group :as group])
+  (:require [sgwr.components.image :as image])
+  (:require [sgwr.components.rectangle :as rect])
+  (:require [sgwr.components.text :as text])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:import javax.swing.SwingUtilities))
@@ -70,7 +70,7 @@
 
    Creates button with icon from resource directory.
 
-   parent     - SgwrElement, the parent group
+   parent     - SgwrComponent, the parent group
    p0         - vector [x0 y0] position of button
    prefix     - keyword, icon name prefix, one of :black :gray or :white
    group      - keyword, icon name main-group, :general :wave, :filter etc...
@@ -93,7 +93,7 @@
        Function of form (fn [obj ev] ...) where obj is this widget
        and ev is an instance of java.awt.event.MouseEvent 
 
-   Returns SgwrElement group"   
+   Returns SgwrComponent group"   
    
   (let [grp (blank-button parent (or id (keyword (format "%s-%s" (name group) (name subgroup))))
                           :drag-action drag-action 
@@ -166,7 +166,7 @@
    Convenience function for creating 'mini' icons. Same as calling 
    (icon-button parent p0 prefix :mini subgroup :w 24 :h 24)
 
-   Returns SgwrElement group"
+   Returns SgwrComponent group"
                                         
   (icon-button parent p0 prefix :mini subgroup
                :id id
@@ -225,7 +225,7 @@
 
     Creates text button
 
-    parent - SgwrElement, the parent group
+    parent - SgwrComponent, the parent group
     p0     - vector [x0 y0], position of button
     txt    - String, the text
 
@@ -255,7 +255,7 @@
        Function of form (fn [obj ev] ...) where obj is this widget
        and ev is an instance of java.awt.event.MouseEvent 
 
-   Returns SgwrElement group"    
+   Returns SgwrComponent group"    
 
 
   (let [grp (blank-button parent (get-button-id "text-button" id)
@@ -304,7 +304,7 @@
     (.color! pad :rollover pad-color)
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
-    (.put-property! grp :text-element txobj)
+    (.put-property! grp :text-component txobj)
     (.put-property! grp :occluder occluder)
     (.use-attributes! grp :default)
     (.use-attributes! occluder :enabled)

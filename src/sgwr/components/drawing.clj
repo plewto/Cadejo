@@ -1,22 +1,22 @@
-(ns sgwr.elements.drawing
+(ns sgwr.components.drawing
   "Defines SgwrDrawing protocol 
   A drawing is an extension of javax.swing.JPanel onto which 
-  elements are rendered. All drawings contain a 'root' and a
-  'widget' group (See sgwr.elements.group) which then contain all
-  other drawing elements. 
+  components are rendered. All drawings contain a 'root' and a
+  'widget' group (See sgwr.components.group) which then contain all
+  other drawing components. 
 
-  The segregation between widget and non-widget elements is to reduce
+  The segregation between widget and non-widget components is to reduce
   the overhead of rendering complex drawings. Once a drawing has been
-  rendered all static elements may be flattened into a single image
+  rendered all static components may be flattened into a single image
   which greatly reduces future render times."
  
   (:require [sgwr.constants :as constants])
-  (:require [sgwr.elements.circle])
-  (:require [sgwr.elements.group :as group])
-  (:require [sgwr.elements.image :as image])
-  (:require [sgwr.elements.point])
-  (:require [sgwr.elements.rectangle])
-  (:require [sgwr.elements.text])
+  (:require [sgwr.components.circle])
+  (:require [sgwr.components.group :as group])
+  (:require [sgwr.components.image :as image])
+  (:require [sgwr.components.point])
+  (:require [sgwr.components.rectangle])
+  (:require [sgwr.components.text])
   (:require [sgwr.cs.native :as native-cs])
   (:require [sgwr.cs.cartesian :as cartesian-cs])
   (:require [sgwr.cs.polar :as polar-cs])
@@ -39,7 +39,7 @@
   (root 
     [this]
     "(root this)
-     Returns the 'root' group all elements are ultimately placed into the
+     Returns the 'root' group all components are ultimately placed into the
     root group.")
 
   (widget-root
@@ -72,10 +72,10 @@
      
 
   (render-node 
-    [this g2d element]
-    "(render-node this g2d element)
+    [this g2d component]
+    "(render-node this g2d component)
      g2d - an instance of java.awt.Graphics2D
-     Render specific element. 
+     Render specific component. 
      Do not call this method directly, instead use the render method.")
 
   (flatten!
@@ -83,7 +83,7 @@
     [this]
     "(flatten! this include-widgets)
      (flatten! this)
-     Replace all drawing elements with a single BufferedImage 
+     Replace all drawing components with a single BufferedImage 
      By default the widgets group is not included.
      render is implicitly called.
      Returns java.awt.image.BufferedImage
@@ -212,26 +212,26 @@
                     (.render-node this g2d widget-root)
                     (.repaint @cpan*))))
 
-              (render-node [this g2d element]
-                (if (not (.is-leaf? element))
-                  (doseq [c (.children element)]
+              (render-node [this g2d component]
+                (if (not (.is-leaf? component))
+                  (doseq [c (.children component)]
                     (.render-node this g2d c))
-                  (let [hidden (.hidden? element)
-                        etype (.element-type element)
+                  (let [hidden (.hidden? component)
+                        etype (.component-type component)
                         sfn (get {:group (fn [& _])
-                                  :point sgwr.elements.point/render-point
-                                  :text sgwr.elements.text/render-text
+                                  :point sgwr.components.point/render-point
+                                  :text sgwr.components.text/render-text
                                   :image image/render-image
-                                  :line sgwr.elements.line/render-line
-                                  :rectangle sgwr.elements.rectangle/render-rectangle
-                                  :circle sgwr.elements.circle/render-circle}
+                                  :line sgwr.components.line/render-line
+                                  :rectangle sgwr.components.rectangle/render-rectangle
+                                  :circle sgwr.components.circle/render-circle}
                                  etype
                                  (fn [obj _]
                                    (utilities/warning (format "Render function not defined for %s" etype))))]
-                    (.setPaint g2d (.color element))
+                    (.setPaint g2d (.color component))
                     (if (or (= hidden :no)(not hidden))
                       (do 
-                        (sfn element g2d))) )))
+                        (sfn component g2d))) )))
           
 
               (flatten! [this include-widgets]

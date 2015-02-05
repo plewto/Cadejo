@@ -1,11 +1,11 @@
-(ns sgwr.elements.mesh
+(ns sgwr.components.mesh
   "Defines composite meshes
-   A mesh is a pseudo element, it is not single element but 
-   collection of related elements."
-  (:require [sgwr.elements.circle :as circle])
-  (:require [sgwr.elements.line :as line])
-  (:require [sgwr.elements.point :as point])
-  (:require [sgwr.elements.rectangle :as rect])
+   A mesh is a pseudo component, it is not single component but 
+   collection of related components."
+  (:require [sgwr.components.circle :as circle])
+  (:require [sgwr.components.line :as line])
+  (:require [sgwr.components.point :as point])
+  (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities]))
 
@@ -30,7 +30,7 @@
                                          force-final true}}]
   "(mesh parent p0 p1 spacing :id :color :style :width :force-final)
     Create mesh of orthogonal lines. 
-    parent  - SgwrElement, the parent group
+    parent  - SgwrComponent, the parent group
     p0      - vector, bounding rectangle vertex p0 -> [x0 y0]
     p1      - vector, opposing bounding rectangle vertex p1 -> [x1 y1]
     spacing - vector, line spacing deltas [dx dy]
@@ -96,7 +96,7 @@
       :ray-gap :ray-length :ray-color :ray-style :ray-width)
 
    Draw concentric circles with optional rays converging at the center
-   parent      - SgwrElement, parent group
+   parent      - SgwrComponent, parent group
    center      - vector [x0 y0] location of center
    radii       - vector [r1 r2 r3...] list of circle radii
    rays        - vector [a1 a2 a3 ...] list of ray angles (see aunit)
@@ -171,7 +171,7 @@
         :ray-gap :ray-length :ray-color :ray-style :ray-width)
 
    Draw concentric circles with optional rays converging at the center
-   parent      - SgwrElement, parent group
+   parent      - SgwrComponent, parent group
    radii       - vector [r1 r2 r3...] list of circle radii
    rays        - vector [a1 a2 a3 ...] list of ray angles 
                  (unit determined by coordinate-system)

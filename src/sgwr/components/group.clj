@@ -1,7 +1,7 @@
-(ns sgwr.elements.group
-  "Defines group elements
-   A group is an element (implements sgwr.elements.SgwrElement) which
-   holds other elements, possibly other groups. 
+(ns sgwr.components.group
+  "Defines group components
+   A group is an component (implements sgwr.components.SgwrComponent) which
+   holds other components, possibly other groups. 
 
    Each group may have it's own coordinate system which makes it
    possible to overlay multiple coordinate systems onto a single
@@ -10,7 +10,7 @@
   (:require [sgwr.constants :as constants])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.utilities :as utilities])
-  (:require [sgwr.elements.rectangle :as rect]))
+  (:require [sgwr.components.rectangle :as rect]))
 
 (defn- shape-function [obj]
     (if (.hidden? obj)
@@ -88,7 +88,7 @@
                             fill false
                             hide false
                             cs nil}}]
-  (let [obj (sgwr.elements.element/create-element etype
+  (let [obj (sgwr.components.component/create-component etype
                                                    parent
                                                    group-function-map
                                                    locked-group-properties)]

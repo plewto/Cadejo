@@ -60,48 +60,48 @@
 
 (defn is-group? [obj]
   (try
-    (= (.element-type obj) :group)
+    (= (.component-type obj) :group)
     (catch IllegalArgumentException ex
       false)))
 
 (defn is-point? [obj]
   (try
-    (= (.element-type obj) :point)
+    (= (.component-type obj) :point)
     (catch IllegalArgumentException ex
       false)))
 
 (defn is-line? [obj]
   (try
-    (= (.element-type obj) :line)
+    (= (.component-type obj) :line)
     (catch IllegalArgumentException ex
       false)))
 
 (defn is-rectangle? [obj]
   (try
-    (= (.element-type obj) :rectangle)
+    (= (.component-type obj) :rectangle)
     (catch IllegalArgumentException ex
       false)))
 
 (defn is-ellipse? [obj]
   (try
-    (= (.element-type obj) :ellipse)
+    (= (.component-type obj) :ellipse)
     (catch IllegalArgumentException ex
       false)))
 
 (defn is-circle? [obj]
   (try
-    (= (.element-type obj) :circle)
+    (= (.component-type obj) :circle)
     (catch IllegalArgumentException ex
       false)))
 
 (defn is-text? [obj]
   (try
-    (= (.element-type obj) :text)
+    (= (.component-type obj) :text)
     (catch IllegalArgumentException ex
       false)))
 
 (defn is-image? [obj]
   (try
-    (= (.element-type obj) :image)
+    (= (.component-type obj) :image)
     (catch IllegalArgumentException ex
       false)))

@@ -1,8 +1,8 @@
 (ns sgwr.widgets.slider
-  (:require [sgwr.elements.group :as group])
-  (:require [sgwr.elements.line :as line])
-  (:require [sgwr.elements.point :as point])
-  (:require [sgwr.elements.rectangle :as rect])
+  (:require [sgwr.components.group :as group])
+  (:require [sgwr.components.line :as line])
+  (:require [sgwr.components.point :as point])
+  (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math]))
 
@@ -19,7 +19,7 @@
 
     Sets value of slider
 
-    obj     - SgwrElement group containing slider
+    obj     - SgwrComponent group containing slider
     v       - float, the new slider value
     render? - boolean, if true render drawing containing the slider, 
               default true
@@ -176,7 +176,7 @@
        :rim-color :rim-style :rim-width :rim-radius
        :handle-color :handle-style :handle-size)
 
-    parent  - SgwrElement, the parent group
+    parent  - SgwrComponent, the parent group
     p0      - vector [x y] bottom or left hand position of slider
     length  - float, length of slider
     v0      - float, minimum value
@@ -212,10 +212,10 @@
    :rim-radius - int, Rim|pad corner radius, default 12
 
    :handle-color - Color, keyword or vector
-   :handle-style - vector, sets handle shape, see sgwr.elements.point
+   :handle-style - vector, sets handle shape, see sgwr.components.point
    :handle-size  - float, handle point size
 
-   Returns SgwrElement group containing slider components"
+   Returns SgwrComponent group containing slider components"
   (let [vertical? (= orientation :vertical)
         [x0 y0] p0
         [x1 y1] (if vertical? [x0 (- y0 length)] [(+ x0 length) y0]) 

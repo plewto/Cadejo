@@ -4,7 +4,7 @@
    Where each cell implements sgwr.indicators.cell/Cell"
   (:use [cadejo.util.trace])
   (:require [sgwr.cs.native :as native])
-  (:require [sgwr.elements.rectangle :as rect])
+  (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.indicators.basic-cell :as basic])
   (:require [sgwr.indicators.dot-matrix :as matrix])
   (:require [sgwr.indicators.sixteen :as sixteen])
@@ -22,7 +22,7 @@
   (colors! 
     [this inactive active]
     "(colors! this active inactive)
-     Sets active and inactive element colors
+     Sets active and inactive component colors
      Color arguments may be Color, keyword or vector, see sgwr.util.color")
  
   (character-count
@@ -43,7 +43,7 @@
     [this]
     "(all-off! this render?)
      (all-off! this)
-     Sets all display elements to inactive color
+     Sets all display components to inactive color
      If render? true render containing drawing
      render? is true by default")
 
@@ -79,7 +79,7 @@
    (let [pad 4
          gap 5
          bar-width (+ (* char-count (+ cell-width gap)))
-         elements (let [chr-fn (get-cell-constructor ctype)
+         components (let [chr-fn (get-cell-constructor ctype)
                         acc* (atom [])
                         w (+ cell-width gap)]
                     (dotimes [i char-count]
@@ -106,11 +106,11 @@
 
                (colors! [this inactive active]
                  (reset! colors* [inactive active])
-                 (doseq [e elements]
+                 (doseq [e components]
                    (.colors! e inactive active)))
          
                (character-count [this]
-                 (count elements))
+                 (count components))
             
                (disable! [this render?]
                  (.use-attributes! occluder :disabled)
@@ -127,7 +127,7 @@
                  (.enable! this :render))
 
                (all-off! [this render?]
-                 (doseq [e elements]
+                 (doseq [e components]
                    (.display! e \space))
                  (render-drawing render?))
                
@@ -144,7 +144,7 @@
                    (reset! current-value* "")
                    (while (< @i* limit)
                      (let [c (nth text @i*)]
-                       (.display! (nth elements @i*)c)
+                       (.display! (nth components @i*)c)
                        (swap! current-value* (fn [q](str q c)))
                        (swap! i* inc)))
                    (render-drawing render?)))

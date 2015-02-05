@@ -4,12 +4,12 @@
    The button advances to the next state upon being clicked."
 
   (:require [sgwr.constants :as constants])  
-  (:use [sgwr.elements.element :only [set-attributes!]])
-  (:require [sgwr.elements.group :as group])
-  (:require [sgwr.elements.image :as image])
-  (:require [sgwr.elements.point :as point])
-  (:require [sgwr.elements.rectangle :as rect])
-  (:require [sgwr.elements.text :as text])
+  (:use [sgwr.components.component :only [set-attributes!]])
+  (:require [sgwr.components.group :as group])
+  (:require [sgwr.components.image :as image])
+  (:require [sgwr.components.point :as point])
+  (:require [sgwr.components.rectangle :as rect])
+  (:require [sgwr.components.text :as text])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities])
@@ -30,7 +30,7 @@
 
    Set multistate-button to to state indicated by state-index
 
-   msb         - SgwrElement group containing multistate-button
+   msb         - SgwrComponent group containing multistate-button
    state-index - int, the new state, 0 <= index < max
                  The number maximum index value may be determined
                  by (count (.get-property msb :states))
@@ -170,7 +170,7 @@
 
    Create multistate-button with text content
 
-   parent - SgwrElement, the parent group
+   parent - SgwrComponent, the parent group
    p0     - vector [x0 y0], the buttons position
    states - nested vector, [[key-0 text-0 color-0][key-1 text-1 color-1]...[key-n text-n color-n]]
             Defines the possible states the button may be in.  Where
@@ -207,7 +207,7 @@
     :rim-width  - float, the rim line width, default 1.0
     :rim-radius - int, rim/pad corner radius, default 12
 
-    Returns SgwrElement group"
+    Returns SgwrComponent group"
 
   (let [grp (blank-multistate-button parent (map first states) (get-button-id "multistate-button" id)
                                      :drag-action drag-action 
@@ -442,7 +442,7 @@
       :gap :pad-color
       :rim-color :rim-style :rim-width :rim-radius)
   
-   parent - SgwrElement, the parent group
+   parent - SgwrComponent, the parent group
    p0     - vector [x0 y0], the buttons position
    txt    - String, the text
    :id    - keyword, if not specified a unique id will be generated
@@ -520,7 +520,7 @@
                    occ)]
     (.put-property! grp :rim rim)
     (.put-property! grp :point pnt)
-    (.put-property! grp :text-element txobj)
+    (.put-property! grp :text-component txobj)
     (.put-property! grp :occluder occluder)
     (.use-attributes! grp :unselected)
     (.use-attributes! occluder :enabled)
@@ -625,7 +625,7 @@
                    occ)]
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
-    (.put-property! grp :text-element txobj)
+    (.put-property! grp :text-component txobj)
     (.put-property! grp :occluder occluder)
     (.use-attributes! grp :unselected)
     (.use-attributes! occluder :enabled)

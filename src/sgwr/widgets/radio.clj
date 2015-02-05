@@ -1,8 +1,8 @@
 (ns sgwr.widgets.radio
    "Defines sets of mutually exclusive buttons"
-  (:require [sgwr.elements.circle :as circle])
-  (:require [sgwr.elements.group :as group])
-  (:require [sgwr.elements.text :as text])
+  (:require [sgwr.components.circle :as circle])
+  (:require [sgwr.components.group :as group])
+  (:require [sgwr.components.text :as text])
   (:require [sgwr.util.color :as uc]))
 
 (let [counter* (atom 0)]
@@ -118,7 +118,7 @@
        :c1-color :c1-radius
        :c2-color :c2-radius
 
-   parent - SgwrElement, parent group
+   parent - SgwrComponent, parent group
    p0     - vector [x y], position of button
    txt    - String, button text
    rbl*   - Atom holding button list, Only one button in list may be
@@ -145,7 +145,7 @@
    :c2-color  - Color of inner 'selected' circle
    :c2-radius - Radius of inner 'selected' circle, default 4
 
-   Returns SgwrElement group holding radio-button components"
+   Returns SgwrComponent group holding radio-button components"
      
   (let [grp (blank-radio-button parent rbl* (get-button-id id)
                                 :drag-action drag-action 
@@ -181,7 +181,7 @@
                    occ)]
         (.put-property! grp :c1 c1)
         (.put-property! grp :c2 c2)
-        (.put-property! grp :text-element txobj)
+        (.put-property! grp :text-component txobj)
         (.fill! c2 :default :no)
         (.fill! c2 :selected true)
         (.put-property! grp :occluder occluder)

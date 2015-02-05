@@ -1,5 +1,5 @@
-(ns sgwr.elements.line
-  "Defines line elements
+(ns sgwr.components.line
+  "Defines line components
    Attributes:
        color - 
        style - dash pattern
@@ -11,7 +11,7 @@
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.stroke :as ustroke])
-  (:require [sgwr.elements.element])
+  (:require [sgwr.components.component])
   (:import java.awt.geom.Line2D))
 
 (defn style-fn [& args]
@@ -70,7 +70,7 @@
                                  width 1.0}}]
   "(line parent p0 p1 :id :color :style :width)
    Create segmen twith end-points p0 and p1." 
-  (let [obj (sgwr.elements.element/create-element :line parent line-function-map locked-properties)]
+  (let [obj (sgwr.components.component/create-component :line parent line-function-map locked-properties)]
     (if parent (.set-parent! obj parent))
     (.set-points! obj [p0 p1])
     (.put-property! obj :id id)

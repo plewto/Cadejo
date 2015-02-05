@@ -1,8 +1,8 @@
-(ns sgwr.elements.attributes
-  "Each drawing element has a set of named attributes which define how
-  the element is to be rendered. The use! method instructs the element
+(ns sgwr.components.attributes
+  "Each drawing component has a set of named attributes which define how
+  the component is to be rendered. The use! method instructs the component
   to use a specific attribute set. The attributes include color, style,
-  width, size, fill and hide. Not all elements make use of all
+  width, size, fill and hide. Not all components make use of all
   attribute values."
   (:require [sgwr.constants :as constants])
   (:require [sgwr.util.color :as uc])
@@ -81,7 +81,7 @@
      Sets the style value for indicated attribute map
      If id does not match any existing attribute map create a new map.
      If id not specified use the current map.
-     style argument st is interpreted differently for each element type
+     style argument st is interpreted differently for each component type
      Returns st")
 
   (width!

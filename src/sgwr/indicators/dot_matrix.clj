@@ -2,8 +2,8 @@
   "Defines displaybar cell in terms of 5x7 matrix"
   (:require [sgwr.indicators.cell])
   (:require [sgwr.util.color :as uc])
-  (:require [sgwr.elements.element :as elements])
-  (:require [sgwr.elements.circle :as circle]))
+  (:require [sgwr.components.component :as components])
+  (:require [sgwr.components.circle :as circle]))
 
 (def ^:private rows 7)
 (def ^:private columns 5)
@@ -1259,8 +1259,8 @@
                      (dotimes [c columns]
                        (let [dx (+ x-offset (* c column-width))
                              p (circle/circle-r grp [(int dx) (int dy)] dot-radius :fill true)]
-                         (elements/set-attributes! p :inactive :color @inactive* :fill true)
-                         (elements/set-attributes! p :active   :color @active*   :fill true)
+                         (components/set-attributes! p :inactive :color @inactive* :fill true)
+                         (components/set-attributes! p :active   :color @active*   :fill true)
                          (swap! acc* (fn [q](assoc q (dot-key r c) p)))))))
                @acc*)
         all-off (fn []
@@ -1278,8 +1278,8 @@
                   (reset! inactive* c1)
                   (reset! active* c2)
                   (doseq [p (vals dots)]
-                    (elements/set-attributes! p :inactive :color c1 :fill true)
-                    (elements/set-attributes! p :active   :color c2 :fill true))
+                    (components/set-attributes! p :inactive :color c1 :fill true)
+                    (components/set-attributes! p :active   :color c2 :fill true))
                   [c1 c2]))
 
               (character-set [this]

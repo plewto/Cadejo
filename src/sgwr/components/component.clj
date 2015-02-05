@@ -1,20 +1,20 @@
-(ns sgwr.elements.element
-  "SgwrElement defines the basic interface for drawing elements.
-  Each element is a node which automatically inherits properties and
-  attributes from it's ancestors. The terms 'node' and 'element' are
+(ns sgwr.components.component
+  "SgwrComponent defines the basic interface for drawing components.
+  Each component is a node which automatically inherits properties and
+  attributes from it's ancestors. The terms 'node' and 'component' are
   used interchangeably here. Nodes may broadly be divided into
   2 classes, leaf nodes and internal nodes.
 
-  Each element has a set of properties in the form of key/value
-  pairs. If a specific property is not defined for an element the
+  Each component has a set of properties in the form of key/value
+  pairs. If a specific property is not defined for an component the
   property value is inherited from the parent node, or a default value
-  is used.  Each element type also defines a set of 'locked'
+  is used.  Each component type also defines a set of 'locked'
   properties which may not be removed. The value of locked properties
-  may be changed but the element is guaranteed to always have such locked 
+  may be changed but the component is guaranteed to always have such locked 
   properties defined. 
 
   Attributes are a separate set of values used to define how an
-  element is to be rendered, I.E. color, line-style, width, etc. Like
+  component is to be rendered, I.E. color, line-style, width, etc. Like
   properties, attributes are inherited from parent to child. Changing
   the current attribute for a parent node causes it to send a message
   to all of it's children nodes. If the child nodes defines an
@@ -22,7 +22,7 @@
 
   (:use [cadejo.util.trace])
   (:require [sgwr.constants :as constants])
-  (:require [sgwr.elements.attributes :as att])
+  (:require [sgwr.components.attributes :as att])
   (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.cs.coordinate-system]))
 
@@ -49,17 +49,17 @@
         (swap! acc* (fn [q](conj q [x2 y2])))))
     (.set-points! obj @acc*)))
 
-(defprotocol SgwrElement
+(defprotocol SgwrComponent
 
-  (element-type 
+  (component-type 
     [this]
-    "(element-type this)
-     Returns keyword identification for element type")
+    "(component-type this)
+     Returns keyword identification for component type")
 
   (widget-type
     [this]
     "(widget-type this)
-     Returns the element type if this happens to be a 'widget' 
+     Returns the component type if this happens to be a 'widget' 
      Returns nil if this is not a widget")
     
   (parent
@@ -210,7 +210,7 @@
      When this is rendered the current attribute set is used. 
      Ignore if this does not contain a matching attribute id.
      If propagate is true call the use-attribute! method on all
-     children elements of this. propagate is true by default")
+     children components of this. propagate is true by default")
 
   (use-temp-attributes!
     [this id]
@@ -365,7 +365,7 @@
     [this pnts]
     "(set-points! this pnts)
      Set the construction points which define the position and size/shape of
-     this. Each element type will have it's own interpretation for these
+     this. Each component type will have it's own interpretation for these
      points and in some cases (groups) may ignore them. 
      The points argument is always a nested vector of form 
      [[x0 y0][x1 y0]...[xn yn]] Where pairs [xi yi] make 'sence' to the
@@ -442,21 +442,21 @@
                               :hidden :selected :drawing
                               :enabled])
 
-(defn create-element
-  "(create-element etype fnmap)
-   (create-element etype parent fnmap locked)
-   Create a new SgwrElement object 
+(defn create-component
+  "(create-component etype fnmap)
+   (create-component etype parent fnmap locked)
+   Create a new SgwrComponent object 
    
    etype - keyword 
-   parent - nil or instance of SgwrElement
-   fnmap - map which defines certain aspects of the element. Each
-           element type will define it's own function-map 
+   parent - nil or instance of SgwrComponent
+   fnmap - map which defines certain aspects of the component. Each
+           component type will define it's own function-map 
    locked - list of locked property keywords.
  
-   See other files in sgwr.elements for usage examples."
+   See other files in sgwr.components for usage examples."
 
   ([etype fnmap]
-   (create-element etype nil fnmap {}))
+   (create-component etype nil fnmap {}))
 
   ([etype parent fnmap locked]
    (let [parent* (atom parent)
@@ -471,9 +471,9 @@
          attributes (att/attributes)
          update-hook* (atom (fn [& _] nil))
          points* (atom [])
-         elem (reify SgwrElement
+         elem (reify SgwrComponent
        
-               (element-type [this] etype)
+               (component-type [this] etype)
                
                (widget-type [this] widget-type)
 
@@ -541,8 +541,8 @@
                    (swap! properties* (fn [q](dissoc q key)))
                    (do
                      (utilities/warning 
-                      (format "Can not remove locked property %s from %s element"
-                              key (.element-type this)))
+                      (format "Can not remove locked property %s from %s component"
+                              key (.component-type this)))
                      nil)))
                
                (property-keys [this local-only]
@@ -757,7 +757,7 @@
 
                (tree [this depth]
                  (let [pad (utilities/tab depth)
-                       et (.element-type this)
+                       et (.component-type this)
                        id (.get-property this :id)]
                    (println (format "%s%s id %s" pad et id))
                    (doseq [c @children*]
@@ -769,9 +769,9 @@
                  (let [pad1 (utilities/tab depth)
                        pad2 (utilities/tab (inc depth))]
                    (cond (<= verbosity 0)
-                         (let [et (.element-type this)
+                         (let [et (.component-type this)
                                id (.get-property this :id)]
-                           (format "-- %s%s element id = %s  %s\n"
+                           (format "-- %s%s component id = %s  %s\n"
                                    pad1 et id (if (not (= et :group))
                                                 (str "points = " (.points this))
                                                 "")))

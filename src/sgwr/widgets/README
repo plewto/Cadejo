@@ -1,6 +1,6 @@
 			     Widgets Overview
 
-Sgwr widgets are sets of related elements, usually collected into a group,
+Sgwr widgets are sets of related components, usually collected into a group,
 which perform some action in response to mouse events. Each widget type has
 it's own unique properties but there are several properties common to most
 widgets.

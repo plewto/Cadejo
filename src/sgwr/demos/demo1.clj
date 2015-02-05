@@ -1,18 +1,18 @@
 ;; demos1 
-;; Uses native coordinate system, displays basic elements.
+;; Uses native coordinate system, displays basic components.
 ;;
 
 (ns sgwr.demos.demo1
   (:require [sgwr.constants :as constants :reload true])
-  (:require [sgwr.elements.element])
-  (:require [sgwr.elements.drawing :as drw])
-  (:require [sgwr.elements.group :as grp])
-  (:require [sgwr.elements.point :as point :reload true])
-  (:require [sgwr.elements.line :as line])
-  (:require [sgwr.elements.rectangle :as rect])
-  (:require [sgwr.elements.circle :as circle])
-  (:require [sgwr.elements.text :as text])
-  (:require [sgwr.elements.image :as image])
+  (:require [sgwr.components.component])
+  (:require [sgwr.components.drawing :as drw])
+  (:require [sgwr.components.group :as grp])
+  (:require [sgwr.components.point :as point :reload true])
+  (:require [sgwr.components.line :as line])
+  (:require [sgwr.components.rectangle :as rect])
+  (:require [sgwr.components.circle :as circle])
+  (:require [sgwr.components.text :as text])
+  (:require [sgwr.components.image :as image])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.demos.demo2])
   (:require [sgwr.demos.demo3])
@@ -20,7 +20,7 @@
   (:require [seesaw.core :as ss]))
 
 
-(def set-attributes! sgwr.elements.element/set-attributes!)
+(def set-attributes! sgwr.components.component/set-attributes!)
 
 (def drw (drw/native-drawing 600 700))
 (def root (.root drw))

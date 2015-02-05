@@ -3,11 +3,11 @@
   (:require [sgwr.indicators.cell])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
-  (:require [sgwr.elements.element :as elements])
-  (:require [sgwr.elements.rectangle :as rect])
-  (:require [sgwr.elements.text :as text]))
+  (:require [sgwr.components.component :as components])
+  (:require [sgwr.components.rectangle :as rect])
+  (:require [sgwr.components.text :as text]))
 
-(def set-attributes! elements/set-attributes!)
+(def set-attributes! components/set-attributes!)
 
 (defn basic-cell [grp x-offset y-offset & {:keys [cell-width cell-height]
                                            :or {cell-width 25
@@ -23,7 +23,7 @@
          active* (atom (uc/color [255 64 64]))
          x x-offset
          y (+ y-offset cell-height)
-         elements (let [x0 x-offset
+         components (let [x0 x-offset
                         y0 (+ y-offset cell-height)
                         x1 (+ x0 cell-width)
                         y1 y-offset
@@ -42,7 +42,7 @@
                (cell-height [this] cell-height)
 
                (colors! [this inactive active]
-                 (let [[txt box] elements
+                 (let [[txt box] components
                        c1 (uc/color inactive)
                        c2 (uc/color active)]
                    (.color! txt :inactive c1)
@@ -57,7 +57,7 @@
                  (range 32 128))
 
               (display! [this c]
-                (let [[txt box] elements]
+                (let [[txt box] components]
                   (cond (or (= c \space)(= c 32))
                         (do 
                           (.use-attributes! txt :inactive)

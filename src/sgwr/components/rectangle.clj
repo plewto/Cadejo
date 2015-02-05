@@ -1,5 +1,5 @@
-(ns sgwr.elements.rectangle
-  "Defines rectangular elements.
+(ns sgwr.components.rectangle
+  "Defines rectangular components.
    attributes
       color - 
       style - line dash pattern
@@ -10,8 +10,8 @@
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.stroke :as ustroke])
-  (:require [sgwr.elements.element])
-  (:require [sgwr.elements.line])
+  (:require [sgwr.components.component])
+  (:require [sgwr.components.line])
   (:require [seesaw.graphics :as ssg]))
 
 (defn- shape-function [obj]
@@ -99,7 +99,7 @@
                                        :distance-fn rectangle-distance
                                        :update-fn update-fn
                                        :bounds-fn bounds-fn
-                                       :style-fn sgwr.elements.line/style-fn})
+                                       :style-fn sgwr.components.line/style-fn})
 
 (def locked-properties [:center :corner-radius])
 
@@ -111,8 +111,8 @@
                                        fill nil
                                        radius 0}}]
   "(rectangle parent p0 p1 :id :color :style :width :fill :radius)
-   Create rectangle element by opposing points 
-   parent  - SgwrElement, parent group
+   Create rectangle component by opposing points 
+   parent  - SgwrComponent, parent group
    p0      - vector, vertex 0 p0 -> [x0 y0]
    p1      - vector, opposing vertex p1 -> [x1 y1]
    :id     - keyword
@@ -121,7 +121,7 @@
    :width  - float, line width
    :fill   - true, false or :no
    :radius - int, corner radius, default 0"
-  (let [obj (sgwr.elements.element/create-element :rectangle parent rectangle-function-map locked-properties)]
+  (let [obj (sgwr.components.component/create-component :rectangle parent rectangle-function-map locked-properties)]
     (if parent (.set-parent! obj parent))
     (.set-points! obj [p0 p1])
     (.put-property! obj :id id)

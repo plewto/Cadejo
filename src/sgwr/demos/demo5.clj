@@ -1,12 +1,12 @@
 (ns sgwr.demos.demo5
   (:require [sgwr.util.color :as uc])
-  (:require [sgwr.elements.drawing :reload true])
-  (:require [sgwr.elements.group :as group])
-  (:require [sgwr.elements.image :as image])
-  (:require [sgwr.elements.rule :as rule])
-  (:require [sgwr.elements.mesh :as mesh])
-  (:require [sgwr.elements.rectangle :as rect])
-  (:require [sgwr.elements.circle :as circle])
+  (:require [sgwr.components.drawing :reload true])
+  (:require [sgwr.components.group :as group])
+  (:require [sgwr.components.image :as image])
+  (:require [sgwr.components.rule :as rule])
+  (:require [sgwr.components.mesh :as mesh])
+  (:require [sgwr.components.rectangle :as rect])
+  (:require [sgwr.components.circle :as circle])
 
   (:require [sgwr.widgets.multistate-button :as msb :reload false])
   (:require [sgwr.widgets.radio :as radio :reload false])
@@ -18,7 +18,7 @@
 ; ---------------------------------------------------------------------- 
 ;                               Drawing drw1
 
-(def drw1 (sgwr.elements.drawing/native-drawing 400 400))
+(def drw1 (sgwr.components.drawing/native-drawing 400 400))
 (def root1 (.root drw1))
 (def widgets1 (.widget-root drw1))
 
@@ -30,7 +30,7 @@
 ; ---------------------------------------------------------------------- 
 ;                               Drawing drw2
 
-(def drw2 (sgwr.elements.drawing/native-drawing 400 400))
+(def drw2 (sgwr.components.drawing/native-drawing 400 400))
 (def root2 (.root drw2))
 (def widgets2 (.widget-root drw2))
 

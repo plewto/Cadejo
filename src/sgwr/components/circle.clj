@@ -1,8 +1,5 @@
-;; TODO:
-;;     1. define three-point constructor
-
-(ns sgwr.elements.circle
-  "Defines circle element
+(ns sgwr.components.circle
+  "Defines circle component
    attributes:
      color
      style - dash patten
@@ -14,8 +11,8 @@
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities])
   (:require [sgwr.util.stroke :as ustroke])
-  (:require [sgwr.elements.element])
-  (:require [sgwr.elements.line])
+  (:require [sgwr.components.component])
+  (:require [sgwr.components.line])
   (:require [seesaw.graphics :as ssg]))
 
 (defn- shape-fn [obj]
@@ -78,7 +75,7 @@
                                     :distance-fn distance-fn
                                     :update-fn update-fn
                                     :bounds-fn bounds-fn
-                                    :style-fn sgwr.elements.line/style-fn})
+                                    :style-fn sgwr.components.line/style-fn})
 
 (def ^:private locked-properties [:center :radius])
 
@@ -90,8 +87,8 @@
                                     width 1.0
                                     fill nil}}]
   "(circle parent p0 p1 [:id :color :style :fill])
-   Create circle element defined by opposing points of bounding rectangle
-   parent - SgwrElement, most often parent will be a group element
+   Create circle component defined by opposing points of bounding rectangle
+   parent - SgwrComponent, most often parent will be a group component
    p0     - pair [x0 y0] first vertex of bounding rectangle
    p1     - pair [x1 y1] second (opposing) vertex of bounding rectangle
    :id    - keyword, if not specified a unique id is created
@@ -101,7 +98,7 @@
    :width - float, line width for default attributes width > 0.
    :fill  - flag, fill state for default attributes, flag may be false, true 
             or :no"
-  (let [obj (sgwr.elements.element/create-element :circle
+  (let [obj (sgwr.components.component/create-component :circle
                                                   parent
                                                   circle-function-map
                                                   locked-properties)]

@@ -6,9 +6,9 @@
   'balls'. Balls are used to display/alter specific values."
   
   (:require [sgwr.constants :as constants])
-  (:require [sgwr.elements.group :as group])
-  (:require [sgwr.elements.point :as point])
-  (:require [sgwr.elements.rectangle :as rect])
+  (:require [sgwr.components.group :as group])
+  (:require [sgwr.components.point :as point])
+  (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.math :as math])
   (:require [sgwr.util.utilities :as utilities]))
@@ -26,7 +26,7 @@
 
    Set the value of a specific ball
 
-   fobj - SgwrElement group which contains the field.
+   fobj - SgwrComponent group which contains the field.
    id   - keyword, the unique ball id to be altered
    val  - vector [x y], the new value for ball id
    render? - boolean if true render drawing after update,
@@ -131,9 +131,9 @@
           :rim-color :rim-style :rim-width :rim-radius)
 
    Creates field widget. The field is initially empty and does not 
-   contain control 'balls'. Use the ball function to add control elements
+   contain control 'balls'. Use the ball function to add control components
    
-   parent  - SgwrElement, the parent group
+   parent  - SgwrComponent, the parent group
    p0      - vector [x0 y0], coordinates of bounding vertex
    p1      - vector [x1 y1], coordinate of opposing vertex
    range-x - vector [v1 v2], horizontal field value range
@@ -154,7 +154,7 @@
    :rim-width  - Rim line width, default 1.0
    :rim-radius - int, Rim/pad corner radius, default 12
 
-   Returns SgwrElement group containing field elements."
+   Returns SgwrComponent group containing field components."
            
   (let [grp (group/group parent 
                          :etype :field
@@ -231,18 +231,18 @@
 
    Create control 'ball' object and add it to parent fie;d.
 
-   parent     - SgwrElement, a group holding field widget
+   parent     - SgwrComponent, a group holding field widget
    id         - keyword, each ball within any given field must have a unique id.
    init-value - vector [x y], the initial value/position of the ball.
    
   :color - Color, keyword or vector, see sgwr.util.color/color
-  :style - vector, point style, see sgwr.element.point, default [:dot]
+  :style - vector, point style, see sgwr.component.point, default [:dot]
   :size  - float, point size, default 3
 
   :selected-color - Color when ball is active, default to rollover color
   :selected-style - Shape when ball is active, defaults to [:fill :dot]
 
-  Returns SgwrElement, the point element."
+  Returns SgwrComponent, the point component."
 
   (let [mapx (.get-property parent :fn-x-val->pos)
         mapy (.get-property parent :fn-y-val->pos)

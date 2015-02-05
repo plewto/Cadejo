@@ -1,8 +1,8 @@
-(ns sgwr.elements.rule
-  "Defines orthogonal rulers as pseudo-elements"
-  (:require [sgwr.elements.group :as group])
-  (:require [sgwr.elements.line :as line])
-  (:require [sgwr.elements.rectangle :as rect])
+(ns sgwr.components.rule
+  "Defines orthogonal rulers as pseudo-components"
+  (:require [sgwr.components.group :as group])
+  (:require [sgwr.components.line :as line])
+  (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.util.math :as math]))
   
 (let [counter* (atom 0)]
@@ -39,7 +39,7 @@
 
    See the ticks function to add tick marks.
 
-   parent        - SgwrElement, the parent group
+   parent        - SgwrComponent, the parent group
    p0            - vector [x y] lower/left coordinates of ruler
    length        - float, length of ruler
    :id           - keyword, automatically crated if not specified
@@ -112,7 +112,7 @@
   "(ticks ntvruler step :id :length :offset :color :style)
 
    Add tick marks to ruler
-   ntvruler - SgwrElement, a group element as defined by ruler
+   ntvruler - SgwrComponent, a group component as defined by ruler
    step     - float, tick spacing
    :id      - keyword
    :length  - float, length of tick marks
