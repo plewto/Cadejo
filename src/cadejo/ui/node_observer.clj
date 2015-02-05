@@ -2,6 +2,9 @@
 
 (defprotocol NodeObserver
   
+  (set-parent-editor! 
+    [this ed])
+
   (components
     [this])
 

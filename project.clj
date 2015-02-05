@@ -8,6 +8,6 @@
                  [seesaw "1.4.4"]
                  [com.github.insubstantial/substance "7.1"]
                  [overtone "0.9.1"]]
-  :main cadejo.core
-  ;:main cadejo.instruments.combo.editor.panel
+  ;:main cadejo.core
+  :main cadejo.ui.midi.properties-panel
   )
