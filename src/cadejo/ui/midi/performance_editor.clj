@@ -7,7 +7,8 @@
   (:require [cadejo.ui.midi.cceditor-tab])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.midi.program-bar])
-  (:require [cadejo.ui.midi.properties-editor])
+  ;(:require [cadejo.ui.midi.properties-editor])
+  (:require [cadejo.ui.midi.properties-panel])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [seesaw.core :as ss])
@@ -63,11 +64,12 @@
         bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank program-bar)]
                   (.editor! bank bed)
                   bed)
-        properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
+        ;properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
+        properties-panel (cadejo.ui.midi.properties-panel/midi-properties-panel)
         card-buttons* (atom [])
         card-group (ss/button-group)
         pan-cards (ss/card-panel :items [[(.widget bank-ed :pan-main) "BANK"]
-                                         [(.widget properties-editor :pan-main) "MIDI"]])
+                                         [(.widget properties-panel :pan-main) "MIDI"]])
         pan-center (let [panc (.widget basic-ed :pan-center)]
                      (.add panc pan-cards)
                      panc)
@@ -154,11 +156,13 @@
                  
                  (sync-ui! [this]
                    (.sync-ui! bank-ed)
-                   (.sync-ui! properties-editor)
+                   ;(.sync-ui! properties-editor)
+                   (.sync-ui! properties-panel)
                    (.sync-ui! program-bar)
                    (doseq [cced @cc-panels*]
                      (.sync-ui! cced))))]
-      (.set-parent-editor! properties-editor ped)
+      ;(.set-parent-editor! properties-editor ped)
+      (.set-parent-editor! properties-panel ped)
       (.set-parent-editor! bank-ed ped)
       (.put-property! performance :bank-editor bank-ed)
       (doseq [cced @cc-panels*]

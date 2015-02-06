@@ -1,9 +1,12 @@
+;; DEPRECIATED
 (ns cadejo.ui.midi.curve-panel
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [seesaw.core :as ss])
   (:import java.awt.Dimension))
+
+(umsg/warning "cadejo.ui.midi.curve-panel is DEPRECIATED")
 
 (def ^:private rows 7)
 (def ^:private columns 3)

@@ -4,7 +4,6 @@
   (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.node-editor])
-  ;(:require [cadejo.ui.midi.properties-editor])
   (:require [cadejo.ui.midi.properties-panel])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
@@ -236,16 +235,12 @@
         lab-id (.widget basic-ed :lab-id)
         pan-center (.widget basic-ed :pan-center)
         tbar-performance (ss/toolbar :floatable? false)
-        ;properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         midi-properties-panel (cadejo.ui.midi.properties-panel/midi-properties-panel)
         bgroup (ss/button-group)
       
         pan-add-performance (add-performance-panel chanobj)
-        ;; pan-cards (ss/card-panel :items [[pan-add-performance "ADD-INSTRUMENT"]
-        ;;                                  [(.widget properties-editor :pan-main) "MIDI"]])
-
         pan-cards (ss/card-panel :items [[pan-add-performance "ADD-INSTRUMENT"]
-                                         [(.component midi-properties-panel :pan-main) "MIDI"]])
+                                         [(.widget midi-properties-panel :pan-main) "MIDI"]])
 
         jb-add (let [b (factory/toggle "Add Instrument" :general :instrument "Add instrument" bgroup)]
                  (ss/listen b :action (fn [_](ss/show-card! pan-cards "ADD-INSTRUMENT")))
@@ -325,7 +320,6 @@
                       (.add tbar-performance jb)
                       (.sync-ui! (.get-editor p))))
 
-                  ;(.sync-ui! properties-editor)
                   (.sync-ui! midi-properties-panel)
                   (.revalidate (.widget basic-ed :frame))) )]
       (ss/config! lab-id 
@@ -338,7 +332,6 @@
                                  sframe (.frame sed)]
                              (ss/show! sframe)
                              (.toFront sframe))))
-      ;(.set-parent-editor! properties-editor ced)
       (.set-parent-editor! midi-properties-panel ced)
       (.add pan-center pan-cards BorderLayout/CENTER)
       (.add pan-center tbar-performance BorderLayout/SOUTH)

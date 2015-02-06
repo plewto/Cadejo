@@ -5,10 +5,10 @@
   (set-parent-editor! 
     [this ed])
 
-  (components
+  (widgets
     [this])
 
-  (component 
+  (widget 
     [this key])
 
   (sync-ui! 
