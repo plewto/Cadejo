@@ -3,15 +3,15 @@
    bend, pressure, velocity, transpose, dbscale, tuning-table selection
    and key-range.  Also defines several functions and values used by 
    cc-properties-panel."
-  (:use [cadejo.util.trace])
   (:require [cadejo.ui.node-observer])
+  (:require [cadejo.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])
   (:require [sgwr.components.drawing])
-  (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.components.line :as line])
-  (:require [sgwr.components.text :as text])
+  (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.components.rule :as rule])
+  (:require [sgwr.components.text :as text])
   (:require [sgwr.indicators.displaybar :as dbar])
   (:require [sgwr.tools.button :as button])
   (:require [sgwr.tools.dual-slider :as dslider])
@@ -21,18 +21,18 @@
 
 ;; Functions to define color scheme
 ;;
-(defn background-color [] :black)
-(defn icon-prefix [] :gray)
-(defn text-color [] :gray)
-(defn inherited-text-color [] :green)
-(defn title-color [] (text-color))
-(defn dbar-inactive-color [] [77 58 83])
-(defn dbar-active-color [] [245 244 207])
-(defn border-color [] (text-color))
-(defn major-tick-color [] (text-color))
-(defn minor-tick-color [] (text-color))
-(defn passive-track-color [] (text-color))
-(defn active-track-color [] :yellow)
+;; (defn background-color [] :black)
+;; (defn icon-prefix [] :gray)
+;; (defn text-color [] :gray)
+;; (defn inherited-text-color [] :green)
+;; (defn title-color [] (text-color))
+;; (defn dbar-inactive-color [] [77 58 83])
+;; (defn dbar-active-color [] [245 244 207])
+;; (defn border-color [] (text-color))
+;; (defn major-tick-color [] (text-color))
+;; (defn minor-tick-color [] (text-color))
+;; (defn passive-track-color [] (text-color))
+;; (defn active-track-color [] :yellow)
 
 (def drawing-width 970)
 (def drawing-height 400)
@@ -75,7 +75,7 @@
                                       :or {click-action nil}}]
   (let [wr (.tool-root drawing)
         b (msb/icon-multistate-button wr p0 curve-button-states :id id
-                                      :icon-prefix (icon-prefix)
+                                      :icon-prefix (lnf/icon-prefix)
                                       :click-action click-action)]
     b))
 
@@ -85,7 +85,7 @@
   (let [obj (text/text (.root drawing) p txt
                        :style :serif
                        :size 8
-                       :color (title-color))]
+                       :color (lnf/title-color))]
     obj))
                        
 ;; create general text
@@ -93,7 +93,7 @@
 (defn text [drawing p txt & {:keys [style size]
                              :or {style :serif
                                   size 8}}]
-  (text/text (.root drawing) p txt :style style :size size :color (text-color)))
+  (text/text (.root drawing) p txt :style style :size size :color (lnf/text-color)))
 
 (defn inherited-text [drawing p txt]
   (text/text (.root drawing) p txt
@@ -108,14 +108,14 @@
                        (dbar/displaybar-dialog dbar msg
                                                :validator validator
                                                :callback callback))]
-    (button/mini-icon-button parent p0 (icon-prefix) :edit
+    (button/mini-icon-button parent p0 (lnf/icon-prefix) :edit
                              :click-action click-action)))
 
 ;; Create inherit checkbox
 ;;
 (defn inherit-checkbox [parent p0 click-action]
   (let [cb (msb/checkbox parent p0 "Inherit"
-                         :text-color (text-color)
+                         :text-color (lnf/text-color)
                          :text-size 6
                          :click-action click-action)]
     cb))
@@ -125,7 +125,7 @@
 (defn border [parent p0 p1]
   (let [r (rect/rectangle parent p0 p1
                           :width 1.0
-                          :color (border-color))]
+                          :color (lnf/border-color))]
     (.put-property! r :corner-radius 18)
     r))
 
@@ -134,7 +134,7 @@
   (let [b (dbar/displaybar parent x0 y0 ccount dbar-style
                            :cell-height dbar-cell-height
                            :cell-width dbar-cell-width)]
-    (.colors! b (dbar-inactive-color)(dbar-active-color))
+    (.colors! b (lnf/dbar-inactive-color)(lnf/dbar-active-color))
     b))
 
 ; ---------------------------------------------------------------------- 
@@ -509,8 +509,8 @@
                        :size 5)
         s-scale (slider/slider tool [xc (+ y0 200)] slider-length -60 12
                                :gap 8
-                               :track1-color (passive-track-color)
-                               :track2-color (active-track-color)
+                               :track1-color (lnf/passive-track-color)
+                               :track2-color (lnf/active-track-color)
                                :rim-color [0 0 0 0]
                                :value-hook (fn [n]
                                              (let [q (int (/ n 3))
@@ -548,9 +548,9 @@
                                          (.render drw))))]
     (border root p0 [(+ x0 w)(+ y0 h)])
     (title drw [(+ x0 6)(+ y0 25)] "DB Scale")
-    (line/line root [tick-x0 y-db12][tick-x1 y-db12] :color (major-tick-color))
-    (line/line root [tick-x0 y-db0][tick-x1 y-db0] :color (major-tick-color))
-    (line/line root [tick-x0 y-db60][tick-x1 y-db60] :color (major-tick-color))
+    (line/line root [tick-x0 y-db12][tick-x1 y-db12] :color (lnf/major-tick-color))
+    (line/line root [tick-x0 y-db0][tick-x1 y-db0] :color (lnf/major-tick-color))
+    (line/line root [tick-x0 y-db60][tick-x1 y-db60] :color (lnf/major-tick-color))
     (text drw [(+ tick-x0 27)(+ y-db12 4)] "+12" :style :mono :size 5)
     (text drw [(+ tick-x0 27)(+ y-db0 4)] " 0" :style :mono :size 5)
     (text drw [(+ tick-x0 27)(+ y-db60 4)] "-60" :style :mono :size 5)
@@ -668,7 +668,7 @@
         tx-range (text drw [(+ x0 8)(+ y0 25)] (format "Range [%3d %3d]" 0 127)
                         :style :mono
                         :size 5
-                        :color (text-color))
+                        :color (lnf/text-color))
         tx-inherit (inherited-text drw [(+ x0 90)(+ y0 109)] "")
         drag-action (fn [s _]
                       (let [node (get-node)
@@ -679,8 +679,8 @@
         slider (dslider/dual-slider tool [x2 yc] slider-length 0 127 
                                     :orientation :horizontal
                                     :gap 12
-                                    :track1-color (passive-track-color)
-                                    :track4-color (active-track-color)
+                                    :track1-color (lnf/passive-track-color)
+                                    :track4-color (lnf/active-track-color)
                                     :rim-color [0 0 0 0]
                                     :value-hook (fn [n](int n))
                                     :drag-action drag-action)
@@ -719,7 +719,7 @@
               x @x*
               text-offset (cond (< kn 99) -14
                                 :default -10)]
-          (line/line root [x yc][x (+ yc major-length)] :color (major-tick-color))
+          (line/line root [x yc][x (+ yc major-length)] :color (lnf/major-tick-color))
           (text drw [(+ x text-offset)(+ yc major-length 12)](format "%3d" kn)
                 :style :mono :size 6)
           (swap! kn* (fn [q](+ q 12)))
@@ -731,7 +731,7 @@
         (let [kn @kn*
               x @x*]
           (if (not (zero? (rem kn 12)))
-            (line/line root [x yc][x (- yc minor-length)] :color (minor-tick-color))
+            (line/line root [x yc][x (- yc minor-length)] :color (lnf/minor-tick-color))
             )
           (swap! kn* inc)
           (swap! x* (fn [q](+ q minor-delta))))))
@@ -778,13 +778,13 @@
                  (border (.root drw) [(+ x 874)(+ y 253)] [(+ x 950)(+ y 380)])
                  (title drw [(+ x 894)(+ y 277)] "Help")
                  (button/icon-button (.tool-root drw) [(+ x 890) (+ y 293)]
-                                     (icon-prefix) :general :help
+                                     (lnf/icon-prefix) :general :help
                                      :rim-color [0 0 0 0]
                                      :rim-width 1.0))
         sub-panels [bend-subpan pressure-subpan velocity-subpan transpose-subpan
                     dbscale-subpan ttab-subpan krange-subpan] 
         pan-main (ss/horizontal-panel :items [(.canvas drw)])]
-    (.background! drw (background-color))
+    (.background! drw (lnf/background-color))
     (.render drw)
     (reify cadejo.ui.node-observer/NodeObserver
       

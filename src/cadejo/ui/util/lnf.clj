@@ -356,6 +356,22 @@
     (ss/listen jb-dismis :action (fn [_](ss/return-from-dialog dia true)))
     (ss/show! dia)))
 
+
+(defn background-color [] :black)
+(defn icon-prefix [] :gray)
+(defn text-color [] :gray)
+(defn inherited-text-color [] :green)
+(defn title-color [] (text-color))
+(defn dbar-inactive-color [] [77 58 83])
+(defn dbar-active-color [] [245 244 207])
+(defn border-color [] (text-color))
+(defn major-tick-color [] (text-color))
+(defn minor-tick-color [] (text-color))
+(defn passive-track-color [] (text-color))
+(defn active-track-color [] :yellow)
+
+
+
 ;; Set initial skin
 ;;
 (defn set-initial-skin []
@@ -391,3 +407,5 @@
 ;;     (ss/pack! f)
 ;;     (ss/show! f)
 ;;     (skin-dialog)))
+
+

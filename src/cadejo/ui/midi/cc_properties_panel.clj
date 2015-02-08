@@ -1,15 +1,14 @@
 (ns cadejo.ui.midi.cc-properties-panel
   "Provides editor for MIDI CC parameters.
    Up to 18 controllers are supported."
-  (:require [cadejo.ui.node-observer])
-  (:require [cadejo.util.math :as math])
   (:use [cadejo.ui.midi.properties-panel 
          :only [curve-button edit-button 
                 title text inherited-text
                 border displaybar
-                background-color
-                inv-curve-map]
-         :reload true])
+                inv-curve-map]])
+  (:require [cadejo.ui.node-observer])
+  (:require [cadejo.util.lnf :as lnf])
+  (:require [cadejo.util.math :as math])
   (:require [sgwr.components.drawing])
   (:require [sgwr.indicators.displaybar :as dbar])
   (:require [sgwr.tools.multistate-button :as msb])  
@@ -117,7 +116,7 @@
             (swap! row* inc)))
         (swap! sub-panels* (fn [q](conj q sp))))) 
             
-    (.background! drw (background-color))
+    (.background! drw (lnf/background-color))
     (.render drw)
     (reify cadejo.ui.node-observer/NodeObserver
       
