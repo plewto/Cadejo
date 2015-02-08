@@ -225,7 +225,7 @@
              (msb/select-checkbox! cb-inherit false false)
              (.put-property! tx-inherited :text "")
              (msb/set-multistate-button-state! b-curve (get inv-curve-map crv 0) false)
-             (.display dbar (str rng) false))) )))))
+             (.display! dbar (str rng) false))) )))))
 
 
 ; ---------------------------------------------------------------------- 
@@ -478,7 +478,7 @@
             (do 
               (doseq [w components](.enable! w false))
               (msb/select-checkbox! cb-inherit false false)
-              (.display dbar (str xpose) false))))) )))
+              (.display! dbar (str xpose) false))))) )))
 
 ; ---------------------------------------------------------------------- 
 ;                              Db Scale Panel

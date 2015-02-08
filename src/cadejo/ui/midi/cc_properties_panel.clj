@@ -85,7 +85,6 @@
       (widget [this key] nil)
       
       (sync-ui! [this]
-        (println (format "DEBUG cc sync-ui ctrl = %s" ctrl))
         (let [ccobj (cc-suite)
               crv (.curve ccobj ctrl)
               bias (.bias ccobj ctrl)

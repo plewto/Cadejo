@@ -111,7 +111,8 @@
 (defn- filter-freq-click-action [b _]
   (let [param :filter
         imap {0 1, 1 2, 2 3, 3 4, 4 6, 5 8}
-        val (get imap (msb/current-multistate-button-state b) 1)
+        key (first (msb/current-multistate-button-state b))
+        val (get imap key 1)
         ied (.get-property b :editor)]
     (.set-param! ied param val)))
 

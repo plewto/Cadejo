@@ -24,7 +24,7 @@
   (math/linear-function min-amp-db 0 max-amp-db 100))
 
 (def ^:private flanger-rate->pos (math/linear-function min-flanger-rate 0 
-                                                       max-flanger-rate 100))
+                                                       max-flanger-rate 1))
 
 (def ^:private flanger-fb->pos (math/linear-function min-flanger-fb -1
                                                      max-flanger-fb 1))
