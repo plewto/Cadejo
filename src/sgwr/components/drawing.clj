@@ -323,13 +323,13 @@
                                       
                                       (and previous (not @active-tool*)) ; mouse exited tool
                                       (let [exfn (.get-property previous :action-mouse-exited)]
-                                        (.restore-attributes! previous)
+                                        ;(.restore-attributes! previous) ;; disabled bugy rollover highlights
                                         (exfn previous ev)
                                         (.render drw))
                                       
                                       (and (not previous) @active-tool*) ; mouse entered tool
                                       (let [enfn (.get-property @active-tool* :action-mouse-entered)]
-                                        (.use-temp-attributes! @active-tool* :rollover)
+                                        ;(.use-temp-attributes! @active-tool* :rollover) ;; disabled bugy rollover highlights
                                         (enfn @active-tool* ev)
                                         (.render drw)
                                         
