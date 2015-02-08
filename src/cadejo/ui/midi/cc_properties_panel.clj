@@ -1,4 +1,6 @@
 (ns cadejo.ui.midi.cc-properties-panel
+  "Provides editor for MIDI CC parameters.
+   Up to 18 controllers are supported."
   (:require [cadejo.ui.node-observer])
   (:require [cadejo.util.math :as math])
   (:use [cadejo.ui.midi.properties-panel 

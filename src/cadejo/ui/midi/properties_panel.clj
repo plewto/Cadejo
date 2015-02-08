@@ -1,4 +1,8 @@
 (ns cadejo.ui.midi.properties-panel
+  "Provides editor for common MIDI parameters:
+   bend, pressure, velocity, transpose, dbscale, tuning-table selection
+   and key-range.  Also defines several functions and values used by 
+   cc-properties-panel."
   (:use [cadejo.util.trace])
   (:require [cadejo.ui.node-observer])
   (:require [cadejo.util.math :as math])
@@ -15,6 +19,8 @@
   (:require [sgwr.tools.slider :as slider])
   (:require [seesaw.core :as ss]))
 
+;; Functions to define color scheme
+;;
 (defn background-color [] :black)
 (defn icon-prefix [] :gray)
 (defn text-color [] :gray)
