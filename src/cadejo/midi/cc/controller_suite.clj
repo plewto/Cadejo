@@ -168,7 +168,7 @@
               
               (curve [this ctrl]
                 (let [cc (.get-controller this ctrl)]
-                  (and cc (.curve cc))))
+                  (and cc (.get-curve cc))))
               
               (set-scale! [this ctrl s]
                 (let [cc (.get-controller this ctrl)]

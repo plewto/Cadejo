@@ -8,57 +8,64 @@
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.text :as text])
   (:require [sgwr.components.rule :as rule])
-  (:require [sgwr.indicators.displaybar :as dbar :reload true])
+  (:require [sgwr.indicators.displaybar :as dbar])
   (:require [sgwr.tools.button :as button])
   (:require [sgwr.tools.dual-slider :as dslider])
   (:require [sgwr.tools.multistate-button :as msb])  
   (:require [sgwr.tools.slider :as slider])
   (:require [seesaw.core :as ss]))
 
-
-(defn- background-color [] :black)
-(defn- icon-prefix [] :gray)
-(defn- text-color [] :gray)
-(defn- inherited-text-color [] :green)
-(defn- title-color [] (text-color))
-(defn- dbar-inactive-color [] [77 58 83])
-(defn- dbar-active-color [] [245 244 207])
-(defn- border-color [] (text-color))
-(defn- major-tick-color [] (text-color))
-(defn- minor-tick-color [] (text-color))
-(defn- passive-track-color [] (text-color))
-(defn- active-track-color [] :yellow)
+(defn background-color [] :black)
+(defn icon-prefix [] :gray)
+(defn text-color [] :gray)
+(defn inherited-text-color [] :green)
+(defn title-color [] (text-color))
+(defn dbar-inactive-color [] [77 58 83])
+(defn dbar-active-color [] [245 244 207])
+(defn border-color [] (text-color))
+(defn major-tick-color [] (text-color))
+(defn minor-tick-color [] (text-color))
+(defn passive-track-color [] (text-color))
+(defn active-track-color [] :yellow)
 
 (def drawing-width 970)
 (def drawing-height 400)
 (def dbar-cell-width 18)
 (def dbar-cell-height 28)
+(def dbar-style :basic)
 (def slider-length 150)
+(def curve-button-states [[:zero :curve :zero  0]
+                          [:half :curve :half  1]
+                          [:one :curve :one  2]
+                          [:linear :curve :linear  3]
+                          [:quadratic :curve :quadratic  4]
+                          [:cubic :curve :cubic  5]
+                          [:quartic :curve :quartic  6]
+                          [:convex2 :curve :convex2  7]
+                          [:convex4 :curve :convex4  8]
+                          [:convex6 :curve :convex6  9]
+                          [:logistic :curve :logistic 10]
+                          [:logistic2 :curve :logistic2 11]
+                          [:ilinear :curve :ilinear 12]
+                          [:iquadratic :curve :iquadratic 13]
+                          [:icubic :curve :icubic 14]
+                          [:iconvex2 :curve :iconvex2 15]
+                          [:iconvex4 :curve :iconvex4 16]
+                          [:iconvex6 :curve :iconvex6 17]
+                          [:ilogistic :curve :ilogistic 18]
+                          [:ilogistic2 :curve :ilogistic2 19]])
 
-(def ^:private curve-button-states [[:zero :curve :zero  0]
-                                    [:half :curve :half  1]
-                                    [:one :curve :one  2]
-                                    [:linear :curve :linear  3]
-                                    [:quadratic :curve :quadratic  4]
-                                    [:cubic :curve :cubic  5]
-                                    [:quartic :curve :quartic  6]
-                                    [:convex2 :curve :convex2  7]
-                                    [:convex4 :curve :convex4  8]
-                                    [:convex6 :curve :convex6  9]
-                                    [:logistic :curve :logistic 10]
-                                    [:logistic2 :curve :logistic2 11]
-                                    [:ilinear :curve :ilinear 12]
-                                    [:iquadratic :curve :iquadratic 13]
-                                    [:icubic :curve :icubic 14]
-                                    [:iconvex2 :curve :iconvex2 15]
-                                    [:iconvex4 :curve :iconvex4 16]
-                                    [:iconvex6 :curve :iconvex6 17]
-                                    [:ilogistic :curve :ilogistic 18]
-                                    [:ilogistic2 :curve :ilogistic2 19]])
+(def inv-curve-map {:zero 0, :half 1, :one 2,
+                    :linear 3, :quadratic 4, :cubic 5, :quartic 6,
+                    :convex2 7, :convex4 8, :convex6 9,
+                    :logitstic 10, :logistic2 11,
+                    :ilinear 12, :iquadratic 13, :icubic 14, 
+                    :iconvex2 15, :iconvex4 16, :iconvex6 17,
+                    :ilogistic 18, :ilogistic2 19})
 
 ;; create curve multistate button
 ;;
-(defn- curve-button [drawing id p0 & {:keys [click-action]
+(defn curve-button [drawing id p0 & {:keys [click-action]
                                       :or {click-action nil}}]
   (let [wr (.tool-root drawing)
         b (msb/icon-multistate-button wr p0 curve-button-states :id id
@@ -68,7 +75,7 @@
 
 ;; create title text
 ;;
-(defn- title [drawing p txt]
+(defn title [drawing p txt]
   (let [obj (text/text (.root drawing) p txt
                        :style :serif
                        :size 8
@@ -77,17 +84,16 @@
                        
 ;; create general text
 ;;
-(defn- text [drawing p txt & {:keys [style size]
+(defn text [drawing p txt & {:keys [style size]
                              :or {style :serif
                                   size 8}}]
   (text/text (.root drawing) p txt :style style :size size :color (text-color)))
 
-(defn- inherited-text [drawing p txt]
+(defn inherited-text [drawing p txt]
   (text/text (.root drawing) p txt
              :style :mono
              :size 5
              :color (inherited-text-color)))
-
 
 ;; Create edit button
 ;;
@@ -99,10 +105,9 @@
     (button/mini-icon-button parent p0 (icon-prefix) :edit
                              :click-action click-action)))
 
-
 ;; Create inherit checkbox
 ;;
-(defn- inherit-checkbox [parent p0 click-action]
+(defn inherit-checkbox [parent p0 click-action]
   (let [cb (msb/checkbox parent p0 "Inherit"
                          :text-color (text-color)
                          :text-size 6
@@ -111,13 +116,20 @@
 
 ;; Create sub-panel border
 ;;
-(defn- border [parent p0 p1]
+(defn border [parent p0 p1]
   (let [r (rect/rectangle parent p0 p1
                           :width 1.0
                           :color (border-color))]
     (.put-property! r :corner-radius 18)
     r))
 
+
+(defn displaybar [parent x0 y0 ccount]
+  (let [b (dbar/displaybar parent x0 y0 ccount dbar-style
+                           :cell-height dbar-cell-height
+                           :cell-width dbar-cell-width)]
+    (.colors! b (dbar-inactive-color)(dbar-active-color))
+    b))
 
 ; ---------------------------------------------------------------------- 
 ;                             Pitch Bend Panel
@@ -145,9 +157,7 @@
                          (let [r (int (math/str->float (.current-display dbar)))]
                            (.status! @ed* (format "[:bend-range] -> %s" r))
                            (.put-property! (get-node) :bend-range r)))
-        dbar (dbar/displaybar root (+ x0 17)(+ y0 92) 5 :matrix 
-                              :cell-height dbar-cell-height
-                              :cell-width dbar-cell-width)
+        dbar (displaybar root (+ x0 17)(+ y0 92) 5)
         b-edit (edit-button tool [(+ x0 130)(+ y0 92)] dbar 
                             "Bend Range in Cents +/- 2400"
                             range-validator
@@ -155,7 +165,7 @@
         tx2 (text drw [(+ x0 26)(+ y0 65)] "Curve" :style :sans :size 6)
         tx3 (text drw [(+ x0 17)(+ y0 135)] "Range" :style :sans :size 6)
         tx-inherited (inherited-text drw [(+ x0 8)(+ y0 200)] "") ; displays inherited value
-                           
+        components [b-curve dbar b-edit tx2 tx3]
         disable (fn []
                   (let [node (get-node)]
                     (.put-property! node :bend-curve nil)
@@ -164,34 +174,31 @@
                                     (format "Curve %s Range %s"
                                             (.get-property node :bend-curve)
                                             (.get-property node :bend-range)))
-                    (doseq [w [b-curve dbar b-edit tx2 tx3]]
+                    (doseq [w components]
                       (.disable! w false))
                     (.render drw)))
-
         enable (fn []
                  (let [node (get-node)
                        curve (second (msb/current-multistate-button-state b-curve))
                        range (int (math/str->float (.current-display dbar)))]
-                   (.put-property! tx-inherited :text " ")
+                   (.put-property! tx-inherited :text "")
                    (.put-property! node :bend-curve curve)
                    (.put-property! node :bend-range range)
-                   (doseq [w [b-curve dbar b-edit tx2 tx3]]
+                   (doseq [w components]
                      (.enable! w false))
                    (.render drw)))
-
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 225)]
                                      (fn [b _]
                                        (let [inherit (msb/checkbox-selected? b)]
                                          (if inherit
                                            (disable)
-                                           (enable)))))]
+                                           (enable))))) ]
     (border root p0 [(+ x0 w)(+ y0 h)])
     (title drw [(+ x0 67)(+ y0 25)] "Bend")
     (.hide! b-curve :disabled true)
     (.hide! b-edit :disabled true)
     (.hide! tx2 :disabled true)
     (.hide! tx3 :disabled true)
-    (.colors! dbar (dbar-inactive-color)(dbar-active-color))
     (.display! dbar "+200" false)
     (reify cadejo.ui.node-observer/NodeObserver
 
@@ -203,9 +210,22 @@
       (widget [this key] nil)
       
      (sync-ui! [this]
-
-       )
-     )))
+       (let [node (get-node)
+             crv (.local-property node :bend-curve)
+             rng (.local-property node :bend-range)]
+         (if (not crv)
+           (do 
+             (doseq [w components](.disable! w false))
+             (msb/select-checkbox! cb-inherit true false)
+             (.put-property! tx-inherited :text (format "%s range %s"
+                                                        (.get-property node :bend-curve)
+                                                        (.get-property node :bend-range))))
+           (let [crv (.get-property node :bend-curve)]
+             (doseq [w components](.enable! w false))
+             (msb/select-checkbox! cb-inherit false false)
+             (.put-property! tx-inherited :text "")
+             (msb/set-multistate-button-state! b-curve (get inv-curve-map crv 0) false)
+             (.display dbar (str rng) false))) )))))
 
 
 ; ---------------------------------------------------------------------- 
@@ -224,10 +244,7 @@
                                               (let [c (second (msb/current-multistate-button-state b))]
                                                 (.status! @ed* (format "[:pressure-curve] -> %s" c))
                                                 (.put-property! (get-node) :pressure-curve c))))
-        dbar-bias (dbar/displaybar root (+ x0 32)(+ y0 92) 4 :matrix
-                                   :cell-height dbar-cell-height
-                                   :cell-width dbar-cell-width)
-
+        dbar-bias (displaybar root (+ x0 32)(+ y0 92) 4)
         bias-validator (fn [s](let [n (math/str->float s)]
                                 (if n
                                   (and (<= -1.0 n)(<= n 1.0))
@@ -240,10 +257,7 @@
                                  "Pressure Bias +/- 1.0"
                                  bias-validator
                                  bias-callback)
-        dbar-scale (dbar/displaybar root (+ x0 32)(+ y0 142) 4 :matrix
-                                    :cell-height dbar-cell-height
-                                    :cell-width dbar-cell-width)
-       
+        dbar-scale (displaybar root (+ x0 32)(+ y0 142) 4)
         scale-validator (fn [s](let [n (math/str->float s)]
                                  (if n
                                    (and (<= 0 n)(<= n 4))
@@ -258,6 +272,7 @@
                                   scale-callback)
         tx-inherit-curve (inherited-text drw [(+ x0 8)(+ y0 200)] "")
         tx-inherit-values (inherited-text drw [(+ x0 8)(+ y0 212)] "")
+        components [b-curve dbar-bias b-edit-bias dbar-scale b-edit-scale]
         disable (fn []
                   (let [node (get-node)]
                     (.put-property! node :pressure-curve nil)
@@ -269,8 +284,7 @@
                                    (format "Bias %+4.1f Scale %4.2f"
                                            (float (.get-property node :pressure-bias))
                                            (float (.get-property node :pressure-scale))))
-                    (doseq [w [b-curve dbar-bias b-edit-bias dbar-scale b-edit-scale]]
-                      (.disable! w false))
+                    (doseq [w components](.disable! w false))
                     (.render drw)))
         enable (fn []
                  (let [node (get-node)
@@ -282,24 +296,19 @@
                    (.put-property! node :pressure-scale scale)
                    (.put-property! tx-inherit-curve :text "")
                    (.put-property! tx-inherit-values :text "")
-                   (doseq [w [b-curve dbar-bias b-edit-bias dbar-scale b-edit-scale]]
-                     (.enable! w false))
+                   (doseq [w components](.enable! w false))
                    (.render drw)))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 225)]
                                      (fn [b _]
                                        (let [inherit (= (first (msb/current-multistate-button-state b)) 1)]
                                          (if inherit
                                            (disable)
-                                           (enable)))))
-      
-        ]
+                                           (enable))))) ]
     (border root p0 [(+ x0 w)(+ y0 h)])
     (title drw [(+ x0 50)(+ y0 25)] "Pressure")
     (text drw [(+ x0 26)(+ y0 65)] "Curve" :style :sans :size 6)
     (text drw [(+ x0 28)(+ y0 132)] "Bias" :style :sans :size 6)
     (text drw [(+ x0 24)(+ y0 188)] "Scale" :style :sans :size 6)
-    (.colors! dbar-bias (dbar-inactive-color)(dbar-active-color))
-    (.colors! dbar-scale (dbar-inactive-color)(dbar-active-color))
     (.display! dbar-bias "+0.0" false)
     (.display! dbar-scale "1.00" false)
     (reify cadejo.ui.node-observer/NodeObserver
@@ -312,8 +321,23 @@
       (widget [this key] nil)
 
       (sync-ui! [this]
-        )
-      )))
+        (let [node (get-node)]
+          (if (not (.local-property node :pressure-curve))
+            (do
+              (doseq [w components](.disable! w false))
+              (msb/select-checkbox! cb-inherit true false)
+              (.put-property! tx-inherit-curve :text (str (.get-property node :pressure-curve)))
+              (.put-property! tx-inherit-values :text (format "Bias %+4.1f Scale 4.2f" 
+                                                         (float (.get-property node :pressure-bias))
+                                                         (float (.get-property node :pressure-scale)))))
+            (let [crv (.get-property node :pressure-curve)]
+              (doseq [w components](.enable! w false))
+              (msb/select-checkbox! cb-inherit false false)
+              (.put-property! tx-inherit-curve :text "")
+              (.put-property! tx-inherit-values :text "")
+              (msb/set-multistate-button-state! b-curve (get inv-curve-map crv 0) false)
+              (.display! dbar-bias (str (.get-property node :pressure-bias)) false)
+              (.display! dbar-scale (str (.get-property node :pressure-scale)) false))))))))
 
 
 ; ---------------------------------------------------------------------- 
@@ -353,7 +377,7 @@
                                        (let [inherit (= (first (msb/current-multistate-button-state b)) 1)]
                                          (if inherit
                                            (disable)
-                                           (enable)))))]
+                                           (enable))))) ]
     (border root p0 [x1 y1])
     (title drw [(+ x0 50)(+ y0 25)] "Velocity")
     (text drw [(+ x0 26)(+ y0 65)] "Curve" :style :sans :size 6)
@@ -367,11 +391,16 @@
       (widget [this key] nil)
       
       (sync-ui! [this]
-        
-        )
-      )))
-
-
+        (let [node (get-node)]
+          (if (not (.local-property node :velocity-map))
+            (do
+              (.disable! b-curve false)
+              (msb/select-checkbox! cb-inherit true false)
+              (.put-property! tx-inherit :text (str (.get-property node :velocity-map))))
+            (let [crv (.get-property node :velocity-map)]
+              (.enable! b-curve false)
+              (msb/set-multistate-button-state! b-curve (get inv-curve-map crv 0) false)
+              (msb/select-checkbox! cb-inherit false false))))) )))
 
 ; ---------------------------------------------------------------------- 
 ;                              Transpose Panel
@@ -384,9 +413,7 @@
         [x0 y0] p0
         w 175
         h 127
-        dbar (dbar/displaybar root (+ x0 40)(+ y0 42) 3 :matrix  
-                              :cell-height dbar-cell-height
-                              :cell-width dbar-cell-width)
+        dbar (displaybar root (+ x0 40)(+ y0 42) 3)
         validator (fn [s]
                     (let [n (math/str->float s)]
                       (if n
@@ -405,12 +432,12 @@
                             "Transpose -/+ 36"
                             validator
                             callback)
+        components [dbar b-edit]
         tx-inherit (inherited-text drw [(+ x0 100)(+ y0 105)] "")
         disable (fn []
                   (let [node (get-node)]
                     (.put-property! node :transpose nil)
-                    (doseq [w [dbar b-edit]]
-                      (.disable! w false))
+                    (doseq [w components](.disable! w false))
                     (.put-property! tx-inherit :text 
                                     (str (.get-property node :transpose)))
                     (.render drw)))
@@ -418,8 +445,7 @@
                  (let [node (get-node)
                        xpose (int (math/str->float (.current-display dbar)))]
                    (.put-property! node :transpose xpose)
-                   (doseq [w [dbar b-edit]]
-                     (.enable! w false))
+                   (doseq [w components](.enable! w false))
                    (.put-property! tx-inherit :text "")
                    (.render drw)))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 98)]
@@ -428,10 +454,9 @@
                                              inherit (= (first state) 1)]
                                          (if inherit
                                            (disable)
-                                           (enable)))))]
+                                           (enable))))) ]
     (border root p0 [(+ x0 w)(+ y0 h)])
     (title drw [(+ x0 50)(+ y0 25)] "Transpose")
-    (.colors! dbar (dbar-inactive-color)(dbar-active-color))
     (.display! dbar "  0" false)
     (reify cadejo.ui.node-observer/NodeObserver
       
@@ -443,9 +468,17 @@
       (widget [this key] nil)
       
       (sync-ui! [this]
-        
-        )
-      )))
+        (let [node (get-node)
+              xpose (.local-property node :transpose)]
+          (if (not xpose)
+            (do 
+              (doseq [w components](.disable! w false))
+              (msb/select-checkbox! cb-inherit true false)
+              (.put-property! tx-inherit :text (str (.get-property node :transpose))))
+            (do 
+              (doseq [w components](.enable! w false))
+              (msb/select-checkbox! cb-inherit false false)
+              (.display dbar (str xpose) false))))) )))
 
 ; ---------------------------------------------------------------------- 
 ;                              Db Scale Panel
@@ -490,23 +523,23 @@
                     (.disable! s-scale false)
                     (.put-property! tx-inherit :text 
                                     (format "%+3d db" (.get-property node :dbscale)))
-                    (.put-property! tx-value :text "")
-                    (.render drw)))
+                    (.put-property! tx-value :text "")))
+                    ;(.render drw)))
         enable (fn []
                  (let [node (get-node)
                        db (slider/get-slider-value s-scale)]
                    (.put-property! node :dbscale db)
                    (.enable! s-scale false)
                    (.put-property! tx-inherit :text "")
-                   (.put-property! tx-value :text (format "%+3d db" (.get-property node :dbscale)))
-                   (.render drw)
-                   ))
+                   (.put-property! tx-value :text (format "%+3d db" (.get-property node :dbscale)))))
+                   ;(.render drw)))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 225)]
                                      (fn [b _]
                                        (let [inherit (= (first (msb/current-multistate-button-state b)) 1)]
                                          (if inherit
                                            (disable)
-                                           (enable)))))]
+                                           (enable))
+                                         (.render drw))))]
     (border root p0 [(+ x0 w)(+ y0 h)])
     (title drw [(+ x0 6)(+ y0 25)] "DB Scale")
     (line/line root [tick-x0 y-db12][tick-x1 y-db12] :color (major-tick-color))
@@ -526,9 +559,15 @@
       (widget [this key] nil)
       
       (sync-ui! [this]
-        
-        )
-      )))
+        (let [node (get-node)
+              value (.local-property node :dbscale)]
+          (if (not value)
+            (do 
+              (disable)
+              (msb/select-checkbox! cb-inherit true false))
+            (do 
+              (enable)
+              (msb/select-checkbox! cb-inherit false false))))) )))
 
 
 ; ---------------------------------------------------------------------- 
@@ -545,9 +584,7 @@
         x1 (+ x0 w)
         y1 (+ y0 h)
         p1 [x1 y1]
-        dbar (dbar/displaybar root (+ x0 12)(+ y0 42) 12 :matrix
-                              :cell-height dbar-cell-height
-                              :cell-width dbar-cell-width)
+        dbar (displaybar root (+ x0 12)(+ y0 42) 12)
         validator (fn [s] true)  ;; ISSUE NOT IMPLEMENTED
         callback (fn [dbar]   ;; ISSUE NOT IMPLEMENTED
                    (umsg/warning "properties-panel create-scale-selection-panel callback is NOT IMPLEMENTED")
@@ -563,27 +600,23 @@
                     (doseq [w [dbar b-edit]]
                       (.disable! w false))
                     (.put-property! tx-inherit :text
-                                    (.get-property node :scale-id))
-                    (.render drw)))
+                                    (.get-property node :scale-id))))
         enable (fn []
                  (let [node (get-node)
                        sid (keyword (.current-display dbar))]
                    (.put-property! node :scale-id sid)
                    (doseq [w [dbar b-edit]]
                      (.enable! w false))
-                   (.put-property! tx-inherit :text "")
-                    (.render drw)))
-
-
+                   (.put-property! tx-inherit :text "")))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 225)]
                                      (fn [b _]
                                        (let [inherit (= (first (msb/current-multistate-button-state b)) 1)]
                                          (if inherit
                                            (disable)
-                                           (enable)))))]
+                                           (enable))
+                                         (.render drw))))]
     (title drw [(+ x0 78)(+ y0 25)] "Tuning Table")
     (border root p0 p1)
-    (.colors! dbar (dbar-inactive-color)(dbar-active-color))
     (.display! dbar "EQ-12" false) 
     (reify cadejo.ui.node-observer/NodeObserver
       
@@ -595,9 +628,15 @@
       (widget [this key] nil)
       
       (sync-ui! [this]
-        
-        )
-      )))
+        (let [node (get-node)
+              tt (.local-property node :scale-id)]
+          (if (not tt)
+            (do 
+              (disable)
+              (msb/select-checkbox! cb-inherit true false))
+            (do
+              (enable)
+              (msb/select-checkbox! cb-inherit false false)))))) ))
 
 ; ---------------------------------------------------------------------- 
 ;                              Keyrange Panel
@@ -631,8 +670,6 @@
                         (.put-property! tx-range :text (format "Range [%3d %3d]" (first r)(second r)))
                         (.put-property! node :key-range r)
                         (.status! @ed* (format "[:key-range] -> %s" r))))
-
-
         slider (dslider/dual-slider tool [x2 yc] slider-length 0 127 
                                     :orientation :horizontal
                                     :gap 12
@@ -649,8 +686,7 @@
                       (.disable! w false))
                     (.put-property! tx-range :text "")
                     (.put-property! tx-inherit :text
-                                    (str (.get-property node :key-range)))
-                    (.render drw)))
+                                    (str (.get-property node :key-range)))))
         enable (fn []
                  (doseq [w [slider]]
                    (.enable! w false))
@@ -659,8 +695,7 @@
                    (.put-property! node :key-range kr)
                    (.put-property! tx-range :text (str (.get-property node :key-range)))
                    (.put-property! tx-inherit :text "")
-                   (.status! @ed* (format "[:key-range] -> %s" kr))
-                   (.render drw)))
+                   (.status! @ed* (format "[:key-range] -> %s" kr))))
 
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 98)]
                                      (fn [b _]
@@ -668,9 +703,8 @@
                                              inherit (= (first state) 1)]
                                          (if inherit
                                            (disable)
-                                           (enable)))))
-        ]
-
+                                           (enable))
+                                         (.render drw))))]
     ;; Draw major ticks
     (let [kn* (atom 0)
           x* (atom x2)]
@@ -707,14 +741,20 @@
 
       (widget [this key] nil)
       
-     (sync-ui! [this]
+      (sync-ui! [this]
+        (let [node (get-node)
+              kr (.local-property node :key-range)]
+          (if (not kr)
+            (do
+              (disable)
+              (msb/select-checkbox! cb-inherit true false))
+            (do
+              (enable)
+              (msb/select-checkbox! cb-inherit false false))))) )))
 
-       )
-     )))
-
-
-; ---------------------------------------------------------------------- 
-;                           MIDI Properties Panel
+; ********************************************************************** 
+;                          General MIDI properties
+; ********************************************************************** 
 
 (defn midi-properties-panel []
   (let [editor* (atom nil)
@@ -736,8 +776,8 @@
                                      :rim-color [0 0 0 0]
                                      :rim-width 1.0))
         sub-panels [bend-subpan pressure-subpan velocity-subpan transpose-subpan
-                    dbscale-subpan ttab-subpan krange-subpan]
-        ]
+                    dbscale-subpan ttab-subpan krange-subpan] 
+        pan-main (ss/horizontal-panel :items [(.canvas drw)])]
     (.background! drw (background-color))
     (.render drw)
     (reify cadejo.ui.node-observer/NodeObserver
@@ -749,95 +789,14 @@
 
       (widgets [this] {:drawing drw
                        :canvas (.canvas drw)
-                       :pan-main (.canvas drw)})
-      
+                       :pan-main pan-main})
 
       (widget [this key]
         (get (.widgets this) key))
 
       (sync-ui! [this]
-        (doseq [s [bend-subpan]]
+        (doseq [s [bend-subpan pressure-subpan velocity-subpan 
+                   transpose-subpan dbscale-subpan ttab-subpan 
+                   krange-subpan]]
           (.sync-ui! s))
         (.render drw)))))
-
-
-;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 
-
-
-;; (require '[cadejo.midi.node])
-
-;; (defn node [parent]
-;;   (let [properties* (atom {})
-;;         parent* (atom parent)]
-;;     (reify cadejo.midi.node/Node
-;;       (node-type [this] :test)
-;;       (is-root? [this] (= parent nil))
-;;       (parent [this] parent)
-;;       (put-property! [this key val](swap! properties* (fn [q](assoc q key val))))
-;;       (remove-property! [this key](swap! properties* (fn [q](dissoc q key))))
-;;       (local-property [this key](get @properties* key))
-;;       (get-property [this key default]
-;;         (let [locval (.local-property this key)]
-;;           (or locval 
-;;               (and parent (.get-property parent key))
-;;               default)))
-;;       (get-property [this key]
-;;         (.get-property this key nil))
-;;       (properties [this local-only] nil) ;; NOT IMPLEMENTESD
-;;       (get-editor [this] nil) ;; NOT IMPLEMENTED
-;;       (rep-tree [this depth]
-;;         (doseq [k (sort (.keys @properties*))]
-;;           (println (format "[%-18s] -> %s" k (.get-property this k)))))
-;;       )))
-      
-        
-;; (def s (node nil))
-;; (.put-property! s :id :scene)
-;; (.put-property! s :velocity-map :linear)
-;; (.put-property! s :scale-id :eq-12)
-;; (.put-property! s :dbscale 0)
-;; (.put-property! s :transpose 0)
-;; (.put-property! s :key-range [0 127])
-;; (.put-property! s :bend-curve :linear)
-;; (.put-property! s :bend-range 200)
-;; (.put-property! s :pressure-curve :linear)
-;; (.put-property! s :pressure-scale 1.0)
-;; (.put-property! s :pressure-bias 0.0)
-
-;; (def c (node s))
-      
-
-
-;; (defprotocol DummyEditor
-;;   (node [this])
-;;   (dump [this])
-;;   (status! [this msg]))
-
-
-;; (defn dummy-editor []
-;;   (let []
-;;     (reify DummyEditor
-;;       (node [this] c)
-;;       (dump [this]
-;;         (.dump c))
-;;       (status! [this msg]
-;;         (println (format "DUMMY STATUS: %s" msg))))))
-
-;; (def dumed (dummy-editor))
-;; (def mpp (midi-properties-panel))
-;; (.set-parent-editor! mpp dumed)
-
-;; (defn ?? [](.dump dumed))
-
-;; (def pan-main (ss/horizontal-panel :items [(.widget mpp :canvas)]))
-;; (def f (ss/frame :title "test"
-;;                  :content pan-main
-;;                  :on-close :dispose
-;;                  :size [1400 :by 500]))
-;; (ss/show! f)
-
-;; (defn rl [](use 'cadejo.ui.midi.properties-panel :reload))
-;; (defn rla [](use 'cadejo.ui.midi.properties-panel :reload-all))
-;; (defn exit [](System/exit 0))
-
-;; (println)  

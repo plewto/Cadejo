@@ -175,6 +175,7 @@
   "Creates new Scene object connected to specified MIDI input port. 
    Either an IllegalArgumentException or a MidiUnavaliableException may be
    thrown if for some reason the specified port can not be connected."
+  (println (format "Creating scene %s" midi-input-device-name))
   (let [input-device (midi/midi-in midi-input-device-name)
         channels* (atom [])
         editor* (atom nil)
@@ -195,6 +196,6 @@
     (dotimes [ci channel-count]
       (let [cobj (cadejo.midi.channel/channel sobj ci)]
         (swap! channels* (fn [n](conj n cobj)))))
-    (midi/midi-handle-events input-device (.channel-dispatch sobj)) 
+    (midi/midi-handle-events input-device (.channel-dispatch sobj))
     sobj))
 

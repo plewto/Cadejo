@@ -49,7 +49,7 @@
         tool-root (.tool-root drawing)
         modified-marker (let [pnt (sgwr.components.point/point root [234 16] 
                                                              :color inactive
-                                                             :style [:bar :dash :diag :diag2]
+                                                             :style [:triangle]
                                                              :size 3)]
                           (.color! pnt :dirty active)
                           (.color! pnt :clean inactive)

@@ -141,8 +141,9 @@
     
     (ss/listen jb-add :action 
                (fn [_]
+                 (println (format "Creating %s Performance" (.instrument-name descriptor)))
                  (.working chan-ed true)
-                 (.status! chan-ed "Creating performance/instrument")
+                 (.status! chan-ed (format "Creating %s Performance" (.instrument-name descriptor)))
                  (SwingUtilities/invokeLater
                   (proxy [Runnable][]
                     (run []

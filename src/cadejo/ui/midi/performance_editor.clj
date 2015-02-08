@@ -1,13 +1,14 @@
 (println "--> cadejo.ui.midi.performance-editor")
 
 (ns cadejo.ui.midi.performance-editor
+  (:use [cadejo.util.trace])
   (:require [cadejo.config :as config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.bank-editor])
-  (:require [cadejo.ui.midi.cceditor-tab])
+  ;(:require [cadejo.ui.midi.cceditor-tab])
+  (:require [cadejo.ui.midi.cc-properties-panel])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.midi.program-bar])
-  ;(:require [cadejo.ui.midi.properties-editor])
   (:require [cadejo.ui.midi.properties-panel])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -64,7 +65,6 @@
         bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank program-bar)]
                   (.editor! bank bed)
                   bed)
-        ;properties-editor (cadejo.ui.midi.properties-editor/properties-editor)
         properties-panel (cadejo.ui.midi.properties-panel/midi-properties-panel)
         card-buttons* (atom [])
         card-group (ss/button-group)
@@ -75,7 +75,8 @@
                      panc)
         
         available-controllers (.controllers descriptor)
-        cc-panels* (atom [])]
+        cced* (atom nil)
+        ]
     
     (let [b (factory/button "Transmit" :midi :transmit "Transmit current program")]
       (.add toolbar b)
@@ -95,14 +96,14 @@
       (swap! card-buttons* (fn [n](conj n b)))
       (.add toolbar b))
     ;; Add CTRL properties panels
-    (doseq [i (range 0 (count available-controllers) 4)]
-      (let [cced (cadejo.ui.midi.cceditor-tab/cceditor-tab descriptor i)
-            card-id (format "CTRL-%d" i)
-            jb (factory/toggle card-id :midi :ctrl "Display MIDI controller properties" card-group)]
-        (.putClientProperty jb :card card-id)
-        (.add pan-cards (.widget cced :pan-main) card-id)
-        (swap! card-buttons* (fn [n](conj n jb)))
-        (.add toolbar jb)))
+    (let [cced (cadejo.ui.midi.cc-properties-panel/cc-properties-panel descriptor)
+          card-id "CTRL"
+          jb (factory/toggle card-id :midi :ctrl "Display MIDI controller properties" card-group)]
+      (reset! cced* cced)
+      (.putClientProperty jb :card card-id)
+      (.add pan-cards (.widget cced :pan-main) card-id)
+      (swap! card-buttons* (fn [q](conj q jb)))
+      (.add toolbar jb))
     (let [b (factory/toggle "Edit" :edit nil "Edit current program" card-group)]
       (.putClientProperty b :card "EDIT")
       (ss/listen b :action (fn [_]
@@ -156,17 +157,13 @@
                  
                  (sync-ui! [this]
                    (.sync-ui! bank-ed)
-                   ;(.sync-ui! properties-editor)
                    (.sync-ui! properties-panel)
                    (.sync-ui! program-bar)
-                   (doseq [cced @cc-panels*]
-                     (.sync-ui! cced))))]
-      ;(.set-parent-editor! properties-editor ped)
+                   (.sync-ui! @cced*)) )]
       (.set-parent-editor! properties-panel ped)
       (.set-parent-editor! bank-ed ped)
       (.put-property! performance :bank-editor bank-ed)
-      (doseq [cced @cc-panels*]
-        (.set-parent-editor! cced ped))
+      (.set-parent-editor! @cced* ped)
       (ss/config! (.frame ped) :size frame-size)
       (ss/listen (.widget ped :jb-parent)
                  :action (fn [_]
@@ -197,7 +194,8 @@
         (ss/listen b :action (fn [ev]
                                (let [src (.getSource ev)
                                      card-id (.getClientProperty src :card)]
-                                 (ss/show-card! pan-cards card-id)))))
+                                 (ss/show-card! pan-cards card-id)
+                                 (.revalidate pan-cards)))))
       (.add (.widget basic-ed :pan-center)(.widget program-bar :pan-main) BorderLayout/SOUTH)
       (.putClientProperty (.widget basic-ed :jb-help) :topic :performance)
       ped))) 

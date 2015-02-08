@@ -177,6 +177,7 @@
    ci - MIDI channel number ci {0,1,2,...15}
    Channels are not typically created directly. Instead the parent Scene
    calls the function to create it's channels."
+  (println (format "--> channel %02d" (cadejo.util.math/abs (- ci 16))))
   (let [children (atom {})
         properties (atom {:id (int ci)
                           :channel (int ci)})
