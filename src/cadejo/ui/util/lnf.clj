@@ -4,6 +4,7 @@
   (:require [cadejo.config :as config])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.util.user-message :as umsg])
+  (:require [sgwr.util.color :as uc])
   (:require [seesaw.core :as ss])
   (:require [seesaw.color :as ssc])
   ;(:require [seesaw.font :as ssf]) ;; debug only
@@ -359,16 +360,23 @@
 
 (defn background-color [] :black)
 (defn icon-prefix [] :gray)
-(defn text-color [] :gray)
+(defn text-color [] (uc/color :gray))
+(defn selected-text-color [] :green)
 (defn inherited-text-color [] :green)
 (defn title-color [] (text-color))
 (defn dbar-inactive-color [] [77 58 83])
 (defn dbar-active-color [] [245 244 207])
-(defn border-color [] (text-color))
+(defn border-color [] [150 130 167])
+(defn button-border-color [] (border-color))
 (defn major-tick-color [] (text-color))
-(defn minor-tick-color [] (text-color))
+(defn minor-tick-color [] (uc/darker (uc/color (major-tick-color))))
 (defn passive-track-color [] (text-color))
-(defn active-track-color [] :yellow)
+(defn active-track-color [] :red)
+(defn slider-handle-color [] :white)
+(defn envelope-background [] (background-color))
+(defn envelope-border-color [] (border-color))
+(defn envelope-line-color [] :green)
+(defn envelope-handle-color [] (slider-handle-color))
 
 
 

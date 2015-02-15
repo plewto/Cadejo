@@ -7,7 +7,7 @@
                 border displaybar
                 inv-curve-map]])
   (:require [cadejo.ui.node-observer])
-  (:require [cadejo.util.lnf :as lnf])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.drawing])
   (:require [sgwr.indicators.displaybar :as dbar])

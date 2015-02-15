@@ -40,5 +40,10 @@
   (not (member? obj col)))
 
 
+(defn zip [a b]
+  "Zip two list/vectors  
+   (zip '[a b c] [1 2 3]) --> [[a 1][b 2][c 3]]"
+  (map vector a b))
+
 (defn third [col](nth col 2))
 (defn fourth [col](nth col 3))

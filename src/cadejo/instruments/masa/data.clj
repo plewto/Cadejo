@@ -11,8 +11,8 @@
         :percussion   [    0     0     0     0     0     0     0     0     0]
         :amp          0.20
         ;:pedal-sens   0.00
-        :decay        0.20
-        :sustain      0.90
+        :decay        0.00  ; 0.20
+        :sustain      1.00  ; 0.9
         :vrate        5.00
         :vsens        0.01
         :vdepth       0.00
@@ -35,8 +35,8 @@
         :percussion   [    0     0     0     0     1     0     0     1     0]
         :amp          0.28
         ;:pedal-sens   0.00
-        :decay        0.20
-        :sustain      0.90
+        :decay        0.10  ; 0.2
+        :sustain      0.80  ; 0.9
         :vrate        5.44
         :vsens        0.01
         :vdepth       0.00
@@ -58,7 +58,8 @@
       :registration [    8     8     8     0     0     0     0     0     0 ]
       :pedals       [+0.00 +0.00 +0.00 +1.00 +0.00 +0.00 +0.00 +0.00 +0.25 ]
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
-      :decay 0.20   :sustain 0.80
+      :decay 0.30  ; 0.2  
+      :sustain 0.60 ; 0.8
       :vrate 7.000  :vdepth 0.000    :vsens 0.020      :vdelay 0.000
       :scanner-delay-mod 0.200      :scanner-delay 0.010
       :scanner-mod-rate  1.000       :scanner-mod-spread 0.000
@@ -74,7 +75,8 @@
       :registration [    8     0     0     0     0     0     8     8     8 ]
       :pedals       [+0.00 +0.00 +0.00 +0.00 +0.00 +0.00 +0.00 +0.00 +0.00 ]
       :percussion   [    0     0     0     0     0     0     0     0     0 ]
-      :decay 0.20   :sustain 0.80
+      :decay 0.40 ; 0.2  
+      :sustain 0.60 ; 0.8
       :vrate 7.000  :vdepth 0.000    :vsens 0.010      :vdelay 0.000
       :scanner-delay-mod 0.200      :scanner-delay 0.010
       :scanner-mod-rate  1.000       :scanner-mod-spread 0.000

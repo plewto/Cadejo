@@ -4,7 +4,7 @@
   (:use [overtone.core])
   (:require [cadejo.modules.qugen :as qu]))
 
-(def scanner-max-delay 0.01)
+(def ^:private scanner-max-delay 0.01)
 
 (defcgen DelayTime [common-delay freq depth spread]
   (:kr
@@ -24,7 +24,7 @@
                     scanner-scan-rate 0.1
                     scanner-crossmix 0.1
                     scanner-mix 0.0
-                    room-size 0.7
+                    reverb-size 0.7
                     reverb-damp 0.5
                     reverb-mix 0.0
                     dbscale 0]
@@ -82,7 +82,7 @@
         ;; Reverb
         reverb-depth (qu/clamp (+ reverb-mix (in:kr reverb-mix-bus))
                                0 1)
-        reverb-wet-sig (free-verb scanner-out 1 room-size reverb-damp)
+        reverb-wet-sig (free-verb scanner-out 1 reverb-size reverb-damp)
         reverb-out (qu/efx-mixer scanner-out reverb-wet-sig reverb-depth)
         ;; Master volume
         volume (* (dbamp dbscale) 

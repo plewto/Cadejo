@@ -87,12 +87,17 @@
     (ssc/color r g b)))
 
 (defn hsb [c]
-  "Returns color hue, saturation and brightness as float array [h s b]
+  "Returns color hue, saturation and brightness as float vector [h s b]
    See java.awt.Color"
   (let [r (.getRed c)
         g (.getGreen c)
         b (.getBlue c)]
     (Color/RGBtoHSB r g b nil)))
+
+(defn rgb [c]
+  "Returns red, green, blue color values as int vector [r g b]"
+  [(.getRed c)(.getGreen c)(.getBlue c)])
+
 
 (defn hue [c]
   "Return color hue as float 0.0 <= hue < 1.0"

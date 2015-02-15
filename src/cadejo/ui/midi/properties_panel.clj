@@ -4,7 +4,7 @@
    and key-range.  Also defines several functions and values used by 
    cc-properties-panel."
   (:require [cadejo.ui.node-observer])
-  (:require [cadejo.util.lnf :as lnf])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])
   (:require [sgwr.components.drawing])
@@ -99,7 +99,7 @@
   (text/text (.root drawing) p txt
              :style :mono
              :size 5
-             :color (inherited-text-color)))
+             :color (lnf/inherited-text-color)))
 
 ;; Create edit button
 ;;

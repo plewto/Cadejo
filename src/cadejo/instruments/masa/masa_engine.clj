@@ -12,7 +12,7 @@
   (:require [cadejo.instruments.masa.pp])
   (:require [cadejo.instruments.masa.data])
   (:require [cadejo.instruments.masa.efx :as efx])
-  (:require [cadejo.instruments.masa.masa-editor]))
+  (:require [cadejo.instruments.masa.editor.masa-editor]))
 
 (def clipboard* (atom nil))
 
@@ -24,7 +24,7 @@
     (.add-controller! d :cc7 "Volume" 7)
     (.add-controller! d :cca "Scanner Mix" 92)
     (.add-controller! d :ccb "Reverb Mix" 93)
-    (.set-editor-constructor! d cadejo.instruments.masa.masa-editor/masa-editor)
+    (.set-editor-constructor! d cadejo.instruments.masa.editor.masa-editor/masa-editor)
     (.initial-program! d {:r1 0.5 :r2 1.5 :r3 1.0 :r4 2.0 :r5 3.0 
                           :r6 4.0 :r7 5.0 :r8 6.0 :r9 8.0
                           :a1 0 :a2 0 :a3 8 :a4 0 :a5 0 
@@ -36,9 +36,9 @@
                           :decay 0.2 :sustain 0.7
                           :scanner-delay 0.01 :scanner-delay-mod 0.5
                           :scanner-mod-rate 5.0 :scanner-mod-spread 0.0
-                          :scanner-scan-rate 0.1 :scanner-mix 0.0
-                          :room-size 0.7 :reverb-damp 0.5 :reverb-mix 0.0
-                          :vrate 7.0 :vsens 0.05 :vdepth 0.05 :vdelay 0.0 
+                          :scanner-scan-rate 0.1 :scanner-mix 0.0 :scanner-crossmix 0.1
+                          :reverb-size 0.7 :reverb-damp 0.5 :reverb-mix 0.0
+                          :vrate 7.0 :vsens 0.05 :vdepth 0.00 :vdelay 0.0 
                           :amp 0.2})
     (.program-generator! d cadejo.instruments.masa.genpatch/random-masa-program)
     (.help-topic! d :masa)
@@ -296,6 +296,3 @@
 
 (.add-constructor! masa-descriptor :mono masa-mono)
 (.add-constructor! masa-descriptor :poly masa-poly)
-
-
-    

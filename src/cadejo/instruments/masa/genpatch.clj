@@ -1,9 +1,8 @@
 (println "-->    masa genpatch")
 
 (ns cadejo.instruments.masa.genpatch
-  (:use [cadejo.util.trace])
-  (:require [cadejo.util.math :as math])
   (:use [cadejo.instruments.masa.masa-constants])
+  (:require [cadejo.util.math :as math])
   (:require [cadejo.instruments.masa.program :as program]))
 
 (defn random-masa-program [& args]
