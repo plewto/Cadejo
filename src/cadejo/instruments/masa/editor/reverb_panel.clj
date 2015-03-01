@@ -45,7 +45,7 @@
         s-damp (slider drw [x-damp y2] :reverb-damp damp-action)
         s-mix (slider drw [x-mix y2] :reverb-mix mix-action)
         widget-map {}]
-  (rect/rectangle (.root drw) p0 p1 :color (lnf/border-color))
+  (rect/rectangle (.root drw) p0 p1 :color (lnf/major-border-color))
   (text/text (.root drw) [(+ x0 70)(- y0 h -20)] "Reverb" 
              :style :sans
              :size 8

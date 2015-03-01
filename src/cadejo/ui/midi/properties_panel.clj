@@ -19,21 +19,6 @@
   (:require [sgwr.tools.slider :as slider])
   (:require [seesaw.core :as ss]))
 
-;; Functions to define color scheme
-;;
-;; (defn background-color [] :black)
-;; (defn icon-prefix [] :gray)
-;; (defn text-color [] :gray)
-;; (defn inherited-text-color [] :green)
-;; (defn title-color [] (text-color))
-;; (defn dbar-inactive-color [] [77 58 83])
-;; (defn dbar-active-color [] [245 244 207])
-;; (defn border-color [] (text-color))
-;; (defn major-tick-color [] (text-color))
-;; (defn minor-tick-color [] (text-color))
-;; (defn passive-track-color [] (text-color))
-;; (defn active-track-color [] :yellow)
-
 (def drawing-width 970)
 (def drawing-height 400)
 (def dbar-cell-width 18)
@@ -125,7 +110,7 @@
 (defn border [parent p0 p1]
   (let [r (rect/rectangle parent p0 p1
                           :width 1.0
-                          :color (lnf/border-color))]
+                          :color (lnf/major-border-color))]
     (.put-property! r :corner-radius 18)
     r))
 

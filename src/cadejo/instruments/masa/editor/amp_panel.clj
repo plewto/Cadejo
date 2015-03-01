@@ -43,7 +43,7 @@
                            
         s-amp (slider drw [xc y2] :amp amp-action)
         widget-map {}]
-    (rect/rectangle (.root drw) p0 p1 :color (lnf/border-color))
+    (rect/rectangle (.root drw) p0 p1 :color (lnf/major-border-color))
     (text/text (.root drw) [(+ x0 26)(- y0 h -20)] "Amp"
                :style :sans
                :size 8

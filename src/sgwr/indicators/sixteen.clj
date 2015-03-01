@@ -149,7 +149,7 @@
                              :n (line/line grp [xc y1][xc yc] :id :n)
                              :o (line/line grp [x0 y1][xc yc] :id :o)
                              :p (line/line grp [x0 yc][xc yc] :id :p)
-                             :dp (circle/circle-r grp [xc y1] 3 :id :dp)}]
+                             :dp (circle/circle-r grp [xc y1] 2.8 :id :dp :fill true)}]
                    (doseq [e (vals emap)]
                      (if (= e (:dp emap))
                        (do 
@@ -158,6 +158,7 @@
                        (do 
                          (components/set-attributes! e :inactive :color @inactive* :style :solid :width 1.0 :fill :no :hide :no)
                          (components/set-attributes! e :active   :color @active*   :style :solid :width 1.0 :fill :no :hide :no))))
+                   (.fill! (:dp emap) :active true)
                    emap)
         all-off (fn []
                   (doseq [p (vals elements)]

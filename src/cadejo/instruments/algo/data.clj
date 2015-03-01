@@ -12,7 +12,7 @@
 (let [enable '[1 1 1   1 1 1   1 1]]
   (save-program 0 "FmRhodes" "These are remarks"
     (algo (common  :amp 0.399
-                   :lp 16000
+                   :lp 10000
                    :port-time 0.00
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
@@ -99,7 +99,7 @@
   (save-program 1 "Celesta"
     (algo (common  :amp 0.283
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -183,7 +183,7 @@
   (save-program 2 "Ice9"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -436,7 +436,7 @@
   (save-program 5 "SteamOrgan"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -520,7 +520,7 @@
   (save-program 6 "Alcestis" "cca-->op4 ccb-->op7"
     (algo (common  :amp 0.560
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -604,7 +604,7 @@
   (save-program 7 "Admetus"
     (algo (common  :amp 0.283
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -688,7 +688,7 @@
   (save-program 8 "Klaxon" "Pressure n-> op6 feedback"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -762,7 +762,7 @@
                :lfo1     0.00 :lfo2     0.00 :hp  50
                :fb      +0.22 :env->fb +0.00 :lfo2->fb  0.00
                :cca->fb  0.00 :ccb->fb +0.00 :pressure->fb +0.00)
-          (echo    :delay-1 3.198    :fb 0.00
+          (echo    :delay-1 1.000    :fb 0.00
                    :delay-2 0.917    :damp 0.80   :mix 0.00)
           (reverb  :size 0.85        :mix  0.43))))
 
@@ -772,7 +772,7 @@
   (save-program 9 "NoisePad"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -940,7 +940,7 @@
   (save-program 11 "Lindiwe"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -1026,7 +1026,7 @@
   (save-program 12 "HiBells" "cca --> op6"
     (algo (common  :amp 0.283
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -1110,7 +1110,7 @@
   (save-program 13 "Magali"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0100
@@ -1194,7 +1194,7 @@
   (save-program 14 "Glass"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -1284,7 +1284,7 @@
   (save-program 15 "Clipped Piano"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -1368,7 +1368,7 @@
   (save-program 16 "Lfe" "cca --> op1 ccb --> op6 w/fb"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -1452,7 +1452,7 @@
   (save-program 17 "FmReed"
     (algo (common  :amp 0.399
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0100 
                    :lfo1->pitch +0.0000
@@ -1536,7 +1536,7 @@
   (save-program  18 "Mojisola" "cca & ccb --> feedback"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -1620,7 +1620,7 @@
   (save-program 19 "Gost Strings" "cca & ccb --> op w feedback"
     (algo (common  :amp 0.399
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -1706,7 +1706,7 @@
                 "Very long & evolving sound - intersting aliasing on high notes with pitchbend"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -1790,7 +1790,7 @@
   (save-program 21 "NotGamelan"
     (algo (common  :amp 0.399
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -1883,7 +1883,7 @@
   (save-program 22 "Low Ensemble"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -2059,7 +2059,7 @@
   (save-program 24 "TubeBell"
     (algo (common  :amp 0.399
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -2144,7 +2144,7 @@
   (save-program 25 "StackFive" "cca --> op1 ccb --> op7 pressure --> vibrato"
     (algo (common  :amp 0.399
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0200
@@ -2229,7 +2229,7 @@
   (save-program 26 "FmReed2" "pressure --> vibrato"
     (algo (common  :amp 0.399
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0050
@@ -2314,7 +2314,7 @@
   (save-program 27 "FmBrass"
     (algo (common  :amp 0.283
                    :port-time 0.01
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0100
@@ -2399,7 +2399,7 @@
   (save-program 28 "Ibta"
     (algo (common  :amp 0.399
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000
@@ -2483,7 +2483,7 @@
   (save-program 29 "Bass Poly Somenthing"
     (algo (common  :amp 0.200
                    :port-time 0.00
-                   :lp 16000
+                   :lp 10000
                    :cc-volume-depth 0.00
                    :env1->pitch +0.0000 
                    :lfo1->pitch +0.0000

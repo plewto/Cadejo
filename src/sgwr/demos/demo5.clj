@@ -11,32 +11,101 @@
   (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.components.rule :as rule])
   (:require [sgwr.components.text :as text])
+  (:require [sgwr.tools.slider :as slider])
+  (:require [sgwr.tools.button :as button])
+  (:require [sgwr.indicators.displaybar :as dbar])
   (:require [seesaw.core :as ss]))
 
 
 
 (def drw (drawing/native-drawing 900 700))
 (def root (.root drw))
-
-(def c1 (circle/circle root [50 50][100 100]))
-(def a1 (line/line root [50 500][100 200] :id :segment-1))
-(def p1 (point/point root [200 100] :size 6 :style [:dot]))
-(def r1 (rect/rectangle root [200 500][400 200]))
-(def tx (text/text root [300 300] "Why" :size 8))
+(def tools (.tool-root drw))
 
 
-(def jb (ss/button :text "Change"))
+(def headline-1 (text/text root [50 70] "Headline-1 size 12"
+                         :style :sans
+                         :size 12))
 
-(ss/listen jb :action (fn [_]
-                        (.set-points! c1  [[450 450][550 550]])
-                        (.set-points! a1  [[450 500][650 200]])
-                        (.set-points! p1  [[400 100]])
-                        (.set-points! r1  [[600 500][800 200]])
-                        (.set-points! tx  [[700 500]])
-                        (.render drw)))
+
+(def headline-2 (text/text root [50 120] "Section head size 8"
+                           :style :sans
+                           :size 8))
+
+(def label-1 (text/text root [85 420] "Label" 
+                        :style :mono
+                        :size 6))
+
+(def label-2 (text/text root [132 420] "Size 6"
+                        :style :mono
+                        :size 6))
+
+(def slider-length 75)
+
+(def v-slider1 (slider/slider tools [100 400] slider-length 0.0 1.0
+                              :orientation :vertical
+                              :rim-color [0 0 0 0]))
+
+
+(def v-slider2 (slider/slider tools [150 400] slider-length 0.0 1.0
+                              :orientation :vertical
+                              :rim-color [0 0 0 0]))
+
+
+(def b1 (button/icon-button tools [50 500] :gray :general :help :rim-width 1))
+
+
+(def b2 (button/mini-icon-button tools [150 500] :gray :help ))
+
+(def display-type :sixteen)
+
+;; (def dbar1 (dbar/displaybar root 300 100 5 display-type
+;;                             :cell-width 25
+;;                             :cell-height 35))
+;; (.display! dbar1 "25.35" false)
+
+;; (def dbar2 (dbar/displaybar root 300 150 5 display-type
+;;                             :cell-width 20
+;;                             :cell-height 28))
+;; (.display! dbar2 "20.28")
+
+
+;; (def dbar3 (dbar/displaybar root 300 200 5 display-type
+;;                             :cell-width 18
+;;                             :cell-height 25))
+;; (.display! dbar3 "18.25")
+
+;; (def dbar4 (dbar/displaybar root 300 250 5 display-type
+;;                             :cell-width 16
+;;                             :cell-height 22))
+;; (.display! dbar4 "16.22")
+
+
+;; (def dbar5 (dbar/displaybar root 300 300 5 display-type
+;;                             :cell-width 14
+;;                             :cell-height 19))
+;; (.display! dbar5 "14.19")
+
+
+(def dbar6 (dbar/displaybar root 100 150 7 display-type
+                            :cell-width 12
+                            :cell-height 16))
+(.display! dbar6 "1.234567")
+
+
+(def dbar7 (dbar/displaybar root 100 200 5 display-type
+                            :cell-width 12
+                            :cell-height 16))
+(.display! dbar7 "AMP")
+
+
+
+
+
+
+
 
 (def pan-main (ss/border-panel :center (.canvas drw)
-                               :south jb
                                ))
 
 (.background! drw :black)

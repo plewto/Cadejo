@@ -65,7 +65,7 @@
         s-depth (slider drw [(+ x0 112)(- y0 25)] :vdepth 0.0 1.0 depth-action)
         s-delay (slider drw [(+ x0 162)(- y0 25)] :vdelay 0.0 max-vibrato-delay delay-action)
         widget-map {}]
-    (rect/rectangle (.root drw) [(- x0 33) y0][(+ x1 33) y1] :color (lnf/border-color))
+    (rect/rectangle (.root drw) [(- x0 33) y0][(+ x1 33) y1] :color (lnf/major-border-color))
     (text/text (.root drw) [(+ x0 60)(- y0 185)] "Vibrato"
                :style :sans
                :size 8

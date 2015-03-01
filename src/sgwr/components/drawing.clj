@@ -28,8 +28,7 @@
            java.awt.event.MouseMotionListener
            java.awt.event.MouseListener
            javax.swing.JPanel
-           javax.swing.SwingUtilities)
-  )
+           javax.swing.SwingUtilities))
 
 
 (def zoom-ratio* (atom 2/3))

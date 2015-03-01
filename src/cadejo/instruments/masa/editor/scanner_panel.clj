@@ -91,7 +91,7 @@
                         (.status! ied (format "[%s] -> %5.3f [%s] -> %5.3f" param-scan scan-rate param-mod mod-rate))))
         fld-rate (field/field (.tool-root drw) p2 p3 [0 1][0 1] 
                               :drag-action rate-action
-                              :rim-color (lnf/border-color)
+                              :rim-color (lnf/major-border-color)
                               :pad-color [0 0 0 0])
         ball-rate (field/ball fld-rate :b1 [0.5 0.5])
         delay-action (fn [fld _]
@@ -107,7 +107,7 @@
         fld-delay (field/field (.tool-root drw) p4 p5 ;[0 1][0 1]
                                [0 max-scanner-delay][0 max-scanner-delay-mod]
                                :drag-action delay-action
-                               :rim-color (lnf/border-color)
+                               :rim-color (lnf/major-border-color)
                                :pad-color [0 0 0 0])
         ball-delay (field/ball fld-delay :b1 [0.5 0.5])
         s-spread (slider/slider (.tool-root drw) [(+ x2 8) (+ y2 16)] 188 0.0 4.0 
@@ -141,7 +141,7 @@
         widget-map {}]
     (image/read-image (.root drw) [(first p2)(second p3)] "resources/masa/scanner_rate_pattern.png")
     (rect/rectangle (.root drw) [x0 (+ y0 20)] [x1 y1] :id :scanner-border
-                    :color (lnf/border-color))
+                    :color (lnf/major-border-color))
     (label drw [(+ x2 70)(- y3 8)] "Mod Rate")
     (vert-label drw [(- x2 16) (+ y3 60)] "Scan Rate")
     (label drw [(+ x4 80)(- y3 8)] "Delay")

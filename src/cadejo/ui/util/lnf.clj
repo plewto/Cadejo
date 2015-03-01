@@ -358,7 +358,7 @@
     (ss/show! dia)))
 
 
-(defn background-color [] :black)
+(defn background-color [] (uc/color :black))
 (defn icon-prefix [] :gray)
 (defn text-color [] (uc/color :gray))
 (defn selected-text-color [] :green)
@@ -366,18 +366,22 @@
 (defn title-color [] (text-color))
 (defn dbar-inactive-color [] [77 58 83])
 (defn dbar-active-color [] [245 244 207])
-(defn border-color [] [150 130 167])
-(defn button-border-color [] (border-color))
+(defn major-border-color [] [150 130 167])
+(defn minor-border-color [][100 80 117])
+(defn button-border-color [] (minor-border-color))
+(defn selected-button-border [](selected-text-color))
 (defn major-tick-color [] (text-color))
 (defn minor-tick-color [] (uc/darker (uc/color (major-tick-color))))
 (defn passive-track-color [] (text-color))
 (defn active-track-color [] :red)
 (defn slider-handle-color [] :white)
 (defn envelope-background [] (background-color))
-(defn envelope-border-color [] (border-color))
+(defn envelope-border-color [] (minor-border-color))
 (defn envelope-line-color [] :green)
+(defn envelope-selected-line-color [] :yellow)
 (defn envelope-handle-color [] (slider-handle-color))
-
+(defn envelope-alternate-line-color [] (button-border-color))
+(defn blue [](uc/color [0 0 64]))
 
 
 ;; Set initial skin

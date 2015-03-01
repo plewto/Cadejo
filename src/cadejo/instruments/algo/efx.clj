@@ -2,9 +2,10 @@
 
 (ns cadejo.instruments.algo.efx
   (:require [cadejo.modules.qugen :as qu])
+  (:require [cadejo.instruments.algo.algo-constants :as constants])
   (:use [overtone.core]))
 
-(def echo-max-delay 1)
+(def ^:private max-echo-delay constants/max-echo-delay)
 
 (defsynth EfxBlock [lp 10000
                     echo-delay-1 0.25
@@ -25,7 +26,7 @@
   (let [delay-fb-cutoff (+ (* -8000 echo-hf-damp) 10000)
         drysig (lpf (in:ar in-bus 1) lp)
         fbsig (+ (local-in:ar 2) drysig)
-        wetsig (lpf:ar (delay-c fbsig echo-max-delay 
+        wetsig (lpf:ar (delay-c fbsig max-echo-delay 
                                 [echo-delay-1 echo-delay-2]) 
                        delay-fb-cutoff)
         wetsig1 (pan2 (nth wetsig 0) 0.5)
