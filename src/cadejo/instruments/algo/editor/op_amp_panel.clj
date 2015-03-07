@@ -93,7 +93,7 @@
           v* (atom -1.0)
           major (fn [y n]
                   (line/line root [xa y][xb y] :id op-id
-                             :style :solid
+                             :style :dotted
                              :color (lnf/major-tick-color))
                   (text/text root [(- xa 33)(+ y 5)] (format "%+4.1f" n)
                              :id op-id

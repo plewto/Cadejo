@@ -68,7 +68,7 @@
           v0 (math/mean vn1 vp1)
           vline (fn [y c] 
                   (line/line root [x1 y][x2 y] :id id
-                             :style :solid
+                             :style :dotted
                              :color c))
           minor (fn [y n]
                   (vline y (lnf/minor-tick-color))
