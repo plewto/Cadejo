@@ -137,8 +137,7 @@
                                                          text-color text-style text-size
                                                          gap text-x-shift text-y-shift w h
                                                          pad-color
-                                                         rim-color rim-style rim-width rim-radius
-                                                         occluder-color]
+                                                         rim-color rim-style rim-width rim-radius]
                                                   :or {id nil
                                                        drag-action dummy-action
                                                        move-action dummy-action
@@ -159,8 +158,7 @@
                                                        rim-color (uc/color :gray)
                                                        rim-style 0
                                                        rim-width 1.0
-                                                       rim-radius 12
-                                                       occluder-color (uc/transparent :black 190)}}]
+                                                       rim-radius 12}}]
   "(text-multistate-button parent p0 states :id
       :drag-action :move-action :enter-action :exit-action 
       :press-action :release-action :click-action 
@@ -256,14 +254,7 @@
                          (.put-property! txobj :active-state attkey)
                          (swap! acc* (fn [q](conj q txobj)))
                          (swap! i* inc)))
-                     @acc*)
-        occluder (let [occ (rect/rectangle grp p0 [(+ x2 2)(+ y2 2)] :id :occluder
-                                           :fill true
-                                           :color [0 0 0 0])]
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :disabled occluder-color)
-                   (.color! occ :rollover [0 0 0 0])
-                   occ)]
+                     @acc*)]
     (doseq [k (map first states)]
       (doseq [tx txtobj-lst]
         (let [actvs (.get-property tx :active-state)]
@@ -276,9 +267,7 @@
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :text-objects txtobj-lst)
-    (.put-property! grp :occluder occluder)
     (.use-attributes! grp (first (first states)))
-    (.use-attributes! occluder :enabled)
     grp))
 
 ;; states a nested list of form 
@@ -289,8 +278,7 @@
                                                           press-action release-action click-action
                                                           icon-prefix gap w h
                                                           pad-color
-                                                          rim-color rim-style rim-width rim-radius
-                                                          occluder-color]
+                                                          rim-color rim-style rim-width rim-radius]
                                                   :or {id nil
                                                        drag-action dummy-action
                                                        move-action dummy-action
@@ -307,8 +295,7 @@
                                                        rim-color [0 0 0 0] ; (uc/color :gray)
                                                        rim-style 0
                                                        rim-width 1.0
-                                                       rim-radius 12
-                                                       occluder-color (uc/transparent :black 190)}}]
+                                                       rim-radius 12}}]
   "(icon-multistate-button parent p0 states :id
       :drag-action :move-action :enter-action :exit-action 
       :press-action :release-action :click-action 
@@ -352,16 +339,7 @@
                        (.put-property! iobj :active-state attkey)
                        (.hide! iobj :default true)
                        (swap! acc* (fn [q](conj q iobj)))))
-                   @acc*)
-        occluder (let [occ (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :occluder
-                                           :fill true
-                                           :color [0 0 0 0])]
-                   (.color! occ :disabled occluder-color)
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :default [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   (.use-attributes! occ :enabled)
-                   occ)]
+                   @acc*)]
     (doseq [k (map first states)]
       (doseq [iobj iobj-lst]
         (let [active (.get-property iobj :active-state)]
@@ -372,11 +350,9 @@
     (.put-property! grp :rim rim)
     (.color! pad :rollover pad-color)
     (.put-property! pad :corner-radius rim-radius)
-    (.put-property! grp :occluder occluder)
     (.color! rim :unselected rim-color)
     (.use-attributes! grp :enabled)
     (.use-attributes! grp (first (first states)))
-    ;(.use-attributes! occluder :enabled)
     grp)) 
 
 
@@ -417,8 +393,7 @@
                                          text-color text-style text-size 
                                          gap text-x-shift text-y-shift
                                          rim-color rim-style rim-size rim-radius
-                                         selected-check unselected-check
-                                         occluder-color]
+                                         selected-check unselected-check]
                                   :or {id nil
                                        drag-action dummy-action
                                        move-action dummy-action
@@ -438,8 +413,7 @@
                                        rim-size 12 ;; in pixels
                                        rim-radius 0
                                        selected-check [:white [:diag :diag2] 4]
-                                       unselected-check [[0 0 0 0] [:pixel] 1]
-                                       occluder-color (uc/transparent :black 190) }}]
+                                       unselected-check [[0 0 0 0] [:pixel] 1] }}]
 
   "(checkbox parent p0 txt :id
       :drag-action :move-action :enter-action :exit-action 
@@ -515,22 +489,11 @@
                          :color text-color
                          :id :text
                          :style text-style
-                         :size text-size)
-        occluder (let [occ (rect/rectangle grp p0 [x1 y1] 
-                                           :id :occluder 
-                                           :fill true
-                                           :color [0 0 0 0])]
-                   (.color! occ :default [0 0 0 0])
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   (.color! occ :disabled occluder-color)
-                   occ)]
+                         :size text-size)]
     (.put-property! grp :rim rim)
     (.put-property! grp :point pnt)
     (.put-property! grp :text-component txobj)
-    (.put-property! grp :occluder occluder)
     (.use-attributes! grp :unselected)
-    (.use-attributes! occluder :enabled)
     grp))
     
                     
@@ -542,8 +505,7 @@
                                                   selected-text-color unselected-text-color text-style text-size
                                                   gap text-x-shift text-y-shift w h
                                                   selected-pad-color unselected-pad-color
-                                                  selected-rim unselected-rim rim-radius
-                                                  occluder-color]
+                                                  selected-rim unselected-rim rim-radius]
                                            :or {id nil
                                                 drag-action dummy-action
                                                 move-action dummy-action
@@ -565,8 +527,7 @@
                                                 unselected-pad-color [0 0 0 0]
                                                 selected-rim [:green :solid 2.0]
                                                 unselected-rim [:gray :solid 1.0]
-                                                rim-radius 12
-                                                occluder-color (uc/transparent :black 190) }}]
+                                                rim-radius 12}}]
   "(text-toggle-button parent p0 text
       :drag-action :move-action :enter-action :exit-action 
       :press-action :release-action :click-action 
@@ -624,20 +585,11 @@
                 (.color! txobj :unselected unselected-text-color)
                 (.color! txobj :selected selected-text-color)
                 (.color! txobj :rollover selected-text-color)
-                txobj)
-        occluder (let [occ (rect/rectangle grp p0 [x3 y3] :id :occluder
-                                           :fill true
-                                           :color [0 0 0 0])]
-                   (.color! occ :disabled occluder-color)
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   occ)]
+                txobj)]
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :text-component txobj)
-    (.put-property! grp :occluder occluder)
     (.use-attributes! grp :unselected)
-    (.use-attributes! occluder :enabled)
     grp))
                      
 
@@ -648,8 +600,7 @@
                                                                      press-action release-action click-action
                                                                      gap w h
                                                                      selected-pad-color unselected-pad-color
-                                                                     selected-rim unselected-rim rim-radius
-                                                                     occluder-color]
+                                                                     selected-rim unselected-rim rim-radius]
                                                               :or {id nil
                                                                    drag-action dummy-action
                                                                    move-action dummy-action
@@ -665,8 +616,7 @@
                                                                    unselected-pad-color [0 0 0 0]
                                                                    selected-rim [:green :solid 2.0]
                                                                    unselected-rim [[0 0 0 0] :solid 1.0]
-                                                                   rim-radius 12
-                                                                   occluder-color (uc/transparent :black 190) }}]
+                                                                   rim-radius 12}}]
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
                                      (get-button-id "toggle-button" id)
@@ -705,20 +655,11 @@
               (.width! bx :selected (or (third selected-rim) 2.0))
               (.put-property! bx :corner-radius rim-radius)
               bx)
-        icon (image/read-icon grp [x1 y1] prefix group subgroup)
-        occluder (let [occ (rect/rectangle grp p0 [x2 y2] :id :occluder
-                                           :fill true
-                                           :color [0 0 0 0])]
-                   (.color! occ :disabled occluder-color)
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   occ)]
+        icon (image/read-icon grp [x1 y1] prefix group subgroup)]
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :icon icon)
-    (.put-property! grp :occluder occluder)
     (.use-attributes! grp :unselected)
-    (.use-attributes! occluder :enabled)
     grp))
 
                

@@ -135,8 +135,7 @@
                                                gap
                                                pad-color 
                                                rim-color rim-style rim-width rim-radius
-                                               handle-color handle-style handle-size
-                                               occluder-color]
+                                               handle-color handle-style handle-size]
                                         :or {id nil
                                              orientation :vertical
                                              drag-action dummy-action
@@ -164,8 +163,7 @@
                                              rim-radius 12
                                              handle-color :white
                                              handle-style [:fill :dot]
-                                             handle-size 4
-                                             occluder-color (uc/transparent :black 190) }}]
+                                             handle-size 4}}]
   "(slider parent p0 length v0 v1 
        :id :orientation
        :drag-action :move-action :enter-action :exit-action
@@ -280,15 +278,7 @@
                                         :color handle-color
                                         :style handle-style
                                         :size handle-size)]
-                  hand)
-        occluder (let [occ (rect/rectangle grp [x2 (+ y2 3)][(+ x3 3)(- y3 3)]
-                                           :id :occluder
-                                           :color [0 0 0 0]
-                                           :fill true)]
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   (.color! occ :disabled occluder-color)
-                   occ)]
+                  hand)]
     (.put-property! grp :orientation orientation)
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
@@ -296,7 +286,6 @@
     (.put-property! grp :track2 track2)
     (.put-property! grp :track3 track3)
     (.put-property! grp :handle handle)
-    (.put-property! grp :occluder occluder)
     (.put-property! grp :action-mouse-dragged  (compose-drag-action drag-action))
     (.put-property! grp :action-mouse-moved    (compose-action move-action)) 
     (.put-property! grp :action-mouse-entered  (compose-action enter-action)) 
@@ -308,5 +297,4 @@
     (.put-property! grp :fn-val->pos val->pos)
     (.put-property! grp :fn-value-hook value-hook)
     (.use-attributes! grp :default)
-    (.use-attributes! occluder :enabled)
     grp))

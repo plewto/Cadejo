@@ -240,8 +240,7 @@
                                                     rim-color rim-style rim-width rim-radius
                                                     handle1-color handle1-style handle1-size 
                                                     handle2-color handle2-style handle2-size 
-                                                    current-handle-color current-handle-style current-handle-size
-                                                    occluder-color]
+                                                    current-handle-color current-handle-style current-handle-size]
                                              :or {id nil
                                                   orientation :vertical
                                                   drag-action dummy-action
@@ -278,8 +277,7 @@
                                                   handle2-size 3
                                                   current-handle-color :white
                                                   current-handle-style [:dot]
-                                                  current-handle-size 3
-                                                  occluder-color (uc/transparent :black 190) }}]
+                                                  current-handle-size 3}}]
   "(dual-slider parent p0 length v0 v1
          :id :orientation
          :drag-action :move-action :enter-action :exit-action 
@@ -436,14 +434,7 @@
                                                      [:edge-n :edge-e :edge-s]))
                                         :size handle2-size)]
                   (.put-property! hand :value v1)
-                  hand)
-        occluder (let [occ (rect/rectangle grp [x2 (+ y2 3)][(+ x3 3)(- y3 3)]
-                                           :id :occluder
-                                           :fill true :color [0 0 0 0])]
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   (.color! occ :disabled occluder-color) 
-                   occ)]
+                  hand)]
     (.put-property! grp :orientation orientation)
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
@@ -453,7 +444,6 @@
     (.put-property! grp :track4 track4)
     (.put-property! grp :handle1 handle1)
     (.put-property! grp :handle2 handle2)
-    (.put-property! grp :occluder occluder)
     (.put-property! grp :current-handle nil)
     (.put-property! grp :current-handle-color (uc/color current-handle-color))
     (.put-property! grp :current-handle-style (apply point/style-fn current-handle-style))
@@ -471,6 +461,5 @@
     (.put-property! grp :minmax [(min v0 v1)(max v0 v1)])
     (.put-property! grp :values [v0 v1])
     (.use-attributes! grp :default)
-    (.use-attributes! occluder :enabled)
     grp))
 

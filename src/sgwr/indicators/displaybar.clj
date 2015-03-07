@@ -73,10 +73,9 @@
 
 (defn displaybar 
   ;; ctype - one of :basic, 16 or :sixteen, :matrix
-  ([grp x-offset y-offset char-count ctype & {:keys [cell-width cell-height occluder-color]
+  ([grp x-offset y-offset char-count ctype & {:keys [cell-width cell-height]
                                               :or {cell-width 25
-                                                   cell-height 35
-                                                   occluder-color (uc/transparent :black 190) }}]
+                                                   cell-height 35}}]
    (let [pad 4
          gap 5
          bar-width (+ (* char-count (+ cell-width gap)))
@@ -90,12 +89,6 @@
                         (swap! acc* (fn [q](conj q cobj)))))
                     @acc*)
          colors* (atom [:black :gray])
-         occluder (let [occ (rect/rectangle grp [(- x-offset pad) (- y-offset pad)][(+ x-offset bar-width (- pad))(+ y-offset cell-height pad)]
-                                            :color [0 0 0 0]
-                                            :fill true)]
-                    (.color! occ :disabled occluder-color)
-                    (.color! occ :enabled [0 0 0 0])
-                    occ)
          current-value* (atom "")
          render-drawing (fn [flag]
                           (let [drw (.get-property grp :drawing)]
@@ -114,14 +107,12 @@
                  (count components))
             
                (disable! [this render?]
-                 (.use-attributes! occluder :disabled)
                  (render-drawing render?))
 
                (disable! [this]
                  (.disable! this :render))
 
                (enable! [this render?]
-                 (.use-attributes! occluder :enabled)
                  (render-drawing render?))
 
                (enable! [this]
@@ -171,7 +162,6 @@
    :callback  - Function (fn src), callback is called after text has been entered to 
                 inform any interested parties, the single src argument is
                 set to dbar"
-
   (let [jop (JOptionPane.)
         dflt (.current-display dbar)
         rs (JOptionPane/showInputDialog jop message dflt)]

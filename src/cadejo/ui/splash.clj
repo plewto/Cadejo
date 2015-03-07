@@ -148,6 +148,7 @@
                              :border (factory/padding 16)))]
       (ss/listen jb-create :action
                  (fn [_]
+                   (println (format "DEBUG *** create-scene start %s" (System/currentTimeMillis)))
                    (.working cframe true)
                    (.status! cframe "Creating scene")
                    (SwingUtilities/invokeLater
@@ -173,6 +174,7 @@
                           (.working cframe false)
                           (.doClick tb)
                           (swap! global-scenes* (fn [n](assoc n device s)))
+                          (println (format "DEBUG *** create-scene end   %s" (System/currentTimeMillis)))
                           (.status! cframe (format "Scene %s created" device))))))))
       pan-main)))
 

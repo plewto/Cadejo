@@ -23,7 +23,6 @@
                   :id id 
                   :drag-action action
                   :rim-color [0 0 0 0]
-                  :occluder-color (lnf/occluder-color)
                   :track1-color (lnf/passive-track-color)
                   :track2-color (lnf/active-track-color)
                   ;; :track3-color (if is-signed? 
@@ -38,7 +37,6 @@
                  :id id
                  :drag-action action
                  :rim-color [0 0 0 0]
-                 :occluder-color (lnf/occluder-color)
                  :track1-color (lnf/passive-track-color)
                  :track2-color (lnf/active-track-color)
                  :handle-color (lnf/slider-handle-color)
@@ -126,7 +124,6 @@
 (defn mini-edit-button [grp p0 id action]
   (button/mini-icon-button grp p0 (icon-prefix) :edit
                            :id id
-                           :occluder-color (lnf/occluder-color)
                            :click-action action))
 
 ;; (defn mute-button [grp p0 id action]
@@ -222,7 +219,6 @@
 
 (defn displaybar [grp p0 count]
   (let [db (dbar/displaybar grp (first p0)(second p0) count (lnf/dbar-style)
-                            :occluder-color (lnf/occluder-color)
                             :cell-width (dbar-cell-width)
                             :cell-height (dbar-cell-height))]
     (.colors! db (lnf/dbar-inactive-color)(lnf/dbar-active-color))

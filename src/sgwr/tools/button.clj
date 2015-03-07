@@ -46,8 +46,7 @@
                                                              press-action release-action click-action
                                                              gap w h 
                                                              pad-color 
-                                                             rim-color rim-style rim-width rim-radius
-                                                             occluder-color]
+                                                             rim-color rim-style rim-width rim-radius]
                                                        :or {id nil
                                                             drag-action dummy-action
                                                             move-action dummy-action
@@ -63,8 +62,7 @@
                                                             rim-color :gray
                                                             rim-style 0
                                                             rim-width 2.0
-                                                            rim-radius 12
-                                                            occluder-color (uc/transparent :black 190)}}]
+                                                            rim-radius 12}}]
   "(icon-button parent p0 prefix group subgroup
          :id :drag-action :move-action :enter-action :exit-action 
          :press-action :release-action :click-action
@@ -118,23 +116,14 @@
                             :style rim-style
                             :width rim-width
                             :fill :no)
-        icon (image/read-icon grp [x1 y1] prefix group subgroup)
-        occluder (let [occ (rect/rectangle grp p0  [(+ x0 w)(+ y0 h)] :id :occluder
-                                           :fill true)]
-                   (.color! occ :disabled occluder-color)
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   (.use-attributes! occ :enabled)
-                   occ)]
+        icon (image/read-icon grp [x1 y1] prefix group subgroup)]
     (.put-property! pad :corner-radius rim-radius)
     (.put-property! rim :corner-radius rim-radius)
     (.color! pad :rollover pad-color)
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :icon icon)
-    (.put-property! grp :occluder occluder)
     (.use-attributes! grp :default)
-    (.use-attributes! occluder :enabled)
     grp))
                             
   
@@ -143,8 +132,7 @@
                                                             press-action release-action click-action
                                                             gap w h 
                                                             pad-color
-                                                            rim-color rim-style rim-width rim-radius
-                                                            occluder-color]
+                                                            rim-color rim-style rim-width rim-radius]
                                                      :or {id nil
                                                           drag-action dummy-action
                                                           move-action dummy-action
@@ -160,8 +148,7 @@
                                                           rim-color :gray
                                                           rim-style 0
                                                           rim-width 1.0
-                                                          rim-radius 12
-                                                          occluder-color (uc/transparent :black 190)}}]
+                                                          rim-radius 12}}]
   "(mini-icon-button parent p0 prefix subgroup 
          :id :drag-action :move-action :enter-action :exit-action 
          :press-action :release-action :click-action
@@ -189,9 +176,7 @@
                :rim-style rim-style 
                :rim-width rim-width 
                :rim-radius rim-radius 
-               :fill-rim? :no
-               :occluder-color occluder-color))
-
+               :fill-rim? :no))
 
 (defn text-button [parent p0 txt & {:keys [id 
                                            drag-action move-action enter-action exit-action
@@ -199,8 +184,7 @@
                                            text-color text-style text-size
                                            gap text-x-shift text-y-shift w h
                                            pad-color
-                                           rim-color rim-style rim-width rim-radius
-                                           occluder-color]
+                                           rim-color rim-style rim-width rim-radius]
                                     :or {id nil
                                          drag-action dummy-action
                                          move-action dummy-action
@@ -221,8 +205,7 @@
                                          rim-color :gray
                                          rim-style 0
                                          rim-width 2.0
-                                         rim-radius 12
-                                         occluder-color (uc/transparent :black 190)}}]
+                                         rim-radius 12}}]
   "(text-button parent p0 txt 
          :id :drag-action :move-action :enter-action :exit-action
          :press-action :release-action :click-action
@@ -296,14 +279,7 @@
         txobj (text/text grp [x1 y1] txt :id :text
                          :color text-color
                          :style text-style
-                         :size text-size)
-        occluder (let [occ (rect/rectangle grp p0 [(inc x3) (inc y3)] :id :occluder
-                                           :fill true)]
-                   (.color! occ :disabled occluder-color)
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   (.use-attributes! occ :enabled)
-                   occ)]
+                         :size text-size)]
     (.color! txobj :rollover text-color)
     (.color! pad :rollover pad-color)
     (.put-property! pad :corner-radius rim-radius)
@@ -312,7 +288,5 @@
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :text-component txobj)
-    (.put-property! grp :occluder occluder)
     (.use-attributes! grp :default)
-    (.use-attributes! occluder :enabled)
     grp))

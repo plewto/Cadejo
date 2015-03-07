@@ -41,7 +41,6 @@
                                            :id (keyword (format "op%d-keyscale-slider" n))
                                            :orientation :horizontal
                                            :rim-color [0 0 0 0]
-                                           :occluder-color (lnf/occluder-color)
                                            :track1-color (lnf/passive-track-color)
                                            :track2-color (lnf/passive-track-color)
                                            :track3-color (lnf/passive-track-color)

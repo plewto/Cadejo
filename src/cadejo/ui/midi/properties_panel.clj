@@ -64,7 +64,6 @@
         prefix (cond (= cs "Twilight") :gray :default (lnf/icon-prefix))
         b (msb/icon-multistate-button wr p0 curve-button-states :id id
                                       :icon-prefix prefix
-                                      :occluder-color (lnf/occluder-color)
                                       :click-action click-action)]
     b))
 
@@ -98,7 +97,6 @@
                                                :validator validator
                                                :callback callback))]
     (button/mini-icon-button parent p0 (lnf/icon-prefix) :edit
-                             :occluder-color (lnf/occluder-color)
                              :click-action click-action)))
 
 ;; Create inherit checkbox
@@ -126,7 +124,6 @@
 
 (defn displaybar [parent x0 y0 ccount]
   (let [b (dbar/displaybar parent x0 y0 ccount (lnf/dbar-style)
-                           :occluder-color (lnf/occluder-color)
                            :cell-height dbar-cell-height
                            :cell-width dbar-cell-width)]
     (.colors! b (lnf/dbar-inactive-color)(lnf/dbar-active-color))
@@ -507,7 +504,6 @@
                                :track1-color (lnf/passive-track-color)
                                :track2-color (lnf/active-track-color)
                                :rim-color [0 0 0 0]
-                               :occluder-color (lnf/occluder-color)
                                :handle-color (lnf/slider-handle-color)
                                :value-hook (fn [n]
                                              (let [q (int (/ n 3))
@@ -679,7 +675,6 @@
                                     :track1-color (lnf/passive-track-color)
                                     :track4-color (lnf/active-track-color)
                                     :rim-color [0 0 0 0]
-                                    :occluder-color (lnf/occluder-color)
                                     :handle1-color (lnf/slider-handle-color)
                                     :handle2-color (lnf/slider-handle-color)
                                     :value-hook (fn [n](int n))

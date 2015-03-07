@@ -37,10 +37,8 @@
     (.put-property! b :op op)
     (.put-property! b :card-number card-number)
     (let [pad (.get-property b :pad)
-          occluder (.get-property b :occluder)
           rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
-      (.color! occluder :default [0 0 0 0])
       (.color! rim :highlight (lnf/button-selected-border))
       (.color! txt :highlight (lnf/text-selected-color))
       
@@ -63,10 +61,8 @@
     (.put-property! b :card-number card-number)
     (.put-property! b :op id)
     (let [pad (.get-property b :pad)
-          occluder (.get-property b :occluder)
           rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
-      (.color! occluder :default [0 0 0 0])
       (.color! rim :highlight (lnf/button-selected-border))
       (.color! txt :highlight (lnf/text-selected-color))
       (.use-attributes! b :default)

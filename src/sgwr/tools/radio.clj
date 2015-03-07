@@ -169,21 +169,11 @@
                          :color text-color
                          :id :text
                          :style text-style
-                         :size text-size)
-        occluder (let [occ (circle/circle-r grp [xc yc] c1-radius 
-                                            :id :occluder 
-                                            :fill true)]
-                   (.color! occ :disabled (uc/transparent :black 190))
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :default [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   (.use-attributes! occ :enabled)
-                   occ)]
+                         :size text-size)]
         (.put-property! grp :c1 c1)
         (.put-property! grp :c2 c2)
         (.put-property! grp :text-component txobj)
         (.fill! c2 :default :no)
         (.fill! c2 :selected true)
-        (.put-property! grp :occluder occluder)
         (.use-attributes! grp :default)
         grp))

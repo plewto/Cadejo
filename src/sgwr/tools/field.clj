@@ -110,8 +110,7 @@
                                                     drag-action move-action enter-action exit-action
                                                     press-action release-action click-action
                                                     pad-color 
-                                                    rim-color rim-style rim-width rim-radius
-                                                    occluder-color]
+                                                    rim-color rim-style rim-width rim-radius]
                                              :or {id nil
                                                   drag-action dummy-action
                                                   move-action dummy-action 
@@ -124,8 +123,7 @@
                                                   rim-color :gray
                                                   rim-style 0
                                                   rim-width 1.0
-                                                  rim-radius 0
-                                                  occluder-color (uc/transparent :black 190) }}]
+                                                  rim-radius 0}}]
   "(field parent p0 p1 range-x range-y 
           :id :drag-action :move-action :enter-action :exit-action 
           :press-action :release-action :click-action 
@@ -176,18 +174,9 @@
                                       :width rim-width
                                       :fill :no)]
               (.put-property! rim :corner-radius rim-radius)
-              rim)
-        occluder (let [occ (rect/rectangle grp p0 [(+ (first p1) 3)(+ (second p1) 3)]
-                                           :id :occluder
-                                           :fill true
-                                           :color [0 0 0 0])]
-                   (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :rollover [0 0 0 0])
-                   (.color! occ :disabled occluder-color)
-                   occ)]
+              rim)]
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
-    (.put-property! grp :occluder occluder)
     (.put-property! grp :balls* (atom {}))
     (.put-property! grp :current-ball* (atom nil))
     (.put-property! grp :action-mouse-dragged  (compose-drag-action drag-action))
@@ -216,7 +205,6 @@
                                                                      (first range-y)
                                                                      (second p1)))
     (.use-attributes! grp :default)
-    (.use-attributes! occluder :enabled)
     grp))
     
     
