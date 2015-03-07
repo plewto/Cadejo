@@ -19,6 +19,7 @@
                          :track2-color (lnf/active-track-color)
                          :track2-width 1
                          :handle-style [:fill :dot]
+                         :handle-color (lnf/slider-handle-color)
                          :handle-size 3)]
     s))
 

@@ -1,5 +1,7 @@
 (ns cadejo.instruments.combo.editor.panel
   (:use [cadejo.instruments.combo.constants])
+  (:require [cadejo.config :as config])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.drawing])
   (:require [sgwr.components.line :as line])
@@ -28,7 +30,7 @@
    (let [root (.root drw)
          style :serif-bold
          size size
-         color :gray]
+         color (lnf/text-color)]
      (text/text root p0 txt 
                 :color color
                 :style style
@@ -39,9 +41,10 @@
                                 delta 12}}]
   (let [root (.root drw)
         x (first p0)
-        y* (atom (second p0))]
+        y* (atom (second p0))
+        c (lnf/text-color)]
     (doseq [s txt]
-      (text/text root [x @y*] (str s) :size size)
+      (text/text root [x @y*] (str s) :size size :color c)
       (swap! y* (fn [q](+ q delta))))))
 
 (defn- default-drag-action [slider _]
@@ -125,12 +128,14 @@
         drw (let [d (sgwr.components.drawing/native-drawing ed-width ed-height)
                   root (.root d)
                   y3 (+ y2 30)
-                  r1 (rect/rectangle root [40   12][240 438])
-                  r2 (rect/rectangle root [240  12][340 155])
-                  r3 (rect/rectangle root [240 155][340 438])
-                  r4 (rect/rectangle root [340  12][460 234])
-                  r5 (rect/rectangle root [460  12][580 234])
-                  r6 (rect/rectangle root [340 234][580 438])]
+                  border (lnf/minor-border-color)
+                  r1 (rect/rectangle root [40   12][240 438] :color border) 
+                  r2 (rect/rectangle root [240  12][340 155] :color border)
+                  r3 (rect/rectangle root [240 155][340 438] :color border)
+                  r4 (rect/rectangle root [340  12][460 234] :color border)
+                  r5 (rect/rectangle root [460  12][580 234] :color border)
+                  r6 (rect/rectangle root [340 234][580 438] :color border)]
+              (.background! d (lnf/background))
               (text d [125 34] "Mix")
               (text d [115 234] "Wave")
               (text d [(- x1 4) y3] "1")
@@ -150,7 +155,7 @@
               (text d [425 260] "Flanger")
               (text d [370 400] "-   Feedback    +" :size 5)
               (vtext d [470 315] "Rate")
-              (line/line root [410 280][410 380] :style :dotted)
+              (line/line root [410 280][410 380] :style :dotted :color (lnf/minor-border-color))
               (text d [(+ x7 -15) y3] "Depth" :size 5)
               (text d [(+ x8 -10)  y3] "Mix" :size 5)
               d)
@@ -163,9 +168,14 @@
                        r (rule/ruler root p0 length
                                      :rim-color [0 0 0 0])
                        s (slider/slider troot p0 length v0 v1 :id id
-                                        :drag-action drag-action)]
-                   (rule/ticks r mn-step :length 4 :color :gray)
-                   (rule/ticks r mj-step :length 12 :color :green)
+                                        :drag-action drag-action
+                                        :track1-color (lnf/passive-track-color)
+                                        :track2-color (lnf/active-track-color)
+                                        :handle-color (lnf/slider-handle-color)
+                                        :rim-color [0 0 0 0])]
+                       
+                   (rule/ticks r mn-step :length 4 :color (lnf/minor-tick-color))
+                   (rule/ticks r mj-step :length 12 :color (lnf/major-tick-color))
                    (.put-property! s :editor ied)
                    s))
         detune-coarse* (atom 0.0)
@@ -196,6 +206,9 @@
                                        [:br :filter :notch]]
                                b (msb/icon-multistate-button 
                                   troot [270 50] states 
+                                  :icon-prefix (let [cs (config/current-skin)]
+                                                 (cond (= cs "Twilight") :gray
+                                                       :default (lnf/icon-prefix)))
                                   :click-action filter-curve-click-action)]
                            (.put-property! b :editor ied)
                            b)
@@ -203,6 +216,7 @@
                                       [:4 " 4 "], [:6 " 6 "], [:8 " 8 "]]
                               b (msb/text-multistate-button 
                                  troot [272 100] states
+                                 :text-color (lnf/text-color)
                                  :w 36 :h 36 :rim-radius 0
                                  :click-action filter-freq-click-action)]
                           (.put-property! b :editor ied)
@@ -217,7 +231,9 @@
                                            :drag-action flanger-drag-action)]
                         (.put-property! f :editor ied)
                         f)
-        ball-flanger (field/ball field-flanger :b1 [0.5 0.5] :style [:diag :diag2]) ]
+        ball-flanger (field/ball field-flanger :b1 [0.5 0.5] :style [:diag :diag2]
+                                 :selected-color (lnf/slider-handle-color)
+                                 :color (lnf/slider-handle-color))]
     (.use-attributes! (.root drw) :default)
     (msb/set-multistate-button-state! msb-filter-curve 0)
     (msb/set-multistate-button-state! msb-filter-freq 0)

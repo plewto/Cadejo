@@ -42,17 +42,17 @@
                   (line/line root [x1 y][x2 y] :id :delay
                              :style :solid
                              :color c))
-          major (fn [y n]
-                  (vline y (lnf/major-tick-color))
+          minor (fn [y n]
+                  (vline y (lnf/minor-tick-color))
                   (text/text root [xtx (+ y 5)] (format "%4.2f" n)
                              :style :mono
                              :size 6
-                             :color (lnf/major-tick-color)))]
-      (major vn1 1.0)
-      (major vp1 1.0)
-      (major v0 0.50)
-      (major (math/mean v0 vp1) 0.75)
-      (major (math/mean v0 vn1) 0.25))
+                             :color (lnf/minor-tick-color)))]
+      (minor vn1 1.0)
+      (minor vp1 1.0)
+      (minor v0 0.50)
+      (minor (math/mean v0 vp1) 0.75)
+      (minor (math/mean v0 vn1) 0.25))
     (factory/major-label root [(+ x0 40)(- y0 210)] "Reverb")
     (factory/inner-border root [x0 y0][(+ x0 220)(- y0 250)])
     {:sync-fn sync-fn}))

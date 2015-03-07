@@ -5,6 +5,7 @@
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.text :as text])
+  (:require [sgwr.util.color :as uc])
   (:require [sgwr.tools.field :as field]))
 
 (defn envelope-panel [drw ied p0 ]
@@ -41,6 +42,7 @@
                          :rim-color (lnf/envelope-border-color))
         bll (let [b (field/ball fld :ball [0.5 0.5] 
                                 :color (lnf/envelope-handle-color)
+                                :selected-color (lnf/envelope-handle-color)
                                 :style [:dot]
                                 :size 3
                                 :selected-style [:dot])]

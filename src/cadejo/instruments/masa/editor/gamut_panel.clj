@@ -14,9 +14,9 @@
   (:import javax.swing.JOptionPane))
 
 
-(defn- help-action [& _]
-  (println "MASA gamut-panel help not implemented")
-  )
+;; (defn- help-action [& _]
+;;   (println "MASA gamut-panel help not implemented")
+;;   )
 
 (def ^:private param-list [:r1 :r2 :r3 :r4 :r5 :r6 :r7 :r8 :r9])
 
@@ -149,7 +149,7 @@
         x (+ (first p0) x-shift)
         y (- (second p0) y-shift)
         unselected-color (lnf/text-color)
-        selected-color (lnf/selected-text-color)
+        selected-color (lnf/text-selected-color)
         states [[:unselected (str id) unselected-color]
                 [:selected (str id) selected-color]]
         b (msb/text-multistate-button (.tool-root drw) [x y] states
@@ -221,11 +221,11 @@
       (preset-button drw pos 1 2 " Klstr "  :cluster click-action)
       (preset-button drw pos 1 3 " Detune"  :detune click-action)
       ;; Help button
-      (button/mini-icon-button (.tool-root drw) [(+ x0 8)(- y0 47)]
-                               (lnf/icon-prefix) :help
-                               :click-action help-action
-                               :rim-color (lnf/button-border-color)
-                               :action (fn [& _] ))
+      ;; (button/mini-icon-button (.tool-root drw) [(+ x0 8)(- y0 47)]
+      ;;                          (lnf/icon-prefix) :help
+      ;;                          :click-action help-action
+      ;;                          :rim-color (lnf/button-border-color)
+      ;;                          :action (fn [& _] ))
       (let [subed (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
                     (widgets [this] widget-map)
                     

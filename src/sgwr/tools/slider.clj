@@ -135,7 +135,8 @@
                                                gap
                                                pad-color 
                                                rim-color rim-style rim-width rim-radius
-                                               handle-color handle-style handle-size]
+                                               handle-color handle-style handle-size
+                                               occluder-color]
                                         :or {id nil
                                              orientation :vertical
                                              drag-action dummy-action
@@ -163,7 +164,8 @@
                                              rim-radius 12
                                              handle-color :white
                                              handle-style [:fill :dot]
-                                             handle-size 4}}]
+                                             handle-size 4
+                                             occluder-color (uc/transparent :black 190) }}]
   "(slider parent p0 length v0 v1 
        :id :orientation
        :drag-action :move-action :enter-action :exit-action
@@ -285,7 +287,7 @@
                                            :fill true)]
                    (.color! occ :enabled [0 0 0 0])
                    (.color! occ :rollover [0 0 0 0])
-                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :disabled occluder-color)
                    occ)]
     (.put-property! grp :orientation orientation)
     (.put-property! grp :pad pad)

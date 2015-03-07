@@ -35,8 +35,12 @@
                         (.sync-ui! ied)
                         (.status! ied (format "%s op %s" 
                                               (if selected? "Mute" "Unmute") n))))
+        cb-style (lnf/checkbox)
         cb-mute (msb/checkbox tools [x-mute y-mute] "Mute"
                               :id :mute
+                              :rim-radius (:rim-radius cb-style)
+                              :rim-color (:rim-color cb-style)
+                              :selected-check [(:check-color cb-style)(:check-style cb-style)(:check-size cb-style)]
                               :text-color (lnf/text-color)
                               :click-action mute-action)
         border (factory/inner-border root p0 [(+ x0 width)(- y0 height)])
@@ -59,11 +63,11 @@
                        (doseq [c components]
                          (.use-attributes! c (if flag :highlight :default))))]
     (doseq [tc text-components]
-      (.color! tc :highlight (lnf/selected-text-color))
+      (.color! tc :highlight (lnf/text-selected-color))
       (.color! tc :default (lnf/text-color)))
-    (.color! border :highlight (lnf/selected-button-border))
+    (.color! border :highlight (lnf/button-selected-border))
     (.color! border :default (lnf/minor-border-color))
-    (.color! (.get-property cb-mute :rim) :highlight (lnf/selected-button-border))
+    (.color! (.get-property cb-mute :rim) :highlight (lnf/button-selected-border))
     (.color! (.get-property cb-mute :rim) :default (lnf/button-border-color))
     (.put-property! cb-mute :op n)
     (factory/inner-border root p0 [(+ x0 width)(- y0 height)])

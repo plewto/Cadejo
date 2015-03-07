@@ -52,20 +52,20 @@
                   (let [x1 (- x-slider 10)
                         x2 (+ x-slider 10)]
                     (line/line root [x1 y][x2 y] :id id
-                               :color (lnf/major-tick-color)
+                               :color (lnf/minor-tick-color)
                                :style :solid)))
-          major (fn [x-slider y n]
+          minor (fn [x-slider y n]
                   (vline x-slider y)
                   (text/text root [(- x-slider 45)(+ y 5)](format "%+4.1f" n)
                              :id id 
                              :style :mono
                              :size 6
-                             :color (lnf/major-tick-color)))]
-      (major x-mod vn1 -1.0)
-      (major x-mod vp1 1.0)
-      (major x-mod v0 0.0)
-      (major x-mod (math/mean v0 vp1) 0.5)
-      (major x-mod (math/mean v0 vn1) -0.5)
+                             :color (lnf/minor-tick-color)))]
+      (minor x-mod vn1 -1.0)
+      (minor x-mod vp1 1.0)
+      (minor x-mod v0 0.0)
+      (minor x-mod (math/mean v0 vp1) 0.5)
+      (minor x-mod (math/mean v0 vn1) -0.5)
       (vline x-skew vn1)
       (vline x-skew v0)
       (vline x-skew vp1))

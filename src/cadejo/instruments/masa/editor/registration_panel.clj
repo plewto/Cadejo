@@ -1,5 +1,6 @@
 (ns cadejo.instruments.masa.editor.registration-panel
   (:use [cadejo.instruments.masa.masa-constants ])
+  (:require [cadejo.config :as config])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.util.col :as ucol])
@@ -64,10 +65,12 @@
         y-shift 48
         x (+ (first p0) x-shift)
         y (- (second p0) y-shift)
+        cs (config/current-skin)
         states [[:gate :env :gate][:perc :env :percussion]]
         b (msb/icon-multistate-button (.tool-root drw) [x y] states
                                       :id param
-                                      :prefix (lnf/icon-prefix)
+                                      :icon-prefix (cond (= cs "Twilight") :gray
+                                                         :default (lnf/icon-prefix))
                                       :click-action action)]
     b))
 

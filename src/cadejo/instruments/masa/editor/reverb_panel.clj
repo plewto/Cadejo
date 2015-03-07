@@ -13,6 +13,7 @@
                          :orientation :vertical
                          :drag-action action
                          :rim-color [0 0 0 0]
+                         :handle-color (lnf/slider-handle-color)
                          :track1-color (lnf/passive-track-color)
                          :track2-color (lnf/active-track-color))]
     s))

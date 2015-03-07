@@ -6,7 +6,8 @@
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.indicators.displaybar :as dbar])
-  (:require [sgwr.tools.dual-slider :as dslider]))
+  (:require [sgwr.tools.dual-slider :as dslider])
+  (:require [sgwr.util.color :as uc]))
 
 (defn op-keyscale [n drw p0 ied]
   (let [param-left-key (keyword (format "op%d-left-key" n))
@@ -40,6 +41,13 @@
                                            :id (keyword (format "op%d-keyscale-slider" n))
                                            :orientation :horizontal
                                            :rim-color [0 0 0 0]
+                                           :occluder-color (lnf/occluder-color)
+                                           :track1-color (lnf/passive-track-color)
+                                           :track2-color (lnf/passive-track-color)
+                                           :track3-color (lnf/passive-track-color)
+                                           :track4-color (lnf/active-track-color)
+                                           :handle1-color (lnf/slider-handle-color)
+                                           :handle2-color (lnf/slider-handle-color)
                                            :drag-action action-breakpoint
                                            :value-hook (fn [n](int n)))
         dbar-left (factory/displaybar root [x-left y-left] 3)

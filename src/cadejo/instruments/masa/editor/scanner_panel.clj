@@ -109,7 +109,9 @@
                                :drag-action delay-action
                                :rim-color (lnf/major-border-color)
                                :pad-color [0 0 0 0])
-        ball-delay (field/ball fld-delay :b1 [0.5 0.5])
+        ball-delay (field/ball fld-delay :b1 [0.5 0.5]
+                               :color (lnf/slider-handle-color)
+                               :selected-color (lnf/slider-handle-color))
         s-spread (slider/slider (.tool-root drw) [(+ x2 8) (+ y2 16)] 188 0.0 4.0 
                                 :id :spread
                                 :orientation :horizontal
@@ -117,6 +119,7 @@
                                                (let [v (slider/get-slider-value s)]
                                                  (.set-param! ied :scanner-mod-spread v)))
                                 :rim-color [0 0 0 0]
+                                :handle-color (lnf/slider-handle-color)
                                 :track1-color (lnf/passive-track-color)
                                 :track2-color (lnf/active-track-color))
         s-crossmix (slider/slider (.tool-root drw) [(+ x2 50)(+ y2 65)] 400 0.0 1.0
@@ -126,6 +129,7 @@
                                                  (let [v (slider/get-slider-value s)]
                                                    (.set-param! ied :scanner-crossmix v)))
                                   :rim-color [0 0 0 0]
+                                  :handle-color (lnf/slider-handle-color)
                                   :track1-color (lnf/passive-track-color)
                                   :track2-color (lnf/active-track-color))
         s-mix (slider/slider (.tool-root drw) [(+ x2 50)(+ y2 115)] 400 0.0 1.0
@@ -135,9 +139,9 @@
                                             (let [v (slider/get-slider-value s)]
                                               (.set-param! ied :scanner-mix v)))
                              :rim-color [0 0 0 0]
-                             :track1-color [0 0 0 0]
-                             :track2-color (lnf/active-track-color)
-                             :track3-color (uc/inversion (uc/color (lnf/active-track-color))))
+                             :handle-color (lnf/slider-handle-color)
+                             :track1-color (lnf/passive-track-color)
+                             :track2-color (lnf/active-track-color))
         widget-map {}]
     (image/read-image (.root drw) [(first p2)(second p3)] "resources/masa/scanner_rate_pattern.png")
     (rect/rectangle (.root drw) [x0 (+ y0 20)] [x1 y1] :id :scanner-border
@@ -170,7 +174,7 @@
           (tick drw [x y2] c)
           (tick drw [x y1] c))))
 
-    (.background! drw (lnf/background-color))
+    (.background! drw (lnf/background))
     
     (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
       (widgets [this] widget-map)

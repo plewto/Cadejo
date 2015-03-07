@@ -73,9 +73,10 @@
 
 (defn displaybar 
   ;; ctype - one of :basic, 16 or :sixteen, :matrix
-  ([grp x-offset y-offset char-count ctype & {:keys [cell-width cell-height] 
+  ([grp x-offset y-offset char-count ctype & {:keys [cell-width cell-height occluder-color]
                                               :or {cell-width 25
-                                                   cell-height 35}}]
+                                                   cell-height 35
+                                                   occluder-color (uc/transparent :black 190) }}]
    (let [pad 4
          gap 5
          bar-width (+ (* char-count (+ cell-width gap)))
@@ -92,7 +93,7 @@
          occluder (let [occ (rect/rectangle grp [(- x-offset pad) (- y-offset pad)][(+ x-offset bar-width (- pad))(+ y-offset cell-height pad)]
                                             :color [0 0 0 0]
                                             :fill true)]
-                    (.color! occ :disabled (uc/transparent :black 190))
+                    (.color! occ :disabled occluder-color)
                     (.color! occ :enabled [0 0 0 0])
                     occ)
          current-value* (atom "")

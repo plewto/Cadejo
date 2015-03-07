@@ -17,6 +17,7 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help :as help])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [seesaw.core :as ss]))
 
 (defprotocol CadejoFrame
@@ -77,7 +78,7 @@
         lab-path (ss/label :text "<path>")
         progbar (ss/progress-bar :indeterminate? false)
         tbar-east (ss/toolbar :floatable? false 
-                               :items [:separator jb-parent jb-help])
+                              :items [:separator jb-parent jb-help])
         tbar-client (ss/toolbar :floatable? false 
                                 :items [])
         pan-north (ss/border-panel :west lab-id 

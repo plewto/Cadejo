@@ -10,7 +10,9 @@
 
 (defn lfo-editor [ied]
   (println "-->     LFO")
-  (let [drw (drw/native-drawing 1300 600)
+  (let [drw (let [d (drw/native-drawing 1300 600)]
+              (.background! d (lnf/background))
+              d)
         x-lfo1 20
         x-lfo2 (+ x-lfo1 400)
         x-osp (+ x-lfo2 450)
@@ -25,7 +27,7 @@
         osp (osp/op-selection-panel drw [x-osp y-osp] selection-action)
         pan-main (ss/scrollable
                   (ss/border-panel :center (.canvas drw)
-                                   :background (lnf/background-color)
+                                   :background (lnf/background)
                                    :size [1665 :by 600])
                   :hscroll :as-needed
                   :vscroll :as-needed)

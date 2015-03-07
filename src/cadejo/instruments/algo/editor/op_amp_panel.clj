@@ -100,19 +100,21 @@
                              :style :mono
                              :size 6
                              :color (lnf/major-tick-color)))
-          minor (fn [y n]
-                  (line/line root [xa y][xb y] :id op-id
-                             :style :solid
-                             :color (lnf/minor-tick-color))
-                  (text/text root [(- xa 33)(+ y 5)] (format "%+4.1f" n)
-                             :id op-id
-                             :style :mono
-                             :size 6
-                             :color (lnf/major-tick-color)))]
+          ;; minor (fn [y n]
+          ;;         (line/line root [xa y][xb y] :id op-id
+          ;;                    :style :solid
+          ;;                    :color (lnf/minor-tick-color))
+          ;;         (text/text root [(- xa 33)(+ y 5)] (format "%+4.1f" n)
+          ;;                    :id op-id
+          ;;                    :style :mono
+          ;;                    :size 6
+          ;;                    :color (lnf/minor-tick-color)))
+          ]
       (while (<= @v* 1.0)
-        (if (or (= @v* -1.0)(= @v* 1.0)(zero? @v*))
-          (major @y* @v*)
-          (minor @y* @v*))
+        ;; (if (or (= @v* -1.0)(= @v* 1.0)(zero? @v*))
+        ;;   (major @y* @v*)
+        ;;   (minor @y* @v*)
+        (major @y* @v*)
         (swap! y* (fn [q](- q y-delta)))
         (swap! v* (fn [q](+ q v-delta)))))
     (factory/inner-border root [x0 y0][(+ x0 width)(- y0 height)])

@@ -1,7 +1,7 @@
 (ns cadejo.instruments.algo.editor.envelope-panel 
   (:use [cadejo.instruments.algo.algo-constants])
-  (:require [cadejo.instruments.algo.editor.factory :as factory :reload true])
-  (:require [cadejo.ui.util.lnf :as lnf :reload true])
+  (:require [cadejo.instruments.algo.editor.factory :as factory])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.drawing :as drw])
   (:require [sgwr.components.line :as line])
@@ -175,7 +175,9 @@
         param-release (param-key op "release")
         param-breakpoint (param-key op "breakpoint")
         param-sustain (param-key op "sustain")
-        drw (drw/native-drawing width toolbar-height)
+        drw (let [d (drw/native-drawing width toolbar-height)]
+              (.background! d (lnf/envelope-background))
+              d)
         root (.root drw)
         tools (.tool-root drw)
         [x0 y0][0 toolbar-height]
@@ -193,7 +195,7 @@
         x-invert (+ x-zoom-restore x-space)
         y-buttons (- y0 50)
         pan-main (ss/vertical-panel :items [(.canvas drw)]
-                                    :background (lnf/background-color))
+                                    :background (lnf/background))
         invert-action (fn [cb _]
                         (if (msb/checkbox-selected? cb)
                           (do
@@ -204,9 +206,14 @@
                             (.set-param! ied param-bias 0.0)
                             (.set-param! ied param-scale 1.0)
                             (.status! ied (format "Envelope %s normal" op)))))
+        cb-style (lnf/checkbox)
         cb-invert (if (invertable? op)
                     (msb/checkbox tools [x-invert (+ y-buttons 15)] "Invert" 
                                   :id :invert-env
+                                  :rim-radius (:rim-radius cb-style)
+                                  :rim-color (:rim-color cb-style)
+                                  :selected-check [(:check-color cb-style)(:check-style cb-style)(:check-size cb-style)]
+                                  
                                   :click-action invert-action
                                   :text-color (lnf/text-color)))
         sync-fn (fn [dmap]
@@ -223,7 +230,7 @@
     (factory/zoom-in-button tools [x-zoom-in y-buttons] :env-zoom-in callback)
     (factory/zoom-out-button tools [x-zoom-out y-buttons] :env-zoom-out callback)
     (factory/zoom-restore-button tools [x-zoom-restore y-buttons] :env-zoom-restore callback)
-    (.background! drw (lnf/background-color))
+    (.background! drw (lnf/background))
     (.render drw)
     {:pan-main pan-main
      :drawing drw
@@ -238,7 +245,9 @@
         param-sustain (param-key op "sustain")
         zoom-ratio 1.5
         performance (.parent-performance ied)
-        drw (drw/cartesian-drawing width height (first default-envelope-view)(second default-envelope-view))
+        drw (let [d (drw/cartesian-drawing width height (first default-envelope-view)(second default-envelope-view))]
+              (.background! d (lnf/envelope-background))
+              d)
         root (.root drw)
         tools (.tool-root drw)
         major (fn [p0 p1]
@@ -387,7 +396,7 @@
                                                                        (:pan-main tb)])
                                     :east (Box/createHorizontalStrut 100)
                                     :south (Box/createVerticalStrut 16)
-                                    :background (lnf/background-color)))]
+                                    :background (lnf/background)))]
     (.add-mouse-listener drw (proxy [MouseListener][]
                                (mouseExited [_]
                                  (.use-attributes! root :default)

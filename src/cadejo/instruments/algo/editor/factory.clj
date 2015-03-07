@@ -1,5 +1,6 @@
 (ns cadejo.instruments.algo.editor.factory
   (:use [cadejo.instruments.algo.algo-constants])
+  (:require [cadejo.config :as config])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.image :as image])
@@ -11,6 +12,10 @@
   (:require [sgwr.tools.slider :as slider])
   (:require [sgwr.util.color :as uc]))
 
+(defn- icon-prefix []
+  (let [cs (config/current-skin)]
+    (cond (= cs "Twilight") :gray
+          :default (lnf/icon-prefix))))
 
 (defn slider 
   ([grp p0 id v0 v1 action is-signed?]
@@ -18,11 +23,12 @@
                   :id id 
                   :drag-action action
                   :rim-color [0 0 0 0]
+                  :occluder-color (lnf/occluder-color)
                   :track1-color (lnf/passive-track-color)
                   :track2-color (lnf/active-track-color)
-                  :track3-color (if is-signed? 
-                                  (uc/complement (uc/color (lnf/active-track-color)))
-                                  (lnf/passive-track-color))
+                  ;; :track3-color (if is-signed? 
+                  ;;                 (lnf/alternate-track-color)
+                  ;;                 (lnf/passive-track-color))
                   :handle-color (lnf/slider-handle-color)))
   ([grp p0 id v0 v1 action]
    (slider grp p0 id v0 v1 action false)))
@@ -32,6 +38,7 @@
                  :id id
                  :drag-action action
                  :rim-color [0 0 0 0]
+                 :occluder-color (lnf/occluder-color)
                  :track1-color (lnf/passive-track-color)
                  :track2-color (lnf/active-track-color)
                  :handle-color (lnf/slider-handle-color)
@@ -88,13 +95,13 @@
   (text/text grp p0 txt :id id 
              :style :sans
              :size 8
-             :color (lnf/title-color)))
+             :color (lnf/text-color)))
 
 (defn major-label [grp p0 txt]
   (text/text grp p0 txt
              :style :sans-bold
              :size 18
-             :color (lnf/major-border-color)))
+             :color (lnf/text-color)))
 
 (defn op-label [grp p0 n]
   (major-label grp p0 (format "OP %d" n)))
@@ -117,70 +124,70 @@
 
 
 (defn mini-edit-button [grp p0 id action]
-  (button/mini-icon-button grp p0 (lnf/icon-prefix) :edit
+  (button/mini-icon-button grp p0 (icon-prefix) :edit
                            :id id
-                           :click-action action
-                           ))
+                           :occluder-color (lnf/occluder-color)
+                           :click-action action))
 
 ;; (defn mute-button [grp p0 id action]
-;;   (button/icon-button grp p0 (lnf/icon-prefix) :general :delete
+;;   (button/icon-button grp p0 (icon-prefix) :general :delete
 ;;                       :id id
 ;;                       :click-action action
 ;;                       :rim-color [0 0 0 0]))
 
 
 (defn init-button [grp p0 id action]
-  (button/icon-button grp p0 (lnf/icon-prefix) :general :reset
+  (button/icon-button grp p0 (icon-prefix) :general :reset
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
 
 (defn dice-button [grp p0 id action]
-  (button/icon-button grp p0 (lnf/icon-prefix) :general :dice
+  (button/icon-button grp p0 (icon-prefix) :general :dice
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
 
 
 (defn copy-button [grp p0 id action]
-  (button/icon-button grp p0 (lnf/icon-prefix) :general :copy
+  (button/icon-button grp p0 (icon-prefix) :general :copy
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
 
 (defn paste-button [grp p0 id action]
-  (button/icon-button grp p0 (lnf/icon-prefix) :general :paste
+  (button/icon-button grp p0 (icon-prefix) :general :paste
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
 
 
 (defn help-button [grp p0 id action]
-  (button/icon-button grp p0 (lnf/icon-prefix) :general :help
+  (button/icon-button grp p0 (icon-prefix) :general :help
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
                       
 (defn zoom-in-button [grp p0 id action]
-  (button/icon-button grp p0 (lnf/icon-prefix) :view :in
+  (button/icon-button grp p0 (icon-prefix) :view :in
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
 
 (defn zoom-out-button [grp p0 id action]
-  (button/icon-button grp p0 (lnf/icon-prefix) :view :out
+  (button/icon-button grp p0 (icon-prefix) :view :out
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
 
 (defn zoom-restore-button [grp p0 id action]
-  (button/icon-button grp p0 (lnf/icon-prefix) :view :reset
+  (button/icon-button grp p0 (icon-prefix) :view :reset
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
 
 (defn env-button [grp p0 curve action]
-  (button/icon-button grp p0 (lnf/icon-prefix) :env curve
+  (button/icon-button grp p0 (icon-prefix) :env curve
                       :id curve
                       :click-action action
                       :rim-color [0 0 0 0]))
@@ -204,10 +211,20 @@
     b))
 
 
+(defn- dbar-cell-height [] 
+  (let [sty (lnf/dbar-style)]
+    (get {:matrix 35 :sixteen 30 :basic 30} sty 35)))
+
+(defn- dbar-cell-width []
+  (let [sty (lnf/dbar-style)]
+    (get {:matrix 25 :sixteen 20 :basic 20} sty 25)))
+  
+
 (defn displaybar [grp p0 count]
-  (let [db (dbar/displaybar grp (first p0)(second p0) count dbar-style
-                            :cell-width dbar-cell-width
-                            :cell-height dbar-cell-height)]
+  (let [db (dbar/displaybar grp (first p0)(second p0) count (lnf/dbar-style)
+                            :occluder-color (lnf/occluder-color)
+                            :cell-width (dbar-cell-width)
+                            :cell-height (dbar-cell-height))]
     (.colors! db (lnf/dbar-inactive-color)(lnf/dbar-active-color))
     db))
 

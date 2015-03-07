@@ -7,7 +7,6 @@
   (:require [sgwr.util.color :as uc])
   (:require [seesaw.core :as ss])
   (:require [seesaw.color :as ssc])
-  ;(:require [seesaw.font :as ssf]) ;; debug only
   (:require [seesaw.icon])
   (:require [seesaw.swingx :as swingx])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel
@@ -21,16 +20,16 @@
 ;; Map skin to 'normal' icon prefix
 ;;
 (def ^:private skin-icon-prefix 
-  {"Autumn" "gray"
+  {"Autumn" "black"
    "Business" "black"
    "Business Black Steel" "black"
    "Business Blue Steel" "black"
-   "Cerulean" "gray"
+   "Cerulean" "black"
    "Challenger Deep" "white"
    "Creme" "black"
    "Creme Coffee" "black"
    "Dust" "black"
-   "Dust Coffee" "gray"
+   "Dust Coffee" "black"
    "Emerald Dusk" "white"
    "Gemini" "black"
    "Graphite" "white"
@@ -43,21 +42,21 @@
    "Moderate" "black"
    "Nebula" "black"
    "Nebula Brick Wall" "black"
-   "Office Black 2007" "black"
-   "Office Blue 2007" "gray"
+   "Office Black 2007" "gray"
+   "Office Blue 2007" "black"
    "Office Silver 2007" "black"
-   "Raven" "black"
+   "Raven" "gray"
    "Sahara" "black"
    "Twilight" "black"})
 
 ;; Map skin to 'selected' icon prefix
 ;;
 (def ^:private skin-selected-icon-prefix 
-  {"Autumn" "white"
-   "Business" "white"
-   "Business Black Steel" "white"
-   "Business Blue Steel" "white"
-   "Cerulean" "white"
+  {"Autumn" "gray"
+   "Business" "gray"
+   "Business Black Steel" "gray"
+   "Business Blue Steel" "gray"
+   "Cerulean" "gray"
    "Challenger Deep" "gray"
    "Creme" "white"
    "Creme Coffee" "white"
@@ -75,9 +74,9 @@
    "Moderate" "white"
    "Nebula" "white"
    "Nebula Brick Wall" "white"
-   "Office Black 2007" "white"
-   "Office Blue 2007" "white"
-   "Office Silver 2007" "white"
+   "Office Black 2007" "gray"
+   "Office Blue 2007" "gray"
+   "Office Silver 2007" "gray"
    "Raven" "white"
    "Sahara" "white"
    "Twilight" "white"})
@@ -85,165 +84,387 @@
 (defn skin-name [i]
   (nth available-skins i))
 
-;; Map skin name to color scheme
-;; Each scheme is a map with keys
-;;    :text-fg          - 'normal' button/label foreground
-;;    :text-fg-selected - selected buttopn/label foreground
-;;    :text-bg          - 'normal' button/lable background
-;;    :text-bg-selected - selected button/label background
-;;    :bg               - pannel background
-;;
+
 (def color-schemes
-  {"Autumn" {:text-fg (ssc/color 172  98  59)
-             :text-fg-selected (ssc/color 172  98  59)
-             :text-bg (ssc/color 254 229 201)
-             :text-bg-selected (ssc/color 252 200 126)
-             :bg (ssc/color 255 227 197)}
-   "Business" {:text-fg (ssc/color  14  19  24)
-               :text-fg-selected (ssc/color 14  19  24)
-               :text-bg (ssc/color 182 188 193)
-               :text-bg-selected (ssc/color 236 239 243)
-               :bg (ssc/color 216 221 225)}
-   "Business Black Steel" {:text-fg (ssc/color  21  26  31)
-                           :text-fg-selected (ssc/color 19  19  19)
-                           :text-bg (ssc/color 209 214 220)
-                           :text-bg-selected (ssc/color 122 177 212)
-                           :bg (ssc/color 241 246 250)}
-   "Business Blue Steel" {:text-fg (ssc/color  21  26  31)
-                          :text-fg-selected (ssc/color 19  19  19)
-                          :text-bg (ssc/color 209 214 220)
-                          :text-bg-selected (ssc/color 122 177 212)
-                          :bg (ssc/color 241 246 250)}
-   "Cerulean" {:text-fg (ssc/color  42  46  54)
-               :text-fg-selected (ssc/color 85  88  94)
-               :text-bg (ssc/color 245 245 245)
-               :text-bg-selected (ssc/color 189 219 236)
-               :bg (ssc/color 251 252 252)}
-   "Challenger Deep" {:text-fg (ssc/color 255 255 255)
-                      :text-fg-selected (ssc/color 255 255 255)
-                      :text-bg (ssc/color  50  30 113)
-                      :text-bg-selected (ssc/color 46   8  69)
-                      :bg (ssc/color  31  20  67)}
-   "Creme" {:text-fg (ssc/color   0   0   0)
-            :text-fg-selected (ssc/color 38  38  38)
-            :text-bg (ssc/color 242 243 237)
-            :text-bg-selected (ssc/color 160 224 248)
-            :bg (ssc/color 238 243 230)}
-   "Creme Coffee" {:text-fg (ssc/color   0   0   0)
-                   :text-fg-selected (ssc/color 50  34  15)
-                   :text-bg (ssc/color 246 246 241)
-                   :text-bg-selected (ssc/color 236 207 142)
-                   :bg (ssc/color 238 243 230)}
-   "Dust" {:text-fg (ssc/color  59  54  57)
-           :text-fg-selected (ssc/color 34  38  41)
-           :text-bg (ssc/color 230 228 221)
-           :text-bg-selected (ssc/color 174 155 123)
-           :bg (ssc/color 234 231 226)}
-   "Dust Coffee" {:text-fg (ssc/color  67  60  50)
-                  :text-fg-selected (ssc/color 50  34  15)
-                  :text-bg (ssc/color 222 211 181)
-                  :text-bg-selected (ssc/color 236 205 141)
-                  :bg (ssc/color 232 217 185)}
-   "Emerald Dusk" {:text-fg (ssc/color 255 255 255)
-                   :text-fg-selected (ssc/color 255 255 255)
-                   :text-bg (ssc/color  20  59  33)
-                   :text-bg-selected (ssc/color 38  90  16)
-                   :bg (ssc/color  14  50  35)}
-   "Gemini" {:text-fg (ssc/color   0   0   0)
-             :text-fg-selected (ssc/color 112  67  11)
-             :text-bg (ssc/color 181 191 190)
-             :text-bg-selected (ssc/color 255 230  95)
-             :bg (ssc/color 210 224 224)}
-   "Graphite" {:text-fg (ssc/color 180 180 180)
-               :text-fg-selected (ssc/color 200 200 200)
-               :text-bg (ssc/color  66  66  66)
-               :text-bg-selected (ssc/color 107 107 107)
-               :bg (ssc/color  77  77  77)}
-   "Graphite Aqua" {:text-fg (ssc/color 180 180 180)
-                    :text-fg-selected (ssc/color 200 200 200)
-                    :text-bg (ssc/color  63  63  63)
-                    :text-bg-selected (ssc/color 89  89  89)
-                    :bg (ssc/color  77  77  77)}
-   "Graphite Glass" {:text-fg (ssc/color  69  69  69)
-                     :text-fg-selected (ssc/color 200 200 200)
-                     :text-bg (ssc/color  64  64  64)
-                     :text-bg-selected (ssc/color 103 103 103)
-                     :bg (ssc/color  77  77  77)}
-   "Magellan" {:text-fg (ssc/color 143 193 249)
-               :text-fg-selected (ssc/color 2  28  58)
-               :text-bg (ssc/color   3  68 133)
-               :text-bg-selected (ssc/color 15 112 219)
-               :bg (ssc/color  12  90 176)}
-   "Mariner" {:text-fg (ssc/color   0   0   0)
-              :text-fg-selected (ssc/color 74  25   3)
-              :text-bg (ssc/color 226 228 227)
-              :text-bg-selected (ssc/color 251 215 137)
-              :bg (ssc/color 217 219 223)}
-   "Mist Aqua" {:text-fg (ssc/color  15  20  24)
-                :text-fg-selected (ssc/color 0   0   0)
-                :text-bg (ssc/color 216 221 225)
-                :text-bg-selected (ssc/color 125 204 236)
-                :bg (ssc/color 228 233 238)}
-   "Mist Silver" {:text-fg (ssc/color  15  20  24)
-                  :text-fg-selected (ssc/color 64  64  64)
-                  :text-bg (ssc/color 216 221 225)
-                  :text-bg-selected (ssc/color 204 220 230)
-                  :bg (ssc/color 228 233 238)}
-   "Moderate" {:text-fg (ssc/color  15  20  24)
-               :text-fg-selected (ssc/color 0   0   0)
-               :text-bg (ssc/color 228 232 237)
-               :text-bg-selected (ssc/color 106 166 204)
-               :bg (ssc/color 240 245 250)}
-   "Nebula" {:text-fg (ssc/color  42  46  54)
-             :text-fg-selected (ssc/color 0   0   0)
-             :text-bg (ssc/color 237 238 241)
-             :text-bg-selected (ssc/color 193 213 232)
-             :bg (ssc/color 244 247 252)}
-   "Nebula Brick Wall" {:text-fg (ssc/color  42  46  54)
-                        :text-fg-selected (ssc/color 0   0   0)
-                        :text-bg (ssc/color 237 238 241)
-                        :text-bg-selected (ssc/color 193 213 232)
-                        :bg (ssc/color 244 247 252)}
-   "Office Black 2007" {:text-fg (ssc/color  40  40  40)
-                        :text-fg-selected (ssc/color 76  83  92)
-                        :text-bg (ssc/color 195 202 208)
-                        :text-bg-selected (ssc/color 254 199 120)
-                        :bg (ssc/color 208 213 217)}
-   "Office Blue 2007" {:text-fg (ssc/color  21  66 139)
-                       :text-fg-selected (ssc/color 29  71 139)
-                       :text-bg (ssc/color 203 221 244)
-                       :text-bg-selected (ssc/color 252 211 156)
-                       :bg (ssc/color 200 219 238)}
-   "Office Silver 2007" {:text-fg (ssc/color  76  83  92)
-                         :text-fg-selected (ssc/color 76  83  92)
-                         :text-bg (ssc/color 240 242 242)
-                         :text-bg-selected (ssc/color 253 208 147)
-                         :bg (ssc/color 243 245 245)}
-   "Raven" {:text-fg (ssc/color 255 255 255)
-            :text-fg-selected (ssc/color 27  32  37)
-            :text-bg (ssc/color  57  47  38)
-            :text-bg-selected (ssc/color 232 235 240)
-            :bg (ssc/color  25  18  12)}
-   "Sahara" {:text-fg (ssc/color  15  20  25)
-             :text-fg-selected (ssc/color 0   0   0)
-             :text-bg (ssc/color 225 229 234)
-             :text-bg-selected (ssc/color 181 204 100)
-             :bg (ssc/color 240 245 250)}
-   "Twilight" {:text-fg (ssc/color 185 180 158)
-               :text-fg-selected (ssc/color 0   0   0)
-               :text-bg (ssc/color  58  58  51)
-               :text-bg-selected (ssc/color 138 129  94)
-               :bg (ssc/color  76  74  65)}})
+  {"Autumn" 
+   {:background (uc/color [255 227 197])
+    :text-color (uc/color [172 98 59])
+    :text-selected-color (uc/color [1 30 60])
+    :dbar-active-color (uc/color [1 30 60])}
+   "Business" 
+   {:background (uc/color [216 221 225])
+    :text-color (uc/color [14 19 24])
+    :text-selected-color (uc/color [85 110 138])
+    :dbar-active-color (uc/color :black)}
+   "Business Black Steel"
+   {:background (uc/color [241 246 250])
+    :text-color (uc/color [14 19 24])
+    :text-selected-color (uc/color [85 110 138])
+    :slider-handle-color (uc/color :black)
+    :dbar-active-color (uc/color :black)
+    :dbar-style :basic}
+ "Business Blue Steel"
+   {:background (uc/color [226 238 248])
+    :text-color (uc/color [21 26 31])
+    :text-selected-color (uc/color [85 110 138])
+    :slider-handle-color (uc/color :black)
+    :dbar-active-color (uc/color :black)
+    :dbar-style :basic}
+   "Cerulean"
+   {:background (uc/color [240 246 251])
+    :text-color (uc/color [42  46  54])
+    :text-selected-color (uc/color [141 104 124])
+    :title-color (uc/color [42 46 54])
+    :dbar-active-color (uc/color :black)
+    :dbar-inactive-color (uc/color [227 229 229])
+    :dbar-style :matrix
+    :slider-handle-color (uc/color [42 46 54])
+    :active-track-color (uc/color [42 46 54])
+    :passive-track-color (uc/color [225 213 207])
+    :major-tick-color (uc/color [42 46 54])
+    :minor-tick-color (uc/color [42 46 54])
+    :occluder-color (uc/color [240 246 251 250])
+    :checkbox  {:rim-radius 18
+               :rim-color (uc/color [42 46 54])
+               :check-color (uc/color [42 46 54])
+               :check-style [:dot :fill]
+               :check-size 2}}
+   "Challenger Deep"
+   {:background (uc/color [32 20 67])
+    :text-color (uc/color [249 249 249])
+    :text-selected-color (uc/color [91 82 116])
+    :slider-handle-color (uc/color [255 244 129])
 
-(defn get-color [skin-name usage]
-  (let [cmap (get color-schemes skin-name
-                  {:text-fg (ssc/color 51 51 51)
-                   :text-fg-selected (ssc/color 51 51 51)
-                   :text-bg (ssc/color 243 247 250)
-                   :text-bg-selected (ssc/color 184 207 229)
-                   :bg (ssc/color 238 238 238)})]
-    (get cmap usage (ssc/color 127 127 127))))
+    :active-track-color (uc/color [193 129 255])
+    :passive-track-color (uc/color [94 38 130])
 
+    :major-tick-color (uc/color [200 200 200])
+    :minor-tick-color (uc/color [200 200 200])
+    :dbar-style :sixteen
+    :dbar-active-color (uc/color [193 129 255])
+    :dbar-inactive-color (uc/color [94 38 130])
+    :envelope-selected-line-color (uc/color [193 129 255])
+    }
+    "Creme"
+    {:background (uc/color [233 233 223])
+     :text-color (uc/color :black)
+     :text-selected-color (uc/color [91 0 54])
+     :slider-handle-color (uc/color :black)
+     :active-track-color (uc/color [91 0 54])
+     :passive-track-color (uc/color [163 163 156])
+     :major-tick-color (uc/color [128 64 64])
+     :minor-tick-color (uc/color [128 64 64])
+     :dbar-style :matrix
+     :dbar-active-color (uc/color :black)
+     :dbar-inactive-color (uc/color [233 233 223]) 
+     :envelope-line-color (uc/color [91 0 54])
+     :envelope-selected-line-color (uc/color [ 0 75 130])} 
+    "Dust"
+    {:background (uc/color [234 231 226])
+     :text-color (uc/color [59 54 57])
+     :text-selected-color (uc/color [179 160 64])
+     :dbar-style :basic
+     :slider-handle-color (uc/color :black)
+     :passive-track-color (uc/darker (uc/color [234 231 226]))
+     :active-track-color (uc/color [59 54 57])}
+    "Dust Coffee"
+     {:background (uc/color [232 217 185])
+      :text-color (uc/color [59 54 57])
+      :text-selected-color (uc/brighter (uc/color [90 54 57]))
+      :dbar-style :matrix
+      :dbar-active-color (uc/color :black)
+      :active-track-color (uc/color :black)
+      :passive-track-color (uc/darker (uc/color 217 217 180))
+      :slider-handle-color :black}
+     "Emerald Dusk"
+     {:background (uc/color [14 50 35])
+      :text-color (uc/color :white)
+      :text-selected-color (uc/color :green)
+      :dbar-style :sixteen
+      :dbar-active-color (uc/color [0 192 0])
+      :dbar-passive-color (uc/color [130 130 130])
+      :active-track-color (uc/color [192 192 0])
+      :passive-track-color (uc/color [0 96 0])
+      :slider-handle-color (uc/color [0 128 128])
+      :minor-tick-color (uc/color :green)
+      :major-tick-color (uc/color :green)
+      :major-border-color (uc/color :green)
+      :minor-border-color (uc/color :green)
+      :envelope-line-color (uc/color [0 192 0])
+      :envelope-selected-line-color (uc/color :white)
+      :envelope-handle-color (uc/color :yellow)
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color :green)
+                 :check-color (uc/color :yellow)
+                 :check-style [:dot :fill]
+                 :check-size 2}}
+     "Gemini"
+     {:background (uc/color [210 224 224])
+      :text-color (uc/color [48 61 84])
+      :text-selected-color (uc/color [56 173 131])
+      :title-color (uc/color [48 61 84])
+      :dbar-active-color (uc/color :black)
+      :dbar-inactive-color (uc/color [210 224 224])
+      :dbar-style :matrix
+      :passive-track-color (uc/darker (uc/color [210 224 224]))
+      :active-track-color (uc/color [48 61 84])
+      :slider-handle-color (uc/color :black)
+      :major-border-color (uc/color [48 61 84])
+      :minor-border-color (uc/color [48 61 84])
+      :minor-tick-color (uc/color [48 61 48])
+      :major-tick-color (uc/color :black)
+      :envelope-line-color (uc/color [27 84 63])
+      :evelope-selected-line-color (uc/color [52 27 84])
+      :envelope-handle-color (uc/color [171 3 66])
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color [48 61 84])
+                 :check-color (uc/color [52 27 84])
+                 :check-style [:dot :fill]
+                 :check-size 2}}
+     "Graphite"
+     {:background (uc/color [77 77 77])
+      :text-color (uc/color [180 180 180])
+      :text-selected-color (uc/color [111 111 175])
+      :title-color (uc/color [180 180 210])
+      :major-border-color (uc/color :black)
+      :minor-border-color (uc/color :black)
+      :dbar-style :matrix
+      :dbar-inactive-color (uc/color [77 77 77])
+      :dbar-active-color (uc/color [180 180 200])
+      :slider-handle-color (uc/color :black)
+      :passive-track-color (uc/darker (uc/color [180 180 180]))
+      :active-track-color (uc/color :black)
+      :minor-tick-color (uc/color :black)
+      :major-tick-color (uc/color :black)
+      :envelope-selected-line-color (uc/color :yellow)
+      :envelope-border-color (uc/color :black)}
+     "Magellan"
+     {:background (uc/color [12 90 176])
+      :text-color (uc/color [143 193 249])
+      :text-selected-color (uc/color [140 225 131])
+      :title-color (uc/color [143 193 249])
+      :major-border-color (uc/color [143 193 249])
+      :minor-border-color (uc/color [143 193 249])
+      :dbar-style :sixteen
+      :dbar-inactive-color (uc/darker (uc/color [12 90 176]) 0.8)
+      :dbar-active-color (uc/color [140 225 131])
+      :slider-handle-color (uc/color :black)
+      :passive-track-color (uc/darker (uc/color [12 90 176]))
+      :active-track-color (uc/color [140 225 131])
+      :minor-tick-color (uc/color [143 193 249])
+      :major-tick-color (uc/brighter (uc/color [143 193 249]))
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color [143 193 249])
+                 :check-color (uc/color [140 225 131])
+                 :check-style [:dot :fill]
+                 :check-size 5}}
+     "Mariner"
+     {:background (uc/color [228 230 230])
+      :text-color (uc/color :black)
+      :text-selected-color (uc/color [129 40 0])
+      :major-border-color (uc/color :black)
+      :minor-border-color (uc/color [64 32 32])
+      :dbar-style :basic
+      :dbar-inactive-color (uc/color [228 230 230])
+      :dbar-active-color (uc/brighter (uc/color [74 25 3]))
+      :minor-tick-color (uc/color [64 0 0])
+      :major-tick-color (uc/color :black)
+      :slider-handle-color (uc/color :black)
+      :active-track-color (uc/color [74 25 3])
+      :passive-track-color (uc/darker (uc/color [228 230 230]))
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color [74 25 3])
+                 :check-color (uc/color [74 25 3])
+                 :check-style [:bar :dash]
+                 :check-size 3}}
+     "Mist"
+     {:background (uc/color [228 233 238])
+      :text-color (uc/color [15 20 24])
+      :text-selected-color (uc/color [128 30 128])
+      :dbar-style :basic}
+     "Moderate"
+     {:background (uc/color [234 242 248])
+      :text-color (uc/color [15 20 25])
+      :text-selected-color (uc/color [106 168 206])
+      :major-border-color (uc/color [15 20 25])
+      :minor-border-color (uc/brighter (uc/color [15 20 25]))
+      :minor-tick-color (uc/color [106 168 206])
+      :major-tick-color (uc/darker (uc/color [106 168 206]))
+      :dbar-style :basic
+      :slider-handle-color (uc/color :black)
+      :active-track-color (uc/color :black)
+      :passive-track-color (uc/color [106 168 206])
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color [15 20 25])
+                 :check-color (uc/color [15 20 25])
+                 :check-style [:dot :fill]
+                 :check-size 2}}
+     "Nebula"
+     {:background (uc/color [244 247 252])
+      :text-color (uc/color [42 46 54])
+      :text-selected-color (uc/color [130 89 151])
+      :major-border-color (uc/color [42 46 54])
+      :minor-border-color (uc/brighter (uc/color [42 46 54]))
+      :minor-tick-color (uc/color [42 46 54])
+      :major-tick-color (uc/darker (uc/color [130 89 151]))
+      :dbar-style :matrix
+      :dbar-inactive-color (uc/color [244 247 252])
+      :dbar-active-color (uc/color [42 46 54])
+      :slider-handle-color (uc/color :black)
+      :active-track-color (uc/color :black)
+      :passive-track-color (uc/color [130 89 151])
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color [15 20 25])
+                 :check-color (uc/color [15 20 25])
+                 :check-style [:dot :fill]
+                 :check-size 2}}
+     "Office Black 2007"
+     {:background (uc/color [208 213 217])
+      :text-color (uc/color [40 40 40])
+      :text-selected-color (uc/color [86 2 55])
+      :major-border-color (uc/color [86 2 55])
+      :minor-border-color (uc/color [40 40 40])
+      :dbar-style :matrix
+      :dbar-active-color (uc/color [65 1 40])
+      :dbar-inactive-color (uc/darker (uc/color [208 213 217]) 0.9)
+      :slider-handle-color (uc/color [65 1 40])
+      :active-track-color (uc/color [65 1 40])
+      :passive-track-color (uc/darker (uc/color [208 213 217]))
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color [40 40 40])
+                 :check-color (uc/color [65 1 40])
+                 :check-style [:dot]
+                 :check-size 3}}
+
+     "Office Blue 2007"
+     {:background (uc/color [209 221 233])
+      :text-color (uc/color [21 66 139])
+      :text-selected-color (uc/darker (uc/color [254 182 89]))
+      :major-border-color (uc/color [21 66 139])
+      :minor-border-color (uc/darker (uc/color [254 182 89]))
+      :title-color (uc/complement (uc/color [254 182 89]))
+      :dbar-style :matrix
+      :slider-handle-color (uc/color [21 66 139])
+      :active-track-color (uc/color [21 66 139])
+      :passive-track-color (uc/darker (uc/color [254 182 89]) 0.8)
+      :envelope-border-color (uc/color [21 66 139])
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color [21 66 139])
+                 :check-color (uc/color [21 63 139])
+                 :check-style [:dot :fill]
+                 :check-size 2}}
+
+     "Office Silver 2007"
+     {:background (uc/color [243 245 245])
+      :text-color (uc/color [76 83 92])
+      :text-selected-color (uc/darker (uc/color [254 182 89]))
+      :title-color (uc/darker (uc/complement (uc/color [254 182 89])))
+      :major-border-color (uc/color [76 83 92])
+      :minor-border-color (uc/darker (uc/color [254 182 89]))
+      :dbar-style :sixteen
+      :dbar-active-color (uc/color [76 83 92])
+      :dbra-inactive-color (uc/darker (uc/color [243 245 245]) 0.8)
+      :slider-handle-color (uc/color [76 83 92])
+      :active-track-color (uc/color [76 83 92])
+      :passive-track-color (uc/darker (uc/color [254 182 89]) 0.8)
+      :envelope-border-color (uc/color [76 83 92])
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color [76 83 92])
+                 :check-color (uc/color [21 63 139])
+                 :check-style [:dot :fill]
+                 :check-size 2}} 
+     "Raven"
+      {:background (uc/color [29 25 22])
+      :text-color (uc/color [217 229 250])
+      :text-selected-color (uc/color [198 201 206])
+      :title-color (uc/darker (uc/complement (uc/color [198 201 206])))
+      :major-border-color (uc/color [217 229 250])
+      :minor-border-color (uc/darker (uc/color [198 201 206]))
+      :minor-tick-color (uc/color [93 16 140])
+      :major-tick-color (uc/color [140 16 113])
+      :dbar-style :sixteen
+      :dbar-active-color (uc/color [217 229 250])
+      :dbra-inactive-color (uc/darker (uc/color [78 77 75]) 0.7)
+      :slider-handle-color (uc/color [217 229 250])
+      :active-track-color (uc/color [93 16 140])
+      :passive-track-color (uc/color [31 4 47])
+      :envelope-border-color (uc/color [217 229 250])
+      :checkbox {:rim-radius 18
+                 :rim-color (uc/color [217 229 250])
+                 :check-color( uc/complement (uc/color [217 229 250]))
+                 :check-style [:dot :fill]
+                 :check-size 3}} 
+      "Sahara"
+      {:background (uc/color [239 243 247])
+       :text-color (uc/color [15 20 25])
+       :text-selected-color (uc/color [168 189 94])
+       :title-color (uc/color [21 35 34])
+       :minor-border-color (uc/color [21 35 34])
+       :major-border-color (uc/color [15 20 25])
+       :minor-tick-color (uc/color [21 35 34])
+       :major-tick-color (uc/color [15 20 25])
+       :dbar-style :basic
+       :passive-track-color (uc/darker (uc/color [231 233 236]) 0.8)
+       :active-track-color (uc/color [21 35 34])
+       :slider-handle-color (uc/color [21 35 34])
+       :envelope-border-color (uc/color [15 20 25])}
+       "Twilight"
+       {:background (uc/color :black) ;  [76 74 65])
+        :text-color (uc/color [185 180 158])
+        :selected-text-color (uc/color [138 129 95])
+        :title-color (uc/color [138 129 95])
+        :minor-border-color (uc/color [84 81 75])
+        :major-border-color (uc/color [59 57 53])
+        :minor-tick-color (uc/color [84 81 75])
+        :major-tick-color (uc/color [59 57 53])
+        :dbar-style :matrix
+        :dbar-inactive-color (uc/color [77 58 83])
+        :dbar-active-color (uc/color [245 244 207])
+        :envelope-background (uc/color :black)
+        :envelope-border-color (uc/color [84 81 75])
+        :envelope-line-color (uc/color [77 58 83])
+        :envelope-selected-line-color (uc/color [245 244 207])
+        :envelope-handle-color (uc/color [76 74 65])
+        :slider-handle-color (uc/color [138 129 95])
+        :passive-track-color (uc/color [84 81 75])
+        :active-track-color (uc/brighter (uc/color [77 58 83]))
+        :checkbox {:rim-radius 18
+                   :rim-color (uc/color [185 180 158])
+                   :check-color (uc/brighter (uc/color [77 58 83]))
+                   :check-style [:dot :fill]
+                   :check-size 2}}
+     })
+
+
+     
+    
+    
+    
+  
+
+
+(defn skin-substitution [skin-name]
+  (get {
+        "Creme Coffee" "Creme"
+        "Graphite Aqua" "Graphite"
+        "Graphite Glass" "Graphite"
+        "Mist Aqua" "Mist"
+        "Mist Silver" "Mist"
+        "Nebula Brick Wall" "Nebula"
+        }
+       skin-name
+       skin-name))
+
+
+
+(defn property 
+  ([skin-name usage default]
+   (let [alias (skin-substitution skin-name)
+         scm (get color-schemes alias)]
+     ;(println (format "DEBUG scm '%s' -> %s" alias scm))
+     (get scm usage default)))
+  ([skin-name usage]
+   (property skin-name usage (uc/color :gray))))
 
 
 ;; Return java.io.File for icon 
@@ -358,30 +579,64 @@
     (ss/show! dia)))
 
 
-(defn background-color [] (uc/color :black))
-(defn icon-prefix [] :gray)
-(defn text-color [] (uc/color :gray))
-(defn selected-text-color [] :green)
-(defn inherited-text-color [] :green)
-(defn title-color [] (text-color))
-(defn dbar-inactive-color [] [77 58 83])
-(defn dbar-active-color [] [245 244 207])
-(defn major-border-color [] [150 130 167])
-(defn minor-border-color [][100 80 117])
-(defn button-border-color [] (minor-border-color))
-(defn selected-button-border [](selected-text-color))
-(defn major-tick-color [] (text-color))
-(defn minor-tick-color [] (uc/darker (uc/color (major-tick-color))))
-(defn passive-track-color [] (text-color))
-(defn active-track-color [] :red)
-(defn slider-handle-color [] :white)
-(defn envelope-background [] (background-color))
-(defn envelope-border-color [] (minor-border-color))
-(defn envelope-line-color [] :green)
-(defn envelope-selected-line-color [] :yellow)
-(defn envelope-handle-color [] (slider-handle-color))
-(defn envelope-alternate-line-color [] (button-border-color))
-(defn blue [](uc/color [0 0 64]))
+
+
+
+(defn icon-prefix [] (get skin-icon-prefix (config/current-skin) :gray))
+
+;; (defn background-color []
+;;   (umsg/warning "lnf/background-color DEPRECIATED use lnf/background")
+;;   (background))
+
+
+(defn- lnf-property [key default]
+  (fn [](property (config/current-skin) key (apply default nil))))
+
+
+(defn background [](property (config/current-skin) :background (uc/color [191 191 191])))
+(defn text-color [](property (config/current-skin) :text-color (uc/color :black)))
+(defn text-selected-color [](property (config/current-skin) :text-selected-color (uc/color :green)))
+
+
+
+(def title-color            (lnf-property :title-color text-selected-color))
+(def dbar-inactive-color    (lnf-property :dbar-inactive-color background))
+(def dbar-active-color      (lnf-property :dbar-active-color text-color))
+(def dbar-style             (lnf-property :dbar-style (constantly :matrix)))
+(def major-border-color     (lnf-property :major-border-color text-selected-color))
+(def minor-border-color     (lnf-property :minor-border-color text-color))
+(def button-border-color    (lnf-property :button-border-color text-color))
+(def button-selected-border (lnf-property :button-selected-border text-selected-color))
+(def passive-track-color    (lnf-property :passive-track-color text-color))
+(def active-track-color     (lnf-property :active-track-color text-selected-color))
+(def alternate-track-color  (lnf-property :alternate-track-color text-selected-color))
+(def slider-handle-color    (lnf-property :slider-handle-color text-selected-color))
+(def major-tick-color       (lnf-property :major-tick-color text-selected-color))
+(def minor-tick-color       (lnf-property :minor-tick-color text-color))
+(def envelope-background    (lnf-property :envelope-background background))
+(def envelope-border-color  (lnf-property :envelope-border-color text-selected-color))
+(def envelope-line-color    (lnf-property :envelope-line-color text-color))
+(def envelope-selected-line-color (lnf-property :envelope-selected-line-color text-selected-color))
+(def envelope-handle-color  (lnf-property :envelope-handle-color text-selected-color))
+(def occluder-color         (lnf-property :occluder-color (fn [](uc/transparent (background) 200))))
+
+
+;; Returns map for sgwr checkbox attributes using current skin
+;; {:rim-radius r
+;;  :rim-color  rc
+;;  :check-color cc
+;;  :check-style [vector] ; see sgwr point styles
+;;  :check-size cs}
+;;
+(defn checkbox [](property (config/current-skin) :checkbox
+                           {:rim-radius 18
+                            :rim-color (text-color)
+                            :check-color (text-selected-color)
+                            :check-style [:dot :fill]
+                            :check-size 3}))
+                            
+
+
 
 
 ;; Set initial skin

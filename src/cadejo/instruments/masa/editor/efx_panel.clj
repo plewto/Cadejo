@@ -21,7 +21,8 @@
         sub-panels [scanpan revpan amppan]
         widget-map {:drawing drw
                     :canvas (.canvas drw)
-                    :pan-main (ss/horizontal-panel :items [(.canvas drw)])} ]
+                    :pan-main (ss/horizontal-panel :items [(.canvas drw)] 
+                                                   :background (lnf/background))}]
     (reify cadejo.ui.instruments.subedit/InstrumentSubEditor 
       
       (widgets [this] widget-map)

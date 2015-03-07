@@ -70,15 +70,15 @@
                   (line/line root [x1 y][x2 y] :id id
                              :style :solid
                              :color c))
-          major (fn [y n]
-                  (vline y (lnf/major-tick-color))
+          minor (fn [y n]
+                  (vline y (lnf/minor-tick-color))
                   (text/text root [xtx (+ y 5)] (format "%+4.1f" n)
                              :style :mono
                              :size 6
-                             :color (lnf/major-tick-color)))]
-      (major vn1 -1.0)
-      (major vp1 1.0)
-      (major v0 0.0)
-      (major (math/mean v0 vp1) 0.5)
-      (major (math/mean v0 vn1) -0.5))
+                             :color (lnf/minor-tick-color)))]
+      (minor vn1 -1.0)
+      (minor vp1 1.0)
+      (minor v0 0.0)
+      (minor (math/mean v0 vp1) 0.5)
+      (minor (math/mean v0 vn1) -0.5))
     {:sync-fn sync-fn}))

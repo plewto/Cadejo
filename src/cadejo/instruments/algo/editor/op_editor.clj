@@ -142,17 +142,14 @@
         (doseq [[p v](seq dmap)](.set-param! ied p v))))
     (.sync-ui! ied)
     (.status! ied (format "Randomize OP %s" op))))
-        
-        
-        
-        
-                     
 
 
 (defn op-editor [op ied]
   (println (format "-->     op %d" (- 9 op)))
   (let [enable-param (keyword (format "op%d-enable" op))
-        drw (drw/native-drawing 790 670)
+        drw (let [d (drw/native-drawing 790 670)]
+              (.background! d (lnf/background))
+              d)
         tools (.tool-root drw)
         [x0 y0] [0 670]
         x-gap 20
@@ -196,7 +193,7 @@
         init-action (fn [b _]
                       (let [temp (.get-property b :rim-color)
                             op (.get-property b :id)]
-                        (.put-property! b :rim-color (lnf/selected-button-border))
+                        (.put-property! b :rim-color (lnf/button-selected-border))
                         (.render drw)
                         (init-op ied op)
                         (.put-property! b :rim-color [0 0 0 0])
@@ -223,7 +220,7 @@
         pan-main (ss/scrollable 
                   (ss/border-panel :center (.canvas drw)
                                    :east (:pan-main env-pan)
-                                   :background (uc/color (lnf/background-color)))
+                                   :background (uc/color (lnf/background)))
                   :hscroll :as-needed
                   :vscroll :as-needed)
         widget-map {:drawing drw

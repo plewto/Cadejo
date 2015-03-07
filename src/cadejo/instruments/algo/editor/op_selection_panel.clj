@@ -41,8 +41,8 @@
           rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
       (.color! occluder :default [0 0 0 0])
-      (.color! rim :highlight (lnf/selected-button-border))
-      (.color! txt :highlight (lnf/selected-text-color))
+      (.color! rim :highlight (lnf/button-selected-border))
+      (.color! txt :highlight (lnf/text-selected-color))
       
     
     (.use-attributes! b :default)
@@ -67,8 +67,8 @@
           rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
       (.color! occluder :default [0 0 0 0])
-      (.color! rim :highlight (lnf/selected-button-border))
-      (.color! txt :highlight (lnf/selected-text-color))
+      (.color! rim :highlight (lnf/button-selected-border))
+      (.color! txt :highlight (lnf/text-selected-color))
       (.use-attributes! b :default)
       b)))
       
@@ -138,7 +138,7 @@
                      :lfo (aux-button :lfo tools [x-aux (+ y-aux (* 1 (+ aux-button-height 8)))   ] "LFO  " action 9)
                      :pitch (aux-button :pitch tools [x-aux (+ y-aux (* 2 (+ aux-button-height 8)))   ] "Pitch  " action 10) 
                      :fx (aux-button :fx tools [x-aux (+ y-aux (* 3 (+ aux-button-height 8)))   ] "Fx  " action 11)}
-         track-color (uc/complement (uc/color (lnf/text-color)))
+         track-color (lnf/button-border-color)
          vline (fn [x y1 y2](line/line (.root drw) [x y1][x y2] :color track-color))
          hline (fn [x1 x2 y] (line/line (.root drw) [x1 y][x2 y] :color track-color))]
      (vline x2 y1 y2)

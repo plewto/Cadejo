@@ -3,11 +3,13 @@
   (:require [cadejo.instruments.combo.editor.panel])
   (:require [cadejo.ui.instruments.instrument-editor :as ied])
   (:require [cadejo.ui.instruments.subedit])
+  (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.multistate-button :as msb])
-  (:require [sgwr.tools.slider]))
+  (:require [sgwr.tools.slider])
+  (:require [seesaw.core :as ss]))
 
 
 (def ^:private msg1 "Combo editor does not have %s tool")
@@ -41,9 +43,11 @@
   (let [ied (ied/instrument-editor performance)
         panel (cadejo.instruments.combo.editor.panel/editor-panel ied)
         render (fn [](.render (:drawing panel)))
+        pan-main (ss/vertical-panel :items [(.canvas (:drawing panel))]
+                                    :background (lnf/background))
         combo-ed (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
                    
-                   (widgets [this] {:pan-main (.canvas (:drawing panel))})
+                   (widgets [this] {:pan-main pan-main})
 
                    (widget [this key]
                      (or (get (.widgets this) key)

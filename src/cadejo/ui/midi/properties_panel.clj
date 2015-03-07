@@ -4,6 +4,7 @@
    and key-range.  Also defines several functions and values used by 
    cc-properties-panel."
   (:require [cadejo.ui.node-observer])
+  (:require [cadejo.config :as config])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.user-message :as umsg])
@@ -23,7 +24,7 @@
 (def drawing-height 400)
 (def dbar-cell-width 18)
 (def dbar-cell-height 28)
-(def dbar-style :basic)
+;(def dbar-style :basic)
 (def slider-length 150)
 (def curve-button-states [[:zero :curve :zero  0]
                           [:half :curve :half  1]
@@ -59,8 +60,11 @@
 (defn curve-button [drawing id p0 & {:keys [click-action]
                                       :or {click-action nil}}]
   (let [wr (.tool-root drawing)
+        cs (config/current-skin)
+        prefix (cond (= cs "Twilight") :gray :default (lnf/icon-prefix))
         b (msb/icon-multistate-button wr p0 curve-button-states :id id
-                                      :icon-prefix (lnf/icon-prefix)
+                                      :icon-prefix prefix
+                                      :occluder-color (lnf/occluder-color)
                                       :click-action click-action)]
     b))
 
@@ -84,7 +88,7 @@
   (text/text (.root drawing) p txt
              :style :mono
              :size 5
-             :color (lnf/inherited-text-color)))
+             :color (lnf/text-color)))
 
 ;; Create edit button
 ;;
@@ -94,14 +98,19 @@
                                                :validator validator
                                                :callback callback))]
     (button/mini-icon-button parent p0 (lnf/icon-prefix) :edit
+                             :occluder-color (lnf/occluder-color)
                              :click-action click-action)))
 
 ;; Create inherit checkbox
 ;;
 (defn inherit-checkbox [parent p0 click-action]
-  (let [cb (msb/checkbox parent p0 "Inherit"
+  (let [stylemap (lnf/checkbox)
+        cb (msb/checkbox parent p0 "Inherit"
                          :text-color (lnf/text-color)
                          :text-size 6
+                         :rim-radius (:rim-radius stylemap)
+                         :rim-color (:rim-color stylemap)
+                         :selected-check [(:check-color stylemap)(:check-style stylemap)(:check-size stylemap)]
                          :click-action click-action)]
     cb))
 
@@ -116,7 +125,8 @@
 
 
 (defn displaybar [parent x0 y0 ccount]
-  (let [b (dbar/displaybar parent x0 y0 ccount dbar-style
+  (let [b (dbar/displaybar parent x0 y0 ccount (lnf/dbar-style)
+                           :occluder-color (lnf/occluder-color)
                            :cell-height dbar-cell-height
                            :cell-width dbar-cell-width)]
     (.colors! b (lnf/dbar-inactive-color)(lnf/dbar-active-color))
@@ -497,6 +507,8 @@
                                :track1-color (lnf/passive-track-color)
                                :track2-color (lnf/active-track-color)
                                :rim-color [0 0 0 0]
+                               :occluder-color (lnf/occluder-color)
+                               :handle-color (lnf/slider-handle-color)
                                :value-hook (fn [n]
                                              (let [q (int (/ n 3))
                                                    db (* 3 q)]
@@ -667,6 +679,9 @@
                                     :track1-color (lnf/passive-track-color)
                                     :track4-color (lnf/active-track-color)
                                     :rim-color [0 0 0 0]
+                                    :occluder-color (lnf/occluder-color)
+                                    :handle1-color (lnf/slider-handle-color)
+                                    :handle2-color (lnf/slider-handle-color)
                                     :value-hook (fn [n](int n))
                                     :drag-action drag-action)
 
@@ -769,7 +784,7 @@
         sub-panels [bend-subpan pressure-subpan velocity-subpan transpose-subpan
                     dbscale-subpan ttab-subpan krange-subpan] 
         pan-main (ss/horizontal-panel :items [(.canvas drw)])]
-    (.background! drw (lnf/background-color))
+    (.background! drw (lnf/background))
     (.render drw)
     (reify cadejo.ui.node-observer/NodeObserver
       

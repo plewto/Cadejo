@@ -240,7 +240,8 @@
                                                     rim-color rim-style rim-width rim-radius
                                                     handle1-color handle1-style handle1-size 
                                                     handle2-color handle2-style handle2-size 
-                                                    current-handle-color current-handle-style current-handle-size]
+                                                    current-handle-color current-handle-style current-handle-size
+                                                    occluder-color]
                                              :or {id nil
                                                   orientation :vertical
                                                   drag-action dummy-action
@@ -277,7 +278,8 @@
                                                   handle2-size 3
                                                   current-handle-color :white
                                                   current-handle-style [:dot]
-                                                  current-handle-size 3}}]
+                                                  current-handle-size 3
+                                                  occluder-color (uc/transparent :black 190) }}]
   "(dual-slider parent p0 length v0 v1
          :id :orientation
          :drag-action :move-action :enter-action :exit-action 
@@ -440,7 +442,7 @@
                                            :fill true :color [0 0 0 0])]
                    (.color! occ :enabled [0 0 0 0])
                    (.color! occ :rollover [0 0 0 0])
-                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :disabled occluder-color) 
                    occ)]
     (.put-property! grp :orientation orientation)
     (.put-property! grp :pad pad)

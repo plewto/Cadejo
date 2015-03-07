@@ -60,12 +60,12 @@
       (while (>= @y* y2)
         (line/line root [x1 @y*][x2 @y*] :id :amp 
                    :style :solid
-                   :color (lnf/major-tick-color))
+                   :color (lnf/minor-tick-color))
         (text/text root [(- x1 30)(+ @y* 4)] 
                    (format "%2dk" (int (/ @f* 1000)))
                    :style :mono
                    :size 6
-                   :color (lnf/major-tick-color))
+                   :color (lnf/minor-tick-color))
         (swap! y* (fn [q](- q delta-y)))
         (swap! f* (fn [q](+ q delta-f)))))
     ;; Draw cc7 ticks
@@ -83,13 +83,13 @@
       (while (>= @y* y2)
         (line/line root [x1 @y*][x2 @y*] :id :amp
                    :style :solid
-                   :color (lnf/major-tick-color))
+                   :color (lnf/minor-tick-color))
         (text/text root [(- x1 35)(+ @y* 4)] 
                    (format "%4.2f" @v*)
                    :id :amp
                    :style :mono
                    :size 6
-                   :color (lnf/major-tick-color))
+                   :color (lnf/minor-tick-color))
         (swap! y* (fn [q](- q delta-y)))
         (swap! v* (fn [q](+ q delta-v)))))
     ;; Draw volume ticks
@@ -106,14 +106,14 @@
       (while (>= @y* y2)
         (line/line root [x1 @y*][x2 @y*] :id :amp
                    :style :solid
-                   :color (lnf/major-tick-color))
+                   :color (lnf/minor-tick-color))
         (if (even? @counter*)
           (text/text root [(- x1 35)(+ @y* 4)] 
                      (format "%+3d" @v*)
                      :style :mono
                      :id :amp
                      :size 6
-                     :color (lnf/major-tick-color)))
+                     :color (lnf/minor-tick-color)))
         (swap! y* (fn [q](- q delta-y)))
         (swap! v* (fn [q](+ q delta-v)))
         (swap! counter* inc)))

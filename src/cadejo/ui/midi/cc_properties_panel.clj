@@ -116,7 +116,7 @@
             (swap! row* inc)))
         (swap! sub-panels* (fn [q](conj q sp))))) 
             
-    (.background! drw (lnf/background-color))
+    (.background! drw (lnf/background))
     (.render drw)
     (reify cadejo.ui.node-observer/NodeObserver
       

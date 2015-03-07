@@ -110,7 +110,8 @@
                                                     drag-action move-action enter-action exit-action
                                                     press-action release-action click-action
                                                     pad-color 
-                                                    rim-color rim-style rim-width rim-radius]
+                                                    rim-color rim-style rim-width rim-radius
+                                                    occluder-color]
                                              :or {id nil
                                                   drag-action dummy-action
                                                   move-action dummy-action 
@@ -123,7 +124,8 @@
                                                   rim-color :gray
                                                   rim-style 0
                                                   rim-width 1.0
-                                                  rim-radius 0}}]
+                                                  rim-radius 0
+                                                  occluder-color (uc/transparent :black 190) }}]
   "(field parent p0 p1 range-x range-y 
           :id :drag-action :move-action :enter-action :exit-action 
           :press-action :release-action :click-action 
@@ -181,7 +183,7 @@
                                            :color [0 0 0 0])]
                    (.color! occ :enabled [0 0 0 0])
                    (.color! occ :rollover [0 0 0 0])
-                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :disabled occluder-color)
                    occ)]
     (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)

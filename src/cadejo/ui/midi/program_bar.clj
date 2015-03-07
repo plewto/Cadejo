@@ -17,6 +17,8 @@
   (:require [sgwr.indicators.displaybar])
   (:require [sgwr.tools.button :as sb])
   (:require [clojure.string])
+  (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [sgwr.util.color :as uc])
   (:import javax.swing.Box))
 
 (def ^:private name-length 12)
@@ -38,10 +40,15 @@
   (sync-ui!
     [this]))
 
+
 (defn program-bar [performance]
   (let [prognum* (atom 0)
         bank (.bank performance)
-        [bg inactive active alt](config/displaybar-colors)
+        [bg inactive active alt][(lnf/background)
+                                 (lnf/dbar-inactive-color)
+                                 (lnf/dbar-active-color)
+                                 (uc/complement (lnf/dbar-active-color))]
+                                 
         drawing (let [drw (sgwr.components.drawing/native-drawing 611 65)]
                   (.background! drw bg)
                   drw)
@@ -56,8 +63,8 @@
                           (.use-attributes! pnt :clean)
                           pnt)
 
-        dbar-prognum (sgwr.indicators.displaybar/displaybar root 6 16 3 :matrix)
-        dbar-name (sgwr.indicators.displaybar/displaybar root 250 16 name-length :matrix)
+        dbar-prognum (sgwr.indicators.displaybar/displaybar root 6 16 3 (lnf/dbar-style))
+        dbar-name (sgwr.indicators.displaybar/displaybar root 250 16 name-length (lnf/dbar-style))
        
         pan-center (ss/horizontal-panel :items [(.canvas drawing)]
                                         :border (factory/padding))
@@ -84,7 +91,9 @@
                           (.status! (.get-editor performance)
                                     (format "Stored program %s" slot))))
 
-        sb-prefix :gray
+        sb-prefix (let [cs (config/current-skin)]
+                    (cond (= cs "Twilight") :gray
+                          :default  (lnf/icon-prefix)))
         sb-inc (sb/mini-icon-button tool-root [107 4] sb-prefix :up1 
                                     :click-action (fn [& _](inc-prognum 1)))
         sb-dec (sb/mini-icon-button tool-root [107 34] sb-prefix :down1
@@ -95,7 +104,6 @@
                                          :click-action (fn [& _](dec-prognum 8)))
         sb-store (sb/icon-button tool-root [170 10] sb-prefix :general :bankstore
                                  :click-action store-program)
-        
 
         cpb (reify ProgramBar
 
@@ -126,24 +134,11 @@
                                      (.use-attributes! modified-marker :clean))
                                    (if (not (= (.color modified-marker) current-color))
                                      (.render drawing))
-                                   (Thread/sleep update-period)))))
-        ]
- 
-    ;; (ss/listen jb-inc :action (fn [_](inc-prognum 1)))
-    ;; (ss/listen jb-inc-page :action (fn [_](inc-prognum 8)))
-    ;; (ss/listen jb-dec :action (fn [_](dec-prognum 1)))
-    ;; (ss/listen jb-dec-page :action (fn [_](dec-prognum 8)))
-    ;; (ss/listen jb-store :action
-    ;;            (fn [_]
-    ;;              (let [bank-ed (.editor bank)
-    ;;                    prog (.current-program bank)
-    ;;                    slot @prognum*]
-    ;;                (.push-undo-state! bank-ed
-    ;;                                   (format "Store program %s" slot))
-    ;;                (.store! bank slot (.clone prog))
-    ;;                (.sync-ui! bank-ed)
-    ;;                (.status! (.get-editor performance) (format "Stored program %s" slot)))))
-    (let [[bg inactive active alt](config/displaybar-colors)]
+                                   (Thread/sleep update-period)))))]
+    (let [[bg inactive active alt] [(lnf/background)
+                                    (lnf/dbar-inactive-color)
+                                    (lnf/dbar-active-color)
+                                    (uc/complement (lnf/dbar-active-color))]]
       (.colors! dbar-name inactive active)
       (.colors! dbar-prognum inactive active)
       (.setName update-thread "ProgramBar-update")

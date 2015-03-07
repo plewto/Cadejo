@@ -18,7 +18,9 @@
              :color (lnf/text-color)))
 
 (defn drawbar-panel [ied]
-  (let [drw (sgwr.components.drawing/native-drawing drawing-width drawing-height)
+  (let [drw (let [d (sgwr.components.drawing/native-drawing drawing-width drawing-height)]
+              (.background! d (lnf/background))
+              d)
         regpan (regpan/registration-panel drw ied [50 275])
         gpan (gpan/gamut-panel drw ied [50 410])
         envpan (envpan/envelope-panel drw ied [545 175])
@@ -26,7 +28,8 @@
         sub-panels [regpan gpan envpan vibpan]
         widget-map {:drawing drw
                     :canvas (.canvas drw)
-                    :pan-main (ss/horizontal-panel :items [(.canvas drw)])}]
+                    :pan-main (ss/horizontal-panel :items [(.canvas drw)]
+                                                   :background (lnf/background))}]
     (text drw [10 210] "Pedals")
     (text drw [10 250] "Env")
     (text drw [10 300] "F Edit")

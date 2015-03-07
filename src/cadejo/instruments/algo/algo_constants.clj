@@ -1,8 +1,8 @@
 (ns cadejo.instruments.algo.algo-constants)
 
-(def dbar-cell-width 25)
-(def dbar-cell-height 35)
-(def dbar-style :matrix)
+;; (def dbar-cell-width 25)
+;; (def dbar-cell-height 35)
+;; (def dbar-style :matrix)
 (def slider-length 150)
 (def slider-spacing 50)
 (def minor-tick-length 12)

@@ -137,7 +137,8 @@
                                                          text-color text-style text-size
                                                          gap text-x-shift text-y-shift w h
                                                          pad-color
-                                                         rim-color rim-style rim-width rim-radius]
+                                                         rim-color rim-style rim-width rim-radius
+                                                         occluder-color]
                                                   :or {id nil
                                                        drag-action dummy-action
                                                        move-action dummy-action
@@ -158,7 +159,8 @@
                                                        rim-color (uc/color :gray)
                                                        rim-style 0
                                                        rim-width 1.0
-                                                       rim-radius 12}}]
+                                                       rim-radius 12
+                                                       occluder-color (uc/transparent :black 190)}}]
   "(text-multistate-button parent p0 states :id
       :drag-action :move-action :enter-action :exit-action 
       :press-action :release-action :click-action 
@@ -259,7 +261,7 @@
                                            :fill true
                                            :color [0 0 0 0])]
                    (.color! occ :enabled [0 0 0 0])
-                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :disabled occluder-color)
                    (.color! occ :rollover [0 0 0 0])
                    occ)]
     (doseq [k (map first states)]
@@ -287,7 +289,8 @@
                                                           press-action release-action click-action
                                                           icon-prefix gap w h
                                                           pad-color
-                                                          rim-color rim-style rim-width rim-radius]
+                                                          rim-color rim-style rim-width rim-radius
+                                                          occluder-color]
                                                   :or {id nil
                                                        drag-action dummy-action
                                                        move-action dummy-action
@@ -304,7 +307,8 @@
                                                        rim-color [0 0 0 0] ; (uc/color :gray)
                                                        rim-style 0
                                                        rim-width 1.0
-                                                       rim-radius 12}}]
+                                                       rim-radius 12
+                                                       occluder-color (uc/transparent :black 190)}}]
   "(icon-multistate-button parent p0 states :id
       :drag-action :move-action :enter-action :exit-action 
       :press-action :release-action :click-action 
@@ -352,7 +356,7 @@
         occluder (let [occ (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :occluder
                                            :fill true
                                            :color [0 0 0 0])]
-                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :disabled occluder-color)
                    (.color! occ :enabled [0 0 0 0])
                    (.color! occ :default [0 0 0 0])
                    (.color! occ :rollover [0 0 0 0])
@@ -413,7 +417,8 @@
                                          text-color text-style text-size 
                                          gap text-x-shift text-y-shift
                                          rim-color rim-style rim-size rim-radius
-                                         selected-check unselected-check]
+                                         selected-check unselected-check
+                                         occluder-color]
                                   :or {id nil
                                        drag-action dummy-action
                                        move-action dummy-action
@@ -433,7 +438,9 @@
                                        rim-size 12 ;; in pixels
                                        rim-radius 0
                                        selected-check [:white [:diag :diag2] 4]
-                                       unselected-check [[0 0 0 0] [:pixel] 1]}}]
+                                       unselected-check [[0 0 0 0] [:pixel] 1]
+                                       occluder-color (uc/transparent :black 190) }}]
+
   "(checkbox parent p0 txt :id
       :drag-action :move-action :enter-action :exit-action 
       :press-action :release-action :click-action 
@@ -516,7 +523,7 @@
                    (.color! occ :default [0 0 0 0])
                    (.color! occ :enabled [0 0 0 0])
                    (.color! occ :rollover [0 0 0 0])
-                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :disabled occluder-color)
                    occ)]
     (.put-property! grp :rim rim)
     (.put-property! grp :point pnt)
@@ -535,7 +542,8 @@
                                                   selected-text-color unselected-text-color text-style text-size
                                                   gap text-x-shift text-y-shift w h
                                                   selected-pad-color unselected-pad-color
-                                                  selected-rim unselected-rim rim-radius]
+                                                  selected-rim unselected-rim rim-radius
+                                                  occluder-color]
                                            :or {id nil
                                                 drag-action dummy-action
                                                 move-action dummy-action
@@ -557,7 +565,8 @@
                                                 unselected-pad-color [0 0 0 0]
                                                 selected-rim [:green :solid 2.0]
                                                 unselected-rim [:gray :solid 1.0]
-                                                rim-radius 12}}]
+                                                rim-radius 12
+                                                occluder-color (uc/transparent :black 190) }}]
   "(text-toggle-button parent p0 text
       :drag-action :move-action :enter-action :exit-action 
       :press-action :release-action :click-action 
@@ -619,7 +628,7 @@
         occluder (let [occ (rect/rectangle grp p0 [x3 y3] :id :occluder
                                            :fill true
                                            :color [0 0 0 0])]
-                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :disabled occluder-color)
                    (.color! occ :enabled [0 0 0 0])
                    (.color! occ :rollover [0 0 0 0])
                    occ)]
@@ -639,23 +648,25 @@
                                                                      press-action release-action click-action
                                                                      gap w h
                                                                      selected-pad-color unselected-pad-color
-                                                                     selected-rim unselected-rim rim-radius]
+                                                                     selected-rim unselected-rim rim-radius
+                                                                     occluder-color]
                                                               :or {id nil
                                                                    drag-action dummy-action
-                                                                    move-action dummy-action
-                                                                    enter-action dummy-action
-                                                                    exit-action dummy-action
-                                                                    press-action dummy-action
-                                                                    release-action dummy-action
-                                                                    click-action dummy-action
-                                                                    gap 7
-                                                                    w 44
-                                                                    h 44
-                                                                    selected-pad-color [0 128 128 64]
-                                                                    unselected-pad-color [0 0 0 0]
-                                                                    selected-rim [:green :solid 2.0]
-                                                                    unselected-rim [[0 0 0 0] :solid 1.0]
-                                                                    rim-radius 12}}]
+                                                                   move-action dummy-action
+                                                                   enter-action dummy-action
+                                                                   exit-action dummy-action
+                                                                   press-action dummy-action
+                                                                   release-action dummy-action
+                                                                   click-action dummy-action
+                                                                   gap 7
+                                                                   w 44
+                                                                   h 44
+                                                                   selected-pad-color [0 128 128 64]
+                                                                   unselected-pad-color [0 0 0 0]
+                                                                   selected-rim [:green :solid 2.0]
+                                                                   unselected-rim [[0 0 0 0] :solid 1.0]
+                                                                   rim-radius 12
+                                                                   occluder-color (uc/transparent :black 190) }}]
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
                                      (get-button-id "toggle-button" id)
@@ -698,7 +709,7 @@
         occluder (let [occ (rect/rectangle grp p0 [x2 y2] :id :occluder
                                            :fill true
                                            :color [0 0 0 0])]
-                   (.color! occ :disabled (uc/transparent :black 190))
+                   (.color! occ :disabled occluder-color)
                    (.color! occ :enabled [0 0 0 0])
                    (.color! occ :rollover [0 0 0 0])
                    occ)]

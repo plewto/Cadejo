@@ -17,9 +17,11 @@
 
 (defn efx-editor [ied]
   (println "-->     Effects")
-  (let [drw (drw/native-drawing 900 700)
+  (let [drw (let [d (drw/native-drawing 900 700)]
+              (.background! d (lnf/background))
+              d)
         pan-main (ss/scrollable (ss/border-panel :center (.canvas drw)
-                                                 :background (lnf/background-color)))
+                                                 :background (lnf/background)))
         x-delay 50
         x-reverb (+ x-delay 430)
         x-amp x-delay
