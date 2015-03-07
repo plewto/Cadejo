@@ -90,12 +90,14 @@
    {:background (uc/color [255 227 197])
     :text-color (uc/color [172 98 59])
     :text-selected-color (uc/color [1 30 60])
-    :dbar-active-color (uc/color [1 30 60])}
+    :dbar-active-color (uc/color [1 30 60])
+    :dbar-style :matrix}
    "Business" 
    {:background (uc/color [216 221 225])
     :text-color (uc/color [14 19 24])
     :text-selected-color (uc/color [85 110 138])
-    :dbar-active-color (uc/color :black)}
+    :dbar-active-color (uc/color :black)
+    :dbar-style :matrix}
    "Business Black Steel"
    {:background (uc/color [241 246 250])
     :text-color (uc/color [14 19 24])
@@ -134,17 +136,14 @@
     :text-color (uc/color [249 249 249])
     :text-selected-color (uc/color [91 82 116])
     :slider-handle-color (uc/color [255 244 129])
-
     :active-track-color (uc/color [193 129 255])
     :passive-track-color (uc/color [94 38 130])
-
     :major-tick-color (uc/color [200 200 200])
     :minor-tick-color (uc/color [200 200 200])
     :dbar-style :sixteen
     :dbar-active-color (uc/color [193 129 255])
     :dbar-inactive-color (uc/color [94 38 130])
-    :envelope-selected-line-color (uc/color [193 129 255])
-    }
+    :envelope-selected-line-color (uc/color [193 129 255])}
     "Creme"
     {:background (uc/color [233 233 223])
      :text-color (uc/color :black)
@@ -432,36 +431,22 @@
                    :rim-color (uc/color [185 180 158])
                    :check-color (uc/brighter (uc/color [77 58 83]))
                    :check-style [:dot :fill]
-                   :check-size 2}}
-     })
+                   :check-size 2}} })
 
-
-     
-    
-    
-    
-  
-
-
-(defn skin-substitution [skin-name]
-  (get {
-        "Creme Coffee" "Creme"
+(defn- skin-substitution [skin-name]
+  (get {"Creme Coffee" "Creme"
         "Graphite Aqua" "Graphite"
         "Graphite Glass" "Graphite"
         "Mist Aqua" "Mist"
         "Mist Silver" "Mist"
-        "Nebula Brick Wall" "Nebula"
-        }
+        "Nebula Brick Wall" "Nebula"}
        skin-name
        skin-name))
-
-
 
 (defn property 
   ([skin-name usage default]
    (let [alias (skin-substitution skin-name)
          scm (get color-schemes alias)]
-     ;(println (format "DEBUG scm '%s' -> %s" alias scm))
      (get scm usage default)))
   ([skin-name usage]
    (property skin-name usage (uc/color :gray))))
@@ -554,7 +539,6 @@
                                  (fn [ev]
                                    (let [src (.getSource ev)
                                          skin (.getClientProperty src :skin)]
-                                     ;(reset! current-skin-name* (.getDisplayName skin))
                                      (config/current-skin! (.getDisplayName skin))
                                      (ss/invoke-later
                                       (SubstanceLookAndFeel/setSkin (.getClassName skin))))))))
@@ -579,14 +563,8 @@
     (ss/show! dia)))
 
 
-
-
-
 (defn icon-prefix [] (get skin-icon-prefix (config/current-skin) :gray))
 
-;; (defn background-color []
-;;   (umsg/warning "lnf/background-color DEPRECIATED use lnf/background")
-;;   (background))
 
 
 (defn- lnf-property [key default]
@@ -602,7 +580,7 @@
 (def title-color            (lnf-property :title-color text-selected-color))
 (def dbar-inactive-color    (lnf-property :dbar-inactive-color background))
 (def dbar-active-color      (lnf-property :dbar-active-color text-color))
-(def dbar-style             (lnf-property :dbar-style (constantly :matrix)))
+;(def dbar-style             (lnf-property :dbar-style (constantly :matrix)))
 (def major-border-color     (lnf-property :major-border-color text-selected-color))
 (def minor-border-color     (lnf-property :minor-border-color text-color))
 (def button-border-color    (lnf-property :button-border-color text-color))
@@ -620,6 +598,12 @@
 (def envelope-handle-color  (lnf-property :envelope-handle-color text-selected-color))
 (def occluder-color         (lnf-property :occluder-color (fn [](uc/transparent (background) 200))))
 
+;; Returns sgwr displaybar style.
+;; Values set by config.clj have priority. if config/displaybar-value returns nil
+;; extract style from lnf properties map, if that fails use :basic
+;;
+(defn dbar-style [] (let [cf (config/displaybar-style)]
+                      (or cf (property (config/current-skin) :dbar-style :basic))))
 
 ;; Returns map for sgwr checkbox attributes using current skin
 ;; {:rim-radius r

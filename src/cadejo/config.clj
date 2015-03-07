@@ -1,5 +1,6 @@
 (ns cadejo.config
   (:require [cadejo.util.user-message :as umsg])
+  (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.path :as path])
   (:require [cadejo.util.midi])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel))
@@ -39,29 +40,6 @@
     [this flag]
     "Sets flag indicating whether GUI components are to be use are not.")
 
-  ;; (icon-style
-  ;;   [this]
-  ;;   "Return icon style index. 
-  ;;    If icon-style is not explicitly set derive style from current-skin
-  ;;    The returned value is either an int indicating the icon index directly
-  ;;    or a string indicating the current skin")
-
-  ;; (icon-style!
-  ;;   [this n]
-  ;;   "Set icon style 
-  ;;    n - int, style index 0 <= n <= 25
-  ;;    If icon style is not explicitly set the style is derived from the current skin")
-
-  ;; (selected-icon-style 
-  ;;   [this]
-  ;;   "Return icon style for 'selected' buttons
-  ;;    If not explicitly set the style is derived from the current skin")
-
-  ;; (selected-icon-style!
-  ;;   [this n]
-  ;;   "Set icon style for selected buttons.
-  ;;    If not explicitly set, icon style is derived from current skin")
-
   (initial-skin 
     [this]
     "Return string, the name of initial-skin.")
@@ -79,22 +57,9 @@
     [this skin-name]
     "Used internally")
 
-  ;; (displaybar-colors!
-  ;;   ;; DEPRECIATED
-  ;;   [this bg inactive active button]
-  ;;   [this bg inactive active])
-  
-  ;; (displaybar-colors
-  ;;   ;; dDEPRECIATED
-  ;;   [this])
+  (displaybar-style! [this sty])
 
-  ;; (envelope-colors!
-  ;;   ;; DEPRECIATED
-  ;;   [this bg fg])
-
-  ;; (envelope-colors
-  ;;   ;; DEPRECIATED
-  ;;   [this])
+  (displaybar-style [this])
 
   (enable-pp
     [this]
@@ -194,8 +159,6 @@
 (defn cadejo-config []
   (let [input-ports* (atom [])
         load-gui* (atom false)
-        ;; icon-style* (atom nil)
-        ;; selected-icon-style* (atom nil)
         initial-skin* (atom "Dust")
         current-skin* (atom "Dust")
         max-scene-count* (atom 4)
@@ -204,20 +167,14 @@
         exit-warn* (atom true)
         overwrite-warn* (atom true)
         unsaved-warn* (atom true)
-        
+        displaybar-style* (atom nil)
         enable-tooltips* (atom true)
         enable-button-text* (atom true)
         enable-button-icons* (atom false)
-        
         config-path* (atom nil)
         instruments* (atom nil)
-        ;; displaybar-colors* (atom [[  5  32   2]  ;; DEPRECIATED
-        ;;                           [ 77  58  83]
-        ;;                           [245 244 207]
-        ;;                           [128 128 128]])
-        ;; envelope-colors* (atom [nil nil]) ;; DEPRECIATED
         cnfig (reify CadejoConfig
-
+                
                 (version [this] +VERSION+)
 
                 (channel-count [this] 16)
@@ -237,22 +194,6 @@
                 (load-gui! [this flag]
                   (reset! load-gui* flag))
 
-                ;; (icon-style [this] 
-                ;;   (or @icon-style*
-                ;;       @current-skin*
-                ;;       11))
-
-                ;; (icon-style! [this n]
-                ;;   (reset! icon-style* (int (min (max 0 n) 25))))
-
-                ;; (selected-icon-style [this]
-                ;;   (or @selected-icon-style*
-                ;;       @current-skin*
-                ;;       6))
-
-                ;; (selected-icon-style! [this n]
-                ;;   (reset! selected-icon-style* (min (max 0 n) 25)))
-
                 (initial-skin [this] @initial-skin*)
 
                 (initial-skin! [this skin-name]
@@ -264,24 +205,14 @@
                 (current-skin! [this skin-name]
                   (reset! current-skin* skin-name))
 
-                ;; (displaybar-colors! [this bg inactive active button]
-                ;;   (umsg/warning "config/displaybar-colorS! is DEPRECIATED")
-                ;;   (reset! displaybar-colors* [bg inactive active button]))
+                (displaybar-style! [this sty]
+                  (let [s (if (ucol/member? sty [nil :matrix :sixteen :basic])
+                            sty
+                            (umsg/warning (format "Invalid config displaybar-stykle %s  Using default." sty)))]
+                    (reset! displaybar-style* s)))
 
-                ;; (displaybar-colors! [this bg inactive active]
-                ;;   (reset! displaybar-colors* [bg inactive active active]))
-
-                ;; (displaybar-colors [this]
-                ;;   (umsg/warning "config/displaybar-colorS is DEPRECIATED")
-                ;;   @displaybar-colors*)
-
-                ;; (envelope-colors! [this bg fg]
-                ;;   (umsg/warning "config/envelope-colors! is DEPRECIATED")
-                ;;   (reset! envelope-colors* [bg fg]))
-
-                ;; (envelope-colors [this]
-                ;;   (umsg/warning "config/envelope-colors is DEPRECIATED")
-                ;;   @envelope-colors*)
+                (displaybar-style [this]
+                  @displaybar-style*)
 
                 (enable-pp [this] @enable-pp*)
 
@@ -396,18 +327,6 @@
 (defn load-gui! [flag]
   (.load-gui! @current-config* flag))
 
-;; (defn icon-style []
-;;   (.icon-style @current-config*))
-
-;; (defn icon-style! [n]
-;;   (.icon-style! @current-config* n))
-
-;; (defn selected-icon-style []
-;;   (.selected-icon-style @current-config*))
-
-;; (defn selected-icon-style! [n]
-;;   (.selected-icon-style! @current-config* n))
-
 (defn initial-skin []
   (.initial-skin @current-config*))
 
@@ -420,20 +339,11 @@
 (defn current-skin! [skin-name]
   (.current-skin! @current-config* skin-name))
 
-;; (defn displaybar-colors!  ;; DEPRECIATED
-;;   ([bg inactive active button]
-;;      (.displaybar-colors! @current-config* bg inactive active button))
-;;   ([bg inactive active]
-;;      (displaybar-colors! bg inactive active active)))
+(defn displaybar-style! [sty] 
+  (.displaybar-style! @current-config* sty))
 
-;; (defn displaybar-colors [] ;; DEPRECIATED
-;;   (.displaybar-colors @current-config*))
-
-;; (defn envelope-colors! [bg fg] ;; DEPRECIATED
-;;   (.envelope-colors! @current-config* bg fg))
-
-;; (defn envelope-colors [] ;; DEPRECIATED
-;;   (.envelope-colors @current-config*))
+(defn displaybar-style [] 
+  (.displaybar-style @current-config*))
 
 (defn enable-pp []
   (.enable-pp @current-config*))
@@ -541,11 +451,9 @@
 ; "Sahara"
 ; "Twilight"
 
-
-;(icon-style! 0)
-;(selected-icon-style! 0)
 (load-gui! true)
 (initial-skin! "Twilight")
+(displaybar-style! :basic)
 (enable-pp! false)
 (maximum-scene-count! 2)
 (maximum-undo-count! 10)
@@ -555,7 +463,3 @@
 (enable-tooltips! true)
 (enable-button-text! true)
 (enable-button-icons! true)
-
-;; nil colors --> use LNF
-;; (envelope-colors!      :black [109  81 117]) ;; DEPRECIATED
-;; (displaybar-colors!    :black [ 77  58  83][245 244 207][ 77 58 83])
