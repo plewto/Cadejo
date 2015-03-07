@@ -29,14 +29,13 @@
                               :w op-button-width
                               :h op-button-height
                               :text-size 7
-                              :pad-color [0 0 0 0]
                               :rim-width 1.0
                               :rim-color (lnf/button-border-color)
                               :rim-radius 6
                               :text-color (lnf/text-color))]
     (.put-property! b :op op)
     (.put-property! b :card-number card-number)
-    (let [pad (.get-property b :pad)
+    (let [;pad (.get-property b :pad)
           rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
       (.color! rim :highlight (lnf/button-selected-border))
@@ -60,7 +59,7 @@
                               :text-color (lnf/text-color))]
     (.put-property! b :card-number card-number)
     (.put-property! b :op id)
-    (let [pad (.get-property b :pad)
+    (let [;pad (.get-property b :pad)
           rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
       (.color! rim :highlight (lnf/button-selected-border))

@@ -133,7 +133,6 @@
                                                track2-color track2-style track2-width
                                                track3-color track3-style track3-width
                                                gap
-                                               pad-color 
                                                rim-color rim-style rim-width rim-radius
                                                handle-color handle-style handle-size]
                                         :or {id nil
@@ -156,7 +155,6 @@
                                              track3-style :solid
                                              track3-width 1.0
                                              gap 8
-                                             pad-color [0 0 0 0]
                                              rim-color :gray
                                              rim-style :solid
                                              rim-width 1.0
@@ -172,7 +170,7 @@
        :track1-color :track1-style :track1-width
        :track2-color :track2-style :track2-width
        :track3-color :track3-style :track3-width
-       :gap :pad-color
+       :gap
        :rim-color :rim-style :rim-width :rim-radius
        :handle-color :handle-style :handle-size)
 
@@ -205,11 +203,10 @@
     :track(i)-width - float, line width, default 1.0
 
    :gap       - float, space between track and outer rim
-   :pad-color - Color, keyword or vector, background color
    :rim-color  - Outer rim color
    :rim-style  - Rim dash pattern, default :solid
    :rim-width  - Rim line width, default 1.0
-   :rim-radius - int, Rim|pad corner radius, default 12
+   :rim-radius - int, rim corner radius, default 12
 
    :handle-color - Color, keyword or vector
    :handle-style - vector, sets handle shape, see sgwr.components.point
@@ -231,13 +228,6 @@
                                 (math/clipped-linear-function x0 v0 x1 v1)
                                 (math/clipped-linear-function v0 x0 v1 x1)])
          grp (group/group parent :etype :slider :id (get-slider-id id))
-         pad (let [pad (rect/rectangle grp [x2 y2][x3 y3] 
-                                       :id :pad
-                                       :color pad-color
-                                       :fill true)]
-               (.put-property! pad :corner-radius rim-radius)
-               (.color! pad :rollover pad-color)
-               pad)
          rim (let [rim (rect/rectangle grp [x2 y2][x3 y3]
                                        :id :rim
                                        :color rim-color
@@ -280,7 +270,6 @@
                                         :size handle-size)]
                   hand)]
     (.put-property! grp :orientation orientation)
-    (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :track1 track1)
     (.put-property! grp :track2 track2)

@@ -236,7 +236,6 @@
                                                     track3-color track3-style track3-width
                                                     track4-color track4-style track4-width
                                                     gap
-                                                    pad-color 
                                                     rim-color rim-style rim-width rim-radius
                                                     handle1-color handle1-style handle1-size 
                                                     handle2-color handle2-style handle2-size 
@@ -264,7 +263,6 @@
                                                   track4-style :solid
                                                   track4-width 1.0
                                                   gap 8
-                                                  pad-color [0 0 0 0]
                                                   rim-color :gray
                                                   rim-style :solid
                                                   rim-width 1.0
@@ -290,7 +288,7 @@
          :handle1-color :handle1-style :handle1-size 
          :handle2-color :handle2-style :handle2-size 
          :current-handle-color :current-handle-style :current-handle-size
-         :gap :pad-color
+         :gap
          :rim-color :rim-style :rim-width :rim-radius)
 
     Creates dual-slider 
@@ -330,11 +328,10 @@
    :current-handle-size  - 
 
    :gap       - float, space between track and outer rim
-   :pad-color - Color, keyword or vector, background color
    :rim-color  - Outer rim color
    :rim-style  - Rim dash pattern, default :solid
    :rim-width  - Rim line width, default 1.0
-   :rim-radius - int, Rim|pad corner radius, default 12
+   :rim-radius - int, rim corner radius, default 12
 
    Actions
 
@@ -360,13 +357,6 @@
                                 (math/clipped-linear-function x0 v0 x1 v1)
                                 (math/clipped-linear-function v0 x0 v1 x1)])
          grp (group/group parent :etype :dual-slider :id (get-slider-id id))
-         pad (let [pad (rect/rectangle grp [x2 y2][x3 y3] 
-                                       :id :pad
-                                       :color (uc/color pad-color)
-                                       :fill true)]
-               (.put-property! pad :corner-radius rim-radius)
-               (.color! pad :rollover (uc/color pad-color))
-               pad)
          rim (let [rim (rect/rectangle grp [x2 y2][x3 y3]
                                        :id :rim
                                        :color (uc/color rim-color)
@@ -436,7 +426,6 @@
                   (.put-property! hand :value v1)
                   hand)]
     (.put-property! grp :orientation orientation)
-    (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :track1 track1)
     (.put-property! grp :track2 track2)

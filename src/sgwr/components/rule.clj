@@ -13,7 +13,7 @@
           
 (defn ruler [parent p0 length  & {:keys [orientation id
                                          track-color track-style track-width track-offset
-                                         gap pad-color
+                                         gap 
                                          rim-color rim-style rim-width rim-radius]
                                   :or {orientation :vertical
                                        id nil
@@ -22,7 +22,6 @@
                                        track-width 1.0
                                        track-offset 0
                                        gap nil
-                                       pad-color [0 0 0 0]
                                        rim-color :gray
                                        rim-style 1.0
                                        rim-width 1.0
@@ -30,12 +29,11 @@
   "(ruler parent p0 length 
           :id :orientation 
           :track-color :track-style :track-width :track-offset
-          :gap :pad-color
+          :gap 
           :rim-color :rim-style :rim-width :rim-radius)
    
    Creates orthogonal ruler (sans tick marks) The ruler consist of a
-   centerl line (the 'track'), A surrounding box (the 'rim') and a
-   background (the 'pad')
+   centerl line (the 'track')
 
    See the ticks function to add tick marks.
 
@@ -51,11 +49,10 @@
    :track-offset - float, value which shifts track from central position
                    default 0
    :gap          - float, amount of space between track and rim
-   :pad-color    - color,
    :rim-color    - color
    :rim-style    - rim line dash pattern
    :rim-width    - rim line width
-   :rim-radius   - int, corner radius of pad and rim, default 0
+   :rim-radius   - int, corner radius rim, default 0
    
    Returns new group object"
   (let [vertical (= orientation :vertical)
@@ -76,11 +73,6 @@
                   [(+ x1 gap)(- y1 gap)]
                   [(+ x1 gap)(+ y1 gap)])
         grp (group/group parent :id (get-rule-id id))
-        pad (let [pad (rect/rectangle grp [x2 y2][x3 y3] :id :pad
-                                      :color pad-color
-                                      :fill true)]
-              (.put-property! pad :corner-radius rim-radius)
-              pad)
         rim (let [rim (rect/rectangle grp [x2 y2][x3 y3] :id :rim
                                       :color rim-color
                                       :style rim-style

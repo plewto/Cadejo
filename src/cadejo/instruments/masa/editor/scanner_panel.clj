@@ -67,18 +67,16 @@
         x3 (+ x2 200)
         x4 (+ x0 280)
         x5 (+ x4 200)
-
         y1 (- y0 h)
         y2 (- y0 130)
         y3 (- y2 200)
         y4 y2
         y5 y3
-
         p1 [x1 y1]
         p2 [x2 y2]
         p3 [x3 y3]
         p4 [x4 y4]
-        p5 [x5 y5]
+        p5 [x5 y5] 
         rate-action (fn [fld _]
                       (let [param-scan :scanner-scan-rate
                             param-mod :scanner-mod-rate
@@ -91,8 +89,7 @@
                         (.status! ied (format "[%s] -> %5.3f [%s] -> %5.3f" param-scan scan-rate param-mod mod-rate))))
         fld-rate (field/field (.tool-root drw) p2 p3 [0 1][0 1] 
                               :drag-action rate-action
-                              :rim-color (lnf/major-border-color)
-                              :pad-color [0 0 0 0])
+                              :rim-color (lnf/major-border-color))
         ball-rate (field/ball fld-rate :b1 [0.5 0.5])
         delay-action (fn [fld _]
                       (let [param-delay :scanner-delay
@@ -107,8 +104,7 @@
         fld-delay (field/field (.tool-root drw) p4 p5 ;[0 1][0 1]
                                [0 max-scanner-delay][0 max-scanner-delay-mod]
                                :drag-action delay-action
-                               :rim-color (lnf/major-border-color)
-                               :pad-color [0 0 0 0])
+                               :rim-color (lnf/major-border-color)) 
         ball-delay (field/ball fld-delay :b1 [0.5 0.5]
                                :color (lnf/slider-handle-color)
                                :selected-color (lnf/slider-handle-color))
@@ -157,7 +153,6 @@
                :style :snaes
                :size 8
                :color (lnf/text-color))
- 
     ;; mix and crossmix tickmarks
     (let [y1 (+ y2 65)
           y2 (+ y2 115)

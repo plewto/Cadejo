@@ -136,7 +136,6 @@
                                                          press-action release-action click-action
                                                          text-color text-style text-size
                                                          gap text-x-shift text-y-shift w h
-                                                         pad-color
                                                          rim-color rim-style rim-width rim-radius]
                                                   :or {id nil
                                                        drag-action dummy-action
@@ -154,7 +153,6 @@
                                                        text-y-shift 0
                                                        w nil
                                                        h nil
-                                                       pad-color [0 0 0 0]
                                                        rim-color (uc/color :gray)
                                                        rim-style 0
                                                        rim-width 1.0
@@ -165,7 +163,6 @@
       :text-color :text-style :text-size
       :text-x-shift :text-y-shift
       :gap :w :H
-      :pad-color
       :rim-color :rim-style :rim-width :rim-radius)
 
    Create multistate-button with text content
@@ -201,11 +198,10 @@
     :h   - float, button height. If not specified the height is guessed 
            using text-size.
 
-    :pad-color  - Color, keyword or vector
     :rim-color  - Color, keyword or vector
     :rim-style  - int or keyword, the rim line dash pattern, default :solid
     :rim-width  - float, the rim line width, default 1.0
-    :rim-radius - int, rim/pad corner radius, default 12
+    :rim-radius - int, rim corner radius, default 12
 
     Returns SgwrComponent group"
 
@@ -229,12 +225,6 @@
         y2 (+ y0 height)
         yc (math/mean y0 y2)
         y1 (+ yc (* 1/2 est-tx-height) text-y-shift)
-        pad (rect/rectangle grp p0 [x2 y2]
-                            :id :rim
-                            :color pad-color
-                            :style 0
-                            :width 1.0
-                            :fill true)
         rim (rect/rectangle grp p0 [x2 y2]
                             :id :rim
                             :color rim-color
@@ -261,10 +251,7 @@
           (if (= actvs k)
             (.hide! tx actvs :no)
             (.hide! tx k true)))))
-    (.color! pad :rollover pad-color)
-    (.put-property! pad :corner-radius rim-radius)
     (.put-property! rim :corner-radius rim-radius)
-    (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :text-objects txtobj-lst)
     (.use-attributes! grp (first (first states)))
@@ -277,7 +264,6 @@
                                                           drag-action move-action enter-action exit-action
                                                           press-action release-action click-action
                                                           icon-prefix gap w h
-                                                          pad-color
                                                           rim-color rim-style rim-width rim-radius]
                                                   :or {id nil
                                                        drag-action dummy-action
@@ -291,7 +277,6 @@
                                                        gap 4
                                                        w 44
                                                        h 44
-                                                       pad-color [0 0 0 0]
                                                        rim-color [0 0 0 0] ; (uc/color :gray)
                                                        rim-style 0
                                                        rim-width 1.0
@@ -301,7 +286,6 @@
       :press-action :release-action :click-action 
       :icon-prefix
       :gap :w :h 
-      :pad-color
       :rim-color :rim-style :rim-width :rim-radius)
 
    Creates multistate button using icons from resource directory
@@ -322,11 +306,6 @@
         [x0 y0] p0
         x1 (+ x0 gap)
         y1 (+ y0 gap)
-        pad (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :rim
-                            :color pad-color
-                            :style 0
-                            :width 1.0
-                            :fill true)
         rim (rect/rectangle grp p0 [(+ x0 w)(+ y0 h)] :id :rim
                             :color rim-color
                             :style rim-style
@@ -346,10 +325,7 @@
           (if (= active k)
             (.hide! iobj k :no)
             (.hide! iobj k true)))))
-    (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
-    (.color! pad :rollover pad-color)
-    (.put-property! pad :corner-radius rim-radius)
     (.color! rim :unselected rim-color)
     (.use-attributes! grp :enabled)
     (.use-attributes! grp (first (first states)))
@@ -420,7 +396,7 @@
       :press-action :release-action :click-action 
       :text-color :text-style :text-size
       :text-x-shift :text-y-shift
-      :gap :pad-color
+      :gap
       :rim-color :rim-style :rim-width :rim-radius)
   
    parent - SgwrComponent, the parent group
@@ -446,7 +422,7 @@
     :rim-color  - Color, keyword or vector
     :rim-style  - int or keyword, the rim line dash pattern, default :solid
     :rim-width  - float, the rim line width, default 1.0
-    :rim-radius - int, rim/pad corner radius, default 12"
+    :rim-radius - int, rim corner radius, default 12"
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
                                      (get-button-id "checkbox" id)
@@ -504,7 +480,6 @@
                                                   press-action release-action click-action
                                                   selected-text-color unselected-text-color text-style text-size
                                                   gap text-x-shift text-y-shift w h
-                                                  selected-pad-color unselected-pad-color
                                                   selected-rim unselected-rim rim-radius]
                                            :or {id nil
                                                 drag-action dummy-action
@@ -523,8 +498,6 @@
                                                 text-y-shift 0
                                                 w nil
                                                 h nil
-                                                selected-pad-color [0 128 128 64]
-                                                unselected-pad-color [0 0 0 0]
                                                 selected-rim [:green :solid 2.0]
                                                 unselected-rim [:gray :solid 1.0]
                                                 rim-radius 12}}]
@@ -533,7 +506,6 @@
       :press-action :release-action :click-action 
       :text-color :text-style :text-size
       :gap :text-x-shift :text-y-shift
-      :selected-pad-color :unselected-pad-color
       :selected-rim-color :unselected-rim-color :rim-radius)"
   (let [states [:unselected :selected]
         grp (blank-multistate-button parent states 
@@ -555,16 +527,6 @@
         y3 (+ y0 height)
         yc (math/mean y0 y3)
         y1 (+ yc (* 1/2 est-tx-height) text-y-shift)
-        pad (let [pad (rect/rectangle grp p0 [x3 y3] :id :pad
-                                      :color [0 0 0 0]
-                                      :style 0
-                                      :width 1.0
-                                      :fill true)]
-              (.color! pad :unselected unselected-pad-color)
-              (.color! pad :selected selected-pad-color)
-              (.color! pad :rollover selected-pad-color)
-              (.put-property! pad :corner-radius rim-radius)
-              pad)
         rim (let [bx (rect/rectangle grp p0 [x3 y3] :id :rim
                                      :color :gray
                                      :style 0
@@ -586,7 +548,6 @@
                 (.color! txobj :selected selected-text-color)
                 (.color! txobj :rollover selected-text-color)
                 txobj)]
-    (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :text-component txobj)
     (.use-attributes! grp :unselected)
@@ -599,7 +560,6 @@
                                                                      drag-action move-action enter-action exit-action
                                                                      press-action release-action click-action
                                                                      gap w h
-                                                                     selected-pad-color unselected-pad-color
                                                                      selected-rim unselected-rim rim-radius]
                                                               :or {id nil
                                                                    drag-action dummy-action
@@ -612,8 +572,6 @@
                                                                    gap 7
                                                                    w 44
                                                                    h 44
-                                                                   selected-pad-color [0 128 128 64]
-                                                                   unselected-pad-color [0 0 0 0]
                                                                    selected-rim [:green :solid 2.0]
                                                                    unselected-rim [[0 0 0 0] :solid 1.0]
                                                                    rim-radius 12}}]
@@ -632,16 +590,6 @@
         y1 (+ y0 gap)
         x2 (+ x1 w)
         y2 (+ y1 h)
-        pad (let [pad (rect/rectangle grp p0 [x2 y2] :id :pad
-                                      :color [0 0 0 0]
-                                      :style 0
-                                      :width 1.0
-                                      :fill true)]
-              (.color! pad :unselected unselected-pad-color)
-              (.color! pad :selected selected-pad-color)
-              (.color! pad :rollover selected-pad-color)
-              (.put-property! pad :corner-radius rim-radius)
-              pad)
         rim (let [bx (rect/rectangle grp p0 [x2 y2] :id :rim
                                      :color :gray
                                      :style 0
@@ -656,7 +604,6 @@
               (.put-property! bx :corner-radius rim-radius)
               bx)
         icon (image/read-icon grp [x1 y1] prefix group subgroup)]
-    (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :icon icon)
     (.use-attributes! grp :unselected)

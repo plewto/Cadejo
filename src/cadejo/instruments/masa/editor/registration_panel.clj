@@ -24,7 +24,6 @@
                          :track1-color (lnf/passive-track-color)
                          :track2-color track-color
                          :track2-width 8
-                         :pad-color [0 0 0 0]
                          :rim-color [0 0 0 0]
                          :handle-color (lnf/slider-handle-color)
                          :handle-style [:fill :box]

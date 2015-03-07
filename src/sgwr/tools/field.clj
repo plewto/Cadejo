@@ -109,7 +109,6 @@
 (defn field [parent p0 p1 range-x range-y & {:keys [id
                                                     drag-action move-action enter-action exit-action
                                                     press-action release-action click-action
-                                                    pad-color 
                                                     rim-color rim-style rim-width rim-radius]
                                              :or {id nil
                                                   drag-action dummy-action
@@ -119,7 +118,6 @@
                                                   press-action dummy-action
                                                   release-action dummy-action
                                                   click-action dummy-action
-                                                  pad-color [0 0 0 0]
                                                   rim-color :gray
                                                   rim-style 0
                                                   rim-width 1.0
@@ -127,7 +125,6 @@
   "(field parent p0 p1 range-x range-y 
           :id :drag-action :move-action :enter-action :exit-action 
           :press-action :release-action :click-action 
-          :pad-color 
           :rim-color :rim-style :rim-width :rim-radius)
 
    Creates field tool. The field is initially empty and does not 
@@ -148,25 +145,16 @@
    Function of form (fn [obj ev] ...) where obj is this tool
    and ev is an instance of java.awt.event.MouseEvent 
 
-   :pad-color - Color, keyword or vector, background color
    :rim-color  - Outer rim color
    :rim-style  - Rim dash pattern, default :solid
    :rim-width  - Rim line width, default 1.0
-   :rim-radius - int, Rim/pad corner radius, default 12
+   :rim-radius - int, rim corner radius, default 12
 
    Returns SgwrComponent group containing field components."
            
   (let [grp (group/group parent 
                          :etype :field
                          :id (get-field-id id))
-        pad (let [pad (rect/rectangle grp p0 p1
-                                      :id :pad
-                                      :color pad-color
-                                      :fill true)]
-              (.put-property! pad :corner-radius rim-radius)
-              (.color! pad :disabled [32 32 32])
-              (.color! pad :rollover pad-color)
-              pad)
         rim (let [rim (rect/rectangle grp p0 p1
                                       :id :rim
                                       :color rim-color
@@ -175,7 +163,6 @@
                                       :fill :no)]
               (.put-property! rim :corner-radius rim-radius)
               rim)]
-    (.put-property! grp :pad pad)
     (.put-property! grp :rim rim)
     (.put-property! grp :balls* (atom {}))
     (.put-property! grp :current-ball* (atom nil))
