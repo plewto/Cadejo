@@ -37,18 +37,15 @@
          handle (.get-property obj :handle)
          track1 (.get-property obj :track1)
          track2 (.get-property obj :track2)
-         track3 (.get-property obj :track3)
          [p0 p1](.points track1)]
      (if vertical?
        (let [pos (.inv-map cs [(first p0)(mapfn val)])]
          (.set-points! handle [pos])
          (.set-points! track2 [p0 pos])
-         (.set-points! track3 [pos p1])
          (.put-property! obj :value (invmap (second pos))))
        (let [pos (.inv-map cs [(mapfn val)(second p0)])]
          (.set-points! handle [pos])
          (.set-points! track2 [p0 pos])
-         (.set-points! track3 [pos p1])
          (.put-property! obj :value (invmap (first pos)))))
       (if render? (.render (.get-property obj :drawing)))
       (.get-property obj :value))))
@@ -76,7 +73,6 @@
              handle (.get-property slider :handle)
              track1 (.get-property slider :track1)
              track2 (.get-property slider :track2)
-             track3 (.get-property slider :track3)
              [p0 p1](.points track1)
              pos (.inv-map cs [(.getX ev)(.getY ev)])]
          (if vertical?
@@ -85,14 +81,12 @@
                  val (vhook (mapfn param))]
              (.set-points! handle [[x (second pos)]])
              (.set-points! track2 [p0 [x (second pos)]])
-             (.set-points! track3 [[x (second pos)] p1])
              (.put-property! slider :value val))
            (let [y (second p0)
                  param (first pos)
                  val (vhook (mapfn param))]
              (.set-points! handle [[(first pos) y]])
              (.set-points! track2 [p0 [(first pos) y]])
-             (.set-points! track3 [[(first pos) y] p1])
              (.put-property! slider :value val)))
          (dfn slider ev)
          (.render (.get-property slider :drawing))))))
@@ -107,23 +101,19 @@
             handle (.get-property slider :handle)
             track1 (.get-property slider :track1)
             track2 (.get-property slider :track2)
-            track3 (.get-property slider :track3)
             [p0 p1](.points track1)]
         (if vertical?
           (let [pos (.inv-map cs [(first p0)(mapfn val)])]
             (.set-points! handle [pos])
-            (.set-points! track2 [p0 pos])
-            (.set-points! track3 [pos p1]))
+            (.set-points! track2 [p0 pos]))
           (let [pos (.inv-map cs [(mapfn val)(second p0)])]
             (.set-points! handle [pos])
-            (.set-points! track2 [p0 pos])
-            (.set-points! track3 [pos p1])))
+            (.set-points! track2 [p0 pos])))
         (rfn slider ev)
         (.render (.get-property slider :drawing))))))
 
 ;; track1 - fixed background
 ;; track2 - from botom/left to current handle position
-;; track3 - from top/right to current handle position
 ;;
 (defn slider [parent p0 length v0 v1 & {:keys [id orientation
                                                drag-action move-action enter-action exit-action
@@ -131,7 +121,6 @@
                                                value-hook
                                                track1-color track1-style track1-width
                                                track2-color track2-style track2-width
-                                               track3-color track3-style track3-width
                                                gap
                                                rim-color rim-style rim-width rim-radius
                                                handle-color handle-style handle-size]
@@ -151,9 +140,6 @@
                                              track2-color :yellow
                                              track2-style :solid
                                              track2-width 1.0
-                                             track3-color [0 0 0 0]
-                                             track3-style :solid
-                                             track3-width 1.0
                                              gap 8
                                              rim-color :gray
                                              rim-style :solid
@@ -169,7 +155,6 @@
        :value-hook
        :track1-color :track1-style :track1-width
        :track2-color :track2-style :track2-width
-       :track3-color :track3-style :track3-width
        :gap
        :rim-color :rim-style :rim-width :rim-radius
        :handle-color :handle-style :handle-size)
@@ -196,7 +181,6 @@
     There are three tracks, 
     track1 is a static line background between v0 and v1
     track2 is a dynamic line between v0 and the current low value
-    track3 is a dynamic line between current high value and v1
 
     :track(i)-color - Color, keyword, vector, see sgwr.util.color
     :track(i)-style - int or keyword, line dash pattern, default :solid
@@ -254,15 +238,6 @@
                   (.hide! t2 :default :no)
                   (.fill! t2 :default :no)
                   t2)
-         track3 (let [t3 (line/line grp [x0 y0][x1 y1]
-                                    :id :track3
-                                    :color track3-color
-                                    :style track3-style
-                                    :width track3-width)]
-                  (.color! t3 :rollover track3-color)
-                  (.hide! t3 :default :no)
-                  (.fill! t3 :default :no)
-                  t3)
          handle (let [hand (point/point grp [x0 y0]
                                         :id :handle
                                         :color handle-color
@@ -273,7 +248,6 @@
     (.put-property! grp :rim rim)
     (.put-property! grp :track1 track1)
     (.put-property! grp :track2 track2)
-    (.put-property! grp :track3 track3)
     (.put-property! grp :handle handle)
     (.put-property! grp :action-mouse-dragged  (compose-drag-action drag-action))
     (.put-property! grp :action-mouse-moved    (compose-action move-action)) 
