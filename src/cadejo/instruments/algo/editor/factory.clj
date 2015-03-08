@@ -120,6 +120,15 @@
                   :radius 12))
   
 
+(defn occluder [drawing p0 p1]
+  (let [r (rect/rectangle (.occluder-root drawing) p0 p1 :id :occluder)]
+    (.color! r :disabled (uc/transparent (lnf/occluder-color) 128))
+    ;(.color! r :disabled (uc/color [255 0 0 128])) ;; ISSUE for test only replace with commented line above
+    (.color! r :enabled [0 0 0 0])
+    (.fill! r :disabled true)
+    (.fill! r :enabled :no)
+    (.use-attributes! r :enabled)
+    r))
 
 (defn mini-edit-button [grp p0 id action]
   (button/mini-icon-button grp p0 (icon-prefix) :edit

@@ -15,9 +15,9 @@
         scanpan (scanpan/scanner-panel drw ied [10 410])
         revpan (revpan/reverb-panel drw ied [520 300])
         amppan (amppan/amp-panel drw ied [730 300])
-        b-help (button/mini-icon-button (.tool-root drw) [520 320] (lnf/icon-prefix) :help
-                                    :id :help
-                                    :rim-color (lnf/button-border-color))
+        ;; b-help (button/mini-icon-button (.tool-root drw) [520 320] (lnf/icon-prefix) :help
+        ;;                             :id :help
+        ;;                             :rim-color (lnf/button-border-color))
         sub-panels [scanpan revpan amppan]
         widget-map {:drawing drw
                     :canvas (.canvas drw)

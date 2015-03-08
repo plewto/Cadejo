@@ -180,12 +180,25 @@
         y-copy y-init
         y-paste y-init
         ;y-help y-init
-        overview-pan (ovr/overview-panel drw [x-over y-over] ied)
+        this* (atom nil)
+        overview-pan (ovr/overview-panel drw [x-over y-over] ied this*)
         kscale-pan (ksp/op-keyscale op drw [x-keyscale y-keyscale] ied)
         amp-pan (oap/op-amp op drw [x-amp y-amp] ied)
         freq-pan (ofp/op-freq op drw [x-freq y-freq] ied)
         fb-pan (fbp/op-feedback-panel op drw [x-feedback y-feedback] ied)
         env-pan (ep/envelope-panel op ied)
+        occ-1 (factory/occluder drw [(+ x0  24)(- y0 143)][(+ x0 763)(- y0 237)]) ;; keyscale
+        occ-2 (factory/occluder drw [(+ x0  24)(- y0 245)][(+ x0 365)(- y0 465)]) ;; amp
+        occ-3 (factory/occluder drw [(+ x0 372)(- y0 245)][(+ x0 768)(- y0 465)]) ;; fb panel
+        occ-4 (factory/occluder drw [(+ x0  24)(- y0 472)][(+ x0 365)(- y0 566)]) ;; freq panel
+        occ-op1 (factory/occluder drw [(+ x0  429)(- y0 519)][(+ x0 462)(- y0 552)]) 
+        occ-op2 (factory/occluder drw [(+ x0  429)(- y0 569)][(+ x0 462)(- y0 602)]) 
+        occ-op3 (factory/occluder drw [(+ x0  429)(- y0 619)][(+ x0 462)(- y0 652)]) 
+        occ-op4 (factory/occluder drw [(+ x0  479)(- y0 519)][(+ x0 512)(- y0 552)]) 
+        occ-op5 (factory/occluder drw [(+ x0  479)(- y0 569)][(+ x0 512)(- y0 602)]) 
+        occ-op6 (factory/occluder drw [(+ x0  529)(- y0 569)][(+ x0 562)(- y0 602)]) 
+        occ-op7 (factory/occluder drw [(+ x0  589)(- y0 519)][(+ x0 622)(- y0 552)]) 
+        occ-op8 (factory/occluder drw [(+ x0  589)(- y0 569)][(+ x0 622)(- y0 602)]) 
         selection-action (fn [b _]
                            (let [card (.get-property b :card-number)]
                              (.show-card-number! ied card)))
@@ -234,22 +247,44 @@
     (factory/op-label (.root drw) [x-label y-label] op)
     ((:highlight-fn overview-pan) op true)
     (osp/highlight! op algo-graph)
-    (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
-      (widgets [this] widget-map)
-      (widget [this key] (get widget-map key))
-      (parent [this] ied)
-      (parent! [this _] ied) ;; ignore
-      (status! [this msg](.status! ied msg))
-      (warning! [this msg](.warning! ied msg))
-      (set-param! [this param value](.set-param! ied param value))
-      (init! [this] 
-        ;; ISSUE op init not implemented
-        )
-      (sync-ui! [this]
-        (let [dmap (.current-data (.bank (.parent-performance ied)))
-              muted? (zero? (enable-param dmap))]
-          (doseq [sp (cons overview-pan sub-panels)]
-            ((:sync-fn sp)))
-          ((:sync-fn env-pan))
-          (if muted? (disable-fn)(enable-fn)))
-        (.render drw)))))
+    (reset! this* (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
+                    (widgets [this] widget-map)
+                    (widget [this key] (get widget-map key))
+                    (parent [this] ied)
+                    (parent! [this _] ied) ;; ignore
+                    (status! [this msg](.status! ied msg))
+                    (warning! [this msg](.warning! ied msg))
+                    (set-param! [this param value](.set-param! ied param value))
+                    (init! [this] 
+                      ;; ISSUE op init not implemented
+                      )
+                    (sync-ui! [this]
+                      (let [dmap (.current-data (.bank (.parent-performance ied)))
+                            muted? (zero? (enable-param dmap))
+                            mute-1 (zero? (:op1-enable dmap))
+                            mute-2 (zero? (:op2-enable dmap))
+                            mute-3 (zero? (:op3-enable dmap))
+                            mute-4 (zero? (:op4-enable dmap))
+                            mute-5 (zero? (:op5-enable dmap))
+                            mute-6 (zero? (:op6-enable dmap))
+                            mute-7 (zero? (:op7-enable dmap))
+                            mute-8 (zero? (:op8-enable dmap))
+                            mute-op (fn [occ flag]
+                                      (.use-attributes! occ (if flag :disabled :enabled)))]
+                        (mute-op occ-op1 mute-1)
+                        (mute-op occ-op2 mute-2)
+                        (mute-op occ-op3 mute-3)
+                        (mute-op occ-op4 mute-4)
+                        (mute-op occ-op5 mute-5)
+                        (mute-op occ-op6 mute-6)
+                        (mute-op occ-op7 mute-7)          
+                        (mute-op occ-op8 mute-8)
+                        (doseq [occ [occ-1 occ-2 occ-3 occ-4]]
+                          (.use-attributes! occ (if muted? :disabled :enabled)))
+                        (doseq [sp (cons overview-pan sub-panels)]
+                          ((:sync-fn sp)))
+                        ((:sync-fn env-pan))
+                        (if muted? (disable-fn)(enable-fn)))
+                      (.render drw))))
+    @this*))
+            

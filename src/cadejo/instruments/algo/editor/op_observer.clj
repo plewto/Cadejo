@@ -4,7 +4,7 @@
   (:require [sgwr.tools.multistate-button :as msb]))
 
 
-(defn- op-observer [n drw p0 ied]
+(defn- op-observer [n drw p0 ied op-ed*]
   (let [param-enable (keyword (format "op%d-enable" n))
         param-freq (keyword (format "op%d-detune" n))
         param-bias (keyword (format "op%d-bias" n))
@@ -33,6 +33,7 @@
                       (let [selected? (msb/checkbox-selected? b)]
                         (.set-param! ied param-enable (if selected? 0 1))
                         (.sync-ui! ied)
+                        (.sync-ui! @op-ed*)
                         (.status! ied (format "%s op %s" 
                                               (if selected? "Mute" "Unmute") n))))
         cb-style (lnf/checkbox)
@@ -47,7 +48,7 @@
         text-components (list txt-op txt-freq txt-bias txt-amp 
                              (.get-property cb-mute :text-component))
         components (cons (.get-property cb-mute :rim)(cons border text-components))
-                            
+        occ (factory/occluder drw [(+ x0 5)(- y0 27)][(+ x0 75)(- y0 85)])
         sync-fn (fn []
                   (let [dmap (.current-data (.bank (.parent-performance ied)))
                         muted? (zero? (param-enable dmap))
@@ -55,10 +56,10 @@
                         bias (float (param-bias dmap))
                         amp (float (param-amp dmap))]
                     (msb/select-checkbox! cb-mute muted? false)
+                    (.use-attributes! occ (if muted? :disabled :enabled))
                     (.put-property! txt-freq :text (format "F %7.4f" frq))
                     (.put-property! txt-bias :text (format "B %+7.4f" bias))
                     (.put-property! txt-amp :text (format "A  %5.3f" amp))))
-
         highlight-fn (fn [flag]
                        (doseq [c components]
                          (.use-attributes! c (if flag :highlight :default))))]
@@ -75,7 +76,7 @@
      :highlight-fn highlight-fn}))
 
 
-(defn overview-panel [drw p0 ied]
+(defn overview-panel [drw p0 ied op-ed*]
   (let [[x0 y0] p0
         x-delta 96
         width (* 8 x-delta)
@@ -83,7 +84,7 @@
         oo-map (let [acc* (atom {})
                      x* (atom x0)]
                  (doseq [n (range 1 9)]
-                   (let [oo (op-observer n drw [@x* y0] ied)]
+                   (let [oo (op-observer n drw [@x* y0] ied op-ed*)]
                      (swap! acc* (fn [q](assoc q n oo)))
                      (swap! x* (fn [q](+ q x-delta)))))
                  @acc*)

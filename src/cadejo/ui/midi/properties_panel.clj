@@ -18,6 +18,7 @@
   (:require [sgwr.tools.dual-slider :as dslider])
   (:require [sgwr.tools.multistate-button :as msb])  
   (:require [sgwr.tools.slider :as slider])
+  (:require [sgwr.util.color :as uc])
   (:require [seesaw.core :as ss]))
 
 (def drawing-width 970)
@@ -89,14 +90,27 @@
              :size 5
              :color (lnf/text-color)))
 
+(defn occluder [drawing p0 p1]
+  (let [r (rect/rectangle (.occluder-root drawing) p0 p1 :id :occluder)]
+    (.color! r :disabled (lnf/occluder-color))
+    (.color! r :enabled [0 0 0 0])
+    (.fill! r :disabled true)
+    (.fill! r :enabled :no)
+    (.use-attributes! r :disabled)
+    r))
+                  
+
+
 ;; Create edit button
 ;;
 (defn edit-button [parent p0 dbar msg validator callback]
-  (let [click-action (fn [& _]
+  (let [cs (config/current-skin)
+        prefix (if (= cs "Twilight") :gray (lnf/icon-prefix))
+        click-action (fn [& _]
                        (dbar/displaybar-dialog dbar msg
                                                :validator validator
                                                :callback callback))]
-    (button/mini-icon-button parent p0 (lnf/icon-prefix) :edit
+    (button/mini-icon-button parent p0 prefix :edit
                              :click-action click-action)))
 
 ;; Create inherit checkbox
@@ -164,10 +178,12 @@
         tx3 (text drw [(+ x0 17)(+ y0 135)] "Range" :style :sans :size 6)
         tx-inherited (inherited-text drw [(+ x0 8)(+ y0 200)] "") ; displays inherited value
         components [b-curve dbar b-edit tx2 tx3]
+        occ (occluder drw [(+ x0 10)(+ y0 40)][(+ x0 170)(+ y0 190)])
         disable (fn []
                   (let [node (get-node)]
                     (.put-property! node :bend-curve nil)
                     (.put-property! node :bend-range nil)
+                    (.use-attributes! occ :disabled)
                     (.put-property! tx-inherited :text 
                                     (format "Curve %s Range %s"
                                             (.get-property node :bend-curve)
@@ -179,6 +195,7 @@
                  (let [node (get-node)
                        curve (second (msb/current-multistate-button-state b-curve))
                        range (int (math/str->float (.current-display dbar)))]
+                   (.use-attributes! occ :enabled)
                    (.put-property! tx-inherited :text "")
                    (.put-property! node :bend-curve curve)
                    (.put-property! node :bend-range range)
@@ -271,6 +288,7 @@
         tx-inherit-curve (inherited-text drw [(+ x0 8)(+ y0 200)] "")
         tx-inherit-values (inherited-text drw [(+ x0 8)(+ y0 212)] "")
         components [b-curve dbar-bias b-edit-bias dbar-scale b-edit-scale]
+        occ (occluder drw [(+ x0 10)(+ y0 40)][(+ x0 170)(+ y0 190)])
         disable (fn []
                   (let [node (get-node)]
                     (.put-property! node :pressure-curve nil)
@@ -282,6 +300,7 @@
                                    (format "Bias %+4.1f Scale %4.2f"
                                            (float (.get-property node :pressure-bias))
                                            (float (.get-property node :pressure-scale))))
+                    (.use-attributes! occ :disabled)
                     (doseq [w components](.disable! w false))
                     (.render drw)))
         enable (fn []
@@ -295,6 +314,7 @@
                    (.put-property! tx-inherit-curve :text "")
                    (.put-property! tx-inherit-values :text "")
                    (doseq [w components](.enable! w false))
+                   (.use-attributes! occ :enabled)
                    (.render drw)))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 225)]
                                      (fn [b _]
@@ -357,18 +377,21 @@
                                                 (.status! @ed* (format "[:velocity-map] -> %s" c))
                                                 (.put-property! (get-node) :velocity-map c))))
         tx-inherit (inherited-text drw [(+ x0 100)(+ y0 105)] "")
+        occ (occluder drw [(+ x0 10)(+ y0 40)][(+ x0 170)(+ y0 90)])
         disable (fn []
                   (let [node (get-node)]
                     (.put-property! node :velocity-map nil)
                     (.disable! b-curve false)
                     (.put-property! tx-inherit :text
                                     (format "%s" (.get-property node :velocity-map)))
+                    (.use-attributes! occ :disabled)
                     (.render drw)))
         enable (fn []
                  (let [node (get-node)]
                    (.put-property! node :velocity-map nil)
                    (.enable! b-curve false)
                    (.put-property! tx-inherit :text "")
+                   (.use-attributes! occ :enabled)
                    (.render drw)))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 98)]
                                      (fn [b _]
@@ -431,6 +454,7 @@
                             validator
                             callback)
         components [dbar b-edit]
+        occ (occluder drw [(+ x0 10)(+ y0 40)][(+ x0 170)(+ y0 90)])
         tx-inherit (inherited-text drw [(+ x0 100)(+ y0 105)] "")
         disable (fn []
                   (let [node (get-node)]
@@ -438,6 +462,7 @@
                     (doseq [w components](.disable! w false))
                     (.put-property! tx-inherit :text 
                                     (str (.get-property node :transpose)))
+                    (.use-attributes! occ :disabled)
                     (.render drw)))
         enable (fn []
                  (let [node (get-node)
@@ -445,6 +470,7 @@
                    (.put-property! node :transpose xpose)
                    (doseq [w components](.enable! w false))
                    (.put-property! tx-inherit :text "")
+                   (.use-attributes! occ :enabled)
                    (.render drw)))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 98)]
                                      (fn [b _]
@@ -516,12 +542,14 @@
                                                    (.put-property! tx-value :text (format "%+3d db" db))
                                                    (.put-property! node :dbscale db))))
         tx-inherit (inherited-text drw [(+ x0 30)(+ y0 218)] "")
+        occ (occluder drw [(+ x0 10)(+ y0 40)][(+ x0 80)(+ y0 205)])
         disable (fn []
                   (let [node (get-node)]
                     (.put-property! node :dbscale nil)
                     (.disable! s-scale false)
                     (.put-property! tx-inherit :text 
                                     (format "%+3d db" (.get-property node :dbscale)))
+                    (.use-attributes! occ :disabled)
                     (.put-property! tx-value :text "")))
                     ;(.render drw)))
         enable (fn []
@@ -530,6 +558,7 @@
                    (.put-property! node :dbscale db)
                    (.enable! s-scale false)
                    (.put-property! tx-inherit :text "")
+                   (.use-attributes! occ :enabled)
                    (.put-property! tx-value :text (format "%+3d db" (.get-property node :dbscale)))))
                    ;(.render drw)))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 225)]
@@ -593,11 +622,13 @@
                                      validator
                                      callback)
         tx-inherit (inherited-text drw [(+ x0 90)(+ y0 235)] "")
+        occ (occluder drw [(+ x0 10)(+ y0 35)][(+ x0 320)(+ y0 80)])
         disable (fn []
                   (let [node (get-node)]
                     (.put-property! node :scale-id nil)
                     (doseq [w [dbar b-edit]]
                       (.disable! w false))
+                    (.use-attributes! occ :disabled)
                     (.put-property! tx-inherit :text
                                     (.get-property node :scale-id))))
         enable (fn []
@@ -606,6 +637,7 @@
                    (.put-property! node :scale-id sid)
                    (doseq [w [dbar b-edit]]
                      (.enable! w false))
+                   (.use-attributes! occ :enabled)
                    (.put-property! tx-inherit :text "")))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 225)]
                                      (fn [b _]
@@ -674,17 +706,19 @@
                                     :gap 12
                                     :track1-color (lnf/passive-track-color)
                                     :track4-color (lnf/active-track-color)
+                                    :track4-width 2
                                     :rim-color [0 0 0 0]
                                     :handle1-color (lnf/slider-handle-color)
                                     :handle2-color (lnf/slider-handle-color)
                                     :value-hook (fn [n](int n))
                                     :drag-action drag-action)
-
+        occ (occluder drw [(+ x0 5)(+ y0 40)][(+ x0 860)(+ y0 92)])
         disable (fn []
                   (let [node (get-node)]
                     (.put-property! node :key-range nil)
                     (doseq [w [slider]]
                       (.disable! w false))
+                    (.use-attributes! occ :disabled)
                     (.put-property! tx-range :text "")
                     (.put-property! tx-inherit :text
                                     (str (.get-property node :key-range)))))
@@ -693,6 +727,7 @@
                    (.enable! w false))
                  (let [node (get-node)
                        kr (dslider/get-dual-slider-values slider)]
+                   (.use-attributes! occ :enabled)
                    (.put-property! node :key-range kr)
                    (.put-property! tx-range :text (str (.get-property node :key-range)))
                    (.put-property! tx-inherit :text "")
@@ -769,11 +804,12 @@
         dbscale-subpan (create-db-scale-panel drw [(+ x 535) (+ y 0)])
         ttab-subpan (create-scale-selection-panel drw [(+ x 620) (+ y 0)])
         krange-subpan (create-keyrange-panel drw [(+ x 10)(+ y 253)])
-        b-help (do 
+        b-help (let [cs (config/current-skin)
+                     prefix (if (= cs "Twilight") :gray (lnf/icon-prefix))]
                  (border (.root drw) [(+ x 874)(+ y 253)] [(+ x 950)(+ y 380)])
                  (title drw [(+ x 894)(+ y 277)] "Help")
                  (button/icon-button (.tool-root drw) [(+ x 890) (+ y 293)]
-                                     (lnf/icon-prefix) :general :help
+                                     prefix :general :help
                                      :rim-color [0 0 0 0]
                                      :rim-width 1.0))
         sub-panels [bend-subpan pressure-subpan velocity-subpan transpose-subpan

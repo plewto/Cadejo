@@ -125,7 +125,7 @@
     :passive-track-color (uc/color [225 213 207])
     :major-tick-color (uc/color [42 46 54])
     :minor-tick-color (uc/color [42 46 54])
-    :occluder-color (uc/color [240 246 251 250])
+    ;:occluder-color (uc/color [240 246 251 240])
     :checkbox  {:rim-radius 18
                :rim-color (uc/color [42 46 54])
                :check-color (uc/color [42 46 54])

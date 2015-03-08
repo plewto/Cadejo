@@ -38,7 +38,6 @@
 
         fld (field/field (.tool-root drw) p0 p1[0.0 max-decay-time] [1.0 0.0]
                          :drag-action drag-action
-                         :pad-color (lnf/envelope-background)
                          :rim-color (lnf/envelope-border-color))
         bll (let [b (field/ball fld :ball [0.5 0.5] 
                                 :color (lnf/envelope-handle-color)

@@ -46,6 +46,13 @@
     "(tool-root this)
      Returns the group used for active tools.")
 
+  (occluder-root
+    [this]
+    "(occluder-root this)
+     Returns group used for occlusion objects.
+     Objects in the occlusion group are always rendered last and appear 
+     above all other objects.")
+
   (canvas-bounds
     [this]
     "(canvas-bounds this)
@@ -169,6 +176,7 @@
    Create new drawing using coordinate-system cs"
   (let [root-group (group/group nil :id :root)
         tool-root (group/group root-group :id :tool-root)
+        occluder-root (group/group root-group :id :occluder-root)
         active-tool* (atom nil)
         background-color* (atom (uc/color :black))
         ;background-image* (atom nil)
@@ -186,16 +194,11 @@
 
               (tool-root [this] tool-root)
 
+              (occluder-root [this] occluder-root)
+
               (canvas-bounds [this] (.canvas-bounds cs))
 
               (canvas [this] @cpan*)
-
-              ;; (background! [this bg]
-              ;;   (let [bgt (type bg)]
-              ;;     (cond (= bgt java.awt.image.BufferedImage)
-              ;;           (reset! background-image* bg)
-              ;;           :default
-              ;;           (reset! background-color* (uc/color bg)))))
 
               (background! [this bg]
                 (reset! background-color* (uc/color bg)))
@@ -207,8 +210,10 @@
                     (.setPaint g2d @background-color*)
                     (.fillRect g2d 0 0 width height)
                     (doseq [e (.children root-group)]
-                      (if (not (= e tool-root))(.render-node this g2d e)))
+                      (if (or (not (= e tool-root))(not (= e occluder-root)))
+                        (.render-node this g2d e)))
                     (.render-node this g2d tool-root)
+                    (.render-node this g2d occluder-root)
                     (.repaint @cpan*))))
 
               (render-node [this g2d component]
