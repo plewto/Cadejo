@@ -74,7 +74,7 @@
   (let [obj (text/text (.root drawing) p txt
                        :style :serif
                        :size 8
-                       :color (lnf/title-color))]
+                       :color (lnf/title))]
     obj))
                        
 ;; create general text
@@ -82,17 +82,17 @@
 (defn text [drawing p txt & {:keys [style size]
                              :or {style :serif
                                   size 8}}]
-  (text/text (.root drawing) p txt :style style :size size :color (lnf/text-color)))
+  (text/text (.root drawing) p txt :style style :size size :color (lnf/text)))
 
 (defn inherited-text [drawing p txt]
   (text/text (.root drawing) p txt
              :style :mono
              :size 5
-             :color (lnf/text-color)))
+             :color (lnf/text)))
 
 (defn occluder [drawing p0 p1]
   (let [r (rect/rectangle (.occluder-root drawing) p0 p1 :id :occluder)]
-    (.color! r :disabled (lnf/occluder-color))
+    (.color! r :disabled (lnf/occluder))
     (.color! r :enabled [0 0 0 0])
     (.fill! r :disabled true)
     (.fill! r :enabled :no)
@@ -115,14 +115,24 @@
 
 ;; Create inherit checkbox
 ;;
+;; (defn inherit-checkbox [parent p0 click-action]
+;;   (let [stylemap (lnf/checkbox)
+;;         cb (msb/checkbox parent p0 "Inherit"
+;;                          :text-color (lnf/text-color)
+;;                          :text-size 6
+;;                          :rim-radius (:rim-radius stylemap)
+;;                          :rim-color (:rim-color stylemap)
+;;                          :selected-check [(:check-color stylemap)(:check-style stylemap)(:check-size stylemap)]
+;;                          :click-action click-action)]
+;;     cb))
+
 (defn inherit-checkbox [parent p0 click-action]
-  (let [stylemap (lnf/checkbox)
-        cb (msb/checkbox parent p0 "Inherit"
-                         :text-color (lnf/text-color)
+  (let [cb (msb/checkbox parent p0 "Inherit"
+                         :text-color (lnf/text)
                          :text-size 6
-                         :rim-radius (:rim-radius stylemap)
-                         :rim-color (:rim-color stylemap)
-                         :selected-check [(:check-color stylemap)(:check-style stylemap)(:check-size stylemap)]
+                         :rim-radius (lnf/checkbox-rim-radius)
+                         :rim-color (lnf/checkbox-rim)
+                         :selected-check [(lnf/checkbox)(lnf/checkbox-style)(lnf/checkbox-size)]
                          :click-action click-action)]
     cb))
 
@@ -131,7 +141,7 @@
 (defn border [parent p0 p1]
   (let [r (rect/rectangle parent p0 p1
                           :width 1.0
-                          :color (lnf/major-border-color))]
+                          :color (lnf/major-border))]
     (.put-property! r :corner-radius 18)
     r))
 
@@ -140,7 +150,7 @@
   (let [b (dbar/displaybar parent x0 y0 ccount (lnf/dbar-style)
                            :cell-height dbar-cell-height
                            :cell-width dbar-cell-width)]
-    (.colors! b (lnf/dbar-inactive-color)(lnf/dbar-active-color))
+    (.colors! b (lnf/dbar-inactive)(lnf/dbar-active))
     b))
 
 ; ---------------------------------------------------------------------- 
@@ -527,10 +537,10 @@
                        :size 5)
         s-scale (slider/slider tool [xc (+ y0 200)] slider-length -60 12
                                :gap 8
-                               :track1-color (lnf/passive-track-color)
-                               :track2-color (lnf/active-track-color)
+                               :track1-color (lnf/passive-track)
+                               :track2-color (lnf/active-track)
                                :rim-color [0 0 0 0]
-                               :handle-color (lnf/slider-handle-color)
+                               :handle-color (lnf/handle)
                                :value-hook (fn [n]
                                              (let [q (int (/ n 3))
                                                    db (* 3 q)]
@@ -570,9 +580,9 @@
                                          (.render drw))))]
     (border root p0 [(+ x0 w)(+ y0 h)])
     (title drw [(+ x0 6)(+ y0 25)] "DB Scale")
-    (line/line root [tick-x0 y-db12][tick-x1 y-db12] :color (lnf/major-tick-color))
-    (line/line root [tick-x0 y-db0][tick-x1 y-db0] :color (lnf/major-tick-color))
-    (line/line root [tick-x0 y-db60][tick-x1 y-db60] :color (lnf/major-tick-color))
+    (line/line root [tick-x0 y-db12][tick-x1 y-db12] :color (lnf/major-tick))
+    (line/line root [tick-x0 y-db0][tick-x1 y-db0] :color (lnf/major-tick))
+    (line/line root [tick-x0 y-db60][tick-x1 y-db60] :color (lnf/major-tick))
     (text drw [(+ tick-x0 27)(+ y-db12 4)] "+12" :style :mono :size 5)
     (text drw [(+ tick-x0 27)(+ y-db0 4)] " 0" :style :mono :size 5)
     (text drw [(+ tick-x0 27)(+ y-db60 4)] "-60" :style :mono :size 5)
@@ -693,7 +703,7 @@
         tx-range (text drw [(+ x0 8)(+ y0 25)] (format "Range [%3d %3d]" 0 127)
                         :style :mono
                         :size 5
-                        :color (lnf/text-color))
+                        :color (lnf/text))
         tx-inherit (inherited-text drw [(+ x0 90)(+ y0 109)] "")
         drag-action (fn [s _]
                       (let [node (get-node)
@@ -704,12 +714,12 @@
         slider (dslider/dual-slider tool [x2 yc] slider-length 0 127 
                                     :orientation :horizontal
                                     :gap 12
-                                    :track1-color (lnf/passive-track-color)
-                                    :track4-color (lnf/active-track-color)
+                                    :track1-color (lnf/passive-track)
+                                    :track4-color (lnf/active-track)
                                     :track4-width 2
                                     :rim-color [0 0 0 0]
-                                    :handle1-color (lnf/slider-handle-color)
-                                    :handle2-color (lnf/slider-handle-color)
+                                    :handle1-color (lnf/handle)
+                                    :handle2-color (lnf/handle)
                                     :value-hook (fn [n](int n))
                                     :drag-action drag-action)
         occ (occluder drw [(+ x0 5)(+ y0 40)][(+ x0 860)(+ y0 92)])
@@ -749,7 +759,7 @@
               x @x*
               text-offset (cond (< kn 99) -14
                                 :default -10)]
-          (line/line root [x yc][x (+ yc major-length)] :color (lnf/major-tick-color))
+          (line/line root [x yc][x (+ yc major-length)] :color (lnf/major-tick))
           (text drw [(+ x text-offset)(+ yc major-length 12)](format "%3d" kn)
                 :style :mono :size 6)
           (swap! kn* (fn [q](+ q 12)))
@@ -761,7 +771,7 @@
         (let [kn @kn*
               x @x*]
           (if (not (zero? (rem kn 12)))
-            (line/line root [x yc][x (- yc minor-length)] :color (lnf/minor-tick-color))
+            (line/line root [x yc][x (- yc minor-length)] :color (lnf/minor-tick))
             )
           (swap! kn* inc)
           (swap! x* (fn [q](+ q minor-delta))))))
