@@ -1,9 +1,7 @@
 (ns cadejo.instruments.masa.editor.masa-editor
   (:require [cadejo.ui.instruments.instrument-editor :as ied])
   (:require [cadejo.instruments.masa.editor.drawbar-panel])
-  (:require [cadejo.instruments.masa.editor.efx-panel])
-  )
-
+  (:require [cadejo.instruments.masa.editor.efx-panel]))
 
 (defn masa-editor [performance]
   (let [ied (ied/instrument-editor performance)

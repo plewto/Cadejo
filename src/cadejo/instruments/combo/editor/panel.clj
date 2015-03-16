@@ -8,7 +8,6 @@
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.components.rule :as rule])
-  ;(:require [sgwr.components.text :as text])
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.slider :as slider])
   (:require [sgwr.tools.multistate-button :as msb])
@@ -24,29 +23,6 @@
 (def ^:private vibrato-pos->sens 
   (math/linear-function 0 min-vibrato-sensitivity
                         100 max-vibrato-sensitivity))
-
-    
-;; (defn- text [drw p0 txt & {:keys [size]
-;;                            :or {size 8.0}}]
-;;    (let [root (.root drw)
-;;          style :serif-bold
-;;          size size
-;;          color (lnf/text-color)]
-;;      (text/text root p0 txt 
-;;                 :color color
-;;                 :style style
-;;                 :size size)))
-
-;; (defn- vtext [drw p0 txt & {:keys [size delta]
-;;                            :or {size 5
-;;                                 delta 12}}]
-;;   (let [root (.root drw)
-;;         x (first p0)
-;;         y* (atom (second p0))
-;;         c (lnf/text)]
-;;     (doseq [s txt]
-;;       (sfactory/text root [x @y*] (str s) :size size :color c)
-;;       (swap! y* (fn [q](+ q delta))))))
 
 (defn- default-drag-action [slider _]
   (let [param (.get-property slider :id)
@@ -160,24 +136,6 @@
               (sfactory/label d [(+ x7 -15) y3] "Depth")
               (sfactory/label d [(+ x8 -10) y3] "Mix")
               d)
-        ;; slider (fn [id p0 v0 v1 drag-action & {:keys [length]
-        ;;                                           :or {length 150}}]
-        ;;          (let [root (.root drw)
-        ;;                troot (.tool-root drw)
-        ;;                mj-step 50
-        ;;                mn-step 10
-        ;;                r (rule/ruler root p0 length
-        ;;                              :rim-color [0 0 0 0])
-        ;;                s (slider/slider troot p0 length v0 v1 :id id
-        ;;                                 :drag-action drag-action
-        ;;                                 :track1-color (lnf/passive-track)
-        ;;                                 :track2-color (lnf/active-track)
-        ;;                                 :handle-color (lnf/handle)
-        ;;                                 :rim-color [0 0 0 0])]
-        ;;            (rule/ticks r mn-step :length 4 :color (lnf/minor-tick-color))
-        ;;            (rule/ticks r mj-step :length 12 :color (lnf/major-tick-color))
-        ;;            (.put-property! s :editor ied)
-        ;;            s))
         detune-coarse* (atom 0.0)
         detune-fine* (atom 0.0)
         troot (.tool-root drw)

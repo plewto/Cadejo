@@ -5,21 +5,11 @@
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
-  ;;(:require [sgwr.components.text :as text])
   (:require [sgwr.tools.button :as button])
   (:require [sgwr.tools.multistate-button :as msb])
   (:import javax.swing.JOptionPane))
 
-
-;; (defn- help-action [& _]
-;;   (println "MASA gamut-panel help not implemented")
-;;   )
-
 (def ^:private param-list [:r1 :r2 :r3 :r4 :r5 :r6 :r7 :r8 :r9])
-
-
-;; (defn- zip [a b]
-;;   (map vector a b))
 
 (defn- use-b3-gamut [ied drw]
   (let [flst [0.5 1.5 1.0 2.0 3.0 4.0 5.0 6.0 8.0]]
@@ -109,21 +99,6 @@
    :cluster cluster-gamut
    :detune detune-gamut})
 
-;; Create label text
-;;    
-;; (defn- freq-text [drw p0 id]
-;;   (let [x-offset 15
-;;         y-offset 495
-;;         x (+ (first p0) x-offset)
-;;         y (- (second p0) y-offset)
-;;         txt (text/text (.root drw) [x y] "x.xxxx"
-;;                        :id id
-;;                        :color (lnf/text-color)
-;;                        :style :mono
-;;                        :size 6.0)]
-;;     txt))
-
-
 (defn- freq-text [drw p0 id]
   (let [x-offset 15
         y-offset 495
@@ -188,8 +163,6 @@
                               :text-size 6
                               :text-color (lnf/text))]
     b))
-  
-
 
 (defn gamut-panel [drw ied p0]
   (let [data (fn [param]
@@ -228,12 +201,6 @@
       (preset-button drw pos 1 1 " Rnd 2 " :rnd2 click-action)
       (preset-button drw pos 1 2 " Klstr "  :cluster click-action)
       (preset-button drw pos 1 3 " Detune"  :detune click-action)
-      ;; Help button
-      ;; (button/mini-icon-button (.tool-root drw) [(+ x0 8)(- y0 47)]
-      ;;                          (lnf/icon-prefix) :help
-      ;;                          :click-action help-action
-      ;;                          :rim-color (lnf/button-border-color)
-      ;;                          :action (fn [& _] ))
       (let [subed (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
                     (widgets [this] widget-map)
                     

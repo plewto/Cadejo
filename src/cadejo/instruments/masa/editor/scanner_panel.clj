@@ -28,12 +28,6 @@
         pos (math/sqrt q)]
     pos))
 
-;; (defn- label [drw p0 txt]
-;;   (text/text (.root drw) p0 txt
-;;              :color (lnf/text-color)
-;;              :style :mono 
-;;              :size 6))
-
 (defn- vert-label [drw p0 txt]
   (let [root (.root drw)
         delta 12
@@ -59,8 +53,8 @@
                (let [dmap (.current-data (.bank (.parent-performance ied)))]
                  (get dmap param)))
         [x0 y0] p0
-        w 500 ; 492
-        h 400 ; 392
+        w 500
+        h 400
         x1 (+ x0 w)
         x2 (+ x0 32)
         x3 (+ x2 200)
@@ -85,7 +79,8 @@
                             scan-rate (pos->rate (second pos))]
                         (.set-param! ied param-scan scan-rate)
                         (.set-param! ied param-mod mod-rate)
-                        (.status! ied (format "[%s] -> %5.3f [%s] -> %5.3f" param-scan scan-rate param-mod mod-rate))))
+                        (.status! ied (format "[%s] -> %5.3f [%s] -> %5.3f"
+                                              param-scan scan-rate param-mod mod-rate))))
         fld-rate (field/field (.tool-root drw) p2 p3 [0 1][0 1] 
                               :drag-action rate-action
                               :rim-color (lnf/minor-border))
@@ -99,8 +94,9 @@
                             delay-mod (second pos)]
                         (.set-param! ied param-delay delay-time)
                         (.set-param! ied param-mod delay-mod)
-                        (.status! ied (format "[%s] -> %5.3f [%s] -> %5.3f" param-delay delay-time param-mod delay-mod))))
-        fld-delay (field/field (.tool-root drw) p4 p5 ;[0 1][0 1]
+                        (.status! ied (format "[%s] -> %5.3f [%s] -> %5.3f"
+                                              param-delay delay-time param-mod delay-mod))))
+        fld-delay (field/field (.tool-root drw) p4 p5
                                [0 max-scanner-delay][0 max-scanner-delay-mod]
                                :drag-action delay-action
                                :rim-color (lnf/minor-border)) 

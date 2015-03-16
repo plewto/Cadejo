@@ -9,29 +9,7 @@
   (:require [sgwr.components.text :as text])
   (:require [sgwr.tools.slider :as slider])
   (:require [sgwr.tools.multistate-button :as msb])
-  (:require [sgwr.util.color :as uc])
-  )
-
-
-;; Create 'drawbar' slider
-;;
-;; (defn- drawbar [drw ied p0 param track-color action]
-;;   (let [x-shift 32
-;;         y-shift 100
-;;         x (+ (first p0) x-shift)
-;;         y (- (second p0) y-shift)
-;;         s (slider/slider (.tool-root drw) [x y] slider-length 0 8
-;;                          :id param :orientation :vertical
-;;                          :value-hook (fn [n](int n))
-;;                          :drag-action action
-;;                          :track1-color (lnf/passive-track-color)
-;;                          :track2-color track-color
-;;                          :track2-width 8
-;;                          :rim-color [0 0 0 0]
-;;                          :handle-color (lnf/slider-handle-color)
-;;                          :handle-style [:fill :box]
-;;                          :handle-size 3)]
-;;     s))
+  (:require [sgwr.util.color :as uc]))
 
 (defn- drawbar [drw ied p0 param track-color action]
   (let [x-shift 32
@@ -47,8 +25,6 @@
                             :handle-size 4
                             :value-hook int)]
     s))
-
-
 
 ;; Create 'pedal' multistate-button
 ;;

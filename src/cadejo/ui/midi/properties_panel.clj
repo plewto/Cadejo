@@ -25,7 +25,6 @@
 (def drawing-height 400)
 (def dbar-cell-width 18)
 (def dbar-cell-height 28)
-;(def dbar-style :basic)
 (def slider-length 150)
 (def curve-button-states [[:zero :curve :zero  0]
                           [:half :curve :half  1]
@@ -115,17 +114,6 @@
 
 ;; Create inherit checkbox
 ;;
-;; (defn inherit-checkbox [parent p0 click-action]
-;;   (let [stylemap (lnf/checkbox)
-;;         cb (msb/checkbox parent p0 "Inherit"
-;;                          :text-color (lnf/text-color)
-;;                          :text-size 6
-;;                          :rim-radius (:rim-radius stylemap)
-;;                          :rim-color (:rim-color stylemap)
-;;                          :selected-check [(:check-color stylemap)(:check-style stylemap)(:check-size stylemap)]
-;;                          :click-action click-action)]
-;;     cb))
-
 (defn inherit-checkbox [parent p0 click-action]
   (let [cb (msb/checkbox parent p0 "Inherit"
                          :text-color (lnf/text)

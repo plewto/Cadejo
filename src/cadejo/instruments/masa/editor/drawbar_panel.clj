@@ -9,18 +9,7 @@
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [sgwr.components.drawing])
-  (:require [sgwr.components.text :as text])
   (:require [seesaw.core :as ss]))
-
-;; (defn- text [drw p0 txt] 
-;;   (text/text (.root drw) p0 txt
-;;              :style :sans
-;;              :size 6
-;;              :color (lnf/text)))
-
-(def ^:private text sfactory/text)
-
-
 
 (defn drawbar-panel [ied]
   (let [drw (let [d (sgwr.components.drawing/native-drawing drawing-width drawing-height)]
@@ -35,9 +24,9 @@
                     :canvas (.canvas drw)
                     :pan-main (ss/horizontal-panel :items [(.canvas drw)]
                                                    :background (lnf/background))}]
-    (text drw [10 210] "Pedals")
-    (text drw [10 250] "Env")
-    (text drw [10 300] "F Edit")
+    (sfactory/text drw [10 210] "Pedals")
+    (sfactory/text drw [10 250] "Env")
+    (sfactory/text drw [10 300] "F Edit")
     (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
       (widgets [this] widget-map)
       
@@ -62,10 +51,6 @@
       (init! [this]
         (doseq [sp sub-panels](.init! sp)))
 
-
       (sync-ui! [this]
         (doseq [sp sub-panels](.sync-ui! sp))
-        (.render drw)
-        )
-      
-      )))
+        (.render drw)))))

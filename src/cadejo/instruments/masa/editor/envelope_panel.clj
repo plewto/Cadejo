@@ -6,7 +6,6 @@
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.rectangle :as rect])
-  (:require [sgwr.components.text :as text])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.tools.field :as field]))
 
@@ -65,10 +64,6 @@
         widget-map {}]
     (.put-property! fld :segment-1 segment-1)
     (.put-property! fld :segment-2 segment-2)
-    ;; (text/text (.root drw) [(+ x0 55)(- y0 157)] "Envelope"
-    ;;            :style :sans
-    ;;            :size 8
-    ;;            :color (lnf/text))
     (sfactory/text drw [(+ x0 55)(- y0 157)] "Envelope")
     (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
       (widgets [this] widget-map)

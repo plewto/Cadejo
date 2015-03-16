@@ -5,30 +5,7 @@
   (:require [cadejo.ui.instruments.subedit])
   (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.components.line :as line])
-  (:require [sgwr.components.text :as text])
   (:require [sgwr.tools.slider :as slider]))
-
-
-;; (defn- slider [drw p0 param mn mx drag-action]
-;;   (let [len 140
-;;         s (slider/slider (.tool-root drw) p0 len mn mx
-;;                          :id param
-;;                          :drag-action drag-action
-;;                          :orientation :vertical
-;;                          :rim-color [0 0 0 0]
-;;                          :track1-color (lnf/passive-track-color)
-;;                          :track2-color (lnf/active-track-color)
-;;                          :track2-width 1
-;;                          :handle-style [:fill :dot]
-;;                          :handle-color (lnf/slider-handle-color)
-;;                          :handle-size 3)]
-;;     s))
-
-;; (defn- small-text [drw p0 txt]
-;;   (text/text (.root drw) p0 txt
-;;              :style :mono
-;;              :size 5.5
-;;              :color (lnf/text-color)))
 
 (defn- rule-line [drw p0 txt]
   (let [length 180
@@ -62,21 +39,12 @@
         delay-action (fn [s _]
                        (let [v (slider/get-slider-value s)]
                          (.set-param! ied :vdelay v)))
-        ;; s-rate (slider drw  [(+ x0  12)(- y0 25)] :vrate min-vibrato-frequency max-vibrato-frequency freq-action)
-        ;; s-sens (slider drw  [(+ x0  62)(- y0 25)] :vsens 0.0 max-vibrato-sensitivity sens-action)
-        ;; s-depth (slider drw [(+ x0 112)(- y0 25)] :vdepth 0.0 1.0 depth-action)
-        ;; s-delay (slider drw [(+ x0 162)(- y0 25)] :vdelay 0.0 max-vibrato-delay delay-action)
-
         s-rate (sfactory/vslider drw  ied :vrate  [(+ x0  12)(- y0 25)] min-vibrato-frequency max-vibrato-frequency freq-action)
         s-sens (sfactory/vslider drw  ied :vsens  [(+ x0  62)(- y0 25)] 0.0 max-vibrato-sensitivity sens-action)
         s-depth (sfactory/vslider drw ied :vdepth [(+ x0 112)(- y0 25)] 0.0 1.0 depth-action)
         s-delay (sfactory/vslider drw ied :vdelay [(+ x0 162)(- y0 25)] 0.0 max-vibrato-delay delay-action)
         widget-map {}]
     (rect/rectangle (.root drw) [(- x0 33) y0][(+ x1 33) y1] :color (lnf/minor-border) :radius 12)
-    ;; (text/text (.root drw) [(+ x0 60)(- y0 185)] "Vibrato"
-    ;;            :style :sans
-    ;;            :size 8
-    ;;            :color (lnf/text-color))
     (sfactory/text drw [(+ x0 60)(- y0 188)] "Vibrato")
     (sfactory/label drw [(+ x0 2)(- y0 5)] "Rate")
     (sfactory/label drw [(+ x0 50)(- y0 5)] "Sens")

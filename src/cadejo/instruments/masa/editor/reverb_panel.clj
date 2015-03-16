@@ -5,25 +5,7 @@
   (:require [cadejo.ui.instruments.subedit])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.rectangle :as rect])
-  ;(:require [sgwr.components.text :as text])
   (:require [sgwr.tools.slider :as slider]))
-
-;; (defn- slider [drw p id action]
-;;   (let [s (slider/slider (.tool-root drw) p slider-length 0.0 1.0
-;;                          :id id
-;;                          :orientation :vertical
-;;                          :drag-action action
-;;                          :rim-color [0 0 0 0]
-;;                          :handle-color (lnf/slider-handle-color)
-;;                          :track1-color (lnf/passive-track-color)
-;;                          :track2-color (lnf/active-track-color))]
-;;     s))
-
-;; (defn- label [drw p0 txt]
-;;   (text/text (.root drw) p0 txt
-;;              :color (lnf/text-color)
-;;              :style :mono
-;;              :size 6))
 
 (defn reverb-panel [drw ied p0]
   (let [data (fn [param] ;; Returns current program value of parameter
@@ -43,18 +25,11 @@
         size-action (fn [s _](.set-param! ied :reverb-size (slider/get-slider-value s)))
         damp-action (fn [s _](.set-param! ied :reverb-damp (slider/get-slider-value s)))
         mix-action (fn [s _](.set-param! ied :reverb-mix (slider/get-slider-value s)))
-        ;; s-size (slider drw [x-size y2] :room-size size-action)
-        ;; s-damp (slider drw [x-damp y2] :reverb-damp damp-action)
-        ;; s-mix (slider drw [x-mix y2] :reverb-mix mix-action)
         s-size (sfactory/vslider drw ied :room-size [x-size y2] 0.0 1.0 size-action)
         s-damp (sfactory/vslider drw ied :reverb-damp [x-damp y2] 0.0 1.0 damp-action)
         s-mix (sfactory/vslider drw ied :reverb-mix [x-mix y2] 0.0 1.0 mix-action)
         widget-map {}]
   (rect/rectangle (.root drw) p0 p1 :color (lnf/minor-border) :radius 12)
-  ;; (text/text (.root drw) [(+ x0 70)(- y0 h -20)] "Reverb" 
-  ;;            :style :sans
-  ;;            :size 8
-  ;;            :color (lnf/text))
   (sfactory/text drw [(+ x0 70)(- y0 h -20)] "Reverb")
   (sfactory/label drw [(+ x-size -12) y3] "Room")
   (sfactory/label drw [(+ x-size -12) (+ y3 12)] "Size")
