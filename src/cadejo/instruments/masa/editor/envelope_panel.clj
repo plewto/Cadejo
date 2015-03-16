@@ -1,14 +1,16 @@
 (ns cadejo.instruments.masa.editor.envelope-panel
   (:use [cadejo.instruments.masa.masa-constants])
   (:require [cadejo.ui.instruments.subedit])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.line :as line])
+  (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.components.text :as text])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.tools.field :as field]))
 
-(defn envelope-panel [drw ied p0 ]
+(defn envelope-panel [drw ied p0]
   (let [data (fn [param]
                (let [dmap (.current-data (.bank (.parent-performance ied)))]
                  (get dmap param)))
@@ -35,35 +37,39 @@
                         (.set-param! ied :sustain sus)
                         (.status! ied (format "[:decay] -> %5.3f [:sustain] -> %5.3f" dcy sus))
                         (.render drw)))
-
         fld (field/field (.tool-root drw) p0 p1[0.0 max-decay-time] [1.0 0.0]
                          :drag-action drag-action
-                         :rim-color (lnf/envelope-border-color))
+                         :rim-color (lnf/envelope-border))
         bll (let [b (field/ball fld :ball [0.5 0.5] 
-                                :color (lnf/envelope-handle-color)
-                                :selected-color (lnf/envelope-handle-color)
+                                :color (lnf/envelope-handle)
+                                :selected-color (lnf/envelope-handle)
                                 :style [:dot]
                                 :size 3
                                 :selected-style [:dot])]
               (.put-property! fld :ball b)
               b)
+        envbg (rect/rectangle (.root drw) p0 p1 
+                              :id :env-background
+                              :color (lnf/envelope-background)
+                              :fill true)
         segment-1 (let [s (line/line fld [x0 y1][xc yc]
                                      :id :segment-1
-                                     :color (lnf/envelope-line-color))]
+                                     :color (lnf/envelope-segment))]
                     (.put-property! fld :segment-1 s)
                     s)
         segment-2 (let [s (line/line fld [xc yc][x1 yc]
                                      :id :segmnet-2
-                                     :color (lnf/envelope-line-color))]
+                                     :color (lnf/envelope-segment))]
                     (.put-property! fld :segment-2 s)
                     s)
         widget-map {}]
     (.put-property! fld :segment-1 segment-1)
     (.put-property! fld :segment-2 segment-2)
-    (text/text (.root drw) [(+ x0 55)(- y0 157)] "Envelope"
-               :style :sans
-               :size 8
-               :color (lnf/text-color))
+    ;; (text/text (.root drw) [(+ x0 55)(- y0 157)] "Envelope"
+    ;;            :style :sans
+    ;;            :size 8
+    ;;            :color (lnf/text))
+    (sfactory/text drw [(+ x0 55)(- y0 157)] "Envelope")
     (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
       (widgets [this] widget-map)
       

@@ -3,28 +3,29 @@
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.components.text :as text])
   (:require [sgwr.tools.slider :as slider]))
 
-(defn- slider [drw p id action]
-  (let [s (slider/slider (.tool-root drw) p slider-length
-                         min-amp-db max-amp-db
-                         :id id
-                         :orientation :vertical
-                         :drag-action action
-                         :rim-color [0 0 0 0]
-                         :handle-color (lnf/slider-handle-color)
-                         :track1-color (lnf/passive-track-color)
-                         :track2-color (lnf/active-track-color))]
-    s))
+;; (defn- slider [drw p id action]
+;;   (let [s (slider/slider (.tool-root drw) p slider-length
+;;                          min-amp-db max-amp-db
+;;                          :id id
+;;                          :orientation :vertical
+;;                          :drag-action action
+;;                          :rim-color [0 0 0 0]
+;;                          :handle-color (lnf/slider-handle-color)
+;;                          :track1-color (lnf/passive-track-color)
+;;                          :track2-color (lnf/active-track-color))]
+;;     s))
 
-(defn- label [drw p0 txt]
-  (text/text (.root drw) p0 txt
-             :color (lnf/text-color)
-             :style :mono
-             :size 6))
+;; (defn- label [drw p0 txt]
+;;   (text/text (.root drw) p0 txt
+;;              :color (lnf/text-color)
+;;              :style :mono
+;;              :size 6))
 
 (defn amp-panel [drw ied p0]
   (let [w 90
@@ -42,13 +43,15 @@
                        (.set-param! ied param amp)
                        (.status! ied (format "[:amp] -> %5.3f (%d db)" (float amp)(int db)))))
                            
-        s-amp (slider drw [xc y2] :amp amp-action)
+        ;;s-amp (slider drw [xc y2] :amp amp-action)
+        s-amp (sfactory/vslider drw ied :amp [xc y2] min-amp-db max-amp-db amp-action)
         widget-map {}]
-    (rect/rectangle (.root drw) p0 p1 :color (lnf/major-border-color))
-    (text/text (.root drw) [(+ x0 26)(- y0 h -20)] "Amp"
-               :style :sans
-               :size 8
-               :color (lnf/text-color))
+    (rect/rectangle (.root drw) p0 p1 :color (lnf/minor-border) :radius 12)
+    ;; (text/text (.root drw) [(+ x0 26)(- y0 h -20)] "Amp"
+    ;;            :style :sans
+    ;;            :size 8
+    ;;            :color (lnf/text-color))
+    (sfactory/text drw [(+ x0 26)(- y0 h -20)] "Amp")
     (let [xa (+ x0 35)
           xb (+ xa 20)
           ya y2
@@ -59,12 +62,12 @@
           ]
       (doseq [i (range 0.0 1.125 0.125)]
         (let [y (- ya (* i 4 y-delta))
-              c (cond (or (= i 0.0)(= i 0.5)(= i 1.0)) (lnf/major-tick-color)
-                      :default (lnf/minor-tick-color))]
+              c (cond (or (= i 0.0)(= i 0.5)(= i 1.0)) (lnf/major-tick)
+                      :default (lnf/minor-tick))]
           (line/line (.root drw)[xa y][xb y]
                      :style :solid
                      :color c)
-          (label drw [(- xc 6)(+ y2 20)] "db"))))
+          (sfactory/label drw [(- xc 6)(+ y2 20)] "db"))))
     (reify cadejo.ui.instruments.subedit/InstrumentSubEditor
       (widgets [this] widget-map)
       

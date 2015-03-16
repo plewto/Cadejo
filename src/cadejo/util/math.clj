@@ -221,7 +221,7 @@
    If invalid return nil"
   (try
     (Integer/parseInt s)
-    (catch NumberFormatException ex
+    (catch Exception ex
       nil)))
 
 (defn str->float [s]
@@ -229,5 +229,5 @@
    If invalid return nil"
   (try
     (Float/parseFloat s)
-    (catch NumberFormatException ex
+    (catch Exception ex
     nil)))

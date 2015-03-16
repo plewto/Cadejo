@@ -1,16 +1,13 @@
 (ns cadejo.instruments.masa.editor.gamut-panel
   (:use [cadejo.instruments.masa.masa-constants])
   (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
-  ;(:require [sgwr.components.line :as line])
-  ;(:require [sgwr.components.rule :as rule])
-  (:require [sgwr.components.text :as text])
-  ;(:require [sgwr.tools.slider :as slider])
+  ;;(:require [sgwr.components.text :as text])
   (:require [sgwr.tools.button :as button])
   (:require [sgwr.tools.multistate-button :as msb])
-  ;(:require [sgwr.util.color :as uc])
   (:import javax.swing.JOptionPane))
 
 
@@ -114,17 +111,28 @@
 
 ;; Create label text
 ;;    
+;; (defn- freq-text [drw p0 id]
+;;   (let [x-offset 15
+;;         y-offset 495
+;;         x (+ (first p0) x-offset)
+;;         y (- (second p0) y-offset)
+;;         txt (text/text (.root drw) [x y] "x.xxxx"
+;;                        :id id
+;;                        :color (lnf/text-color)
+;;                        :style :mono
+;;                        :size 6.0)]
+;;     txt))
+
+
 (defn- freq-text [drw p0 id]
   (let [x-offset 15
         y-offset 495
         x (+ (first p0) x-offset)
         y (- (second p0) y-offset)
-        txt (text/text (.root drw) [x y] "x.xxxx"
-                       :id id
-                       :color (lnf/text-color)
-                       :style :mono
-                       :size 6.0)]
-    txt))
+        txobj (sfactory/label drw [x y] "x.xxxx")]
+    (.put-property! txobj :id id)
+    txobj))
+    
 
 ;; Create button for drawbar edit selection
 ;;
@@ -148,14 +156,14 @@
         y-shift 125
         x (+ (first p0) x-shift)
         y (- (second p0) y-shift)
-        unselected-color (lnf/text-color)
-        selected-color (lnf/text-selected-color)
+        unselected-color (lnf/text)
+        selected-color (lnf/selected-text)
         states [[:unselected (str id) unselected-color]
                 [:selected (str id) selected-color]]
         b (msb/text-multistate-button (.tool-root drw) [x y] states
                                       :id (keyword (format "r%d" id))
                                       :click-action click-action
-                                      :rim-color (lnf/button-border-color)
+                                      :rim-color (lnf/button-border)
                                       :w w :h h
                                       :gap 12)]
     b))
@@ -175,10 +183,10 @@
                               :click-action action
                               :w w :h h :gap 4
                               :rim-width 1
-                              :rim-color (lnf/button-border-color)
+                              :rim-color (lnf/button-border)
                               :text-style :mono 
                               :text-size 6
-                              :text-color (lnf/text-color))]
+                              :text-color (lnf/text))]
     b))
   
 

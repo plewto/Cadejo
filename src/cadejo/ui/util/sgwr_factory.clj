@@ -69,24 +69,32 @@
 (def major-tick-length 8)
 
 (defn vslider [drw ieditor id p0 v0 v1 drag-action & {:keys [passive-track active-track
+                                                             passive-width active-width
                                                              length
-                                                             handle-color handle-size handle-style]
+                                                             handle-color handle-size handle-style
+                                                             value-hook]
                                                       :or {passive-track nil
+                                                           passive-width 1
                                                            active-track nil
+                                                           active-width 1
                                                            length slider-length
                                                            handle-color nil
                                                            handle-size nil
-                                                           handle-style nil}}]
+                                                           handle-style nil
+                                                           value-hook identity}}]
   (let [s (slider/slider (.tool-root drw) p0 length v0 v1
                          :id id
                          :orientation :vertical
                          :drag-action drag-action
                          :track1-color (or passive-track (lnf/passive-track))
+                         :track1-width passive-width
                          :track2-color (or active-track (lnf/active-track))
+                         :track2-width active-width
                          :rim-color (uc/color [0 0 0 0])
                          :handle-color (or handle-color (lnf/handle))
                          :handle-size (or handle-size (lnf/handle-size))
-                         :handle-style (or handle-style (lnf/handle-style)))]
+                         :handle-style (or handle-style (lnf/handle-style))
+                         :value-hook value-hook)]
     (.put-property! s :editor ieditor)
     s))
     

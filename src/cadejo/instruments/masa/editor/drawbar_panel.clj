@@ -1,5 +1,6 @@
 (ns cadejo.instruments.masa.editor.drawbar-panel
   (:use [cadejo.instruments.masa.masa-constants])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.instruments.masa.editor.envelope-panel :as envpan])
   (:require [cadejo.instruments.masa.editor.gamut-panel :as gpan ])
   (:require [cadejo.instruments.masa.editor.vibrato-panel :as vibpan ])
@@ -11,11 +12,15 @@
   (:require [sgwr.components.text :as text])
   (:require [seesaw.core :as ss]))
 
-(defn- text [drw p0 txt]
-  (text/text (.root drw) p0 txt
-             :style :sans
-             :size 6
-             :color (lnf/text-color)))
+;; (defn- text [drw p0 txt] 
+;;   (text/text (.root drw) p0 txt
+;;              :style :sans
+;;              :size 6
+;;              :color (lnf/text)))
+
+(def ^:private text sfactory/text)
+
+
 
 (defn drawbar-panel [ied]
   (let [drw (let [d (sgwr.components.drawing/native-drawing drawing-width drawing-height)]

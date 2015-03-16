@@ -78,19 +78,19 @@
    {:skin "Autumn"
     :icon-prefix "black"
     :selected-icon-prefix "gray"
-    :ultra-dark   (uc/color [ 68  40  24])
-    :extra-dark   (uc/color [178 106  64])
-    :dark         (uc/color [252 191 122])
-    :medium       (uc/color [255 227 197])
-    :light        (uc/color [255 227 197])
-    :extra-light  nil
-    :ultra-light  (uc/color [255 245 234])
+    :ultra-dark     (uc/color [ 68  40  24])
+    :extra-dark     (uc/color [178 106  64])
+    :dark           (uc/color [252 191 122])
+    :medium         (uc/color [255 227 197])
+    :light          (uc/color [255 227 197])
+    :extra-light    nil
+    :ultra-light    (uc/color [255 245 234])
 
-    :background    (uc/color [255 227 197])
-    :text          (uc/color [178 106  64])
-    :selected-text (uc/color [255 245 197])
-    :passive-track (uc/color [178 106  64])
-    :active-track  (uc/color [ 68  40  24])
+    :background     (uc/color [255 227 197])
+    :text           (uc/color [178 106  64])
+    :selected-text  (uc/color [255 245 197])
+    :passive-track  (uc/color [178 106  64])
+    :active-track   (uc/color [ 68  40  24])
     ;; :minor-border (uc/color [ 68  40  24])
     ;; :major-border (uc/color [ 68  40  24])
     ;; :active-track (uc/color [  0   0   0])
@@ -253,7 +253,12 @@
      :medium     (uc/color [123 123 123])
      :light      (uc/color [180 180 180])
      :extra-light (uc/color [245 247 251])
-     :ultra-light (uc/color :white)
+     :ultra-light (uc/color [253 255 214])
+     :major-tick  (uc/color [180 180 180])
+     :handle      (uc/color [245 247 251])
+     :major-border (uc/color [245 247 251])
+     :dbar-passive (uc/color :black)
+     :dbar-active (uc/color [201 179 208])
      :dbar-style :matrix
      } ;; End Graphite
     
@@ -655,7 +660,7 @@
 (def slider-handle-color    (depreciated-lnf-property :slider-handle-color temp))
 (def major-tick-color       (depreciated-lnf-property :major-tick-color temp))
 (def minor-tick-color       (depreciated-lnf-property :minor-tick-color temp))
-(def envelope-background    (depreciated-lnf-property :envelope-background temp))
+;(def envelope-background    (depreciated-lnf-property :envelope-background temp))
 (def envelope-border-color  (depreciated-lnf-property :envelope-border-color temp))
 (def envelope-line-color    (depreciated-lnf-property :envelope-line-color temp))
 (def envelope-selected-line-color (depreciated-lnf-property :envelope-selected-line-color temp))

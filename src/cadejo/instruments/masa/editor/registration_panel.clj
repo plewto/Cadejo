@@ -2,38 +2,58 @@
   (:use [cadejo.instruments.masa.masa-constants ])
   (:require [cadejo.config :as config])
   (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.util.col :as ucol])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.text :as text])
   (:require [sgwr.tools.slider :as slider])
   (:require [sgwr.tools.multistate-button :as msb])
-  (:require [sgwr.util.color :as uc]))
+  (:require [sgwr.util.color :as uc])
+  )
+
 
 ;; Create 'drawbar' slider
 ;;
+;; (defn- drawbar [drw ied p0 param track-color action]
+;;   (let [x-shift 32
+;;         y-shift 100
+;;         x (+ (first p0) x-shift)
+;;         y (- (second p0) y-shift)
+;;         s (slider/slider (.tool-root drw) [x y] slider-length 0 8
+;;                          :id param :orientation :vertical
+;;                          :value-hook (fn [n](int n))
+;;                          :drag-action action
+;;                          :track1-color (lnf/passive-track-color)
+;;                          :track2-color track-color
+;;                          :track2-width 8
+;;                          :rim-color [0 0 0 0]
+;;                          :handle-color (lnf/slider-handle-color)
+;;                          :handle-style [:fill :box]
+;;                          :handle-size 3)]
+;;     s))
+
 (defn- drawbar [drw ied p0 param track-color action]
   (let [x-shift 32
         y-shift 100
         x (+ (first p0) x-shift)
         y (- (second p0) y-shift)
-        s (slider/slider (.tool-root drw) [x y] slider-length 0 8
-                         :id param :orientation :vertical
-                         :value-hook (fn [n](int n))
-                         :drag-action action
-                         :track1-color (lnf/passive-track-color)
-                         :track2-color track-color
-                         :track2-width 8
-                         :rim-color [0 0 0 0]
-                         :handle-color (lnf/slider-handle-color)
-                         :handle-style [:fill :box]
-                         :handle-size 3)]
+        s (sfactory/vslider drw ied param [x y] 0 8 action
+                            :passive-track (lnf/passive-track)
+                            :active-track track-color
+                            :active-width 8
+                            :handle-color (uc/inversion track-color)
+                            :handle-style [:fill :box]
+                            :handle-size 4
+                            :value-hook int)]
     s))
+
+
 
 ;; Create 'pedal' multistate-button
 ;;
 (defn- pedal-button [drw ied p0 param action]
-  (let [c-zero (uc/color (lnf/text-color))
+  (let [c-zero (uc/color (lnf/text))
         [r0 g0 b0] (uc/rgb c-zero)
         c-pos [(int (* 0.75 r0)) (min 255 (int (* 1.5 g0))) b0] 
         c-neg [(min 255 (int (* 1.5 r0))) (int (* 0.75 g0)) b0] 
@@ -50,7 +70,7 @@
                 [:pos7 "+7" c-pos][:pos8 "+8" c-pos]]
         b (msb/text-multistate-button (.tool-root drw) [x y] states 
                                       :id param
-                                      :rim-color (lnf/button-border-color)
+                                      :rim-color (lnf/button-border)
                                       :click-action action
                                       :gap 4
                                       :w w
@@ -89,10 +109,10 @@
         txt-size 6]
     (dotimes [i 9]
       (line/line (.root drw)[x1 @y*][x2 @y*]  
-                 :color (lnf/major-tick-color)
+                 :color (lnf/major-tick)
                  :style :dotted)
       (text/text (.root drw)[txt-x (+ @y* txt-y-offset)](str i)
-                 :color (lnf/major-tick-color)
+                 :color (lnf/major-tick)
                  :style :mono
                  :size txt-size)
       (swap! y* (fn [q](- q delta-y))))))

@@ -14,7 +14,7 @@
 (def envelope-panel-width 175)
 (def envelope-panel-height 150)
 
-(def drawbar-track-color (uc/color :gray))
+(def drawbar-track-color (uc/color [64 160 84]))
 
 (def drawbar-track-color-sub (let [[r g b](uc/rgb drawbar-track-color)]
                                (uc/color [(int (min 255 (* 1.25 r)))(int (* 0.50 g)) (int (* 0.5 b))])))
