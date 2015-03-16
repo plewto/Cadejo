@@ -452,8 +452,8 @@
 ; "Twilight"
 
 (load-gui! true)
-(initial-skin! "Twilight")
-(displaybar-style! :basic)
+(initial-skin! "Graphite")
+(displaybar-style! nil)    ; nil -> use lnf
 (enable-pp! false)
 (maximum-scene-count! 2)
 (maximum-undo-count! 10)

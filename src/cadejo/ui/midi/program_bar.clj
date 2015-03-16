@@ -45,9 +45,9 @@
   (let [prognum* (atom 0)
         bank (.bank performance)
         [bg inactive active alt][(lnf/background)
-                                 (lnf/dbar-inactive-color)
-                                 (lnf/dbar-active-color)
-                                 (uc/complement (lnf/dbar-active-color))]
+                                 (lnf/dbar-inactive)
+                                 (lnf/dbar-active)
+                                 (uc/complement (lnf/dbar-active))]
                                  
         drawing (let [drw (sgwr.components.drawing/native-drawing 611 65)]
                   (.background! drw bg)
@@ -136,9 +136,9 @@
                                      (.render drawing))
                                    (Thread/sleep update-period)))))]
     (let [[bg inactive active alt] [(lnf/background)
-                                    (lnf/dbar-inactive-color)
-                                    (lnf/dbar-active-color)
-                                    (uc/complement (lnf/dbar-active-color))]]
+                                    (lnf/dbar-inactive)
+                                    (lnf/dbar-active)
+                                    (uc/complement (lnf/dbar-active))]]
       (.colors! dbar-name inactive active)
       (.colors! dbar-prognum inactive active)
       (.setName update-thread "ProgramBar-update")

@@ -2,12 +2,13 @@
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.config :as config])
   (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.drawing])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.components.rule :as rule])
-  (:require [sgwr.components.text :as text])
+  ;(:require [sgwr.components.text :as text])
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.slider :as slider])
   (:require [sgwr.tools.multistate-button :as msb])
@@ -25,27 +26,27 @@
                         100 max-vibrato-sensitivity))
 
     
- (defn- text [drw p0 txt & {:keys [size]
-                           :or {size 8.0}}]
-   (let [root (.root drw)
-         style :serif-bold
-         size size
-         color (lnf/text-color)]
-     (text/text root p0 txt 
-                :color color
-                :style style
-                :size size)))
+;; (defn- text [drw p0 txt & {:keys [size]
+;;                            :or {size 8.0}}]
+;;    (let [root (.root drw)
+;;          style :serif-bold
+;;          size size
+;;          color (lnf/text-color)]
+;;      (text/text root p0 txt 
+;;                 :color color
+;;                 :style style
+;;                 :size size)))
 
-(defn- vtext [drw p0 txt & {:keys [size delta]
-                           :or {size 5
-                                delta 12}}]
-  (let [root (.root drw)
-        x (first p0)
-        y* (atom (second p0))
-        c (lnf/text-color)]
-    (doseq [s txt]
-      (text/text root [x @y*] (str s) :size size :color c)
-      (swap! y* (fn [q](+ q delta))))))
+;; (defn- vtext [drw p0 txt & {:keys [size delta]
+;;                            :or {size 5
+;;                                 delta 12}}]
+;;   (let [root (.root drw)
+;;         x (first p0)
+;;         y* (atom (second p0))
+;;         c (lnf/text)]
+;;     (doseq [s txt]
+;;       (sfactory/text root [x @y*] (str s) :size size :color c)
+;;       (swap! y* (fn [q](+ q delta))))))
 
 (defn- default-drag-action [slider _]
   (let [param (.get-property slider :id)
@@ -127,8 +128,8 @@
         y2 400
         drw (let [d (sgwr.components.drawing/native-drawing ed-width ed-height)
                   root (.root d)
-                  y3 (+ y2 30)
-                  border (lnf/minor-border-color)
+                  y3 (+ y2 23)
+                  border (lnf/minor-border)
                   r1 (rect/rectangle root [40   12][240 438] :color border) 
                   r2 (rect/rectangle root [240  12][340 155] :color border)
                   r3 (rect/rectangle root [240 155][340 438] :color border)
@@ -136,66 +137,65 @@
                   r5 (rect/rectangle root [460  12][580 234] :color border)
                   r6 (rect/rectangle root [340 234][580 438] :color border)]
               (.background! d (lnf/background))
-              (text d [125 34] "Mix")
-              (text d [115 234] "Wave")
-              (text d [(- x1 4) y3] "1")
-              (text d [(- x2 4) y3] "2")
-              (text d [(- x3 4) y3] "3")
-              (text d [(- x4 4) y3] "4")
-              (text d [267 34] "Filter")
-              (text d [255 175] "Detune")
-              (text d [250 430] "Coarse" :size 5)
-              (text d [305 430] "Fine" :size 5)
-              (text d [(- x5 8) 34] "Vibrato")
-              (text d [(- x5 13)(+ y1 25)] "Rate" :size 5)
-              (text d [(- x6 13)(+ y1 25)] "Sens" :size 5)
-              (text d [(+ x7 9) 34] "Out")
-              (text d [(- x7 18)(+ y1 25)] "Reverb" :size 5) 
-              (text d [(- x8 10)(+ y1 25)] "Amp" :size 5)
-              (text d [425 260] "Flanger")
-              (text d [370 400] "-   Feedback    +" :size 5)
-              (vtext d [470 315] "Rate")
-              (line/line root [410 280][410 380] :style :dotted :color (lnf/minor-border-color))
-              (text d [(+ x7 -15) y3] "Depth" :size 5)
-              (text d [(+ x8 -10)  y3] "Mix" :size 5)
+              (sfactory/title d [120 34] "Mix")
+              (sfactory/title d [114 234] "Wave")
+              (sfactory/title d [260 34] "Filter")
+              (sfactory/title d [256 175] "Detune")
+              (sfactory/title d [364 34] "Vibrato")
+              (sfactory/title d [501 34] "Out")
+              (sfactory/title d [420 260] "Flanger")
+              (sfactory/label d [(- x1 3) y3] "1")
+              (sfactory/label d [(- x2 3) y3] "2")
+              (sfactory/label d [(- x3 3) y3] "3")
+              (sfactory/label d [(- x4 3) y3] "4")
+              (sfactory/label d [250 430] "Coarse")
+              (sfactory/label d [305 430] "Fine")
+              (sfactory/label d [(- x5 13)(+ y1 20)] "Rate")
+              (sfactory/label d [(- x6 13)(+ y1 20)] "Sens")
+              (sfactory/label d [(- x7 18)(+ y1 20)] "Reverb") 
+              (sfactory/label d [(- x8 10)(+ y1 20)] "Amp")
+              (sfactory/label d [370 400] "- Feedback +")
+              (sfactory/vtext d [470 315] "Rate" :color (lnf/label))
+              (line/line root [410 280][410 380] :style :dotted :color (lnf/minor-border))
+              (sfactory/label d [(+ x7 -15) y3] "Depth")
+              (sfactory/label d [(+ x8 -10) y3] "Mix")
               d)
-        slider (fn [id p0 v0 v1 drag-action & {:keys [length]
-                                                  :or {length 150}}]
-                 (let [root (.root drw)
-                       troot (.tool-root drw)
-                       mj-step 50
-                       mn-step 10
-                       r (rule/ruler root p0 length
-                                     :rim-color [0 0 0 0])
-                       s (slider/slider troot p0 length v0 v1 :id id
-                                        :drag-action drag-action
-                                        :track1-color (lnf/passive-track-color)
-                                        :track2-color (lnf/active-track-color)
-                                        :handle-color (lnf/slider-handle-color)
-                                        :rim-color [0 0 0 0])]
-                       
-                   (rule/ticks r mn-step :length 4 :color (lnf/minor-tick-color))
-                   (rule/ticks r mj-step :length 12 :color (lnf/major-tick-color))
-                   (.put-property! s :editor ied)
-                   s))
+        ;; slider (fn [id p0 v0 v1 drag-action & {:keys [length]
+        ;;                                           :or {length 150}}]
+        ;;          (let [root (.root drw)
+        ;;                troot (.tool-root drw)
+        ;;                mj-step 50
+        ;;                mn-step 10
+        ;;                r (rule/ruler root p0 length
+        ;;                              :rim-color [0 0 0 0])
+        ;;                s (slider/slider troot p0 length v0 v1 :id id
+        ;;                                 :drag-action drag-action
+        ;;                                 :track1-color (lnf/passive-track)
+        ;;                                 :track2-color (lnf/active-track)
+        ;;                                 :handle-color (lnf/handle)
+        ;;                                 :rim-color [0 0 0 0])]
+        ;;            (rule/ticks r mn-step :length 4 :color (lnf/minor-tick-color))
+        ;;            (rule/ticks r mj-step :length 12 :color (lnf/major-tick-color))
+        ;;            (.put-property! s :editor ied)
+        ;;            s))
         detune-coarse* (atom 0.0)
         detune-fine* (atom 0.0)
         troot (.tool-root drw)
-        s-amp1 (slider :amp1 [x1 y1] 1 100 default-drag-action) 
-        s-amp2 (slider :amp2 [x2 y1] 1 100 default-drag-action) 
-        s-amp3 (slider :amp3 [x3 y1] 1 100 default-drag-action) 
-        s-amp4 (slider :amp4 [x4 y1] 1 100 default-drag-action) 
-        s-wave1 (slider :wave1 [x1 y2] 1 100 default-drag-action) 
-        s-wave2 (slider :wave2 [x2 y2] 1 100 default-drag-action) 
-        s-wave3 (slider :wave3 [x3 y2] 1 100 default-drag-action) 
-        s-wave4 (slider :wave4 [x4 y2] 1 100 default-drag-action) 
-        s-detune-coarse (let [s (slider :detune-coarse [270 y2] 0 100 
-                                        detune-coarse-action :length 200)]
+        s-amp1 (sfactory/vslider drw ied :amp1 [x1 y1] 1 100 default-drag-action) 
+        s-amp2 (sfactory/vslider drw ied :amp2 [x2 y1] 1 100 default-drag-action) 
+        s-amp3 (sfactory/vslider drw ied :amp3 [x3 y1] 1 100 default-drag-action) 
+        s-amp4 (sfactory/vslider drw ied :amp4 [x4 y1] 1 100 default-drag-action) 
+        s-wave1 (sfactory/vslider drw ied :wave1 [x1 y2] 1 100 default-drag-action) 
+        s-wave2 (sfactory/vslider drw ied :wave2 [x2 y2] 1 100 default-drag-action) 
+        s-wave3 (sfactory/vslider drw ied :wave3 [x3 y2] 1 100 default-drag-action) 
+        s-wave4 (sfactory/vslider drw ied :wave4 [x4 y2] 1 100 default-drag-action) 
+        s-detune-coarse (let [s (sfactory/vslider drw ied :detune-coarse [270 y2] 0 100 
+                                                 detune-coarse-action :length 200)]
                           (.put-property! s :coarse* detune-coarse*)
                           (.put-property! s :fine* detune-fine*)
                           s)
-        s-detune-fine   (let [s (slider :detune-fine [315 y2] 0 100 
-                                        detune-fine-action :length 200)]
+        s-detune-fine   (let [s (sfactory/vslider drw ied :detune-fine [315 y2] 0 100 
+                                                 detune-fine-action :length 200)]
                           (.put-property! s :coarse* detune-coarse*)
                           (.put-property! s :fine* detune-fine*)
                           s)
@@ -216,27 +216,44 @@
                                       [:4 " 4 "], [:6 " 6 "], [:8 " 8 "]]
                               b (msb/text-multistate-button 
                                  troot [272 100] states
-                                 :text-color (lnf/text-color)
+                                 :text-color (lnf/text)
                                  :w 36 :h 36 :rim-radius 0
                                  :click-action filter-freq-click-action)]
                           (.put-property! b :editor ied)
                           b)
-        s-vrate (slider :vibrato-freq [x5 y1] 1 100 vibrato-freq-action)
-        s-vsens (slider :vibrato-sens [x6 y1] 1 100 vibrato-sens-action)
-        s-reverb (slider :reverb-mix [x7 y1] 1 100 default-drag-action)
-        s-amp (slider :amp [x8 y1] 0 100 db-amp-action)
-        s-flanger-depth (slider :flanger-depth [x7 y2] 0 100 default-drag-action :length 120)
-        s-flanger-mix (slider :flanger-mix [x8 y2] 0 100 default-drag-action :length 120)
+        s-vrate (sfactory/vslider drw ied :vibrato-freq [x5 y1] 1 100 vibrato-freq-action)
+        s-vsens (sfactory/vslider drw ied :vibrato-sens [x6 y1] 1 100 vibrato-sens-action)
+        s-reverb (sfactory/vslider drw ied :reverb-mix [x7 y1] 1 100 default-drag-action)
+        s-amp (sfactory/vslider drw ied :amp [x8 y1] 0 100 db-amp-action)
+        s-flanger-depth (sfactory/vslider drw ied :flanger-depth [x7 y2] 0 100 default-drag-action :length 120)
+        s-flanger-mix (sfactory/vslider drw ied :flanger-mix [x8 y2] 0 100 default-drag-action :length 120)
         field-flanger (let [f (field/field troot [360 280][460 380][-1 1][0 1]
                                            :drag-action flanger-drag-action)]
                         (.put-property! f :editor ied)
                         f)
         ball-flanger (field/ball field-flanger :b1 [0.5 0.5] :style [:diag :diag2]
-                                 :selected-color (lnf/slider-handle-color)
-                                 :color (lnf/slider-handle-color))]
+                                 :selected-color (lnf/handle)
+                                 :color (lnf/handle))]
     (.use-attributes! (.root drw) :default)
     (msb/set-multistate-button-state! msb-filter-curve 0)
     (msb/set-multistate-button-state! msb-filter-freq 0)
+    (sfactory/minor-ticks drw x1 y1 (- y1 sfactory/slider-length) 10)
+    (sfactory/minor-ticks drw x2 y1 (- y1 sfactory/slider-length) 10)
+    (sfactory/minor-ticks drw x3 y1 (- y1 sfactory/slider-length) 10)
+    (sfactory/minor-ticks drw x4 y1 (- y1 sfactory/slider-length) 10)
+    (sfactory/minor-ticks drw x1 y2 (- y2 sfactory/slider-length) 10)
+    (sfactory/minor-ticks drw x2 y2 (- y2 sfactory/slider-length) 10)
+    (sfactory/minor-ticks drw x3 y2 (- y2 sfactory/slider-length) 10)
+    (sfactory/minor-ticks drw x4 y2 (- y2 sfactory/slider-length) 10)
+    (sfactory/minor-ticks drw 270 y2 (- y2 200) 10) ; detune coarse
+    (sfactory/minor-ticks drw 315 y2 (- y2 200) 10) ; detune fine
+    (sfactory/minor-ticks drw x5 y1 (- y1 sfactory/slider-length) 10) ; vibrato rate
+    (sfactory/minor-ticks drw x6 y1 (- y1 sfactory/slider-length) 10) ; vibrato sens
+    (sfactory/minor-ticks drw x7 y1 (- y1 sfactory/slider-length) 10) ; reverb
+    (sfactory/minor-ticks drw x8 y1 (- y1 sfactory/slider-length) 8) ; amp
+    (sfactory/minor-ticks drw x7 y2 (- y2 120) 10) ; flanger depth
+    (sfactory/minor-ticks drw x8 y2 (- y2 120) 10) ; flanger mix
+    
     (.render drw)
     {:drawing drw
      :s-amp1 s-amp1

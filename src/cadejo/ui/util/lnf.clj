@@ -39,6 +39,7 @@
 ;;   :background              default :extra-dark     * drawing background
 ;;   :text                    default :light          * text color              
 ;;   :selected-text           default :ultra-light    * highlighted text color
+
 ;;   :label                   default :text           * general label color     
 ;;   :title                   default :text           * primary title color                                  
 ;;   :minor-border            default :text           * minor border color                                  
@@ -58,7 +59,7 @@
 ;;   :envelope-selected       default :selected-text  *                                 
 ;;   :envelope-handle         default :handle         *                          
 ;;   :dbar-inactive           default :background     *                              
-;;   :dbar-active             default :selected-text  *                                 
+;;   :dbar-active             default :text           *                                 
 ;;
 ;; Additional properties
 ;;   :icon-prefix             Should be one of "black", "gray" or "white"
@@ -66,21 +67,37 @@
 ;;   :checkbox-style          vector defined point style for selected checkboxes, see sgwr checkbox
 ;;   :checkbox-size           int defines selected checkbox component size in pixels
 ;;   :checkbox-rim-radius     int sets roundness for checkboxes, if radius = 0, checkboxes are square
+;;   :handle-style            default [:dot :fill]
+;;   :handle-size             default 4
 ;;   :occluder                color used to indicate disabled components which should
 ;;                            have some transparency. 
+;;   :dbar-style              Display bar style, one of :matrix, :sixteen or :basic
 
 (def color-schemes
   {"Autumn"
    {:skin "Autumn"
     :icon-prefix "black"
     :selected-icon-prefix "gray"
-    :ultra-dark nil
-    :extra-dark nil
-    :dark nil
-    :medium nil
-    :light nil
-    :extra-light nil
-    :ultra-light nil
+    :ultra-dark   (uc/color [ 68  40  24])
+    :extra-dark   (uc/color [178 106  64])
+    :dark         (uc/color [252 191 122])
+    :medium       (uc/color [255 227 197])
+    :light        (uc/color [255 227 197])
+    :extra-light  nil
+    :ultra-light  (uc/color [255 245 234])
+
+    :background    (uc/color [255 227 197])
+    :text          (uc/color [178 106  64])
+    :selected-text (uc/color [255 245 197])
+    :passive-track (uc/color [178 106  64])
+    :active-track  (uc/color [ 68  40  24])
+    ;; :minor-border (uc/color [ 68  40  24])
+    ;; :major-border (uc/color [ 68  40  24])
+    ;; :active-track (uc/color [  0   0   0])
+    ;; :env-border   (uc/color [ 68  40  24])
+    ;; :env-segment  (uc/color [ 68  40  24])
+    ;; :env-handle   (uc/color [  0   0  0])
+    :dbar-style :matrix
     } ;; End Autumn
    
     "Business"
@@ -230,13 +247,14 @@
     {:skin "Graphite"
      :icon-prefix "white"
      :selected-icon-prefix "black"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
+     :ultra-dark (uc/color :black)
+     :extra-dark (uc/color [ 50  50  50])
+     :dark       (uc/color [ 66  66  66])
+     :medium     (uc/color [123 123 123])
+     :light      (uc/color [180 180 180])
+     :extra-light (uc/color [245 247 251])
+     :ultra-light (uc/color :white)
+     :dbar-style :matrix
      } ;; End Graphite
     
     "Graphite Aqua"
@@ -600,8 +618,10 @@
 (def envelope-selected      (lnf-property :env-selected selected-text))
 (def envelope-handle        (lnf-property :env-handle handle))
 (def dbar-inactive          (lnf-property :dbar-inactive background))
-(def dbar-active            (lnf-property :dbar-active selected-text))
+(def dbar-active            (lnf-property :dbar-active text))
 (def occluder               (lnf-property :occluder (fn [](uc/transparent (background) 200))))
+(def handle-style           (lnf-property :handle-style (constantly [:dot :fill])))
+(def handle-size            (lnf-property :handle-size (constantly 4)))
 
 ;; Returns sgwr displaybar style.
 ;; Values set by config.clj have priority. if config/displaybar-value returns nil
@@ -618,7 +638,7 @@
 ;; ***********************************
 (defn- depreciated-lnf-property [key default]
   (fn []
-    (println "DEPRECIATION WARNING  depreciated-lnf-property function executed")
+    (println (format "DEPRECIATION WARNING  depreciated-lnf-property function executed  key = %s" key))
     (property (config/current-skin) key (apply default nil))))
 
 (defn temp [] (uc/color :gray))
