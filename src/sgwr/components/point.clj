@@ -253,7 +253,7 @@
   ([parent p & {:keys [id color style size]
                 :or {id :new-point
                      color (uc/color :white)
-                     style 0
+                     style [:dot]
                      size 1.0}}]
    (let [obj (sgwr.components.component/create-component :point 
                                                    parent 

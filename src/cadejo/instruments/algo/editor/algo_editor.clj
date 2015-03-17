@@ -21,8 +21,6 @@
 ;;         amp-panel
 ;;         op-selection-panel
 
-
-
 (ns cadejo.instruments.algo.editor.algo-editor
   (:require [cadejo.ui.instruments.instrument-editor :as ied])
   (:require [cadejo.instruments.algo.editor.op-editor :as oped])

@@ -1,13 +1,12 @@
 (ns cadejo.instruments.algo.editor.op-freq-panel 
   (:use [cadejo.instruments.algo.algo-constants])
-  (:require [cadejo.instruments.algo.editor.factory :as factory])  
+  ;(:require [cadejo.instruments.algo.editor.factory :as factory])  
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [sgwr.indicators.displaybar :as dbar])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.text :as text]))
-  
-
 
 (defn op-freq [n drw p0 ied]
   (let [op-id (keyword (format "op%d" n))
@@ -29,7 +28,7 @@
 
         width 350
         height 100
-        dbar-bias (factory/displaybar root [x-bias y-bias] 7)
+        dbar-bias (sfactory/displaybar drw [x-bias y-bias] 7)
         action-edit-bias (fn [b _]
                            (dbar/displaybar-dialog dbar-bias
                                                    (format "Bias op %d" n)
@@ -40,10 +39,10 @@
                                                                (let [s (.current-display dbar-bias)
                                                                      b (math/str->float s)]
                                                                  (.set-param! ied param-bias b)))))
-        b-bias (factory/mini-edit-button tools [x-bias-button y-bias-button]
-                                 op-id action-edit-bias)
+        b-bias (sfactory/mini-edit-button drw [x-bias-button y-bias-button]
+                                          op-id action-edit-bias)
 
-        dbar-freq (factory/displaybar root [x-freq y-freq] 7)
+        dbar-freq (sfactory/displaybar drw [x-freq y-freq] 7)
         action-edit-freq (fn [b _]
                            (dbar/displaybar-dialog dbar-freq
                                                    (format "frequency op %d" n)
@@ -54,7 +53,7 @@
                                                                (let [s (.current-display dbar-freq)
                                                                      f (math/str->float s)]
                                                                  (.set-param! ied param-freq f)))))
-        b-freq (factory/mini-edit-button tools [x-freq-button y-freq-button]
+        b-freq (sfactory/mini-edit-button drw [x-freq-button y-freq-button]
                                  op-id action-edit-freq)
 
        
@@ -71,11 +70,11 @@
                     (.display! dbar-bias (format "%+7.4f" bias) false)
                     (.display! dbar-freq (format "%7.4f" freq) false)))]
 
-    (factory/inner-border root [x0 y0][(+ x0 width)(- y0 height)])
-    (factory/section-label root [(+ x0 10)(+ y-freq 20)] op-id "Freq")
-    (factory/section-label root [(+ x0 10)(+ y-bias 20)] op-id "Bias")
-    (.display! dbar-freq " ")
-    (.display! dbar-bias " ")
+    (sfactory/minor-border drw [x0 y0][(+ x0 width)(- y0 height)])
+    (sfactory/text drw [(+ x0 10)(+ y-freq 20)] "Freq")
+    (sfactory/text drw [(+ x0 10)(+ y-bias 20)] "Bias")
+    (.display! dbar-freq "XXXXXXX")
+    (.display! dbar-bias "XXXXXXX")
     {:sync-fn sync-fn
      :disable-fn disable-fn
      :enable-fn enable-fn}))

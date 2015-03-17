@@ -1,5 +1,6 @@
 (ns cadejo.instruments.algo.editor.op-selection-panel 
-  (:require [cadejo.instruments.algo.editor.factory :as factory])
+  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.rectangle :as rect])
@@ -30,16 +31,16 @@
                               :h op-button-height
                               :text-size 7
                               :rim-width 1.0
-                              :rim-color (lnf/button-border-color)
+                              :rim-color (lnf/button-border)
                               :rim-radius 6
-                              :text-color (lnf/text-color))]
+                              :text-color (lnf/text))]
     (.put-property! b :op op)
     (.put-property! b :card-number card-number)
     (let [;pad (.get-property b :pad)
           rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
-      (.color! rim :highlight (lnf/button-selected-border))
-      (.color! txt :highlight (lnf/text-selected-color))
+      (.color! rim :highlight (lnf/selected-button-border))
+      (.color! txt :highlight (lnf/selected-text))
       
     
     (.use-attributes! b :default)
@@ -54,16 +55,16 @@
                               :w aux-button-width
                               :h aux-button-height
                               :rim-width 1.0
-                              :rim-color (lnf/button-border-color)
+                              :rim-color (lnf/button-border)
                               :rim-radius 6
-                              :text-color (lnf/text-color))]
+                              :text-color (lnf/text))]
     (.put-property! b :card-number card-number)
     (.put-property! b :op id)
     (let [;pad (.get-property b :pad)
           rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
-      (.color! rim :highlight (lnf/button-selected-border))
-      (.color! txt :highlight (lnf/text-selected-color))
+      (.color! rim :highlight (lnf/selected-button-border))
+      (.color! txt :highlight (lnf/selected-text))
       (.use-attributes! b :default)
       b)))
       
@@ -82,8 +83,10 @@
    
    Returns map {k1 b1,  k2 b2, ..., k8 b8} where keys ki are operator
    numbers (1,2,3,...,8) and bi are sgwr buttons"
+
   ([drw p0 action]
    (op-selection-panel drw p0 action true))
+
   ([drw p0 action draw-border]
    (let [tools (.tool-root drw)
          hw (* 0.5 op-button-width)
@@ -133,7 +136,7 @@
                      :lfo (aux-button :lfo tools [x-aux (+ y-aux (* 1 (+ aux-button-height 8)))   ] "LFO  " action 9)
                      :pitch (aux-button :pitch tools [x-aux (+ y-aux (* 2 (+ aux-button-height 8)))   ] "Pitch  " action 10) 
                      :fx (aux-button :fx tools [x-aux (+ y-aux (* 3 (+ aux-button-height 8)))   ] "Fx  " action 11)}
-         track-color (lnf/button-border-color)
+         track-color (lnf/button-border)
          vline (fn [x y1 y2](line/line (.root drw) [x y1][x y2] :color track-color))
          hline (fn [x1 x2 y] (line/line (.root drw) [x1 y][x2 y] :color track-color))]
      (vline x2 y1 y2)
@@ -154,7 +157,7 @@
      (hline x8 x10 y9)
      (hline x13 x14 y7)
      (hline x12 x14 y9)
-     (if draw-border (factory/inner-border (.root drw)[x0 y0][x16 y12]))
+     (if draw-border (sfactory/minor-border drw [x0 y0][x16 y12]))
      button-map)))
 
 

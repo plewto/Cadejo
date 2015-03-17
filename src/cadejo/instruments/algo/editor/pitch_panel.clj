@@ -1,6 +1,7 @@
 (ns cadejo.instruments.algo.editor.pitch-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  (:require [cadejo.instruments.algo.editor.factory :as factory])
+  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.line :as line])
@@ -22,15 +23,20 @@
         x-lfo1 (+ x-env slider-spacing)
         x-lfo2 (+ x-lfo1 slider-spacing)
         y-sliders (- y0 32)
-        y-labels (- y0 30)
+        y-labels (- y0 10)
         action (fn [s _]
                  (let [p (.get-property s :id)
                        v (slider/get-slider-value s)]
                    (.set-param! ied p v)))
-        s-port (factory/slider tools [x-port y-sliders] param-port 0.0 max-port-time action false)
-        s-env (factory/slider tools [x-env y-sliders] param-env min-pitch-modulation max-pitch-modulation action :signed)
-        s-lfo1 (factory/slider tools [x-lfo1 y-sliders] param-lfo1 min-pitch-modulation max-pitch-modulation action :signed)
-        s-lfo2 (factory/slider tools [x-lfo2 y-sliders] param-lfo2 min-pitch-modulation max-pitch-modulation action :signed)
+        ;; s-port (factory/slider tools [x-port y-sliders] param-port 0.0 max-port-time action false)
+        ;; s-env (factory/slider tools [x-env y-sliders] param-env min-pitch-modulation max-pitch-modulation action :signed)
+        ;; s-lfo1 (factory/slider tools [x-lfo1 y-sliders] param-lfo1 min-pitch-modulation max-pitch-modulation action :signed)
+        ;; s-lfo2 (factory/slider tools [x-lfo2 y-sliders] param-lfo2 min-pitch-modulation max-pitch-modulation action :signed)
+
+        s-port (sfactory/vslider drw ied param-port [x-port y-sliders] 0.0 max-port-time action)
+        s-env (sfactory/vslider drw ied param-env [x-env y-sliders] min-pitch-modulation max-pitch-modulation action)
+        s-lfo1 (sfactory/vslider drw ied param-lfo1 [x-lfo1 y-sliders]  min-pitch-modulation max-pitch-modulation action)
+        s-lfo2 (sfactory/vslider drw ied param-lfo2 [x-lfo2 y-sliders]  min-pitch-modulation max-pitch-modulation action)
         sync-fn (fn []
                   (let [dmap (.current-data (.bank (.parent-performance ied)))
                         ptime (float (param-port dmap))
@@ -53,11 +59,11 @@
                              :style :dotted
                              :color c))
           minor (fn [y n]
-                  (vline y (lnf/minor-tick-color))
+                  (vline y (lnf/minor-tick))
                   (text/text root [xtx (+ y 5)] (format "%+4.1f" n)
                              :style :mono
                              :size 6
-                             :color (lnf/minor-tick-color)))]
+                             :color (lnf/minor-tick)))]
       (minor vn1 -1.0)
       (minor vp1 1.0)
       (minor v0 0.0)
@@ -76,22 +82,22 @@
                              :style :solid
                              :color c))
           minor (fn [y n]
-                  (vline y (lnf/minor-tick-color))
+                  (vline y (lnf/minor-tick))
                   (text/text root [xtx (+ y 5)] (format "%4.2f" n)
                              :style :mono
                              :size 6
-                             :color (lnf/minor-tick-color)))]
+                             :color (lnf/minor-tick)))]
       (minor vn1 0.00)
       (minor vp1 1.00)
       (minor v0 0.50)
       (minor (math/mean v0 vp1) 0.75)
       (minor (math/mean v0 vn1) 0.25))
-    (factory/slider-label root [(- x-port 0) y-labels] id "Port")
-    (factory/slider-label root [(- x-env 0) y-labels] id "Env")
-    (factory/slider-label root [(- x-lfo1 0) y-labels] id "LFO1")
-    (factory/slider-label root [(- x-lfo2 0) y-labels] id "LFO2")
-    (factory/major-label root [(+ x0 90)(- y0 220)] "Pitch")
-    (factory/inner-border root [x0 y0][(+ x0 280)(- y0 260)])
+    (sfactory/label drw [(- x-port 12) y-labels] "Port")
+    (sfactory/label drw [(- x-env 12) y-labels] "Env")
+    (sfactory/label drw [(- x-lfo1 12) y-labels] "LFO1")
+    (sfactory/label drw [(- x-lfo2 12) y-labels] "LFO2")
+    (sfactory/title drw [(+ x0 13)(- y0 224)] "Pitch")
+    (sfactory/minor-border drw [x0 y0][(+ x0 280)(- y0 260)])
     {:sync-fn sync-fn}))
         
         

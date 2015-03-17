@@ -2,10 +2,10 @@
 
 (ns cadejo.instruments.algo.editor.pitch-editor
   (:use [cadejo.instruments.algo.algo-constants])
-  (:require [cadejo.instruments.algo.editor.factory :as factory])
+  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.instruments.algo.editor.op-selection-panel :as osp])
-  (:require [cadejo.instruments.algo.editor.envelope-panel :as ep])
   (:require [cadejo.instruments.algo.editor.pitch-panel :as pp])
+  (:require [cadejo.instruments.algo.editor.envelope-panel :as ep])
   (:require [cadejo.instruments.algo.editor.vibrato-panel :as vp])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -54,26 +54,3 @@
         (doseq [sp (list vib pitch envpan)]
           ((:sync-fn sp)))
         (.render drw)))))
-
-
-;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 
-;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 
-;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 
-;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 
-
-;(require '[cadejo.instruments.algo.editor.op-editor :as oped ])
-
-;; (def ped (pitch-editor nil))
-;; (.sync-ui! ped) 
-;; (def pan-main (ss/horizontal-panel :items [(.widget ped :pan-main)]))
-;; (def f (ss/frame :title "ALGO pitch TEST"
-;;                  :content pan-main
-;;                  :on-close :dispose
-;;                  :size [1900 :by 600]))
-
-;; (ss/show! f)
-
-
-;; (defn rl [](use 'cadejo.instruments.algo.editor.pitch-editor :reload))
-;; (defn rla [](use 'cadejo.instruments.algo.editor.pitch-editor :reload-all))
-;; (defn exit [](System/exit 0))

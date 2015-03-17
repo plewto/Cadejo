@@ -257,9 +257,10 @@
      :major-tick  (uc/color [180 180 180])
      :handle      (uc/color [245 247 251])
      :major-border (uc/color [245 247 251])
-     :dbar-passive (uc/color :black)
+     :dbar-inactive (uc/color :black)
      :dbar-active (uc/color [201 179 208])
      :dbar-style :matrix
+     :occluder (uc/color [255 0 0 200])  ;; ISSUE FPO
      } ;; End Graphite
     
     "Graphite Aqua"
@@ -599,6 +600,7 @@
 (def ultra-light            (lnf-property :ultra-light extra-light))
 (def medium                 (lnf-property :medium (constantly (uc/color :gray))))
 (def background             (lnf-property :background extra-dark))
+(def occluder               (lnf-property :occluder (fn [](uc/transparent (background) 128))))
 (def text                   (lnf-property :text light))
 (def selected-text          (lnf-property :selectred-text ultra-light))
 (def label                  (lnf-property :label text))
@@ -612,16 +614,19 @@
 (def handle                 (lnf-property :handle active-track))
 (def button-border          (lnf-property :button-border minor-border))
 (def selected-button-border (lnf-property :selected-button-border selected-text))
+
 (def checkbox               (lnf-property :checkbox selected-text))
 (def checkbox-rim-radius    (lnf-property :cb-rim-radius (constantly 18)))
 (def checkbox-rim           (lnf-property :cb-rim button-border))
 (def checkbox-style         (lnf-property :cb-style (constantly [:dot :fill])))
 (def checkbox-size          (lnf-property :cb-size  (constantly 3)))
+
 (def envelope-background    (lnf-property :env-background background))
 (def envelope-border        (lnf-property :env-border minor-border))
 (def envelope-segment       (lnf-property :env-segment text))
 (def envelope-selected      (lnf-property :env-selected selected-text))
 (def envelope-handle        (lnf-property :env-handle handle))
+
 (def dbar-inactive          (lnf-property :dbar-inactive background))
 (def dbar-active            (lnf-property :dbar-active text))
 (def occluder               (lnf-property :occluder (fn [](uc/transparent (background) 200))))
@@ -648,6 +653,9 @@
 
 (defn temp [] (uc/color :gray))
 (def title-color            (depreciated-lnf-property :title-color temp))
+(def text-color             (depreciated-lnf-property :title-color temp))
+(def selected-text-color             (depreciated-lnf-property :title-color temp))
+(def text-selected-color             (depreciated-lnf-property :title-color temp))
 (def dbar-inactive-color    (depreciated-lnf-property :dbar-inactive-color temp))
 (def dbar-active-color      (depreciated-lnf-property :dbar-active-color temp))
 (def major-border-color     (depreciated-lnf-property :major-border-color temp))

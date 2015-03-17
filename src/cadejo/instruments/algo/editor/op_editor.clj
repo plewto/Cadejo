@@ -1,5 +1,6 @@
 (ns cadejo.instruments.algo.editor.op-editor
-  (:require [cadejo.instruments.algo.editor.factory :as factory])
+  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.instruments.algo.editor.op-amp-panel :as oap])
   (:require [cadejo.instruments.algo.editor.envelope-panel :as ep])
   (:require [cadejo.instruments.algo.editor.op-feedback-panel :as fbp])
@@ -14,6 +15,12 @@
   (:require [sgwr.util.color :as uc])
   (:require [seesaw.core :as ss]))
 
+
+(defn- op-label [drw p0 n]
+  (sfactory/text drw p0 (format "OP %d" n)
+                 :style :sans-bold
+                 :size 18
+                 :color (lnf/text)))
 
 (defn- is-carrier? [op]
   (or (= op 1)(= op 4)(= op 7)))
@@ -147,11 +154,12 @@
 (defn op-editor [op ied]
   (println (format "-->     op %d" (- 9 op)))
   (let [enable-param (keyword (format "op%d-enable" op))
-        drw (let [d (drw/native-drawing 790 670)]
+        drw (let [d (drw/native-drawing 790 690)]
               (.background! d (lnf/background))
               d)
         tools (.tool-root drw)
         [x0 y0] [0 670]
+        dummy-1 (sfactory/fpo drw [x0 y0] :style [:dot] :size 3 :color :blue) ;; DEBUG
         x-gap 20
         y-gap 20
         x1 (+ x0 x-gap)
@@ -168,7 +176,7 @@
         x-copy (+ x-dice 50)
         x-paste (+ x-copy 50)
         ;x-help (+ x-paste 50)
-        y-over y1
+        y-over (+ y1 30)
         y-keyscale (- y-over 120)
         y-amp (- y-keyscale 100)
         y-freq (- y-amp 230)
@@ -181,24 +189,43 @@
         y-paste y-init
         ;y-help y-init
         this* (atom nil)
+        amp-pan (oap/op-amp op drw [x-amp y-amp] ied)
         overview-pan (ovr/overview-panel drw [x-over y-over] ied this*)
         kscale-pan (ksp/op-keyscale op drw [x-keyscale y-keyscale] ied)
-        amp-pan (oap/op-amp op drw [x-amp y-amp] ied)
         freq-pan (ofp/op-freq op drw [x-freq y-freq] ied)
         fb-pan (fbp/op-feedback-panel op drw [x-feedback y-feedback] ied)
         env-pan (ep/envelope-panel op ied)
-        occ-1 (factory/occluder drw [(+ x0  24)(- y0 143)][(+ x0 763)(- y0 237)]) ;; keyscale
-        occ-2 (factory/occluder drw [(+ x0  24)(- y0 245)][(+ x0 365)(- y0 465)]) ;; amp
-        occ-3 (factory/occluder drw [(+ x0 372)(- y0 245)][(+ x0 768)(- y0 465)]) ;; fb panel
-        occ-4 (factory/occluder drw [(+ x0  24)(- y0 472)][(+ x0 365)(- y0 566)]) ;; freq panel
-        occ-op1 (factory/occluder drw [(+ x0  429)(- y0 519)][(+ x0 462)(- y0 552)]) 
-        occ-op2 (factory/occluder drw [(+ x0  429)(- y0 569)][(+ x0 462)(- y0 602)]) 
-        occ-op3 (factory/occluder drw [(+ x0  429)(- y0 619)][(+ x0 462)(- y0 652)]) 
-        occ-op4 (factory/occluder drw [(+ x0  479)(- y0 519)][(+ x0 512)(- y0 552)]) 
-        occ-op5 (factory/occluder drw [(+ x0  479)(- y0 569)][(+ x0 512)(- y0 602)]) 
-        occ-op6 (factory/occluder drw [(+ x0  529)(- y0 569)][(+ x0 562)(- y0 602)]) 
-        occ-op7 (factory/occluder drw [(+ x0  589)(- y0 519)][(+ x0 622)(- y0 552)]) 
-        occ-op8 (factory/occluder drw [(+ x0  589)(- y0 569)][(+ x0 622)(- y0 602)]) 
+
+        ;; occ-1 (sfactory/occluder drw [(+ x0  24)(- y0 143)][(+ x0 763)(- y0 237)]) ;; keyscale
+        ;; occ-2 (sfactory/occluder drw [(+ x0  24)(- y0 245)][(+ x0 365)(- y0 465)]) ;; amp
+        ;; occ-3 (sfactory/occluder drw [(+ x0 372)(- y0 245)][(+ x0 768)(- y0 465)]) ;; fb panel
+        ;; occ-4 (sfactory/occluder drw [(+ x0  24)(- y0 472)][(+ x0 365)(- y0 566)]) ;; freq panel
+
+        occ-1 (sfactory/occluder drw [(+ x0  24)(- y0 109)][(+ x0 763)(- y0 203)]) ;; keyscale
+        occ-2 (sfactory/occluder drw [(+ x0  24)(- y0 211)][(+ x0 365)(- y0 431)]) ;; amp
+        occ-3 (sfactory/occluder drw [(+ x0 372)(- y0 211)][(+ x0 768)(- y0 431)]) ;; fb panel
+        occ-4 (sfactory/occluder drw [(+ x0  24)(- y0 438)][(+ x0 365)(- y0 532)]) ;; freq panel
+
+        ;; occ-op1 (sfactory/occluder drw [(+ x0  429)(- y0 519)][(+ x0 462)(- y0 552)]) 
+        ;; occ-op2 (sfactory/occluder drw [(+ x0  429)(- y0 569)][(+ x0 462)(- y0 602)]) 
+        ;; occ-op3 (sfactory/occluder drw [(+ x0  429)(- y0 619)][(+ x0 462)(- y0 652)]) 
+        ;; occ-op4 (sfactory/occluder drw [(+ x0  479)(- y0 519)][(+ x0 512)(- y0 552)]) 
+        ;; occ-op5 (sfactory/occluder drw [(+ x0  479)(- y0 569)][(+ x0 512)(- y0 602)]) 
+        ;; occ-op6 (sfactory/occluder drw [(+ x0  529)(- y0 569)][(+ x0 562)(- y0 602)]) 
+        ;; occ-op7 (sfactory/occluder drw [(+ x0  589)(- y0 519)][(+ x0 622)(- y0 552)]) 
+        ;; occ-op8 (sfactory/occluder drw [(+ x0  589)(- y0 569)][(+ x0 622)(- y0 602)]) 
+
+        occ-op1 (sfactory/occluder drw [(+ x0  429) (- y0 493) ][(+ x0 462)  (- y0 518)]) 
+        occ-op2 (sfactory/occluder drw [(+ x0  429) (- y0 543) ][(+ x0 462)  (- y0 568)]) 
+        occ-op3 (sfactory/occluder drw [(+ x0  429) (- y0 593) ][(+ x0 462)  (- y0 618)]) 
+        occ-op4 (sfactory/occluder drw [(+ x0  479) (- y0 493) ][(+ x0 512)  (- y0 518)]) 
+        occ-op5 (sfactory/occluder drw [(+ x0  479) (- y0 543) ][(+ x0 512)  (- y0 568)]) 
+        occ-op6 (sfactory/occluder drw [(+ x0  529) (- y0 543) ][(+ x0 562)  (- y0 568)]) 
+        occ-op7 (sfactory/occluder drw [(+ x0  589) (- y0 493) ][(+ x0 622)  (- y0 518)]) 
+        occ-op8 (sfactory/occluder drw [(+ x0  589) (- y0 543) ][(+ x0 622)  (- y0 568)]) 
+
+        
+
         selection-action (fn [b _]
                            (let [card (.get-property b :card-number)]
                              (.show-card-number! ied card)))
@@ -221,7 +248,7 @@
 
         paste-action (fn [b _](paste-op ied op))
 
-        sub-panels (list kscale-pan amp-pan freq-pan fb-pan)
+        sub-panels (list amp-pan freq-pan kscale-pan fb-pan)
         disable-fn (fn []
                      (doseq [sp sub-panels]((:disable-fn sp)))
                      ((:disable-fn env-pan))
@@ -239,12 +266,11 @@
         widget-map {:drawing drw
                     :canvas (.canvas drw)
                     :pan-main pan-main}]
-    (factory/init-button tools  [x-init  y-init] op init-action)
-    (factory/dice-button tools  [x-dice  y-dice] op dice-action)    
-    (factory/copy-button tools  [x-copy  y-copy] op copy-action)
-    (factory/paste-button tools [x-paste y-paste] op paste-action)
-    ;(factory/help-button tools  [x-help  y-help] op help-action)
-    (factory/op-label (.root drw) [x-label y-label] op)
+    (sfactory/init-button drw  [x-init  y-init] op init-action)
+    (sfactory/dice-button drw  [x-dice  y-dice] op dice-action)    
+    (sfactory/copy-button drw  [x-copy  y-copy] op copy-action)
+    (sfactory/paste-button drw [x-paste y-paste] op paste-action)
+    (op-label drw [x-label y-label] op)
     ((:highlight-fn overview-pan) op true)
     (osp/highlight! op algo-graph)
     (reset! this* (reify cadejo.ui.instruments.subedit/InstrumentSubEditor

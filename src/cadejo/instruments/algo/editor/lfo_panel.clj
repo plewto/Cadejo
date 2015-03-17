@@ -1,6 +1,6 @@
 (ns cadejo.instruments.algo.editor.lfo-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  (:require [cadejo.instruments.algo.editor.factory :as factory])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.instruments.algo.editor.lfo-amp-panel :as ap])
   (:require [cadejo.instruments.algo.editor.lfo-freq-panel :as fp])
   (:require [cadejo.instruments.algo.editor.lfo-wave-panel :as wp]))
@@ -18,6 +18,6 @@
         wave-pan (wp/wave-panel n drw [x-wave y-wave] ied)
         sync-fn (fn []
                   (doseq [sp (list frq-pan amp-pan wave-pan)]
-                    ((:sync-fn sp))))]
-    (factory/major-label (.root drw) [(+ x0 94)(- y0 420)] (format "LFO %d" n))
+                  ((:sync-fn sp))))]
+    (sfactory/title drw [(+ x0 62)(- y0 433)] (format "LFO %d" n))
     {:sync-fn sync-fn}))

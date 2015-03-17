@@ -1,7 +1,8 @@
 (ns cadejo.instruments.algo.editor.envelope-panel 
   (:use [cadejo.instruments.algo.algo-constants])
-  (:require [cadejo.instruments.algo.editor.factory :as factory])
+  ;;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.drawing :as drw])
   (:require [sgwr.components.line :as line])
@@ -206,30 +207,31 @@
                             (.set-param! ied param-bias 0.0)
                             (.set-param! ied param-scale 1.0)
                             (.status! ied (format "Envelope %s normal" op)))))
-        cb-style (lnf/checkbox)
+        ;; cb-style (lnf/checkbox)
+        ;; cb-invert (if (invertable? op)
+        ;;             (msb/checkbox tools [x-invert (+ y-buttons 15)] "Invert" 
+        ;;                           :id :invert-env
+        ;;                           :rim-radius (:rim-radius cb-style)
+        ;;                           :rim-color (:rim-color cb-style)
+        ;;                           :selected-check [(:check-color cb-style)(:check-style cb-style)(:check-size cb-style)]
+        ;;                           :click-action invert-action
+        ;;                           :text-color (lnf/text-color)))
         cb-invert (if (invertable? op)
-                    (msb/checkbox tools [x-invert (+ y-buttons 15)] "Invert" 
-                                  :id :invert-env
-                                  :rim-radius (:rim-radius cb-style)
-                                  :rim-color (:rim-color cb-style)
-                                  :selected-check [(:check-color cb-style)(:check-style cb-style)(:check-size cb-style)]
-                                  
-                                  :click-action invert-action
-                                  :text-color (lnf/text-color)))
+                    (sfactory/checkbox drw [x-invert (+ y-buttons 15)] :invert-env "Invert" invert-action))
         sync-fn (fn [dmap]
                   (if cb-invert
                     (let [bias (get dmap param-bias 0.0)]
                       (msb/select-checkbox! cb-invert (pos? bias) false)
                       (.render drw))))]
-    (factory/env-button tools [x-gate y-buttons] :gate callback)
-    (factory/env-button tools [x-percussion y-buttons] :percussion callback)
-    (factory/env-button tools [x-adsr y-buttons] :adsr callback)
-    (factory/dice-button tools [x-dice y-buttons] :env-dice callback)
-    (factory/copy-button tools [x-copy y-buttons] :env-copy callback)
-    (factory/paste-button tools [x-paste y-buttons] :env-paste callback)
-    (factory/zoom-in-button tools [x-zoom-in y-buttons] :env-zoom-in callback)
-    (factory/zoom-out-button tools [x-zoom-out y-buttons] :env-zoom-out callback)
-    (factory/zoom-restore-button tools [x-zoom-restore y-buttons] :env-zoom-restore callback)
+    (sfactory/env-button drw [x-gate y-buttons] :gate callback)
+    (sfactory/env-button drw [x-percussion y-buttons] :percussion callback)
+    (sfactory/env-button drw [x-adsr y-buttons] :adsr callback)
+    (sfactory/dice-button drw [x-dice y-buttons] :env-dice callback)
+    (sfactory/copy-button drw [x-copy y-buttons] :env-copy callback)
+    (sfactory/paste-button drw [x-paste y-buttons] :env-paste callback)
+    (sfactory/zoom-in-button drw [x-zoom-in y-buttons] :env-zoom-in callback)
+    (sfactory/zoom-out-button drw [x-zoom-out y-buttons] :env-zoom-out callback)
+    (sfactory/zoom-restore-button drw [x-zoom-restore y-buttons] :env-zoom-restore callback)
     (.background! drw (lnf/background))
     (.render drw)
     {:pan-main pan-main
@@ -253,21 +255,21 @@
         major (fn [p0 p1]
                 (line/line root p0 p1
                            :id :env-axis
-                           :color (lnf/major-tick-color)
+                           :color (lnf/major-tick)
                            :style :solid))
         minor (fn [p0 p1]
                 (line/line root p0 p1
                            :id :env-axis
-                           :color (lnf/minor-tick-color)
+                           :color (lnf/minor-tick)
                            :style :dotted))
         segment (fn [id p0 p1 sty]
                   (let [seg (line/line root p0 p1
                                        :id id
                                        :style sty
                                        :width 1.0
-                                       :color (lnf/envelope-line-color))]
-                    (.color! seg :selected (lnf/envelope-selected-line-color))
-                    (.color! seg :default (lnf/envelope-line-color))
+                                       :color (lnf/envelope-segment))]
+                    (.color! seg :selected (lnf/envelope-selected))
+                    (.color! seg :default (lnf/envelope-segment))
                     seg))
         seg-a (segment :a [0 0] [1 1] :solid)
         seg-b (segment :b [1 1][2 0.7] :solid)
@@ -276,7 +278,7 @@
         seg-e (segment :e [6 0.5][7 0.0] :solid)
         segments [seg-a seg-b seg-c seg-d seg-e]
         point (fn [id pos adjacent] 
-                (let [c1 (uc/color (lnf/envelope-line-color))
+                (let [c1 (uc/color (lnf/envelope-handle))
                       c2 (uc/inversion c1)
                       p (point/point root pos :id id 
                                      :color c1
@@ -298,7 +300,7 @@
         toolbar* (atom nil)
         txt-view (text/text root [0.1 -0.04] "View: xxx" 
                             :lock-size true
-                            :color (lnf/text-color)
+                            :color (lnf/text)
                             :style :mono
                             :size 6)
         sync-fn (fn []
@@ -510,7 +512,7 @@
                                                 (.warning! ied "Internal ERROR envelope-panel mouse-motion-listener") )))))
     ;; rules
     (point/point root [0 0] :id :env-p0 
-                 :color (lnf/envelope-handle-color)
+                 :color (lnf/envelope-handle)
                  :style [:diag :diag2]
                  :size 3)
     (major [0.0 -0.05][0.0 1.05])

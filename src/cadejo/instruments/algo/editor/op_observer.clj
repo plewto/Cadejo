@@ -1,8 +1,7 @@
 (ns cadejo.instruments.algo.editor.op-observer 
-  (:require [cadejo.instruments.algo.editor.factory :as factory])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [sgwr.tools.multistate-button :as msb]))
-
 
 (defn- op-observer [n drw p0 ied op-ed*]
   (let [param-enable (keyword (format "op%d-enable" n))
@@ -15,20 +14,20 @@
         [x0 y0] p0
         width 80
         height 110
-        x-opnum (+ x0 20)
-        x-freq x-opnum
-        x-bias x-opnum
-        x-amp x-opnum
+        x-opnum (+ x0 25)
+        x-freq (+ x0 10)
+        x-bias x-freq
+        x-amp x-freq
         x-mute (- x-opnum 10)
         y-mute (- y0 20)
-        y-amp (- y-mute 30)
-        y-bias (- y-amp 20)
-        y-freq (- y-bias 20)
-        y-opnum (- y-freq 20)
-        txt-op (factory/slider-label root [x-opnum y-opnum] id (format "OP %d" n))
-        txt-freq (factory/slider-label root [x-freq y-freq] id (format "F %7.4f" 1.0))
-        txt-bias (factory/slider-label root [x-bias y-bias] id (format "B %+7.4f" 1.0))
-        txt-amp (factory/slider-label root [x-amp y-amp] id (format "A  %5.3f" 1.0))
+        y-opnum (- y0 90)
+        y-freq (+ y-opnum 20)
+        y-bias (+ y-freq 20)
+        y-amp (+ y-bias 20)
+        txt-op (sfactory/label drw [x-opnum y-opnum]  (format "OP %d" n))
+        txt-freq (sfactory/label drw [x-freq y-freq]  (format "F %7.4f" 1.0))
+        txt-bias (sfactory/label drw [x-bias y-bias]  (format "B %+7.4f" 1.0))
+        txt-amp (sfactory/label drw [x-amp y-amp]  (format "A  %5.3f" 1.0))
         mute-action (fn [b _]
                       (let [selected? (msb/checkbox-selected? b)]
                         (.set-param! ied param-enable (if selected? 0 1))
@@ -36,19 +35,12 @@
                         (.sync-ui! @op-ed*)
                         (.status! ied (format "%s op %s" 
                                               (if selected? "Mute" "Unmute") n))))
-        cb-style (lnf/checkbox)
-        cb-mute (msb/checkbox tools [x-mute y-mute] "Mute"
-                              :id :mute
-                              :rim-radius (:rim-radius cb-style)
-                              :rim-color (:rim-color cb-style)
-                              :selected-check [(:check-color cb-style)(:check-style cb-style)(:check-size cb-style)]
-                              :text-color (lnf/text-color)
-                              :click-action mute-action)
-        border (factory/inner-border root p0 [(+ x0 width)(- y0 height)])
+        cb-mute (sfactory/checkbox drw [x-mute y-mute] :mute "Mute" mute-action)
+        border (sfactory/minor-border drw p0 [(+ x0 width)(- y0 height)])
         text-components (list txt-op txt-freq txt-bias txt-amp 
                              (.get-property cb-mute :text-component))
         components (cons (.get-property cb-mute :rim)(cons border text-components))
-        occ (factory/occluder drw [(+ x0 5)(- y0 27)][(+ x0 75)(- y0 85)])
+        occ (sfactory/occluder drw [(+ x0 5)(- y0 27)][(+ x0 75)(- y0 85)])
         sync-fn (fn []
                   (let [dmap (.current-data (.bank (.parent-performance ied)))
                         muted? (zero? (param-enable dmap))
@@ -64,14 +56,14 @@
                        (doseq [c components]
                          (.use-attributes! c (if flag :highlight :default))))]
     (doseq [tc text-components]
-      (.color! tc :highlight (lnf/text-selected-color))
-      (.color! tc :default (lnf/text-color)))
-    (.color! border :highlight (lnf/button-selected-border))
-    (.color! border :default (lnf/minor-border-color))
-    (.color! (.get-property cb-mute :rim) :highlight (lnf/button-selected-border))
-    (.color! (.get-property cb-mute :rim) :default (lnf/button-border-color))
+      (.color! tc :highlight (lnf/selected-text))
+      (.color! tc :default (lnf/text)))
+    (.color! border :highlight (lnf/selected-button-border))
+    (.color! border :default (lnf/minor-border))
+    (.color! (.get-property cb-mute :rim) :highlight (lnf/selected-button-border))
+    (.color! (.get-property cb-mute :rim) :default (lnf/button-border))
     (.put-property! cb-mute :op n)
-    (factory/inner-border root p0 [(+ x0 width)(- y0 height)])
+    (sfactory/minor-border drw p0 [(+ x0 width)(- y0 height)])
     {:sync-fn sync-fn
      :highlight-fn highlight-fn}))
 
@@ -96,8 +88,3 @@
                          (hf flag)))]
     {:sync-fn sync-fn
      :highlight-fn highlight-fn}))
-    
-   
-                 
-                     
-                 
