@@ -1,6 +1,5 @@
 (ns cadejo.instruments.algo.editor.envelope-panel 
   (:use [cadejo.instruments.algo.algo-constants])
-  ;;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.util.math :as math])
@@ -207,15 +206,6 @@
                             (.set-param! ied param-bias 0.0)
                             (.set-param! ied param-scale 1.0)
                             (.status! ied (format "Envelope %s normal" op)))))
-        ;; cb-style (lnf/checkbox)
-        ;; cb-invert (if (invertable? op)
-        ;;             (msb/checkbox tools [x-invert (+ y-buttons 15)] "Invert" 
-        ;;                           :id :invert-env
-        ;;                           :rim-radius (:rim-radius cb-style)
-        ;;                           :rim-color (:rim-color cb-style)
-        ;;                           :selected-check [(:check-color cb-style)(:check-style cb-style)(:check-size cb-style)]
-        ;;                           :click-action invert-action
-        ;;                           :text-color (lnf/text-color)))
         cb-invert (if (invertable? op)
                     (sfactory/checkbox drw [x-invert (+ y-buttons 15)] :invert-env "Invert" invert-action))
         sync-fn (fn [dmap]

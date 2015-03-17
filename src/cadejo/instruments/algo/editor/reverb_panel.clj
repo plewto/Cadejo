@@ -1,6 +1,5 @@
 (ns cadejo.instruments.algo.editor.reverb-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])

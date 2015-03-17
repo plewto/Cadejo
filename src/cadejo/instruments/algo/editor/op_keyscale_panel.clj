@@ -1,6 +1,5 @@
 (ns cadejo.instruments.algo.editor.op-keyscale-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.util.math :as math])
@@ -92,11 +91,8 @@
                        (.disable! q false)))
         enable-fn (fn [] 
                      (doseq [q (list s-breakpoints dbar-left b-left dbar-right b-right)]
-                       (.enable! q false)))
-                    
+                       (.enable! q false)))]
 
-
-        ]
     ;; Draw breakpoint major tick marks
     (let [kn* (atom 0)
           x* (atom x-breakpoint)

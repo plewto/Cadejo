@@ -1,6 +1,6 @@
 (ns cadejo.instruments.algo.editor.lfo-amp-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])  
+
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
@@ -32,19 +32,6 @@
                  (let [p (.get-property s :id)
                        v (slider/get-slider-value s)]
                    (.set-param! ied p v)))
-        ;; s-mod (factory/slider tools [x-env y-sliders]
-        ;;                       (if (= 1 n) :env1->lfo1-amp :lfo1->lfo2-amp)
-        ;;                       -1.0 1.0 action :signed)
-        ;; s-prss (factory/slider tools [x-prss y-sliders]
-        ;;                        (keyword (format "pressure->lfo%d-amp" n))
-        ;;                        -1.0 1.0 action :signed)
-        ;; s-cca (factory/slider tools [x-cca y-sliders]
-        ;;                        (keyword (format "cca->lfo%d-amp" n))
-        ;;                        -1.0 1.0 action :signed)
-        ;; s-ccb (factory/slider tools [x-ccb y-sliders]
-        ;;                        (keyword (format "ccb->lfo%d-amp" n))
-        ;;                        -1.0 1.0 action :signed)
-
         s-mod (sfactory/vslider drw ied (if (= 1 n) :env1->lfo1-amp :lfo1->lfo2-amp)
                                 [x-env y-sliders] -1.0 1.0 action)
 

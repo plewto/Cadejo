@@ -1,6 +1,5 @@
 (ns cadejo.instruments.algo.editor.op-freq-panel 
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])  
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
@@ -15,17 +14,14 @@
         root (.root drw)
         tools (.tool-root drw)
         [x0 y0] p0
-
         x-bias (+ x0 72) 
         y-bias (- y0 45)
         x-bias-button (+ x-bias 215)
         y-bias-button (+ y-bias 2.5)
-
         x-freq x-bias
         y-freq (- y-bias 40)
         x-freq-button (+ x-freq 215)
         y-freq-button (+ y-freq 2.5)
-
         width 350
         height 100
         dbar-bias (sfactory/displaybar drw [x-bias y-bias] 7)

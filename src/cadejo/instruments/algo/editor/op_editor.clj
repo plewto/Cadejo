@@ -1,5 +1,4 @@
 (ns cadejo.instruments.algo.editor.op-editor
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.instruments.algo.editor.op-amp-panel :as oap])
   (:require [cadejo.instruments.algo.editor.envelope-panel :as ep])
@@ -175,7 +174,6 @@
         x-dice (+ x-init 50)
         x-copy (+ x-dice 50)
         x-paste (+ x-copy 50)
-        ;x-help (+ x-paste 50)
         y-over (+ y1 30)
         y-keyscale (- y-over 120)
         y-amp (- y-keyscale 100)
@@ -187,7 +185,6 @@
         y-dice y-init
         y-copy y-init
         y-paste y-init
-        ;y-help y-init
         this* (atom nil)
         amp-pan (oap/op-amp op drw [x-amp y-amp] ied)
         overview-pan (ovr/overview-panel drw [x-over y-over] ied this*)
@@ -195,26 +192,10 @@
         freq-pan (ofp/op-freq op drw [x-freq y-freq] ied)
         fb-pan (fbp/op-feedback-panel op drw [x-feedback y-feedback] ied)
         env-pan (ep/envelope-panel op ied)
-
-        ;; occ-1 (sfactory/occluder drw [(+ x0  24)(- y0 143)][(+ x0 763)(- y0 237)]) ;; keyscale
-        ;; occ-2 (sfactory/occluder drw [(+ x0  24)(- y0 245)][(+ x0 365)(- y0 465)]) ;; amp
-        ;; occ-3 (sfactory/occluder drw [(+ x0 372)(- y0 245)][(+ x0 768)(- y0 465)]) ;; fb panel
-        ;; occ-4 (sfactory/occluder drw [(+ x0  24)(- y0 472)][(+ x0 365)(- y0 566)]) ;; freq panel
-
         occ-1 (sfactory/occluder drw [(+ x0  24)(- y0 109)][(+ x0 763)(- y0 203)]) ;; keyscale
         occ-2 (sfactory/occluder drw [(+ x0  24)(- y0 211)][(+ x0 365)(- y0 431)]) ;; amp
         occ-3 (sfactory/occluder drw [(+ x0 372)(- y0 211)][(+ x0 768)(- y0 431)]) ;; fb panel
         occ-4 (sfactory/occluder drw [(+ x0  24)(- y0 438)][(+ x0 365)(- y0 532)]) ;; freq panel
-
-        ;; occ-op1 (sfactory/occluder drw [(+ x0  429)(- y0 519)][(+ x0 462)(- y0 552)]) 
-        ;; occ-op2 (sfactory/occluder drw [(+ x0  429)(- y0 569)][(+ x0 462)(- y0 602)]) 
-        ;; occ-op3 (sfactory/occluder drw [(+ x0  429)(- y0 619)][(+ x0 462)(- y0 652)]) 
-        ;; occ-op4 (sfactory/occluder drw [(+ x0  479)(- y0 519)][(+ x0 512)(- y0 552)]) 
-        ;; occ-op5 (sfactory/occluder drw [(+ x0  479)(- y0 569)][(+ x0 512)(- y0 602)]) 
-        ;; occ-op6 (sfactory/occluder drw [(+ x0  529)(- y0 569)][(+ x0 562)(- y0 602)]) 
-        ;; occ-op7 (sfactory/occluder drw [(+ x0  589)(- y0 519)][(+ x0 622)(- y0 552)]) 
-        ;; occ-op8 (sfactory/occluder drw [(+ x0  589)(- y0 569)][(+ x0 622)(- y0 602)]) 
-
         occ-op1 (sfactory/occluder drw [(+ x0  429) (- y0 493) ][(+ x0 462)  (- y0 518)]) 
         occ-op2 (sfactory/occluder drw [(+ x0  429) (- y0 543) ][(+ x0 462)  (- y0 568)]) 
         occ-op3 (sfactory/occluder drw [(+ x0  429) (- y0 593) ][(+ x0 462)  (- y0 618)]) 
@@ -223,9 +204,6 @@
         occ-op6 (sfactory/occluder drw [(+ x0  529) (- y0 543) ][(+ x0 562)  (- y0 568)]) 
         occ-op7 (sfactory/occluder drw [(+ x0  589) (- y0 493) ][(+ x0 622)  (- y0 518)]) 
         occ-op8 (sfactory/occluder drw [(+ x0  589) (- y0 543) ][(+ x0 622)  (- y0 568)]) 
-
-        
-
         selection-action (fn [b _]
                            (let [card (.get-property b :card-number)]
                              (.show-card-number! ied card)))

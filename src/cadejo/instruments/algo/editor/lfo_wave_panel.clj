@@ -4,7 +4,6 @@
 
 (ns cadejo.instruments.algo.editor.lfo-wave-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])  
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
@@ -31,12 +30,6 @@
                  (let [p (.get-property s :id)
                        v (slider/get-slider-value s)]
                    (.set-param! ied p v)))
-        ;; s-skew (factory/slider tools [x-skew y-slider] 
-        ;;                        param-skew
-        ;;                        0.0 1.0 action false)
-        ;; s-mod (factory/slider tools [x-mod y-slider]
-        ;;                       param-mod
-        ;;                       -1.0 1.0 action :signed)
         s-skew (sfactory/vslider drw ied param-skew [x-skew y-slider] 0.0 1.0 action)
         s-mod (sfactory/vslider drw ied param-mod [x-mod y-slider] -1.0 0.0 action)
         sync-fn (fn []

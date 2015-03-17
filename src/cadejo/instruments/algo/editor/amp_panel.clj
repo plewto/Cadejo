@@ -5,7 +5,6 @@
 
 (ns cadejo.instruments.algo.editor.amp-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory :reload true])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.util.math :as math])
@@ -30,10 +29,6 @@
                         (let [param (.get-property s :id)
                               val (slider/get-slider-value s)]
                           (.set-param! ied param val)))
-        ;; s-filter (factory/lp-slider tools [x-filter y-sliders] param-lp slider-action)
-        ;; s-cc7 (factory/slider tools [x-cc7 y-sliders] param-cc7
-        ;;                       0.0 1.0 slider-action false)
-
         s-filter (sfactory/vslider drw ied param-lp [x-filter y-sliders] min-lp-freq max-lp-freq slider-action
                                    :value-hook (fn [n](* 1000 (int (/ n 1000)))))
         s-cc7 (sfactory/vslider drw ied param-cc7 [x-cc7 y-sliders] 0.0 1.0 slider-action)
@@ -44,8 +39,6 @@
                               lin (math/db->amp db)]
                           (.set-param! ied param-amp lin)
                           (.status! ied (format "[:amp] -> %d db  -> %f" db lin))))
-        ;;s-vol (factory/volume-slider tools [x-vol y-sliders] param-amp volume-action)
-
         s-vol (sfactory/vslider drw ied param-amp [x-vol y-sliders] min-amp-db max-amp-db volume-action
                                 :value-hook (fn [n](* 3 (int (/ n 3)))))
                                                      

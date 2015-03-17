@@ -2,7 +2,6 @@
 
 (ns cadejo.instruments.algo.editor.pitch-editor
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.instruments.algo.editor.op-selection-panel :as osp])
   (:require [cadejo.instruments.algo.editor.pitch-panel :as pp])
   (:require [cadejo.instruments.algo.editor.envelope-panel :as ep])
@@ -12,7 +11,6 @@
   (:require [sgwr.components.drawing :as drw])
   (:require [seesaw.core :as ss])
   (:import javax.swing.Box))
-
 
 (defn pitch-editor [ied]
   (println "-->     Pitch")

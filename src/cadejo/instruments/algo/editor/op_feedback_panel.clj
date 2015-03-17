@@ -1,6 +1,5 @@
 (ns cadejo.instruments.algo.editor.op-feedback-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.util.math :as math])
@@ -41,11 +40,6 @@
         y1 (- y0 30)
         y8 (- y0 height)
         y-label-offset 22
-
-        ;; action (fn [s _] 
-        ;;          (println (format "DEBUG slider id %s  value %s" 
-        ;;                           (.get-property s :id)
-        ;;                           (slider/get-slider-value s))))
         action (fn [s _]
                  (let [p (.get-property s :id)
                        v (slider/get-slider-value s)]
@@ -100,8 +94,7 @@
                        (.disable! q false)))
         enable-fn (fn []
                     (doseq [q tool-list]
-                      (.enable! q false)))
-        ]
+                      (.enable! q false)))]
     ;; fb slider ticks
     (let [id (keyword (format "op%d-tick" n))
           xa (- x1 (* 0.5 major-tick-length))
@@ -198,7 +191,6 @@
     {:sync-fn sync-fn
      :disable-fn disable-fn
      :enable-fn enable-fn}))
-
 
 (defn- electronic-eye [grp p0 n]
   (image/read-image grp p0 (format "resources/algo/electronic_eye_%d.png" n)))

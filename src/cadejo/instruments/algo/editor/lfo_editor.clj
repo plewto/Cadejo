@@ -7,7 +7,6 @@
   (:require [sgwr.components.drawing :as drw])
   (:require [seesaw.core :as ss]))
 
-
 (defn lfo-editor [ied]
   (println "-->     LFO")
   (let [drw (let [d (drw/native-drawing 1300 600)]

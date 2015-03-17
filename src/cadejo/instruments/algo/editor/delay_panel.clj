@@ -1,6 +1,5 @@
 (ns cadejo.instruments.algo.editor.delay-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
@@ -60,13 +59,6 @@
                         (let [param (.get-property s :id)
                               val (slider/get-slider-value s)]
                           (.set-param! ied param val)))
-        ;; s-feedback (factory/slider tools [x-fb y-sliders] param-fb
-        ;;                            min-echo-fb max-echo-fb slider-action :signed)
-        ;; s-damp (factory/slider tools [x-damp y-sliders] param-damp
-        ;;                        0.0 1.0 slider-action false)
-        ;; s-mix (factory/slider tools [x-mix y-sliders] param-mix
-        ;;                       0.0 1.0 slider-action false)
-
         s-feedback (sfactory/vslider drw ied param-fb [x-fb y-sliders] 
                                    min-echo-fb max-echo-fb slider-action)
         s-damp (sfactory/vslider drw ied param-damp [x-damp y-sliders] 

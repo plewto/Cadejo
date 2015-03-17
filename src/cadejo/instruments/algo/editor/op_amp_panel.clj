@@ -1,6 +1,5 @@
 (ns cadejo.instruments.algo.editor.op-amp-panel
    (:use [cadejo.instruments.algo.algo-constants])
-   ;(:require [cadejo.instruments.algo.editor.factory :as factory]) 
    (:require [cadejo.util.math :as math])
    (:require [cadejo.ui.util.lnf :as lnf])
    (:require [cadejo.ui.util.sgwr-factory :as sfactory])
@@ -34,15 +33,6 @@
                  (let [param (.get-property s :id)
                        val (float (slider/get-slider-value s))]
                    (.set-param! ied param val)))
-        ;; s-velocity (factory/slider tools [x1 y1] param-velocity -1.0 1.0 action :signed)
-        ;; s-pressure (factory/slider tools [x2 y1] param-pressure -1.0 1.0 action :signed)
-        ;; s-lfo1 (factory/slider tools [x3 y1] param-lfo1 -1.0 1.0 action :signed)
-        ;; s-lfo2 (factory/slider tools [x4 y1] param-lfo2 -1.0 1.0 action :signed)
-        ;; s-cca (factory/slider tools [x5 y1] param-cca -1.0 1.0 action :signed)
-        ;; s-ccb (factory/slider tools [x6 y1] param-ccb -1.0 1.0 action :signed)
-        
-        ;; [drw ieditor id p0 v0 v1 drag-action ] FPO
-
         s-velocity (sfactory/vslider drw ied param-velocity [x1 y1]  -1.0 1.0 action)
         s-pressure (sfactory/vslider drw ied param-pressure [x2 y1]  -1.0 1.0 action)
         s-lfo1 (sfactory/vslider drw ied param-lfo1 [x3 y1]  -1.0 1.0 action)
@@ -88,13 +78,6 @@
         enable-fn (fn []
                     (doseq [q tool-list]
                       (.enable! q false)))]
-    ;; (factory/slider-label root [x1 y1] op-id "Vel")
-    ;; (factory/slider-label root [x2 y1] op-id "Prss")
-    ;; (factory/slider-label root [x3 y1] op-id "LFO1")
-    ;; (factory/slider-label root [x4 y1] op-id "LFO2")
-    ;; (factory/slider-label root [x5 y1] op-id "CCA")
-    ;; (factory/slider-label root [x6 y1] op-id "CCB")
-
     (sfactory/label drw [(+ x1 x-label-offset)(+ y1 y-label-offset)] "Vel")
     (sfactory/label drw [(+ x2 x-label-offset)(+ y1 y-label-offset)] "Prss")
     (sfactory/label drw [(+ x3 x-label-offset)(+ y1 y-label-offset)] "LFO1")
@@ -118,21 +101,8 @@
                              :id op-id
                              :style :mono
                              :size 6
-                             :color (lnf/major-tick)))
-          ;; minor (fn [y n]
-          ;;         (line/line root [xa y][xb y] :id op-id
-          ;;                    :style :solid
-          ;;                    :color (lnf/minor-tick-color))
-          ;;         (text/text root [(- xa 33)(+ y 5)] (format "%+4.1f" n)
-          ;;                    :id op-id
-          ;;                    :style :mono
-          ;;                    :size 6
-          ;;                    :color (lnf/minor-tick-color)))
-          ]
+                             :color (lnf/major-tick)))]
       (while (<= @v* 1.0)
-        ;; (if (or (= @v* -1.0)(= @v* 1.0)(zero? @v*))
-        ;;   (major @y* @v*)
-        ;;   (minor @y* @v*)
         (major @y* @v*)
         (swap! y* (fn [q](- q y-delta)))
         (swap! v* (fn [q](+ q v-delta)))))

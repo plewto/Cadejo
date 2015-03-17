@@ -1,6 +1,5 @@
 (ns cadejo.instruments.algo.editor.vibrato-panel 
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
@@ -43,9 +42,6 @@
                         (let [p (.get-property s :id)
                               v (slider/get-slider-value s)]
                           (.set-param! ied p v)))
-        ;; s-sens (factory/slider tools [x-sens y-sliders] param-sens 0.0 max-vibrato-sensitivity slider-action false)
-        ;; s-depth (factory/slider tools [x-depth y-sliders] param-depth 0.0 1.0 slider-action false)
-        ;; s-delay (factory/slider tools [x-delay y-sliders] param-delay 0.0 max-vibrato-delay slider-action false)
         s-sens (sfactory/vslider drw ied param-sens [x-sens y-sliders] 0.0 max-vibrato-sensitivity slider-action)
         s-depth (sfactory/vslider drw ied param-depth [x-depth y-sliders] 0.0 1.0 slider-action)
         s-delay (sfactory/vslider drw ied param-delay [x-delay y-sliders] 0.0 max-vibrato-delay slider-action)

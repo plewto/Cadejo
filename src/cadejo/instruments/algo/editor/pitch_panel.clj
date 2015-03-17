@@ -1,13 +1,11 @@
 (ns cadejo.instruments.algo.editor.pitch-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.text :as text])
   (:require [sgwr.tools.slider :as slider]))
-
 
 (defn pitch-panel [drw p0 ied]
   (let [param-port :port-time
@@ -28,11 +26,6 @@
                  (let [p (.get-property s :id)
                        v (slider/get-slider-value s)]
                    (.set-param! ied p v)))
-        ;; s-port (factory/slider tools [x-port y-sliders] param-port 0.0 max-port-time action false)
-        ;; s-env (factory/slider tools [x-env y-sliders] param-env min-pitch-modulation max-pitch-modulation action :signed)
-        ;; s-lfo1 (factory/slider tools [x-lfo1 y-sliders] param-lfo1 min-pitch-modulation max-pitch-modulation action :signed)
-        ;; s-lfo2 (factory/slider tools [x-lfo2 y-sliders] param-lfo2 min-pitch-modulation max-pitch-modulation action :signed)
-
         s-port (sfactory/vslider drw ied param-port [x-port y-sliders] 0.0 max-port-time action)
         s-env (sfactory/vslider drw ied param-env [x-env y-sliders] min-pitch-modulation max-pitch-modulation action)
         s-lfo1 (sfactory/vslider drw ied param-lfo1 [x-lfo1 y-sliders]  min-pitch-modulation max-pitch-modulation action)

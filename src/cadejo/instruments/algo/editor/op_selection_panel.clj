@@ -1,5 +1,4 @@
 (ns cadejo.instruments.algo.editor.op-selection-panel 
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [sgwr.components.line :as line])
@@ -36,15 +35,11 @@
                               :text-color (lnf/text))]
     (.put-property! b :op op)
     (.put-property! b :card-number card-number)
-    (let [;pad (.get-property b :pad)
-          rim (.get-property b :rim)
+    (let [rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
       (.color! rim :highlight (lnf/selected-button-border))
       (.color! txt :highlight (lnf/selected-text))
-      
-    
     (.use-attributes! b :default)
-    ;(.dump b)
     b)))
 
 
@@ -60,8 +55,7 @@
                               :text-color (lnf/text))]
     (.put-property! b :card-number card-number)
     (.put-property! b :op id)
-    (let [;pad (.get-property b :pad)
-          rim (.get-property b :rim)
+    (let [rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
       (.color! rim :highlight (lnf/selected-button-border))
       (.color! txt :highlight (lnf/selected-text))
@@ -159,7 +153,6 @@
      (hline x12 x14 y9)
      (if draw-border (sfactory/minor-border drw [x0 y0][x16 y12]))
      button-map)))
-
 
 (defn highlight! 
   ([op button-map]

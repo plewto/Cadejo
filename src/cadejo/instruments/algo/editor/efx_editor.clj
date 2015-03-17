@@ -2,7 +2,6 @@
 ;;
 (ns cadejo.instruments.algo.editor.efx-editor
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])
   (:require [cadejo.instruments.algo.editor.op-selection-panel :as osp])
   (:require [cadejo.instruments.algo.editor.delay-panel :as dp])
   (:require [cadejo.instruments.algo.editor.reverb-panel :as rp])

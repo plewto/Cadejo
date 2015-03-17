@@ -4,11 +4,8 @@
 ;; :cca->lfo1-freq         :cca->lfo2-freq                                                
 ;; :ccb->lfo1-freq         :ccb->lfo2-freq   
 
-
-
 (ns cadejo.instruments.algo.editor.lfo-freq-panel
   (:use [cadejo.instruments.algo.algo-constants])
-  ;(:require [cadejo.instruments.algo.editor.factory :as factory])  
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
@@ -50,18 +47,8 @@
                            (let [p (.get-property s :id)
                                  v (slider/get-slider-value s)]
                              (.set-param! ied p v)))
-           ;; s-cca (factory/slider tools [x-slider-a y-sliders] 
-           ;;                       param-cca
-           ;;                       -10.0 10.0 
-           ;;                       slider-action :signed)
-           ;; s-ccb (factory/slider tools [x-slider-b y-sliders] 
-           ;;                       param-ccb
-           ;;                       -10.0 10.0 
-           ;;                       slider-action :signed)
-
            s-cca (sfactory/vslider drw ied param-cca [x-slider-a y-sliders] -10.0 10.0 slider-action)
            s-ccb (sfactory/vslider drw ied param-ccb [x-slider-b y-sliders] -10.0 10.0 slider-action)
-
            sync-fn (fn []
                      (let [dmap (.current-data (.bank (.parent-performance ied)))
                            freq (float (param-freq dmap))
