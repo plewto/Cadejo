@@ -453,7 +453,7 @@
 
 (load-gui! true)
 (initial-skin! "Graphite")
-(displaybar-style! :sixteen)    ; nil -> use lnf
+(displaybar-style! nil)    ; nil -> use lnf
 (enable-pp! false)
 (maximum-scene-count! 2)
 (maximum-undo-count! 10)

@@ -58,9 +58,9 @@
     (doseq [tc text-components]
       (.color! tc :highlight (lnf/selected-text))
       (.color! tc :default (lnf/text)))
-    (.color! border :highlight (lnf/selected-button-border))
+    (.color! border :highlight (lnf/button-selected-border))
     (.color! border :default (lnf/minor-border))
-    (.color! (.get-property cb-mute :rim) :highlight (lnf/selected-button-border))
+    (.color! (.get-property cb-mute :rim) :highlight (lnf/button-selected-border))
     (.color! (.get-property cb-mute :rim) :default (lnf/button-border))
     (.put-property! cb-mute :op n)
     (sfactory/minor-border drw p0 [(+ x0 width)(- y0 height)])

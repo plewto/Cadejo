@@ -37,7 +37,7 @@
     (.put-property! b :card-number card-number)
     (let [rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
-      (.color! rim :highlight (lnf/selected-button-border))
+      (.color! rim :highlight (lnf/button-selected-border))
       (.color! txt :highlight (lnf/selected-text))
     (.use-attributes! b :default)
     b)))
@@ -57,7 +57,7 @@
     (.put-property! b :op id)
     (let [rim (.get-property b :rim)
           txt (.get-property b :text-component) ]
-      (.color! rim :highlight (lnf/selected-button-border))
+      (.color! rim :highlight (lnf/button-selected-border))
       (.color! txt :highlight (lnf/selected-text))
       (.use-attributes! b :default)
       b)))

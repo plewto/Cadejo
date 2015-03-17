@@ -14,466 +14,13 @@
            java.io.File))
 
 (declare icon-prefix)
-(declare selected-icon-prefix)
+(declare icon-selected-prefix)
 (def ^:private skins (SubstanceLookAndFeel/getAllSkins))
 (def available-skins (keys skins))
 
 (defn skin-name [i]
   (nth available-skins i))
 
-;; Skin colors are defined hierarchically from the general to the
-;; specific. If a specific color is not defined then a more general color
-;; is used as a default.  The bare minimum is for each skin to define three
-;; general colors, :dark, :light and :medium.
-;;
-;; General colors
-;;   :ultra-dark       default :extra-dark
-;;   :extra-dark       default :dark
-;;   :dark             default black
-;;   :medium           default gray
-;;   :light            default white
-;;   :extra-light      default :light
-;;   :ultra-light      default :extra-light
-;;
-;; Specific component colors
-;;   :background              default :extra-dark     * drawing background
-;;   :text                    default :light          * text color              
-;;   :selected-text           default :ultra-light    * highlighted text color
-
-;;   :label                   default :text           * general label color     
-;;   :title                   default :text           * primary title color                                  
-;;   :minor-border            default :text           * minor border color                                  
-;;   :major-border            default :selected-text  * major border color                                  
-;;   :passive-track           default :medium         * slider background track                                  
-;;   :active-track            default :selected-text  * slider active track                                  
-;;   :minor-tick              default :passive-track  * slider minor tick color                                
-;;   :major-tick              default :minor-tick     * slider major tick color                             
-;;   :handle                  default :active-track   * slider handle color                               
-;;   :button-border           default :minor-border   * button border color                               
-;;   :selected-button-border  default :selected-text  * highlighted button border                                
-;;   :checkbox                default :selected-text  * highlighted checkbox color                                 
-;;   :checkbox-rim            default :button-border  * normal checkbox color                                
-;;   :envelope-background     default :background     *                               
-;;   :envelope-border         default :minor-border   *                                
-;;   :envelope-segment        default :text           *                        
-;;   :envelope-selected       default :selected-text  *                                 
-;;   :envelope-handle         default :handle         *                          
-;;   :dbar-inactive           default :background     *                              
-;;   :dbar-active             default :text           *                                 
-;;
-;; Additional properties
-;;   :icon-prefix             Should be one of "black", "gray" or "white"
-;;   :selected-icon-prefix    Should be "black", "gray" or "white" and different from icon-prefix
-;;   :checkbox-style          vector defined point style for selected checkboxes, see sgwr checkbox
-;;   :checkbox-size           int defines selected checkbox component size in pixels
-;;   :checkbox-rim-radius     int sets roundness for checkboxes, if radius = 0, checkboxes are square
-;;   :handle-style            default [:dot :fill]
-;;   :handle-size             default 4
-;;   :occluder                color used to indicate disabled components which should
-;;                            have some transparency. 
-;;   :dbar-style              Display bar style, one of :matrix, :sixteen or :basic
-
-(def color-schemes
-  {"Autumn"
-   {:skin "Autumn"
-    :icon-prefix "black"
-    :selected-icon-prefix "gray"
-    :ultra-dark     (uc/color [ 68  40  24])
-    :extra-dark     (uc/color [178 106  64])
-    :dark           (uc/color [252 191 122])
-    :medium         (uc/color [255 227 197])
-    :light          (uc/color [255 227 197])
-    :extra-light    nil
-    :ultra-light    (uc/color [255 245 234])
-
-    :background     (uc/color [255 227 197])
-    :text           (uc/color [178 106  64])
-    :selected-text  (uc/color [255 245 197])
-    :passive-track  (uc/color [178 106  64])
-    :active-track   (uc/color [ 68  40  24])
-    ;; :minor-border (uc/color [ 68  40  24])
-    ;; :major-border (uc/color [ 68  40  24])
-    ;; :active-track (uc/color [  0   0   0])
-    ;; :env-border   (uc/color [ 68  40  24])
-    ;; :env-segment  (uc/color [ 68  40  24])
-    ;; :env-handle   (uc/color [  0   0  0])
-    :dbar-style :matrix
-    } ;; End Autumn
-   
-    "Business"
-    {:skin "Business"
-     :icon-prefix "black"
-     :selected-icon-prefix "gray"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Business
-    
-    "Business Black Steel"
-    {:skin "Business Black Steel"
-     :icon-prefix "black"
-     :selected-icon-prefix "gray"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Business Black Steel
-    
-    "Business Blue Steel"
-    {:skin "Business Blue Steel"
-     :icon-prefix "black"
-     :selected-icon-prefix "gray"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Business Blue Steel
-    
-    "Cerulean"
-    {:skin "Cerulean"
-     :icon-prefix "black"
-     :selected-icon-prefix "gray"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Cerulean
-    
-    "Challenger Deep"
-    {:skin "Challenger Deep"
-     :icon-prefix "white"
-     :selected-icon-prefix "gray"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Challenger Deep
-    
-    "Creme"
-    {:skin "Creme"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Creme
-    
-    "Creme Coffee"
-    {:skin "Creme Coffee"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Creme Coffee
-    
-    "Dust"
-    {:skin "Dust"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Dust
-    
-    "Dust Coffee"
-    {:skin "Dust Coffee"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Dust Coffee
-    
-    "Emerald Dusk"
-    {:skin "Emerald Dusk"
-     :icon-prefix "white"
-     :selected-icon-prefix "black"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Emerald Dusk
-    
-    "Gemini"
-    {:skin "Gemini"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Gemini
-    
-    "Graphite"
-    {:skin "Graphite"
-     :icon-prefix "white"
-     :selected-icon-prefix "black"
-     :ultra-dark (uc/color :black)
-     :extra-dark (uc/color [ 50  50  50])
-     :dark       (uc/color [ 66  66  66])
-     :medium     (uc/color [123 123 123])
-     :light      (uc/color [180 180 180])
-     :extra-light (uc/color [245 247 251])
-     :ultra-light (uc/color [253 255 214])
-     :major-tick  (uc/color [180 180 180])
-     :handle      (uc/color [245 247 251])
-     :major-border (uc/color [245 247 251])
-     :dbar-inactive (uc/color :black)
-     :dbar-active (uc/color [201 179 208])
-     :dbar-style :matrix
-     :occluder (uc/color [255 0 0 200])  ;; ISSUE FPO
-     } ;; End Graphite
-    
-    "Graphite Aqua"
-    {:skin "Graphite Aqua"
-     :icon-prefix "white"
-     :selected-icon-prefix "black"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Graphite Aqua
-    
-    "Graphite Glass"
-    {:skin "Graphite Glass"
-     :icon-prefix "white"
-     :selected-icon-prefix "black"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Graphite Glass
-    
-    "Magellan"
-    {:skin "Magellan"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Magellan
-    
-    "Mariner"
-    {:skin "Mariner"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Mariner
-    
-    "Mist Aqua"
-    {:skin "Mist Aqua"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Mist Aqua
-    
-    "Mist Silver"
-    {:skin "Mist Silver"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Mist Silver
-    
-    "Moderate"
-    {:skin "Moderate"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Moderate
-    
-    "Nebula"
-    {:skin "Nebula"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Nebula
-    
-    "Nebula Brick Wall"
-    {:skin "Nebula Brick Wall"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Nebula Brick Wall
-    
-    "Office Black 2007"
-    {:skin "Office Black 2007"
-     :icon-prefix "gray"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Office Black 2007
-    
-    "Office Blue 2007"
-    {:skin "Office Blue 2007"
-     :icon-prefix "black"
-     :selected-icon-prefix "gray"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Office Blue 2007
-    
-    "Office Silver 2007"
-    {:skin "Office Silver 2007"
-     :icon-prefix "black"
-     :selected-icon-prefix "gray"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Office Silver 2007
-    
-    "Raven"
-    {:skin "Raven"
-     :icon-prefix "gray"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Raven
-    
-    "Sahara"
-    {:skin "Sahara"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Sahara
-    
-    "Twilight"
-    {:skin "Twilight"
-     :icon-prefix "black"
-     :selected-icon-prefix "white"
-     :ultra-dark nil
-     :extra-dark nil
-     :dark nil
-     :medium nil
-     :light nil
-     :extra-light nil
-     :ultra-light nil
-     } ;; End Twilight
-    })
-
-(defn- skin-substitution [skin-name]
-  (get {"Creme Coffee" "Creme"
-        "Graphite Aqua" "Graphite"
-        "Graphite Glass" "Graphite"
-        "Mist Aqua" "Mist"
-        "Mist Silver" "Mist"
-        "Nebula Brick Wall" "Nebula"}
-       skin-name
-       skin-name))
-
-(defn property [skin-name usage default]
-  (let [alias (skin-substitution skin-name)
-        scm (get color-schemes alias)
-        val (usage scm)]
-    (or val default)))
 
 
 ;; Return java.io.File for icon 
@@ -530,7 +77,7 @@
        icn))
   ([group subgroup]
    (let [skin-name (config/current-skin)
-         iprefix (selected-icon-prefix)]
+         iprefix (icon-selected-prefix)]
      (read-selected-icon iprefix group subgroup))))
 
 ;; disabled icon set currently does not exists
@@ -544,8 +91,6 @@
   ([group subgroup]
    (read-disabled-icon "black" "general" "blank")))
      
-
-
 ;; Return skin-selection panel
 ;;
 (defn- lnf-selector-panel []
@@ -585,98 +130,281 @@
                        :options [jb-dismis])]
     (ss/listen jb-dismis :action (fn [_](ss/return-from-dialog dia true)))
     (ss/show! dia)))
-
-(defn- lnf-property [key default]
-  (fn []
-    (property (config/current-skin) key (default))))
-
-(def icon-prefix            (lnf-property :icon-prefix (constantly "black")))
-(def selected-icon-prefix   (lnf-property :selected-icon-prefix (constantly "white")))
-(def dark                   (lnf-property :dark (constantly (uc/color :black))))
-(def extra-dark             (lnf-property :extra-dark dark))
-(def ultra-dark             (lnf-property :ultra-dark extra-dark))
-(def light                  (lnf-property :light (constantly (uc/color :white))))
-(def extra-light            (lnf-property :extra-light light))
-(def ultra-light            (lnf-property :ultra-light extra-light))
-(def medium                 (lnf-property :medium (constantly (uc/color :gray))))
-(def background             (lnf-property :background extra-dark))
-(def occluder               (lnf-property :occluder (fn [](uc/transparent (background) 128))))
-(def text                   (lnf-property :text light))
-(def selected-text          (lnf-property :selectred-text ultra-light))
-(def label                  (lnf-property :label text))
-(def title                  (lnf-property :title text))
-(def minor-border           (lnf-property :minor-border text))
-(def major-border           (lnf-property :major-border selected-text))
-(def passive-track          (lnf-property :passive-track medium))
-(def active-track           (lnf-property :active-track selected-text))
-(def minor-tick             (lnf-property :minor-tick passive-track))
-(def major-tick             (lnf-property :major-tick minor-tick))
-(def handle                 (lnf-property :handle active-track))
-(def button-border          (lnf-property :button-border minor-border))
-(def selected-button-border (lnf-property :selected-button-border selected-text))
-
-(def checkbox               (lnf-property :checkbox selected-text))
-(def checkbox-rim-radius    (lnf-property :cb-rim-radius (constantly 18)))
-(def checkbox-rim           (lnf-property :cb-rim button-border))
-(def checkbox-style         (lnf-property :cb-style (constantly [:dot :fill])))
-(def checkbox-size          (lnf-property :cb-size  (constantly 3)))
-
-(def envelope-background    (lnf-property :env-background background))
-(def envelope-border        (lnf-property :env-border minor-border))
-(def envelope-segment       (lnf-property :env-segment text))
-(def envelope-selected      (lnf-property :env-selected selected-text))
-(def envelope-handle        (lnf-property :env-handle handle))
-
-(def dbar-inactive          (lnf-property :dbar-inactive background))
-(def dbar-active            (lnf-property :dbar-active text))
-(def occluder               (lnf-property :occluder (fn [](uc/transparent (background) 200))))
-(def handle-style           (lnf-property :handle-style (constantly [:dot :fill])))
-(def handle-size            (lnf-property :handle-size (constantly 4)))
-
-;; Returns sgwr displaybar style.
-;; Values set by config.clj have priority. if config/displaybar-value returns nil
-;; extract style from lnf properties map, if that fails use :basic
+          
+;; Skin colors are defined hierarchically from the general to the
+;; specific. If a specific color is not defined then a more general color
+;; is used as a default.  The bare minimum is for each skin to define three
+;; general colors, :dark, :light and :medium.
 ;;
-(defn dbar-style [] (let [cf (config/displaybar-style)]
-                      (or cf (property (config/current-skin) :dbar-style :basic))))
+;; General colors
+;;   :ultra-dark       default :extra-dark
+;;   :extra-dark       default :dark
+;;   :dark             default black
+;;   :medium           default :light
+;;   :light            default white
+;;   :extra-light      default :light
+;;   :ultra-light      default :extra-light
+;;
+;; Specific component colors
+;;   :background              default :extra-dark     * drawing background
+;;   :text                    default :light          * text color              
+;;   :selected-text           default :ultra-light    * highlighted text color
+
+;;   :label                   default :text           * general label color     
+;;   :title                   default :text           * primary title color                                  
+;;   :minor-border            default :major-border   * minor border color                                  
+;;   :major-border            default :text           * major border color                                  
+;;   :passive-track           default :medium         * slider background track                                  
+;;   :active-track            default :ultra-light    * slider active track                                  
+;;   :minor-tick              default :passive-track  * slider minor tick color                                
+;;   :major-tick              default :minor-tick     * slider major tick color                             
+;;   :handle                  default :active-track   * slider handle color                               
+;;   :button-border           default :minor-border   * button border color                               
+;;   :selected-button-border  default :selected-text  * highlighted button border                                
+;;   :checkbox                default :selected-text  * highlighted checkbox color                                 
+;;   :checkbox-rim            default :button-border  * normal checkbox color                                
+;;   :envelope-background     default :background     *                               
+;;   :envelope-border         default :minor-border   *                                
+;;   :envelope-segment        default :text           *                        
+;;   :envelope-selected       default :selected-text  *                                 
+;;   :envelope-handle         default :handle         *                          
+;;   :dbar-inactive           default :background     *                              
+;;   :dbar-active             default :text           *                                 
+;;
+;; Additional properties
+;;   :icon-prefix             Should be one of "black", "gray" or "white"
+;;   :selected-icon-prefix    Should be "black", "gray" or "white" and different from icon-prefix
+;;   :checkbox-style          vector defined point style for selected checkboxes, see sgwr checkbox
+;;   :checkbox-size           int defines selected checkbox component size in pixels
+;;   :checkbox-rim-radius     int sets roundness for checkboxes, if radius = 0, checkboxes are square
+;;   :handle-style            default [:dot :fill]
+;;   :handle-size             default 4
+;;   :occluder                color used to indicate disabled components which should
+;;                            have some transparency. 
+;;   :dbar-style              Display bar style, one of :matrix, :sixteen or :basic
 
 
+(defn create-skin-map [name parent & {:keys [icon-prefix icon-selected-prefix
+                                             ultra-dark extra-dark dark
+                                             medium
+                                             light extra-light ultra-light
+                                             background text selected-text
+                                             label title minor-border major-border
+                                             handle handle-style handle-size
+                                             passive-track active-track minor-tick major-tick
+                                             button-border button-selected-border 
+                                             checkbox checkbox-rim checkbox-style checkbox-size checkbox-rim-radius
+                                             env-background env-border env-segment env-selected env-handle
+                                             dbar-inactive dbar-active dbar-style
+                                             occluder]
+                                      :or {icon-prefix nil
+                                           icon-selected-prefix nil
+                                           ultra-dark :extra-dark
+                                           extra-dark :dark
+                                           dark nil
+                                           medium :light
+                                           light nil
+                                           extra-light :light
+                                           ultra-light :extra-light
+                                           background :extra-dark
+                                           text :light
+                                           selected-text :ultra-light
+                                           label :text
+                                           title :text
+                                           minor-border :major-border
+                                           major-border :text
+                                           handle :active-track
+                                           handle-style nil
+                                           handle-size nil
+                                           passive-track :text
+                                           active-track :ultra-light
+                                           minor-tick :passive-track
+                                           major-tick :minor-tick
+                                           button-border :minor-border
+                                           button-selected-border :selected-text
+                                           checkbox :selected-text
+                                           checkbox-rim :button-border
+                                           checkbox-style nil
+                                           checkbox-size nil
+                                           checkbox-rim-radius nil
+                                           env-background :background
+                                           env-border :minor-border
+                                           env-segment :text
+                                           env-selected :selected-text
+                                           env-handle :handle
+                                           dbar-inactive :background
+                                           dbar-active :selected-text
+                                           dbar-style nil
+                                           occluder :background}}]
+  {:skin name
+   :parent parent
+   :icon-prefix icon-prefix
+   :icon-selected-prefix icon-selected-prefix
+   :ultra-dark ultra-dark
+   :extra-dark extra-dark
+   :dark dark
+   :medium medium
+   :light light
+   :extra-light extra-light
+   :ultra-light ultra-light
+   :background background
+   :text text
+   :selected-text selected-text
+   :label label
+   :title title
+   :minor-border minor-border
+   :major-border major-border
+   :handle handle
+   :handle-style handle-style
+   :handle-size handle-size
+   :passive-track passive-track
+   :active-track active-track
+   :minor-tick minor-tick
+   :major-tick major-tick
+   :button-border button-border
+   :button-selected-border button-selected-border
+   :checkbox checkbox
+   :checkbox-rim checkbox-rim
+   :checkbox-style checkbox-style
+   :checkbox-size checkbox-size
+   :checkbox-rim-radius checkbox-rim-radius
+   :env-background env-background
+   :env-border env-border
+   :env-segment env-segment
+   :env-selected env-selected
+   :env-handle env-handle
+   :dbar-inactive dbar-inactive
+   :dbar-active dbar-active
+   :dbar-style dbar-style
+   :occluder occluder})
+                                      
+(def default-skin-map (create-skin-map "Default" nil
+                                       :icon-prefix "black"
+                                       :icon-selected-prefix "gray"
+                                       :dark (uc/color :black)
+                                       :medium (uc/color :gray)
+                                       :light (uc/color :white)
+                                       :handle-style [:dot :fill]
+                                       :handle-size 4
+                                       :checkbox-style [:dot :fill]
+                                       :checkbox-size 3
+                                       :checkbox-rim-radius 18
+                                       :dbar-style :basic))
+
+(def autumn-map (create-skin-map "Autumn" 
+                                 default-skin-map
+                                 :ultra-dark     (uc/color [ 68  40  24])
+                                 :extra-dark     (uc/color [178 106  64])
+                                 :dark           (uc/color [252 191 122])
+                                 :light          (uc/color [255 227 197])
+                                 :ultra-light    (uc/color [255 245 234])
+                                 ))
+
+(def graphite-map (create-skin-map "Graphite"
+                                   default-skin-map
+                                   :icon-prefix "white"
+                                   :icon-selected-prefix "black"
+                                   :ultra-dark  (uc/color :black)
+                                   :extra-dark  (uc/color [ 50  50  50])
+                                   :dark        (uc/color [ 66  66  66])
+                                   :medium      (uc/color [123 123 123])
+                                   :light       (uc/color [180 180 180])
+                                   :extra-light (uc/color [245 247 251])
+                                   :ultra-light (uc/color [201 179 208])
+                                   :major-tick  (uc/color [180 180 180])
+                                   :dbar-style :matrix
+                                   ))
+
+(def graphite-aqua-map (create-skin-map "Graphite Aqua"
+                                        graphite-map
+                                        :ultra-light  (uc/color [ 80 114 237])
+                                        :background   (uc/color [ 87  87  87])
+                                        :dbar-style   :sixteen
+                                        ))
+
+(def schemes 
+  {"Default" default-skin-map
+   "Autumn" autumn-map
+   "Graphite" graphite-map
+   "Graphite Aqua" graphite-aqua-map
+   })
+
+                                           
+(defn skin-color
+  ([skin-map key]
+   (let [val (get skin-map key)]
+     (cond (keyword? val)(skin-color skin-map val)
+           val val
+           :default (skin-color (:parent skin-map) key))))
+  ([key]
+   (skin-color (get schemes (config/current-skin)) key)))
+
+;; DON NOT USE to extract color from skin-map!
+(defn skin-value 
+  ([skin-map key]
+   (let [val (get skin-map key)]
+     (or val (skin-value (:parent skin-map) key))))
+  ([key]
+   (skin-value (get schemes (config/current-skin)) key)))
 
 
-;; ***********************************
-;; *** START DEPRECIATED FUNCTIONS ***
-;; ***********************************
-(defn- depreciated-lnf-property [key default]
-  (fn []
-    (println (format "DEPRECIATION WARNING  depreciated-lnf-property function executed  key = %s" key))
-    (property (config/current-skin) key (apply default nil))))
+;; (defn- def-lnf-color [key]
+;;   (fn [](skin-color key)))
 
-(defn temp [] (uc/color :gray))
-(def title-color            (depreciated-lnf-property :title-color temp))
-(def text-color             (depreciated-lnf-property :title-color temp))
-(def selected-text-color             (depreciated-lnf-property :title-color temp))
-(def text-selected-color             (depreciated-lnf-property :title-color temp))
-(def dbar-inactive-color    (depreciated-lnf-property :dbar-inactive-color temp))
-(def dbar-active-color      (depreciated-lnf-property :dbar-active-color temp))
-(def major-border-color     (depreciated-lnf-property :major-border-color temp))
-(def minor-border-color     (depreciated-lnf-property :minor-border-color temp))
-(def button-border-color    (depreciated-lnf-property :button-border-color temp))
-(def button-selected-border (depreciated-lnf-property :button-selected-border temp))
-(def passive-track-color    (depreciated-lnf-property :passive-track-color temp))
-(def active-track-color     (depreciated-lnf-property :active-track-color temp))
-(def alternate-track-color  (depreciated-lnf-property :alternate-track-color temp))
-(def slider-handle-color    (depreciated-lnf-property :slider-handle-color temp))
-(def major-tick-color       (depreciated-lnf-property :major-tick-color temp))
-(def minor-tick-color       (depreciated-lnf-property :minor-tick-color temp))
-;(def envelope-background    (depreciated-lnf-property :envelope-background temp))
-(def envelope-border-color  (depreciated-lnf-property :envelope-border-color temp))
-(def envelope-line-color    (depreciated-lnf-property :envelope-line-color temp))
-(def envelope-selected-line-color (depreciated-lnf-property :envelope-selected-line-color temp))
-(def envelope-handle-color  (depreciated-lnf-property :envelope-handle-color temp))
-(def occluder-color         (depreciated-lnf-property :occluder-color temp))
-;; *********************************
-;; *** END DEPRECIATED FUNCTIONS ***
-;; *********************************
+(defn lnf-color [key]
+  (fn [](skin-color key)))
+          
+(def dark (lnf-color                    :dark))
+(def extra-dark (lnf-color              :extra-dark))
+(def ultra-dark (lnf-color              :ultra-dark))
+(def light (lnf-color                   :light))
+(def extra-light (lnf-color             :extra-light))
+(def ultra-light (lnf-color             :ultra-light))
+(def medium (lnf-color                  :medium))
+(def background (lnf-color              :background))
+(def occluder (lnf-color                :occluder))
+(def text (lnf-color                    :text))
+(def selected-text (lnf-color           :selected-text))
+(def label (lnf-color                   :label))
+(def title (lnf-color                   :title))
+(def minor-border (lnf-color            :minor-border))
+(def major-border (lnf-color            :major-border))
+(def passive-track (lnf-color           :passive-track))
+(def active-track (lnf-color            :active-track))
+(def minor-tick (lnf-color              :minor-tick))
+(def major-tick (lnf-color              :major-tick))
+(def handle (lnf-color                  :handle))
+(def button-border (lnf-color           :button-border))
+(def button-selected-border (lnf-color  :button-selected-border))
+(def checkbox (lnf-color                :checkbox))
+(def checkbox-rim-radius (lnf-color     :checkbox-rim-radius))
+(def checkbox-rim (lnf-color            :checkbox-rim))
+(def checkbox-style (lnf-color          :checkbox-style))
+(def checkbox-size (lnf-color           :checkbox-size))
+(def envelope-background (lnf-color     :env-background))
+(def envelope-border (lnf-color         :env-border))
+(def envelope-segment (lnf-color        :env-segment))
+(def envelope-selected (lnf-color       :env-selected))
+(def envelope-handle (lnf-color         :env-handle))
+(def dbar-inactive (lnf-color           :dbar-inactive))
+(def dbar-active (lnf-color             :dbar-active))
+(def occluder (lnf-color                :occluder))
+           
+(defn selected-button-border []
+  (umsg/warning "lnf/selected-button-border is DEPRECIATED, use button-selected-border")
+  (button-selected-border))
+
+(defn lnf-value [key]
+  (fn [](skin-value key)))
+
+(def icon-prefix (lnf-value              :icon-prefix))
+(def icon-selected-prefix (lnf-value     :icon-selected-prefix))
+(def checkbox-rim-radius (lnf-value      :checkbox-rim-radius))
+(def checkbox-style (lnf-value           :checkbox-style))
+(def checkbox-size (lnf-value            :checkbox-size))
+(def dbar-style  (lnf-value  :dbar-style))
+(def handle-style (lnf-value             :handle-style))
+(def handle-size (lnf-value              :handle-size))
 
 
 ;; Set initial skin
