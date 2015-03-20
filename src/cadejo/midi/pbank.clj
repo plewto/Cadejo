@@ -14,8 +14,8 @@
 (def program-count 128)
 
 (defn- assert-midi-program-number [pnum]
-  (or (and (integer? pnum)(>= pnum 0)(< pnum program-count) pnum)
-      (umsg/warning (format "%s is not a valid MIDI program number" pnum))))
+  (or (and (integer? pnum)(>= pnum 0)(< pnum program-count) pnum)))
+;      (umsg/warning (format "%s is not a valid MIDI program number" pnum))))
 
 
 (defprotocol PBank
