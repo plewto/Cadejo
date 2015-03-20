@@ -158,7 +158,6 @@
               d)
         tools (.tool-root drw)
         [x0 y0] [0 670]
-        dummy-1 (sfactory/fpo drw [x0 y0] :style [:dot] :size 3 :color :blue) ;; DEBUG
         x-gap 20
         y-gap 20
         x1 (+ x0 x-gap)
