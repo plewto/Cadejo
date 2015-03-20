@@ -7,6 +7,9 @@
            java.awt.geom.Point2D))
 
 
+(defn is-color? [obj]
+  (= (type obj) java.awt.Color))
+
 ;; (defn str-rep-color [c]
 ;;   "Returns string representation of color as vector of int RGB values"
 ;;   (println (type c)) ;; DEBUG
@@ -23,7 +26,7 @@
     (cond (= c java.awt.GradientPaint)
           "Gradient"
 
-          (= c java.awt.Color)
+          (= ct java.awt.Color)
           (let [r (.getRed c)
                 g (.getGreen c)
                 b (.getBlue c)
