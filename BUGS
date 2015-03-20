@@ -118,3 +118,19 @@ bug but flatten still does not work, which leads to a new bug re[port 0010
 # ---------------------------------------------------------- BUG 0010 OPEN
 BUG 0010 2015.02.04 sgwr drawing flatten not implemented.
 
+
+# ---------------------------------------------------------- BUG 0011 OPEN
+2015.03.20 sgwr slider release action causing null pointer exception
+
+cadejo.instruments.alias.editor.test=> Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException
+	at clojure.lang.Numbers.multiply(Numbers.java:3635)
+	at sgwr.util.math$clipped_linear_function$fn__6637.invoke(math.clj:37)
+	at sgwr.tools.slider$compose_release_action$fn__11169.invoke(slider.clj:106)
+	at sgwr.components.drawing$drawing$fn__10604.invoke(drawing.clj:390)
+	at sgwr.components.drawing.proxy$java.lang.Object$MouseListener$1cd75d49.mouseReleased(Unknown Source)
+	at java.awt.Component.processMouseEvent(Component.java:6525)
+	at javax.swing.JComponent.processMouseEvent(JComponent.java:3321)
+	at sgwr.components.drawing.proxy$javax.swing.JPanel$0.processMouseEvent(Unknown Source)
+	at java.awt.Component.processEvent(Component.java:6290)
+	at java.awt.Container.processEvent(Container.java:2234)
+	at sgwr.components.drawing.proxy$javax.swing.JPanel$0.processEvent(Unknown Source)
