@@ -2,6 +2,7 @@
   (:require [cadejo.config :as config])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [sgwr.components.drawing])
   (:require [sgwr.components.line :as line])
   (:require [sgwr.components.point :as point])
   (:require [sgwr.components.rectangle :as rect])
@@ -12,17 +13,31 @@
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.slider :as slider])
   (:require [sgwr.tools.multistate-button :as msb])
-  (:require [sgwr.util.color :as uc])
-  )
+  (:require [sgwr.util.color :as uc]))
+
+
+
 
 
 ; ---------------------------------------------------------------------- 
 ;                            Borders and Regions
 
+
+(defn sgwr-drawing [width height]
+  (let [drw (sgwr.components.drawing/native-drawing width height)]
+    (.background! drw (lnf/background))
+    drw))
+
 (defn minor-border [drw p0 p1 & {:keys [radius]
                                  :or {radius 12}}]
   (rect/rectangle (.root drw) p0 p1 :id :minor-border
                   :color (lnf/minor-border)
+                  :radius radius))
+
+(defn major-border [drw p0 p1 & {:keys [radius]
+                                 :or {radius 12}}]
+  (rect/rectangle (.root drw) p0 p1 :id :minor-border
+                  :color (lnf/major-border)
                   :radius radius))
 
 
@@ -91,6 +106,7 @@
 (def slider-length 150)
 (def minor-tick-length 4)
 (def major-tick-length 8)
+(def tick-label-offsets [-60 5])
 
 (defn vslider [drw ieditor id p0 v0 v1 drag-action & {:keys [passive-track active-track
                                                              passive-width active-width
@@ -137,6 +153,35 @@
                  :color c)
       (swap! y* (fn [q](- q delta))))))
     
+(defn major-tick 
+  ([drw xc y]
+   (let [x1 (- xc major-tick-length)
+         x2 (+ xc major-tick-length)]
+     (line/line (.root drw) [x1 y][x2 y] 
+                :id :major-tick
+                :color (lnf/major-tick))))
+
+  ([drw xc y txt offsets]
+   (major-tick drw xc y)
+   (let [[xoff yoff] offsets
+         xt (+ xc major-tick-length (first offsets))
+         yt (+ y (second offsets))]
+     (label drw [xt yt] (str txt) :size 6.0)))
+
+  ([drw xc y txt]
+   (major-tick drw xc y txt tick-label-offsets)))
+   
+(defn hrule [drw x0 x1 y & {:keys [color style width]
+                                :or {color (lnf/major-tick)
+                                     style :solid
+                                     width 1}}]
+  (let [root (.root drw)]
+    (line/line root [x0 y][x1 y] :id :hrule 
+               :style style :color color :width width)))
+    
+        
+        
+
         
                  
                                             
@@ -152,8 +197,9 @@
     (get {:matrix 25 :sixteen 20 :basic 20} sty 25)))
   
 
-(defn displaybar [drw p0 count]
-  (let [db (dbar/displaybar (.root drw)(first p0)(second p0) count (lnf/dbar-style)
+(defn displaybar [drw p0 count & {:keys [style]
+                                  :or {style nil}}]
+  (let [db (dbar/displaybar (.root drw)(first p0)(second p0) count (or style (lnf/dbar-style))
                             :cell-width (dbar-cell-width)
                             :cell-height (dbar-cell-height))]
     (.colors! db (lnf/dbar-inactive)(lnf/dbar-active))

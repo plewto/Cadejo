@@ -683,7 +683,7 @@
                                              :ultra-light   (uc/color [218 224 235])
                                              :passive-track :dark
                                              :active-track  :light
-                                             :handle-style  [:chevron-n :edge-s]
+                                             :handle-style  [:chevron-w :dash]
                                              :minor-tick    :medium
                                              :env-background :ultra-dark
                                              :dbar-style    :sixteen

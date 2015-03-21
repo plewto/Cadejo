@@ -453,7 +453,7 @@
 
 (load-gui! true)
 (initial-skin! "Twilight")
-(displaybar-style! nil)    ; nil -> use lnf
+(displaybar-style! :basic)    ; nil -> use lnf
 (enable-pp! false)
 (maximum-scene-count! 2)   ; ISSUE check if max-scene-count ios still respected
 (maximum-undo-count! 10)

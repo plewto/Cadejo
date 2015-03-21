@@ -9,5 +9,5 @@
                  [com.github.insubstantial/substance "7.1"]
                  [overtone "0.9.1"]]
   :main cadejo.core
-  ;:main cadejo.ui.util.lnf
+  ;:main cadejo.instruments.alias.editor.test
   )

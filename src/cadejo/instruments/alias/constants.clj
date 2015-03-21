@@ -437,4 +437,10 @@
                             :echo2-pan (:echo2-pan initial-program)
                             :dry-mix 0
                             :amp 0.20})
-                            
+
+
+(def max-port-time 0.5) 
+(def max-lag-time 0.5)                           
+(def slider-spacing 50)
+(def min-amp-db -48)
+(def max-amp-db 0)
