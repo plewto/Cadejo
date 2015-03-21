@@ -44,7 +44,7 @@
                                                    (format "frequency op %d" n)
                                                    :validator (fn [q]
                                                                 (let [f (math/str->float q)]
-                                                                  (>= f 0)))
+                                                                  (and f (>= f 0))))
                                                    :callback (fn [_]
                                                                (let [s (.current-display dbar-freq)
                                                                      f (math/str->float s)]
