@@ -5,7 +5,7 @@
   ;; (:require [cadejo.ui.instruments.subedit :as subedit])
   ;; (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.instruments.alias.editor.osc-editor :as osced])
-  ;; (:require [cadejo.instruments.alias.editor.noise-editor :as noiseed])
+  (:require [cadejo.instruments.alias.editor.noise-editor :as noiseed])
   ;; (:require [cadejo.instruments.alias.editor.mixer-editor :as mixer])
   ;; (:require [cadejo.instruments.alias.editor.filter-editor :as filter])
   ;; (:require [cadejo.instruments.alias.editor.efx-editor :as efxed])
@@ -23,10 +23,12 @@
         osc1 (osced/osc-editor 1 ied)
         osc2 (osced/osc-editor 2 ied)
         osc3 (osced/osc-editor 3 ied)
+        nse (noiseed/noise-editor ied)
         ]
-    (.add-sub-editor! ied "Osc 1" :wave :sawpos "Edit Oscillator 1" osc1)
-    (.add-sub-editor! ied "Osc 2" :wave :pulse "Edit Oscillator 2" osc2)
-    (.add-sub-editor! ied "Osc 3" :wave :sine "Edit Oscillator 3" osc3)
+    (.add-sub-editor! ied "Osc 1" :wave :sawpos "Oscillator 1" osc1)
+    (.add-sub-editor! ied "Osc 2" :wave :pulse "Oscillator 2" osc2)
+    (.add-sub-editor! ied "Osc 3" :wave :sine "Oscillator 3" osc3)
+    (.add-sub-editor! ied "Noise" :wave :noise "Noise/Ring Modulator" nse)
 
     ied))
 

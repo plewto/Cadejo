@@ -1,7 +1,7 @@
 (ns cadejo.instruments.alias.editor.osc-editor
   (:require [cadejo.instruments.alias.constants :as constants])
-  (:require [cadejo.instruments.alias.editor.matrix-editor :as matrix :reload true])
-  (:require [cadejo.ui.util.sgwr-factory :as sfactory :reload true])
+  (:require [cadejo.instruments.alias.editor.matrix-editor :as matrix])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.instruments.subedit :as subedit])
@@ -9,8 +9,7 @@
   (:require [sgwr.indicators.displaybar :as dbar])
   (:require [sgwr.tools.multistate-button :as msb])
   (:require [sgwr.tools.slider :as slider])
-  (:require [seesaw.core :as ss])
-  )
+  (:require [seesaw.core :as ss]))
 
 (def width 1160)
 (def height 500)

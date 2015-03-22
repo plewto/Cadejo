@@ -675,12 +675,15 @@
 
 (def ^:private twilight-map (create-skin-map "Twilight"
                                              default-skin-map
+                                             :icon-prefix "gray"
+                                             :icon-selected-prefix "white"
                                              :ultra-dark    (uc/color :black)
                                              :extra-dark    (uc/color [ 57  57  52])
                                              :dark          (uc/color [ 69  67  59])
                                              :medium        (uc/color [140 132  95])
                                              :light         (uc/color [185 180 158])
                                              :ultra-light   (uc/color [218 224 235])
+                                             :background    :ultra-dark
                                              :passive-track :dark
                                              :active-track  :light
                                              :handle-style  [:chevron-w :dash]
