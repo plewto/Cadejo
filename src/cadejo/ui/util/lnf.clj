@@ -507,6 +507,15 @@
                                                         :checkbox-style [:dot]
                                                         :checkbix-size 2))
 
+(def ^:private dust-map (create-sparse-skin-map "Dust"
+                                            default-skin-map))
+
+(def ^:private dust-coffee-map (create-sparse-skin-map "Dust Coffee"
+                                                   dust-map))
+                                                       
+
+
+
 (def ^:private emerald-dusk-map (create-skin-map "Emerald Dusk"
                                                  default-skin-map
                                                  :icon-prefix "gray"
@@ -702,6 +711,8 @@
    "Challenger Deep" challenger-deep-map
    "Creme" creme-map
    "Creme Coffee" creme-coffee-map
+   "Dust" dust-map
+   "Dust Coffee" dust-coffee-map
    "Emerald Dusk" emerald-dusk-map
    "Gemini" gemini-map
    "Graphite" graphite-map

@@ -439,8 +439,18 @@
                             :amp 0.20})
 
 
-(def max-port-time 0.5) 
 (def max-lag-time 0.5)                           
 (def slider-spacing 50)
 (def min-amp-db -48)
 (def max-amp-db 0)
+(def max-filter-gain 8)
+(def max-filter-mod 8000)
+(def max-snh-freq 10)
+(def max-snh-bias  4)
+(def max-snh-scale 4)
+(def max-counter-value 100)
+(def max-counter-step-size 10)
+(def max-counter-bias 10)
+(def min-counter-scale 0)
+(def max-counter-scale 1.0)
+

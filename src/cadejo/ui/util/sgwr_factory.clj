@@ -72,15 +72,27 @@
                                 color nil}}]
   (let [root (.root drw)]
     (text/text root p0 (str txt)
-               :color (or color (lnf/label))
+               :color (or color (lnf/title))
                :style style
                :size size)))
 
-(defn label [drw p0 txt & {:keys [size style color]
+(defn sub-title [drw p0 txt & {:keys [size style color]
+                               :or  {size 8.0
+                                     style :sans-bold
+                                     color nil}}]
+  (text/text (.root drw) p0 (str txt)
+             :size size
+             :style style
+             :color (or color (lnf/title))))
+
+(defn label [drw p0 txt & {:keys [size style color offset]
                            :or {size 6.0
                                 style :mono
-                                color nil}}]
-  (text/text (.root drw) p0 (str txt)
+                                color nil
+                                offset [0 0]}}]
+  (text/text (.root drw) [(+ (first p0)(first offset))
+                          (+ (second p0)(second offset))]
+                          (str txt)
              :color (or color (lnf/label))
              :style style
              :size size))
@@ -112,7 +124,8 @@
                                                              passive-width active-width
                                                              length
                                                              handle-color handle-size handle-style
-                                                             value-hook]
+                                                             value-hook
+                                                             orientation]
                                                       :or {passive-track nil
                                                            passive-width 1
                                                            active-track nil
@@ -121,10 +134,11 @@
                                                            handle-color nil
                                                            handle-size nil
                                                            handle-style nil
-                                                           value-hook identity}}]
+                                                           value-hook identity
+                                                           orientation :vertical}}]
   (let [s (slider/slider (.tool-root drw) p0 length v0 v1
                          :id id
-                         :orientation :vertical
+                         :orientation orientation
                          :drag-action drag-action
                          :track1-color (or passive-track (lnf/passive-track))
                          :track1-width passive-width
@@ -166,11 +180,77 @@
    (let [[xoff yoff] offsets
          xt (+ xc major-tick-length (first offsets))
          yt (+ y (second offsets))]
-     (label drw [xt yt] (str txt) :size 6.0)))
+     (label drw [xt yt] (str txt) :size 6.0 :color (lnf/major-tick))))
 
   ([drw xc y txt]
    (major-tick drw xc y txt tick-label-offsets)))
+
+;; NOTE: y2 must be less then y1!!!! 
+;;
+(defn major-tick-marks [drw xc y1 y2 & {:keys [v0 v1 step frmt x-offset y-offset font-size color]
+                                          :or {v0 -1.0
+                                               v1 1.0
+                                               step 0.5
+                                               frmt "%+4.1f"
+                                               x-offset -40
+                                               y-offset 5
+                                               font-size 6.0
+                                               color nil}}]
+  (let [root (.root drw)
+        vmin (min v0 v1)
+        vmax (max v0 v1)
+        vrange (- vmax vmin)
+        count (/ vrange step)
+        ydiff (- y2 y1)
+        ydelta (/ ydiff count)
+        v* (atom v0)
+        y* (atom y1)]
+    (while (>= @y* y2)
+      (major-tick drw xc @y*)
+      (label drw [(+ xc x-offset)(+ @y* y-offset)]
+             (format frmt @v*)
+             :color (or color (lnf/major-tick))
+             :size font-size)
+      (swap! y* (fn [q](+ q ydelta)))
+      (swap! v* (fn [q](+ q step))))))
    
+
+(defn db-ticks [drw xc y0 & {:keys [min max length step
+                                    tick-length 
+                                    color
+                                    label-offset
+                                    label-size
+                                    label-format]
+                             :or {min -48
+                                  max 0
+                                  length slider-length
+                                  step 6
+                                  tick-length major-tick-length
+                                  color nil
+                                  label-offset [-30  6]
+                                  label-size 6.0
+                                  label-format "%+3d"}}]
+  (let [x1 (- xc tick-length)
+        x2 (+ xc tick-length)
+        diff-val (math/abs (- max min))
+        count (/ diff-val step)
+        delta-y (/ length count)
+        val* (atom min)
+        y* (atom y0)
+        c (or color (lnf/major-tick))
+        root (.root drw)]
+    (while (and (<= @val* max)(< min max))
+      (line/line root [x1 @y*][x2 @y*] :color c)
+      (label drw [x1 @y*] (format label-format @val*)
+             :color c :size label-size :offset label-offset)
+      (swap! val* (fn [q](+ q step)))
+      (swap! y* (fn [q](- q delta-y))))))
+        
+        
+    
+        
+
+
 (defn hrule [drw x0 x1 y & {:keys [color style width]
                                 :or {color (lnf/major-tick)
                                      style :solid
@@ -178,12 +258,6 @@
   (let [root (.root drw)]
     (line/line root [x0 y][x1 y] :id :hrule 
                :style style :color color :width width)))
-    
-        
-        
-
-        
-                 
                                             
 ; ---------------------------------------------------------------------- 
 ;                               Display Bars
@@ -299,6 +373,23 @@
                          :click-action action)]
     cb))
 
+
+; ---------------------------------------------------------------------- 
+;                                  Fields
+
+
+(defn field [drw p0 p1 param-x range-x param-y range-y action & {:keys []
+                                                 :or {}}]
+  (let [f (field/field (.tool-root drw) p0 p1 range-x range-y 
+                       :id :dispersion-field
+                       :drag-action action
+                       :rim-color (lnf/minor-border)
+                       )
+        b (field/ball f :ball1 [(first range-x)(first range-y)]
+                      :color (lnf/handle)
+                      :style [:dot :fill]
+                      :size 3)]
+    [f b]))
 
 ; ---------------------------------------------------------------------- 
 ;                              Test Positions

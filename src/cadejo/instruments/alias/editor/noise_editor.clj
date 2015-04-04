@@ -1,7 +1,7 @@
 (ns cadejo.instruments.alias.editor.noise-editor
   (:require [cadejo.instruments.alias.constants :as constants])
-  (:require [cadejo.instruments.alias.editor.matrix-editor :as matrix :reload true])
-  (:require [cadejo.ui.util.sgwr-factory :as sfactory :reload true])
+  (:require [cadejo.instruments.alias.editor.matrix-editor :as matrix])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.ui.instruments.subedit :as subedit])
@@ -13,17 +13,17 @@
   (:require [seesaw.core :as ss]))
 
 
-(def width 1600)                        ; TEMP
-(def height 380)
-(def min-noise-filter 10)
-(def max-noise-filter 16000)
-(def min-db constants/min-amp-db)
-(def max-db constants/max-amp-db)
+(def ^:private width 1600) 
+(def ^:private height 500)
+(def ^:private x-matrix-overview 1300)
+(def ^:private y-matrix-overview 330)
+(def ^:private min-noise-filter 10)
+(def ^:private max-noise-filter 16000)
+(def ^:private min-db constants/min-amp-db)
+(def ^:private max-db constants/max-amp-db)
 
 (declare draw-background)
 (declare create-editor)
-
-
 
 (defn noise-editor [ied]
  (let [p0 [0 height]
@@ -31,6 +31,7 @@
              (draw-background d p0)
              d)
        editor (create-editor drw ied p0)
+       matrix-overview (matrix/matrix-overview drw [(+ (first p0) x-matrix-overview)(- (second p0) y-matrix-overview -20)])
        pan-main (ss/scrollable (ss/vertical-panel :items [(.canvas drw)]))
        widget-map {:pan-main pan-main
                    :drawing drw}
@@ -45,6 +46,7 @@
             (init! [this]  ) ;; not implemented
             (sync-ui! [this]
               (let [dmap (.current-data (.bank (.parent-performance ied)))]
+                (matrix-overview dmap)
                 (editor dmap)
                 (.render drw))))]
    ed))
@@ -59,6 +61,7 @@
 ;;
 (defn- coordinates [main sub p0]
   (let [[x0 y0] p0
+        x-logo (+ x0 60)
         x-nse (+ x0 32)
         x-nse-crackle (+ x-nse 40)
         x-nse-filter (+ x-nse-crackle 60)
@@ -90,13 +93,14 @@
         x-rm-border0 x-rm
         x-rm-border1 (+ x-rm-border0 650)
         y-title (- y0 310)
+        y-logo (- y0 492)
         y-slider1 (- y0 111)
         y-slider2 (- y0 sfactory/slider-length)
         y-source (+ y-slider1 33)
         y-border0 (- y0 20)
         y-border1 (- y-border0 330)
         y-help (- y-title 25)
-        nse-x-map {:crackle x-nse-crackle,
+        nse-x-map {:crackle x-nse-crackle, :logo x-logo
                    :filter x-nse-filter,
                    :depth1 x-nse-d1, :lag1 x-nse-l1, :source1 x-nse-s1,
                    :depth2 x-nse-d2, :lag2 x-nse-l2, :source2 x-nse-s2,
@@ -110,7 +114,7 @@
                   :title  x-rm-title, :help x-rm-help
                   :border0 x-rm-border0, :border1 x-rm-border1}
         y-map {:title y-title, :help y-help :source1 y-source, :source2  y-source,
-               :slider1 y-slider1, :slider2 y-slider2
+               :slider1 y-slider1, :slider2 y-slider2, :logo y-logo
                :border0 y-border0, :border1 y-border1}
         x-map (main {:nse nse-x-map :rm rm-x-map})
         x (get x-map sub)
@@ -126,6 +130,8 @@
         label (fn [main sub text xoffset]
                 (let [[xt yt](coordinates main sub p0)]
                   (sfactory/label bg [(- xt xoffset)(+ yt 23)] text)))
+        [x0 y0] p0
+        [x-logo y-logo](coordinates :nse :logo p0)
         [x-crack y-slider1](coordinates :nse :crackle p0)
         x-filter (first (coordinates :nse :filter p0))
         x-carrier (first (coordinates :rm :carrier p0))
@@ -150,7 +156,7 @@
     (label :nse :lag1 "Lag" 10)
     (label :nse :depth2 "Dpth" 15)
     (label :nse :lag2 "Lag" 10)
-    (label :nse :mix "Mix(db)" 19)
+    (label :nse :mix "Mix" 10)
     (label :nse :pan "Pan" 10)
     (sfactory/label bg [(+ x-d1 50)(+ y-slider1 60)] "-- Bus --")
     (sfactory/label bg [(+ x-d3 50)(+ y-slider1 60)] "-- Bus --")
@@ -160,8 +166,9 @@
     (label :rm :lag1 "Lag" 10)
     (label :rm :depth2 "Dpth" 15)
     (label :rm :lag2 "Lag" 10)
-    (label :rm :mix "Mix(db)" 19)
+    (label :rm :mix "Mix" 10)
     (label :rm :pan "Pan" 10)
+    (sfactory/label bg [(+ x0 x-matrix-overview)(- y0 y-matrix-overview)] "Bus Assignments:")
     ;; unsigned minor ticks
     (doseq [x [x-crack x-l1 x-l2 x-l3 x-l4]]
       (sfactory/minor-ticks bg x y-slider1 y-slider2 10))
@@ -177,20 +184,8 @@
           (sfactory/major-tick bg x @y* (format "%+4.1f" @val*) [-50 5]))
         (swap! val* (fn [q](+ q delta-v)))
         (swap! y* (fn [q](- q delta-y)))))
-    ;; mixer ticks
-    (let [diff (- max-db min-db)
-          delta-v 6
-          count (/ diff delta-v)
-          delta-y (/ sfactory/slider-length count)
-          val* (atom nil)
-          y* (atom nil)]
-      (doseq [x [x-mix1 x-mix2]]
-        (reset! val* min-db)
-        (reset! y* y-slider1)
-        (while (<= @val* max-db)
-          (sfactory/major-tick bg x @y* (format "%+3d" (int @val*)) [-50 5])
-          (swap! val* (fn [q](+ q delta-v)))
-          (swap! y* (fn [q](- q delta-y))))))
+    (doseq [x [x-mix1 x-mix2]]
+      (sfactory/db-ticks bg x y-slider1))
     ;; pan labels
     (doseq [x [x-pan1 x-pan2]]
       (sfactory/label bg [(+ x 15)(+ y-slider1 5)] "Filter 1" :size 5.0)
@@ -217,6 +212,8 @@
     (sfactory/minor-border bg
                            (coordinates :rm :border0 p0)
                            (coordinates :rm :border1 p0))
+    (image/read-image (.root bg) [x-logo y-logo] 
+                      (format "resources/alias/noise_logo.png"))
     (.render bg)
     (let [iobj (image/image (.root ddrw) [0 0] width height :id :background-image)]
       (.put-property! iobj :image (.image bg))
@@ -335,15 +332,15 @@
         b-nse-s2 (matrix/source-button drw ied param-nse-s2 (coordinates :nse :source2 p0))
         b-rm-s1  (matrix/source-button drw ied param-rm-s1 (coordinates :rm :source1 p0))
         b-rm-s2  (matrix/source-button drw ied param-rm-s2 (coordinates :rm :source2 p0))
-        noise-help-action (fn [& _]
-                           (println "ISSUE: Alias Noise Help action not implemented")
-                           )
+        ;; noise-help-action (fn [& _]
+        ;;                    (println "ISSUE: Alias Noise Help action not implemented")
+        ;;                    )
 
-        rm-help-action (fn [& _]
-                         (println "ISSUE: Alias Ringmodulator Help action not implemented")
-                         )
-        b-nse-help (sfactory/help-button drw (coordinates :nse :help p0) :alias-noise noise-help-action)
-        b-rm-help (sfactory/help-button drw (coordinates :rm :help p0) :alias-ringmod rm-help-action)
+        ;; rm-help-action (fn [& _]
+        ;;                  (println "ISSUE: Alias Ringmodulator Help action not implemented")
+        ;;                  )
+        ;; b-nse-help (sfactory/help-button drw (coordinates :nse :help p0) :alias-noise noise-help-action)
+        ;; b-rm-help (sfactory/help-button drw (coordinates :rm :help p0) :alias-ringmod rm-help-action)
         sync-fn (fn [dmap]
                   (let [crackle (param-nse-crackle dmap)
                         mix1 (param-nse-mix dmap)
