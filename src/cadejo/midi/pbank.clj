@@ -1,7 +1,6 @@
 (println "--> cadejo.midi.pbank")
 
 (ns cadejo.midi.pbank
-  (:use [cadejo.util.trace])
   (:require [cadejo.midi.program])
   (:require [cadejo.config :as config])
   (:require [cadejo.midi.program])

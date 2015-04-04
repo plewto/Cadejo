@@ -1,11 +1,9 @@
 (println "--> cadejo.ui.midi.performance-editor")
 
 (ns cadejo.ui.midi.performance-editor
-  (:use [cadejo.util.trace])
   (:require [cadejo.config :as config])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.midi.bank-editor])
-  ;(:require [cadejo.ui.midi.cceditor-tab])
   (:require [cadejo.ui.midi.cc-properties-panel])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.midi.program-bar])

@@ -20,7 +20,6 @@
   to all of it's children nodes. If the child nodes defines an
   attribute by the same name it switches to that attribute."
 
-  (:use [cadejo.util.trace])
   (:require [sgwr.constants :as constants])
   (:require [sgwr.components.attributes :as att])
   (:require [sgwr.util.utilities :as utilities])

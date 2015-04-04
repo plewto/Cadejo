@@ -1,7 +1,6 @@
 (println "--> cadejo.instruments.descriptor")
 
 (ns cadejo.instruments.descriptor
-  (:use [cadejo.util.trace])
   (:require [cadejo.midi.program])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg])

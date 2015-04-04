@@ -2,7 +2,6 @@
 (ns cadejo.midi.performance
   "A Performance is a node with a single Channel parent and a set of
    sc synths, properties and keymodes. "
-  (:use [cadejo.util.trace])
   (:require [cadejo.config])
   (:require [cadejo.midi.bend-handler])
   (:require [cadejo.midi.pressure-handler])

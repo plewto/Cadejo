@@ -6,7 +6,6 @@
    the current program into a program bank slot. A low priority thread
    updates the program-name display to indicate if the current program has
    unsaved data."
-  (:use [cadejo.util.trace])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.color-utilities :as cutil])
   (:require [cadejo.ui.util.factory :as factory])

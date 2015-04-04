@@ -2,7 +2,6 @@
 (ns sgwr.indicators.displaybar
   "Defines general display bar in terms of 'cells'
    Where each cell implements sgwr.indicators.cell/Cell"
-  (:use [cadejo.util.trace])
   (:require [sgwr.cs.native :as native])
   (:require [sgwr.components.rectangle :as rect])
   (:require [sgwr.indicators.basic-cell :as basic])

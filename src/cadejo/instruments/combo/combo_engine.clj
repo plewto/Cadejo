@@ -1,7 +1,6 @@
 (println "--> Loading Combo organ")
 
 (ns cadejo.instruments.combo.combo-engine
-  (:use [cadejo.util.trace])
   (:use [overtone.core])
   (:use [cadejo.instruments.combo.constants])
   (:require [cadejo.modules.qugen :as qu])
