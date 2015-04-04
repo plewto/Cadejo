@@ -5,6 +5,7 @@
   (:require [cadejo.modules.qugen :as qu])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
+  (:require [cadejo.midi.mono-exclusive])
   (:require [cadejo.midi.performance])
   (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.masa.genpatch])
@@ -255,6 +256,39 @@
        (.reset chanobj)
        performance)))
 
+
+(defn masa-exclusive
+  ([scene chan id & {:keys [cc1 cc4 cc7 cca ccb main-out]
+                     :or {cc1 1
+                          cc4 4
+                          cc7 7
+                          cca 92
+                          ccb 93
+                          main-out 0}}]
+     (let [chanobj (.channel scene chan)
+           keymode (cadejo.midi.mono-exclusive/mono-exclusive-keymode :MASA)
+           performance (create-performance chanobj id keymode main-out
+                                           cc1 cc4 cc7
+                                           cca ccb)
+           vibrato-block (VibratoBlock
+                          :vibrato-depth-bus (.control-bus performance :vibrato-depth)
+                          :vibrato-bus (.control-bus performance :vibrato))
+           voice (ToneBlock :out-bus (.audio-bus performance :tone)
+                            :bend-bus (.control-bus performance :bend)
+                            :vibrato-bus (.control-bus performance :vibrato)
+                            :pedal-bus (.control-bus performance :pedal))
+           efx-block (efx/EfxBlock :in-bus (.audio-bus performance :tone)
+                                   :out-bus main-out
+                                   :volume-bus (.control-bus performance :volume)
+                                   :scanner-mix-bus (.control-bus performance :scanner-mix)
+                                   :reverb-mix-bus (.control-bus performance :reverb-mix))]
+       (.add-synth! performance :vibrato vibrato-block)
+       (.add-synth! performance :efx efx-block)
+       (.add-voice! performance voice)
+       (Thread/sleep 100) 
+       (.reset chanobj)
+       performance)))
+
 (defn masa-poly 
   ([scene chan id & {:keys [cc1 cc4 cc7 cca ccb voice-count main-out]
                      :or {cc1 1
@@ -294,5 +328,6 @@
        (.reset chanobj)
        performance)))
 
+(.add-constructor! masa-descriptor :exclusive masa-exclusive)
 (.add-constructor! masa-descriptor :mono masa-mono)
 (.add-constructor! masa-descriptor :poly masa-poly)

@@ -4,6 +4,7 @@
   (:use [overtone.core])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
+  (:require [cadejo.midi.mono-exclusive])
   (:require [cadejo.midi.performance])
   (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.alias.constants :as constants])
@@ -96,8 +97,8 @@
 ;; ccd - general controller
 ;; cc7 - volume
 
-(defn alias-mono
-  ([scene chan id & {:keys [cca ccb ccc ccd cc7 main-out]
+(defn alias-instance
+  ([scene chan id keymode & {:keys [cca ccb ccc ccd cc7 main-out]
                      :or {cca 1
                           ccb 16
                           ccc 17
@@ -105,7 +106,7 @@
                           cc7 7
                           main-out 0}}]
      (let [chanobj (.channel scene chan)
-           keymode (cadejo.midi.mono-mode/mono-keymode :Alias)
+           ;keymode (cadejo.midi.mono-mode/mono-keymode :Alias)
            performance (create-performance chanobj id keymode main-out
                                            cca ccb ccc ccd cc7)
            bend-bus (.control-bus performance :bend)
@@ -218,4 +219,30 @@
        (.reset chanobj)
        performance)))
 
+(defn alias-exclusive [scene chan id  & {:keys [cca ccb ccc ccd cc7 main-out]
+                                    :or {cca 1
+                                         ccb 16
+                                         ccc 17
+                                         ccd 4
+                                         cc7 7
+                                         main-out 0}}]
+  (let [km (cadejo.midi.mono-exclusive/mono-exclusive-keymode :Alias)]
+    (alias-instance scene chan id km 
+                    :cca cca :ccb ccb :ccc ccc :ccd ccd
+                    :cc7 cc7 :main-out main-out)))
+
+(defn alias-mono [scene chan id  & {:keys [cca ccb ccc ccd cc7 main-out]
+                                    :or {cca 1
+                                         ccb 16
+                                         ccc 17
+                                         ccd 4
+                                         cc7 7
+                                         main-out 0}}]
+  (let [km (cadejo.midi.mono-mode/mono-keymode :Alias)]
+    (alias-instance scene chan id km 
+                    :cca cca :ccb ccb :ccc ccc :ccd ccd
+                    :cc7 cc7 :main-out main-out)))
+
+
+(.add-constructor! alias-descriptor :exclusize alias-exclusive)
 (.add-constructor! alias-descriptor :mono alias-mono)

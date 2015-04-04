@@ -11,6 +11,7 @@
   (:require [cadejo.instruments.combo.data])
   (:require [cadejo.instruments.combo.editor.combo-editor :as combo-ed])
   (:require [cadejo.midi.mono-mode])
+  (:require [cadejo.midi.mono-exclusive])
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance]))
 
@@ -210,5 +211,32 @@
          (.reset chanobj)
          performance))))
 
+(defn combo-mono-exclusive
+  ([scene chan id & {:keys [cc1 main-out]
+                     :or {cc1 1
+                          main-out 0}}]
+     (let [chanobj (.channel scene chan)
+           keymode (cadejo.midi.mono-exclusive/mono-exclusive-keymode :Combo)
+           performance (create-performance chanobj id keymode cc1)
+           vibrato-bus (.control-bus performance :vibrato)
+           vibrato-depth-bus (.control-bus performance cc1)
+           bend-bus (.control-bus performance :bend)
+           tone-bus (.audio-bus performance :tone)
+           lfo (LFO :vibrato-bus vibrato-bus
+                    :vibrato-depth-bus vibrato-depth-bus)
+           voice (ToneBlock :bend-bus bend-bus
+                            :vibrato-bus vibrato-bus
+                            :out-bus tone-bus)
+           efx (EfxBlock :in-bus tone-bus
+                         :out-bus main-out)]
+       (.add-synth! performance :lfo lfo)
+       (.add-synth! performance :efx efx)
+       (.add-voice! performance voice)
+       (.reset chanobj)
+       (Thread/sleep 100)
+       performance)))
+
+
+(.add-constructor! combo-descriptor :exclusive combo-mono-exclusive)
 (.add-constructor! combo-descriptor :mono combo-mono)
 (.add-constructor! combo-descriptor :poly combo-poly)

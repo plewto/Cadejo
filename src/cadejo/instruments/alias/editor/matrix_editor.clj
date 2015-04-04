@@ -12,7 +12,7 @@
 
 
 (def ^:private c1 (lnf/text))
-(def ^:private c2 (lnf/selected-text))
+(def ^:private c2 (lnf/text))
 (def ^:private c3 (uc/color :red))
 
 (def ^:private general-bus-states  
