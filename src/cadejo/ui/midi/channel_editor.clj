@@ -286,6 +286,7 @@
 
                 (sync-ui! [this]
                   (.removeAll tbar-performance)
+                  (.add tbar-performance (ss/label :text "Shift/Click to remove "))
                   (doseq [p (.children chanobj)]
                     (let [itype (.get-property p :instrument-type)
                           id (.get-property p :id)
@@ -301,11 +302,14 @@
                                                     sed (.get-editor (.get-scene performance))
                                                     id (.getClientProperty src :id)]
                                                 (cond (= mods 17) ; shift+click remove performance
-                                                      (let [ped (.get-editor performance)] 
+                                                      (let [ped (.get-editor performance)
+                                                            dim (.getSize (.frame sed))]
                                                         (.remove-performance! chanobj id)
                                                         (.setVisible pframe false)
                                                         (.dispose pframe)
                                                         (.sync-ui! sed)
+                                                        (.setSize (.frame sed)(int (.getWidth dim))(int (.getHeight dim))) 
+                                                        (.validate (.frame sed))
                                                         (.status! chaned (format "Performance %s removed" id)))
 
                                                       :default ; hide/show performance editor
