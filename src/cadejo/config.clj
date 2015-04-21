@@ -452,7 +452,7 @@
 ; "Twilight"
 
 (load-gui! true)
-(initial-skin! "Raven")
+(initial-skin! "Twilight")
 (displaybar-style! :basic)    ; nil -> use lnf
 (enable-pp! false)
 (maximum-scene-count! 2)   ; ISSUE check if max-scene-count is respected

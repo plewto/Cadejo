@@ -824,10 +824,11 @@
 (def checkbox-rim-radius (lnf-value      :checkbox-rim-radius))
 (def checkbox-style (lnf-value           :checkbox-style))
 (def checkbox-size (lnf-value            :checkbox-size))
-(def dbar-style  (lnf-value  :dbar-style))
 (def handle-style (lnf-value             :handle-style))
 (def handle-size (lnf-value              :handle-size))
-
+(defn dbar-style []
+  (or (config/displaybar-style)
+      (skin-value :dbar-style)))
 
 ;; Set initial skin
 ;;
