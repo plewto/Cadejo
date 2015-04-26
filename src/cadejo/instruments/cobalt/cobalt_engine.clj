@@ -8,10 +8,13 @@
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
   (:require [cadejo.midi.performance])
-  (:require [cadejo.instruments.cobalt.constants :as con :reload true])
-  (:require [cadejo.instruments.cobalt.program :reload true])
-  (:require [cadejo.instruments.cobalt.vibrato :reload true])
-  (:require [cadejo.instruments.cobalt.efx :reload true]))
+  (:require [cadejo.instruments.cobalt.constants :as con])
+  (:require [cadejo.instruments.cobalt.vibrato])
+  (:require [cadejo.instruments.cobalt.efx])
+  (:require [cadejo.instruments.cobalt.program])
+  (:require [cadejo.instruments.cobalt.data])
+  (:require [cadejo.instruments.cobalt.pp :as pp])
+)
 
 (def ^:private clipboard* (atom nil))
 
@@ -297,24 +300,24 @@
                        bzz-harmonics<-cca 0
                        bzz-hp-track 1.00          ; relative to f0
                        bzz-hp-track<-env  0.00    ; env adds to tracking
-                       nse1-amp 0.000 
-                       nse1-amp<-lfo1 0.00
-                       nse1-amp<-cca 0.00
-                       nse1-amp<-velocity 0.00
-                       nse1-amp<-pressure 0.00
-                       nse1-keyscale-key 60
-                       nse1-keyscale-left 0
-                       nse1-keyscale-right 0
-                       nse1-detune 2.00
-                       nse1<-penv 0.00
-                       nse1-attack 0.00
-                       nse1-decay1 0.00
-                       nse1-decay2 0.00
-                       nse1-release 0.00
-                       nse1-peak 1.00
-                       nse1-breakpoint 1.00
-                       nse1-sustain 1.00
-                       nse1-bw 10
+                       nse-amp 0.000 
+                       nse-amp<-lfo1 0.00
+                       nse-amp<-cca 0.00
+                       nse-amp<-velocity 0.00
+                       nse-amp<-pressure 0.00
+                       nse-keyscale-key 60
+                       nse-keyscale-left 0
+                       nse-keyscale-right 0
+                       nse-detune 2.00
+                       nse<-penv 0.00
+                       nse-attack 0.00
+                       nse-decay1 0.00
+                       nse-decay2 0.00
+                       nse-release 0.00
+                       nse-peak 1.00
+                       nse-breakpoint 1.00
+                       nse-sustain 1.00
+                       nse-bw 10
                        bend-bus 0                  ; control buses
                        pressure-bus 0
                        cca-bus 0
@@ -461,19 +464,19 @@
                                       con/min-buzz-hp-freq
                                       con/max-buzz-hp-freq)]
               (* e a (hpf (blip:ar f h) hp-cutoff)))
-        nse (let [a (* (op-amp-modulators nse1-amp 0 0  lfo1 0 0 0 nse1-amp<-lfo1 0)
-                        (op-amp-midi-modulators cca 0 velocity pressure nse1-amp<-cca
-                                                0 nse1-amp<-velocity
-                                                nse1-amp<-pressure)
-                        (op-amp-keytrack:ir note nse1-keyscale-key nse1-keyscale-left
-                                            nse1-keyscale-right))
+        nse (let [a (* (op-amp-modulators nse-amp 0 0  lfo1 0 0 0 nse-amp<-lfo1 0)
+                        (op-amp-midi-modulators cca 0 velocity pressure nse-amp<-cca
+                                                0 nse-amp<-velocity
+                                                nse-amp<-pressure)
+                        (op-amp-keytrack:ir note nse-keyscale-key nse-keyscale-left
+                                            nse-keyscale-right))
 
                    f (max con/min-noise-filter-cutoff  
-                          (op-freq f0 penv nse1-detune nse1<-penv))
+                          (op-freq f0 penv nse-detune nse<-penv))
 
-                   e (op-env nse1-attack nse1-decay1 nse1-decay2 nse1-release nse1-peak
-                             nse1-breakpoint nse1-sustain gate)
-                   bw (qu/clamp nse1-bw con/min-noise-filter-bw con/max-noise-filter-bw)
+                   e (op-env nse-attack nse-decay1 nse-decay2 nse-release nse-peak
+                             nse-breakpoint nse-sustain gate)
+                   bw (qu/clamp nse-bw con/min-noise-filter-bw con/max-noise-filter-bw)
                    rq (/ bw f)
                    agc (qu/clamp (/ 48.0 bw) 5 1)]
                (* e a agc (* (sin-osc:ar f)
@@ -493,7 +496,7 @@
                      [:ccb ccb :linear 0.0])]
     (.put-property! performance :instrument-type :cobalt)
     (.set-bank! performance bank) ;; ISSUE Is this line necessary, if so why?
-    ;; (.pp-hook! bank cadejo.instruments.cobalt.pp/pp-cobalt) ;; ISSUE cobalt pp not implemented
+    (.pp-hook! bank pp/pp-cobalt)
     (.add-control-bus! performance :vibrato (control-bus))
     (.add-audio-bus! performance :efx-in (audio-bus))
     performance))
