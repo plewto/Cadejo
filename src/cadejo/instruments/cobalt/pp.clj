@@ -10,6 +10,7 @@
 (def pad17 (str pad15 "  "))
 (def pad19 (str pad17 "  "))
 (def pad21 (str pad19 "  "))
+(def pad33 (str pad21 "            "))
 (def bar ";; ------------------------------------------------------")
 
 
@@ -82,9 +83,8 @@
   (let [fname (format "lfo%d" id)
         p-freq (keyword (format "lfo%d-frequency" id))
         [p-mod1 p-mod2 p-mod3](cond (= id 1)[:lfo1<-genv1 :lfo1<-cca :lfo1<-pressure]
-                                    (= id 2)[:lfo2<-genv2 :lfo2<-ccb :lfo2<-pressure]
-                                    (= id 3)[:lfo3<-xenv  :lfo3<-cca :lfo3<-ccb]
-                                    :default [:lfo4<-xenv :lfo4<-cca :lfo4<-ccb])
+                                    (= id 2)[:lfo2<-xenv  :lfo2<-cca :lfo2<-ccb]
+                                    :default [:lfo3<-xenv :lfo3<-cca :lfo3<-ccb])
         freq (float (get dmap p-freq 5.00))
         mod1 (float (get dmap p-mod1 0.00))
         mod2 (float (get dmap p-mod2 0.00))
@@ -102,9 +102,7 @@
         detune (float (get dmap (param "-detune") n))
         amp (float (get dmap (param "-amp") 0))
         ge1 (float (get dmap (param "-amp<-genv1") 0))
-        ge2 (float (get dmap (param "-amp<-genv2") 0))
         lf1 (float (get dmap (param "-amp<-lfo1") 0))
-        lf2 (float (get dmap (param "-amp<-lfo2") 0))
         cca (float (get dmap (param "-amp<-cca") 0))
         ccb (float (get dmap (param "-amp<-ccb") 0))
         vel (float (get dmap (param "-amp<-velocity") 0))
@@ -121,8 +119,8 @@
         left (int (get dmap (param "-keyscale-left") 0))
         right (int (get dmap (param "-keyscale-right") 0))]
     (str (format "%s(%s %5.3f %5.3f\n" pad10 fname detune amp)
-         (format "%s:genv1 %4.2f :genv2 %4.2f :lfo1 %4.2f :lfo2 %4.2f\n"
-                 pad15 ge1 ge2 lf1 lf2)
+         (format "%s:genv1 %4.2f :lfo1 %4.2f\n"
+                 pad15 ge1 lf1)
          (format "%s:cca   %4.2f :ccb  %4.2f  :vel  %4.2f :prss %4.2f\n"
                  pad15 cca ccb vel prss) 
          (format "%s:penv  %5.3f\n" pad15 penv)
@@ -130,7 +128,7 @@
                  pad15 att dc1 dc2 rel)
          (format "%s:peak %4.3f :bp  %4.3f  :sus  %4.3f]"
                  pad21 pk bp sus)
-         (if (and (>= n 1)(<= n 4))
+         (if (> n 4)
            ")\n"
            (format "\n%s:key %3d    :left %3d  :right %3d)\n"
                    pad15 key left right)))))
@@ -186,9 +184,7 @@
         detune (float (get dmap (param "-detune") 1))
         amp (float (get dmap (param "-amp") 0))
         ge1 (float (get dmap (param "-amp<-genv1") 0))
-        ge2 (float (get dmap (param "-amp<-genv2") 0))
         lf1 (float (get dmap (param "-amp<-lfo1") 0))
-        lf2 (float (get dmap (param "-amp<-lfo2") 0))
         cca (float (get dmap (param "-amp<-cca") 0))
         ccb (float (get dmap (param "-amp<-ccb") 0))
         vel (float (get dmap (param "-amp<-velocity") 0))
@@ -205,8 +201,8 @@
         left (int (get dmap (param "-keyscale-left") 0))
         right (int (get dmap (param "-keyscale-right") 0))]
     (str (format "%s(%s %5.3f %5.3f\n" pad10 fname detune amp)
-         (format "%s:genv1 %4.2f :genv2 %4.2f :lfo1 %4.2f :lfo2 %4.2f\n"
-                 pad15 ge1 ge2 lf1 lf2)
+         (format "%s:genv1 %4.2f :lfo1 %4.2f\n"
+                 pad15 ge1 lf1)
          (format "%s:cca   %4.2f :ccb  %4.2f  :vel  %4.2f :prss %4.2f\n"
                  pad15 cca ccb vel prss) 
          (format "%s:penv  %5.3f\n" pad15 penv)
@@ -225,32 +221,58 @@
           (int (get dmap :bzz-harmonics<-cca 0))
           (int (get dmap :bzz-hp-track 1))
           (int (get dmap :bzz-hp-track<-env 0))))
-          
+
+(defn- filter [dmap]
+  (let [freq (int (get dmap :filter-freq 10000))
+        track (int (get dmap :filter-track 1))
+        f<-env (float (get dmap :filter<-env 0))
+        f<-prss (float (get dmap :filter<-pressure 0))
+        f<-cca (float (get dmap :filter<-cca 0))
+        f<-ccb (float (get dmap :filter<-ccb 0))
+        res (float (get dmap :filter-res 0))
+        r<-cca (float (get dmap :filter-res<-cca 0))
+        r<-ccb (float (get dmap :filter-res<-ccb 0))
+        att (float (get dmap :filter-attack 0))
+        dcy (float (get dmap :filter-decay 0))
+        rel (float (get dmap :filter-release 0))
+        sus (float (get dmap :filter-sustain 1))
+        mode (float (get dmap :filter-mode -1))
+        offset (float (max 0 (get dmap :filter2-detune 1)))]
+  (str (format "%s(filter :freq  [%5d :track %2d :env %+5.2f :prss %+5.2f\n"
+               pad15 freq track f<-env f<-prss)
+       (format "%s:cca %+5.2f :ccb %+5.2f]\n"
+               pad33 f<-cca f<-ccb)
+       (format "%s:res [%4.2f :cca %+5.2f :ccb %+5.2f]\n"
+               pad19 res r<-cca r<-ccb)
+       (format "%s:env [:att %4.2f :dcy %4.2f :rel %4.2f :sus %4.2f]\n"
+               pad19 att dcy rel sus)
+       (format "%s:mode %+5.2f :offset %5.3f)\n"
+               pad19 mode offset))))
 
 (defn- delay [n dmap]
   (let [fname (format "delay%d" n)
         param (fn [p](keyword (format "%s-%s" fname p)))
         dt (float (get dmap (param "time") 0.1))
+        dt<-lfo2 (float (get dmap (param "time<-lfo2") 0))
         dt<-lfo3 (float (get dmap (param "time<-lfo3") 0))
-        dt<-lfo4 (float (get dmap (param "time<-lfo4") 0))
         dt<-env (float (get dmap (param "time<-xenv") 0))
         amp (int (get dmap (param "amp") con/min-db))
+        amp<-lfo2 (float (get dmap (param "amp<-lfo2") 0))
         amp<-lfo3 (float (get dmap (param "amp<-lfo3") 0))
-        amp<-lfo4 (float (get dmap (param "amp<-lfo4") 0))
         amp<-env (float (get dmap (param "amp<-xenv") 0))
         pan (float (get dmap (param "pan") 0))
+        pan<-lfo2 (float (get dmap (param "pan<-lfo2") 0))
         pan<-lfo3 (float (get dmap (param "pan<-lfo3") 0))
-        pan<-lfo4 (float (get dmap (param "pan<-lfo4") 0))
         pan<-env (float (get dmap (param "pan<-xenv") 0))
         fb (float (get dmap (param "fb") 0.5))
         xfb (float (get dmap (param "xfb") 0))]
     (str 
-     (format "%s(%s  :time [%6.4f :lfo3 %5.3f :lfo4 %5.3f :xenv %5.3f]\n"
-             pad10 fname dt dt<-lfo3 dt<-lfo4 dt<-env)
-     (format "%s:amp  [%+3d  :lfo3 %5.3f :lfo4 %5.3f :xenv %5.3f]\n"
-             pad19 amp amp<-lfo3 amp<-lfo4 amp<-env)
-     (format "%s:pan  [%+5.2f :lfo3 %5.3f :lfo4 %5.3f :xenv %5.3f]\n"
-             pad19 pan pan<-lfo3 pan<-lfo4 pan<-env)
+     (format "%s(%s  :time [%6.4f :lfo2 %5.3f :lfo3 %5.3f :xenv %5.3f]\n"
+             pad10 fname dt dt<-lfo2 dt<-lfo3 dt<-env)
+     (format "%s:amp  [%+3d  :lfo2 %5.3f :lfo3 %5.3f :xenv %5.3f]\n"
+             pad19 amp amp<-lfo2 amp<-lfo3 amp<-env)
+     (format "%s:pan  [%+5.2f :lfo2 %5.3f :lfo3 %5.3f :xenv %5.3f]\n"
+             pad19 pan pan<-lfo2 pan<-lfo3 pan<-env)
      (format "%s:fb   %+5.2f  :xfb %5.2f)\n"
              pad19 fb xfb)))) 
 
@@ -267,27 +289,24 @@
 (defn pp-cobalt [slot name dmap remarks]
   (str (header slot name remarks dmap)
        (genv :genv1 dmap)
-       (genv :genv2 dmap)
        (genv :xenv dmap)
        (penv dmap)
        (vibrato dmap)
        (lfo 1 dmap)
        (lfo 2 dmap)
        (lfo 3 dmap)
-       (lfo 4 dmap)
-       (op 1 dmap)
-       (op 2 dmap)
-       (op 3 dmap)
-       (op 4 dmap)
+       (op 1 dmap)(fm 1 dmap)
+       (op 2 dmap)(fm 2 dmap)
+       (op 3 dmap)(fm 3 dmap)
+       (op 4 dmap)(fm 4 dmap)
        (op 5 dmap)
        (op 6 dmap)
        (op 7 dmap)
-       (fm 7 dmap)
        (op 8 dmap)
-       (fm 8 dmap)
        (noise dmap)
        (buzz dmap)
        (buzz-harmonics dmap)
+       (filter dmap)
        (delay 1 dmap)
        (delay 2 dmap)
        (amp dmap)
