@@ -26,8 +26,8 @@
     (.add-controller! d :cc5 "PortTime" 5) 
     (.add-controller! d :cc7 "Volume" 7)
     (.add-controller! d :cc9 "Pitch Env" 9)
-    (.add-controller! d :cca "CCA" 98)  ; ISSUE REVERT TO 16
-    (.add-controller! d :ccb "CCB" 99)  ; ISSUE REVERT TO 17
+    (.add-controller! d :cca "CCA" 16)
+    (.add-controller! d :ccb "CCB" 17)
     (.set-editor-constructor! d cobalt-ed/cobalt-editor)
     (.initial-program! d con/initial-cobalt-program)
     (.program-generator! d genpatch/random-cobalt-program)
@@ -71,9 +71,9 @@
                        velocity 1.0
                        port-time 1.0
                        port-time<-cc5 1.0
-                       pe-a0 0.50                ; pitch env          
+                       pe-a0 0.00                ; pitch env          
                        pe-a1 0.00                ;     amp values -/+ 1.0 
-                       pe-a2 -0.50
+                       pe-a2 0.00 
                        pe-a3 0.00
                        pe-t1 1.00                ;     time a0->a1
                        pe-t2 1.00
@@ -305,6 +305,13 @@
                        filter-res<-ccb 0
                        filter-mode 0     ; -/+1   -1 -> lp   +1 -> bp
                        filter2-detune 1  ; bp filter freq rel to lp filter
+
+                       dist-mix 1       ; 0 -> dry 1 -> wet
+                       dist-pregain 1
+                       dist<-cca 4
+                       dist<-ccb 0
+                       
+
                        op1-enable 1
                        op2-enable 1
                        op3-enable 1
@@ -487,12 +494,19 @@
                                            con/min-filter-cutoff con/max-filter-cutoff)
                          bp-rq (+ (* -7/32 moog-res) 1)
                          bp-out (bpf:ar filter-in bp-freq bp-rq)]
-                     (x-fade2 moog-out bp-out filter-mode))]
-    (tap :cc5 5 cc5)
-    (tap :cc5-bus 5 cc5-bus)
-    (tap :port-time 5 port-time)
-    (tap :ptime 5 ptime)
-    (out:ar out-bus filter-out)))
+                     (x-fade2 moog-out bp-out filter-mode))
+        fold-pregain (max 1.0 (+ dist-pregain 
+                                 (* cca dist<-cca)
+                                 (* ccb dist<-ccb)))
+        fold-agc (qu/clamp (/ 2.0 fold-pregain)
+                           0.50 1.00)
+        fold-in (* fold-pregain filter-out)
+        fold-out (qu/efx-mixer filter-out (* fold-agc (fold2 fold-in 1.0)) dist-mix)
+        ]
+    (tap :pregain 5 fold-pregain)
+    (tap :agc 5 fold-agc)
+    (tap :cca 5 cca)
+    (out:ar out-bus fold-out)))
 
 (defn- create-performance [chanobj id keymode cc1 cc5 cc7 cc9 cca ccb]
   (let [bank (.clone cadejo.instruments.cobalt.program/bank)
@@ -569,8 +583,8 @@
                                        cc5 5 
                                        cc7 7
                                        cc9 9
-                                       cca 99 ; ISSUE REVERT TO 16
-                                       ccb 98 ; ISSUE REVERT TO 17
+                                       cca 16
+                                       ccb 17
                                        voice-count 8
                                        main-out 0}}]
   (let [chanobj (.channel scene chan)
