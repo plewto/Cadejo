@@ -454,7 +454,7 @@
 (load-gui! true)
 (initial-skin! "Twilight")
 (displaybar-style! :basic)    ; nil -> use lnf
-(enable-pp! false)
+(enable-pp! true)
 (maximum-scene-count! 2)   ; ISSUE check if max-scene-count is respected
 (maximum-undo-count! 10)
 (warn-on-exit! false)

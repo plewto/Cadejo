@@ -6,7 +6,7 @@
   (:require [cadejo.util.col :as col])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.math :as math])
-  (:require [cadejo.instruments.cobalt.constants :as con :reload true])
+  (:require [cadejo.instruments.cobalt.constants :as con])
 )
 
 (defonce bank (cadejo.midi.pbank/pbank :cobalt))
@@ -52,7 +52,7 @@
 
 
 ;; id one of integer 1,2,3,...,8 or
-;;    keyword :bzz, :nse, :genv1, :genv2 or :xenv
+;;    keyword :bzz, :nse, or :xenv
 ;;
 ;; alist assoc list [:att a :dcy1 d1 :dcy2 d2 :rel r :peak p :bp b :sus s]
 ;;       missing assignments take default values.
@@ -80,29 +80,6 @@
             (param "breakpoint") bp
             (param "sustain") sus]]
     rs))
-
-
-(defn genv1 [& {:keys [att dcy1 dcy2 rel peak bp sus]
-                :or {att 0.00
-                     dcy1 0.00
-                     dcy2 0.00
-                     rel 0.00
-                     peak 1.00
-                     bp 1.00
-                     sus 1.00}}]
-  (envn :genv1 [:att att :dcy1 dcy1 :dcy2 dcy2 :rel rel
-               :peak peak :bp bp :sus sus]))
-
-(defn genv2 [& {:keys [att dcy1 dcy2 rel peak bp sus]
-                :or {att 0.00
-                     dcy1 0.00
-                     dcy2 0.00
-                     rel 0.00
-                     peak 1.00
-                     bp 1.00
-                     sus 1.00}}]
-  (envn :genv2 [:att att :dcy1 dcy1 :dcy2 dcy2 :rel rel
-               :peak peak :bp bp :sus sus]))
 
 (defn xenv [& {:keys [att dcy1 dcy2 rel peak bp sus]
                 :or {att 0.00
@@ -134,25 +111,29 @@
     rs))
 
 
-(defn vibrato [freq & {:keys [sens prss depth]
+(defn vibrato [freq & {:keys [sens prss depth delay]
                        :or {sens 0.01
+                            delay 2
                             prss 0.00
                             depth 0.00}}]
   (let [rs [:vibrato-frequency (clamp freq con/min-lfo-frequency con/max-lfo-frequency)
             :vibrato-sensitivity (float (clamp sens con/min-vibrato-sensitivity con/max-vibrato-sensitivity))
             :vibrato<-pressure (uclamp prss)
+            :vibrato-delay delay
             :vibrato-depth (uclamp depth)]]
     rs))
 
 
-(defn lfo1 [freq & {:keys [genv1 cca prss]
-                    :or {genv1 0.00
-                         cca 0.00
-                         prss 0.00}}]
+(defn lfo1 [freq & {:keys [cca prss bleed delay]
+                    :or {cca 0.00
+                         prss 0.00
+                         bleed 1.00
+                         delay 1.0}}]
   (let [rs [:lfo1-freq (clamp freq con/min-lfo-frequency con/max-lfo-frequency)
-            :lfo1<-genv1 (uclamp genv1)
             :lfo1<-cca (uclamp cca)
-            :lfo1<-pressure (uclamp prss)]]
+            :lfo1<-pressure (uclamp prss)
+            :lfo1-bleed (uclamp bleed)
+            :lfo1-delay (float (max 0 delay))]]
     rs))
 
 
@@ -179,20 +160,18 @@
 
 ;; id --> :op1 :op2 :op3 :op4 :op5 :op6 :op7 :op8 :bzz :nse
 ;;
-(defn- op-amp-mod [id genv1 lfo1 cca ccb vel prss]
+(defn- op-amp-mod [id lfo1 cca ccb vel prss]
   (let [param (fn [p](keyword (format "%s-amp<-%s" 
                                       (name id) p)))
-        rs [(param "genv1")(uclamp genv1)
-            (param "lfo1")(uclamp lfo1)
+        rs [(param "lfo1")(uclamp lfo1)
             (param "cca")(uclamp cca)
             (param "ccb")(uclamp ccb)
             (param "velocity")(uclamp vel)
             (param "pressure")(uclamp prss)]]
     rs))
 
-(defn op1 [detune amp & {:keys [genv1 lfo1 cca ccb vel prss env penv key left right]
-                         :or {genv1 0.00
-                              lfo1 0.00
+(defn op1 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
+                         :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
                               vel 0.00
@@ -205,7 +184,7 @@
                               penv 0.00}}]
   (let [rs [:op1-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op1-amp (float (min 1.0 amp))
-            (op-amp-mod :op1 genv1 lfo1 cca ccb vel prss)
+            (op-amp-mod :op1 lfo1 cca ccb vel prss)
             (envn 1 env)
             :op1-keyscale-key (int (clamp key 0 127))
             :op1-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
@@ -215,7 +194,7 @@
 
 (defn fm1 [detune amp & {:keys [bias env left right]
                          :or {bias 0.00
-                              env 0.00
+                              env 1.00
                               left 0
                               right 0}}]
   (let [rs [:fm1-detune (float detune)
@@ -226,9 +205,8 @@
             :fm1-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
     rs))
 
-(defn op2 [detune amp & {:keys [genv1 lfo1 cca ccb vel prss env penv key left right]
-                         :or {genv1 0.00
-                              lfo1 0.00
+(defn op2 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
+                         :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
                               vel 0.00
@@ -241,7 +219,7 @@
                               penv 0.00}}]
   (let [rs [:op2-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op2-amp (float (min 1.0 amp))
-            (op-amp-mod :op2 genv1 lfo1 cca ccb vel prss)
+            (op-amp-mod :op2 lfo1 cca ccb vel prss)
             (envn 2 env)
             :op2-keyscale-key (int (clamp key 0 127))
             :op2-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
@@ -262,9 +240,8 @@
             :fm2-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
     rs))
 
-(defn op3 [detune amp & {:keys [genv1 lfo1 cca ccb vel prss env penv key left right]
-                         :or {genv1 0.00
-                              lfo1 0.00
+(defn op3 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
+                         :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
                               vel 0.00
@@ -277,7 +254,7 @@
                               penv 0.00}}]
   (let [rs [:op3-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op3-amp (float (min 1.0 amp))
-            (op-amp-mod :op3 genv1 lfo1 cca ccb vel prss)
+            (op-amp-mod :op3 lfo1 cca ccb vel prss)
             (envn 3 env)
             :op3-keyscale-key (int (clamp key 0 127))
             :op3-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
@@ -298,9 +275,8 @@
             :fm3-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
     rs))
 
-(defn op4 [detune amp & {:keys [genv1 lfo1 cca ccb vel prss env penv key left right]
-                         :or {genv1 0.00
-                              lfo1 0.00
+(defn op4 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
+                         :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
                               vel 0.00
@@ -313,7 +289,7 @@
                               penv 0.00}}]
   (let [rs [:op4-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op4-amp (float (min 1.0 amp))
-            (op-amp-mod :op4 genv1 lfo1 cca ccb vel prss)
+            (op-amp-mod :op4 lfo1 cca ccb vel prss)
             (envn 4 env)
             :op4-keyscale-key (int (clamp key 0 127))
             :op4-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
@@ -334,9 +310,8 @@
             :fm4-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
     rs))
 
-(defn op5 [detune amp & {:keys [genv1 lfo1 cca ccb vel prss env penv]
-                         :or {genv1 0.00
-                              lfo1 0.00
+(defn op5 [detune amp & {:keys [lfo1 cca ccb vel prss env penv]
+                         :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
                               vel 0.00
@@ -346,14 +321,13 @@
                               penv 0.00}}]
   (let [rs [:op5-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op5-amp (float (min 1.0 amp))
-            (op-amp-mod :op5 genv1 lfo1 cca ccb vel prss)
+            (op-amp-mod :op5 lfo1 cca ccb vel prss)
             (envn 5 env)
             :op5<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn op6 [detune amp & {:keys [genv1 lfo1 cca ccb vel prss env penv]
-                         :or {genv1 0.00
-                              lfo1 0.00
+(defn op6 [detune amp & {:keys [lfo1 cca ccb vel prss env penv]
+                         :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
                               vel 0.00
@@ -363,14 +337,13 @@
                               penv 0.00}}]
   (let [rs [:op6-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op6-amp (float (min 1.0 amp))
-            (op-amp-mod :op6 genv1 lfo1 cca ccb vel prss)
+            (op-amp-mod :op6 lfo1 cca ccb vel prss)
             (envn 6 env)
             :op6<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn op7 [detune amp & {:keys [genv1 lfo1 cca ccb vel prss env penv]
-                         :or {genv1 0.00
-                              lfo1 0.00
+(defn op7 [detune amp & {:keys [lfo1 cca ccb vel prss env penv]
+                         :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
                               vel 0.00
@@ -380,14 +353,13 @@
                               penv 0.00}}]
   (let [rs [:op7-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op7-amp (float (min 1.0 amp))
-            (op-amp-mod :op7 genv1 lfo1 cca ccb vel prss)
+            (op-amp-mod :op7 lfo1 cca ccb vel prss)
             (envn 7 env)
             :op7<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn op8 [detune amp & {:keys [genv1 lfo1 cca ccb vel prss env penv]
-                         :or {genv1 0.00
-                              lfo1 0.00
+(defn op8 [detune amp & {:keys [lfo1 cca ccb vel prss env penv]
+                         :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
                               vel 0.00
@@ -397,7 +369,7 @@
                               penv 0.00}}]
   (let [rs [:op8-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op8-amp (float (min 1.0 amp))
-            (op-amp-mod :op8 genv1 lfo1 cca ccb vel prss)
+            (op-amp-mod :op8 lfo1 cca ccb vel prss)
             (envn 8 env)
             :op8<-penv (sclamp penv)]]
     (flatten rs)))
@@ -405,10 +377,8 @@
 
 
 
-(defn buzz [detune amp & {:keys [genv1 lfo1 cca ccb vel prss env penv key left right]
-                         :or {genv1 0.00
-                              genv2 0.00
-                              lfo1 0.00
+(defn buzz [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
+                         :or {lfo1 0.00
                               lfo2 0.00
                               cca 0.00
                               ccb 0.00
@@ -422,7 +392,7 @@
                               penv 0.00}}]
   (let [rs [:bzz-detune (clamp detune con/min-op-detune con/max-op-detune)
             :bzz-amp (float (min 1.0 amp))
-            (op-amp-mod :bzz genv1 lfo1 cca ccb vel prss)
+            (op-amp-mod :bzz lfo1 cca ccb vel prss)
             (envn :bzz env)
             :bzz-keyscale-key (int (clamp key 0 127))
             :bzz-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
@@ -457,7 +427,7 @@
                               penv 0.00}}]
   (let [rs [:nse-detune (clamp detune con/min-op-detune con/max-op-detune)
             :nse-amp (float (min 1.0 amp))
-            (op-amp-mod :nse 0 lfo1 cca 0 vel prss)
+            (op-amp-mod :nse lfo1 cca 0 vel prss)
             (envn :nse env)
             :nse-bw (int (clamp bw con/min-noise-filter-bw con/max-noise-filter-bw)) 
             :nse-keyscale-key (int (clamp key 0 127))
@@ -466,12 +436,11 @@
             :nse<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn filter [& {:keys [freq env res mode offset]
-                 :or {freq [9999 :track 0 :env +0.00 :prss +0.00 :cca +0.00 :ccb +0.00]
-                      env [:att 0.00 :dcy 0.00 :rel 0.00 :sus 1.00]
-                      res [0.00 :cca 0.00 :ccb 0.00]
-                      mode -1.00
-                      offset 1.0}}]
+(defn lp-filter [& {:keys [freq env res mode]
+                    :or {freq [9999 :track 0 :env +0.00 :prss +0.00 :cca +0.00 :ccb +0.00]
+                         env [:att 0.00 :dcy 0.00 :rel 0.00 :sus 1.00]
+                         res [0.00 :cca 0.00 :ccb 0.00]
+                         mode -1.00}}]
   (let [fmap (col/alist->map (rest freq))
         emap (col/alist->map env)
         rmap (col/alist->map (rest res))
@@ -488,9 +457,13 @@
             :filter-decay (float (max 0 (get emap :dcy 0.0)))
             :filter-release (float (max 0 (get emap :rel 0.0)))
             :filter-sustain (uclamp (get emap :sus 1.0))
-            :filter-mode (sclamp mode)
-            :filter2-detune (float (max 0.125 offset))]]
+            :filter-mode (sclamp mode)]]
     rs))
+
+(defn bp-filter [& {:keys [offset]
+                    :or {offset 2}}]
+  [:filter2-detune (float (max 0.125 offset))])
+
 
 (defn delay1 [& {:keys [time amp pan fb xfb]
                  :or {time [1.00 :lfo2 0.00 :lfo3 0.00 :xenv 0.00]
@@ -532,7 +505,7 @@
 (defn delay2 [& {:keys [time amp pan fb xfb]
                  :or {time [1.00 :lfo2 0.00 :lfo3 0.00 :xenv 0.00]
                       amp  [-60  :lfo2 0.00 :lfo3 0.00 :xenv 0.00]
-                      pan  [-0.7 :lfo2 0.00 :lfo3 0.00 :xenv 0.00]
+                      pan  [+0.7 :lfo2 0.00 :lfo3 0.00 :xenv 0.00]
                       fb   0.5
                       xfb  0.00}}]
   (let [tmap (col/alist->map (rest time))
@@ -567,15 +540,13 @@
     rs))
 
 
-(defn amp [n & {:keys [vel genv1 cc7 dry dry-pan]
+(defn amp [n & {:keys [vel cc7 dry dry-pan]
                :or {vel 0.00
-                    genv1 0.00
                     cc7 0.00
                     dry con/max-db
                     dry-pan 0.0}}]
   (let [rs [:amp (int (clamp n con/min-db con/max-db))
             :amp<-velocity (uclamp vel)
-            :amp<-genv1 (uclamp genv1)
             :amp<-cc7 (uclamp cc7)
             :dry-amp (int (clamp dry con/min-db con/max-db))
             :dry-pan (sclamp dry-pan)]]

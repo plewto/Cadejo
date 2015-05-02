@@ -88,7 +88,7 @@
                 (qu/amp-modulator-depth env lfo3-amp<-xenv))
         drysig (in:ar in-bus)
         [fb1 fb2](local-in:ar 2)
-        delay1 (let [time (qu/clamp (+ delay1-time
+        dly1 (let [time (qu/clamp (+ delay1-time
                                        (* 1/100 (+ (* lfo2 delay1-time<-lfo2)
                                                     (* lfo3 delay1-time<-lfo3)
                                                     (* env delay1-time<-xenv))))
@@ -96,27 +96,27 @@
                      insig (+ drysig (* fb1 delay1-fb)(* fb2 delay1-xfb))]
                  (delay-c insig con/max-delay-time time))
        
-        delay1-amp (* (dbamp delay1-amp)
+        dly1-amp (* (dbamp delay1-amp)
                       (qu/amp-modulator-depth lfo2 delay1-amp<-lfo2)
                       (qu/amp-modulator-depth lfo3 delay1-amp<-lfo3)
                       (qu/amp-modulator-depth env delay1-amp<-xenv))
-        delay1-pos (qu/clamp (+ delay1-pan
+        dly1-pos (qu/clamp (+ delay1-pan
                                 (* lfo2 delay1-pan<-lfo2)
                                 (* lfo3 delay1-pan<-lfo3)
                                 (* env delay1-pan<-xenv))
                              -1 1)
-        delay2 (let [time (qu/clamp (+ delay2-time
+        dly2 (let [time (qu/clamp (+ delay2-time
                                        (* 1/100 (+ (* lfo2 delay2-time<-lfo2)
                                                     (* lfo3 delay2-time<-lfo3)
                                                     (* env delay2-time<-xenv))))
                                     0 con/max-delay-time)
                      insig (+ drysig (* fb1 delay2-fb)(* fb2 delay2-xfb))]
                  (delay-c insig con/max-delay-time time))
-        delay2-amp (* (dbamp delay2-amp)
+        dly2-amp (* (dbamp delay2-amp)
                       (qu/amp-modulator-depth lfo2 delay2-amp<-lfo2)
                       (qu/amp-modulator-depth lfo3 delay2-amp<-lfo3)
                       (qu/amp-modulator-depth env delay2-amp<-xenv))
-        delay2-pos (qu/clamp (+ delay2-pan
+        dly2-pos (qu/clamp (+ delay2-pan
                                 (* lfo2 delay2-pan<-lfo2)
                                 (* lfo3 delay2-pan<-lfo3)
                                 (* env delay2-pan<-xenv))
@@ -124,9 +124,7 @@
         master-amp (* (dbamp (+ dbscale amp))
                       (qu/amp-modulator-depth:ir velocity amp<-velocity)
                       (qu/amp-modulator-depth:kr cc7 amp<-cc7))]
-    (local-out:ar [delay1 delay2])
+    (local-out:ar [dly1 dly2])
     (out:ar out-bus (* master-amp (+ (pan2 (* (dbamp dry-amp) drysig) dry-pan)
-                                     (pan2 (* delay1-amp delay1) delay1-pos)
-                                     (pan2 (* delay2-amp delay2) delay2-pos))))))
-        
-        
+                                     (pan2 (* dly1-amp dly1) dly1-pos)
+                                     (pan2 (* dly2-amp dly2) dly2-pos) )))))

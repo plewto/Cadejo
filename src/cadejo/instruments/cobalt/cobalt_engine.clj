@@ -14,6 +14,8 @@
   (:require [cadejo.instruments.cobalt.program])
   (:require [cadejo.instruments.cobalt.data])
   (:require [cadejo.instruments.cobalt.pp :as pp])
+  (:require [cadejo.instruments.cobalt.genpatch.genpatch :as genpatch])
+  (:require [cadejo.instruments.cobalt.editor.cobalt-editor :as cobalt-ed])
 )
 
 (def ^:private clipboard* (atom nil))
@@ -24,14 +26,14 @@
     (.add-controller! d :cc7 "Volume" 7)
     (.add-controller! d :cca "CCA" 16)
     (.add-controller! d :ccb "CCB" 17)
+    (.set-editor-constructor! d cobalt-ed/cobalt-editor)
     (.initial-program! d con/initial-cobalt-program)
-    ;(.program-generator! d xxx)
+    (.program-generator! d genpatch/random-cobalt-program)
     (.help-topic! d :cobalt)
     d))
 
-(defcgen op-amp-modulators [amp ge1 lf1 p-ge1 p-lf1]
+(defcgen op-amp-modulators [amp lf1 p-lf1]
   (:kr (* amp 
-          (qu/amp-modulator-depth ge1 p-ge1)
           (qu/amp-modulator-depth lf1 p-lf1))))
 
 (defcgen op-amp-midi-modulators [cca ccb vel prss p-cca p-ccb p-vel p-prss]
@@ -66,14 +68,6 @@
                        gate 0
                        velocity 1.0
                        port-time 0.0
-                       genv1-attack 1.0            ; general env genv1
-                       genv1-decay1 0.0
-                       genv1-decay2 0.0
-                       genv1-release 1.0
-                       genv1-peak 1.0
-                       genv1-breakpoint 1.0
-                       genv1-sustain 1.0
-                       amp<-genv1 0.0              ; application of genv1 to overall amp
                        pe-a0 0.00                ; pitch env          
                        pe-a1 0.00                ;     amp values -/+ 1.0 
                        pe-a2 0.00
@@ -82,12 +76,12 @@
                        pe-t2 1.00
                        pe-t3 1.00
                        lfo1-freq 5.00              ; lfo1
-                       lfo1<-genv1 0.0
                        lfo1<-cca 0.0
                        lfo1<-pressure 0.0
+                       lfo1-bleed 0     ; = 0 -> use delay, = 1 -> ignore delay
+                       lfo1-delay 2.0
                        ;; OP1
                        op1-amp 1.000 
-                       op1-amp<-genv1 0.00
                        op1-amp<-lfo1 0.00
                        op1-amp<-cca 0.00
                        op1-amp<-ccb 0.00
@@ -113,7 +107,6 @@
                        fm1-keyscale-right 0
                        ;; OP2
                        op2-amp 0.000 
-                       op2-amp<-genv1 0.00
                        op2-amp<-lfo1 0.00
                        op2-amp<-cca 0.00
                        op2-amp<-ccb 0.00
@@ -139,7 +132,6 @@
                        fm2-keyscale-right 0
                        ;; OP3
                        op3-amp 0.000 
-                       op3-amp<-genv1 0.00
                        op3-amp<-lfo1 0.00
                        op3-amp<-cca 0.00
                        op3-amp<-ccb 0.00
@@ -165,7 +157,6 @@
                        fm3-keyscale-right 0
                        ;; OP4
                        op4-amp 0.000 
-                       op4-amp<-genv1 0.00
                        op4-amp<-lfo1 0.00
                        op4-amp<-cca 0.00
                        op4-amp<-ccb 0.00
@@ -191,7 +182,6 @@
                        fm4-keyscale-right 0
                        ;; OP5
                        op5-amp 1.000               ; linear
-                       op5-amp<-genv1 0.00
                        op5-amp<-lfo1 0.00
                        op5-amp<-cca 0.00
                        op5-amp<-ccb 0.00
@@ -208,7 +198,6 @@
                        op5-sustain 1.00
                        ;; OP6
                        op6-amp 0.000 
-                       op6-amp<-genv1 0.00
                        op6-amp<-lfo1 0.00
                        op6-amp<-cca 0.00
                        op6-amp<-ccb 0.00
@@ -225,7 +214,6 @@
                        op6-sustain 1.00
                        ;; OP7
                        op7-amp 0.000 
-                       op7-amp<-genv1 0.00
                        op7-amp<-lfo1 0.00
                        op7-amp<-cca 0.00
                        op7-amp<-ccb 0.00
@@ -242,7 +230,6 @@
                        op7-sustain 1.00
                        ;; OP8
                        op8-amp 0.000 
-                       op8-amp<-genv1 0.00
                        op8-amp<-lfo1 0.00
                        op8-amp<-cca 0.00
                        op8-amp<-ccb 0.00
@@ -257,8 +244,8 @@
                        op8-peak 1.00
                        op8-breakpoint 1.00
                        op8-sustain 1.00
+                       ;; BUZZ
                        bzz-amp 1.000               ; linear
-                       bzz-amp<-genv1 0.00
                        bzz-amp<-lfo1 0.00
                        bzz-amp<-cca 0.00
                        bzz-amp<-ccb 0.00
@@ -281,6 +268,7 @@
                        bzz-harmonics<-cca 0
                        bzz-hp-track 1.00          ; relative to f0
                        bzz-hp-track<-env  0.00    ; env adds to tracking
+                       ;; NOISE
                        nse-amp 0.000 
                        nse-amp<-lfo1 0.00
                        nse-amp<-cca 0.00
@@ -313,6 +301,16 @@
                        filter-res<-ccb 0
                        filter-mode 0     ; -/+1   -1 -> lp   +1 -> bp
                        filter2-detune 1  ; bp filter freq rel to lp filter
+                       op1-enable 1
+                       op2-enable 1
+                       op3-enable 1
+                       op4-enable 1
+                       op5-enable 1
+                       op6-enable 1
+                       op7-enable 1
+                       op8-enable 1
+                       nse-enable 1
+                       bzz-enable 1
                        nse-bw 10
                        bend-bus 0                  ; control buses
                        pressure-bus 0
@@ -327,17 +325,14 @@
         vibrato (+ 1 (in:kr vibrato-bus))
         f0 (* (lag2:kr freq port-time) 
               bend vibrato)
-        genv1 (let [e (cenv/addsr2 genv1-attack genv1-decay1 genv1-decay2
-                                   genv1-release genv1-peak genv1-breakpoint
-                                   genv1-sustain 0 gate)]
-                (* e e))
+        
         penv (pitch-env:kr pe-t1 pe-t2 pe-t3 pe-a0 pe-a1 pe-a2 pe-a3 gate)
-        lfo1 (* (qu/amp-modulator-depth genv1 lfo1<-genv1)
-                (qu/amp-modulator-depth cca lfo1<-cca)
-                (qu/amp-modulator-depth pressure lfo1<-pressure)
+        lfo1-amp (+ (* cca lfo1<-cca)
+                    (* pressure lfo1<-pressure)
+                    (qu/amp-modulator-depth (lag2:kr gate (* 4 lfo1-delay))(- 1 lfo1-bleed)))
+        lfo1 (* lfo1-amp
                 (sin-osc:kr lfo1-freq))
-        op1 (let [ac (* (op-amp-modulators op1-amp genv1 lfo1
-                                           op1-amp<-genv1 op1-amp<-lfo1)
+        op1 (let [ac (* (op-amp-modulators op1-amp lfo1 op1-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
                                                 op1-amp<-cca op1-amp<-ccb
                                                 op1-amp<-velocity op1-amp<-pressure)
@@ -351,9 +346,8 @@
                         (op-amp-keytrack:ir note op1-keyscale-key 
                                             fm1-keyscale-left fm1-keyscale-right)
                         (qu/amp-modulator-depth e fm1<-env))]
-              (* ac e (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
-        op2 (let [ac (* (op-amp-modulators op2-amp genv1 lfo1
-                                           op2-amp<-genv1 op2-amp<-lfo1)
+              (* ac e op1-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
+        op2 (let [ac (* (op-amp-modulators op2-amp lfo1 op2-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
                                                 op2-amp<-cca op2-amp<-ccb
                                                 op2-amp<-velocity op2-amp<-pressure)
@@ -367,9 +361,8 @@
                         (op-amp-keytrack:ir note op2-keyscale-key 
                                             fm2-keyscale-left fm2-keyscale-right)
                         (qu/amp-modulator-depth e fm2<-env))]
-              (* ac e (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
-        op3 (let [ac (* (op-amp-modulators op3-amp genv1 lfo1
-                                           op3-amp<-genv1 op3-amp<-lfo1)
+              (* ac e op2-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
+        op3 (let [ac (* (op-amp-modulators op3-amp lfo1 op3-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
                                                 op3-amp<-cca op3-amp<-ccb
                                                 op3-amp<-velocity op3-amp<-pressure)
@@ -383,9 +376,8 @@
                         (op-amp-keytrack:ir note op3-keyscale-key 
                                             fm3-keyscale-left fm3-keyscale-right)
                         (qu/amp-modulator-depth e fm3<-env))]
-              (* ac e (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
-        op4 (let [ac (* (op-amp-modulators op4-amp genv1 lfo1
-                                           op4-amp<-genv1 op4-amp<-lfo1)
+              (* ac e op3-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
+        op4 (let [ac (* (op-amp-modulators op4-amp lfo1 op4-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
                                                 op4-amp<-cca op4-amp<-ccb
                                                 op4-amp<-velocity op4-amp<-pressure)
@@ -399,45 +391,40 @@
                         (op-amp-keytrack:ir note op4-keyscale-key 
                                             fm4-keyscale-left fm4-keyscale-right)
                         (qu/amp-modulator-depth e fm4<-env))]
-              (* ac e (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
-        op5 (let [a (* (op-amp-modulators op5-amp genv1 lfo1
-                                          op5-amp<-genv1 op5-amp<-lfo1)
+              (* ac e op4-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
+        op5 (let [a (* (op-amp-modulators op5-amp lfo1 op5-amp<-lfo1)
                        (op-amp-midi-modulators cca ccb velocity pressure
                                                op5-amp<-cca op5-amp<-ccb
                                                op5-amp<-velocity op5-amp<-pressure))
                   f (op-freq f0 penv op5-detune op5<-penv)
                   e (op-env op5-attack op5-decay1 op5-decay2 op5-release
                             op5-peak op5-breakpoint op5-sustain gate)]
-              (* a e (sin-osc:ar f)))
-        op6 (let [a (* (op-amp-modulators op6-amp genv1 lfo1
-                                          op6-amp<-genv1 op6-amp<-lfo1)
+              (* a e op5-enable (sin-osc:ar f)))
+        op6 (let [a (* (op-amp-modulators op6-amp lfo1 op6-amp<-lfo1)
                        (op-amp-midi-modulators cca ccb velocity pressure
                                                op6-amp<-cca op6-amp<-ccb
                                                op6-amp<-velocity op6-amp<-pressure))
                   f (op-freq f0 penv op6-detune op6<-penv)
                   e (op-env op6-attack op6-decay1 op6-decay2 op6-release
                             op6-peak op6-breakpoint op6-sustain gate)]
-              (* a e (sin-osc:ar f)))
-        op7 (let [a (* (op-amp-modulators op7-amp genv1 lfo1
-                                          op7-amp<-genv1 op7-amp<-lfo1)
+              (* a e op6-enable (sin-osc:ar f)))
+        op7 (let [a (* (op-amp-modulators op7-amp lfo1 op7-amp<-lfo1)
                        (op-amp-midi-modulators cca ccb velocity pressure
                                                op7-amp<-cca op7-amp<-ccb
                                                op7-amp<-velocity op7-amp<-pressure))
                   f (op-freq f0 penv op7-detune op7<-penv)
                   e (op-env op7-attack op7-decay1 op7-decay2 op7-release
                             op7-peak op7-breakpoint op7-sustain gate)]
-              (* a e (sin-osc:ar f)))
-        op8 (let [a (* (op-amp-modulators op8-amp genv1 lfo1
-                                          op8-amp<-genv1 op8-amp<-lfo1)
+              (* a e op7-enable (sin-osc:ar f)))
+        op8 (let [a (* (op-amp-modulators op8-amp lfo1 op8-amp<-lfo1)
                        (op-amp-midi-modulators cca ccb velocity pressure
                                                op8-amp<-cca op8-amp<-ccb
                                                op8-amp<-velocity op8-amp<-pressure))
                   f (op-freq f0 penv op8-detune op8<-penv)
                   e (op-env op8-attack op8-decay1 op8-decay2 op8-release
                             op8-peak op8-breakpoint op8-sustain gate)]
-              (* a e (sin-osc:ar f)))
-            bzz (let [a (* (op-amp-modulators bzz-amp genv1 lfo1
-                                              bzz-amp<-genv1 bzz-amp<-lfo1)
+              (* a e op8-enable (sin-osc:ar f)))
+        bzz (let [a (* (op-amp-modulators bzz-amp lfo1 bzz-amp<-lfo1)
                        (op-amp-midi-modulators cca ccb velocity pressure bzz-amp<-cca
                                                bzz-amp<-ccb bzz-amp<-velocity
                                                bzz-amp<-pressure)
@@ -453,23 +440,22 @@
                                                (* e bzz-hp-track<-env)))
                                       con/min-buzz-hp-freq
                                       con/max-buzz-hp-freq)]
-              (* e a (hpf (blip:ar f h) hp-cutoff)))
-        nse (let [a (* (op-amp-modulators nse-amp 0 0 lfo1 0 0 0 nse-amp<-lfo1 0)
-                        (op-amp-midi-modulators cca 0 velocity pressure nse-amp<-cca
-                                                0 nse-amp<-velocity
-                                                nse-amp<-pressure)
-                        (op-amp-keytrack:ir note nse-keyscale-key nse-keyscale-left
-                                            nse-keyscale-right))
-
-                   f (max con/min-noise-filter-cutoff  
+              (* e a bzz-enable (hpf (blip:ar f h) hp-cutoff)))
+        nse (let [a (* (dbamp con/noise-amp-boost)
+                       (op-amp-modulators nse-amp lfo1 nse-amp<-lfo1 0)
+                       (op-amp-midi-modulators cca 0 velocity pressure nse-amp<-cca
+                                               0 nse-amp<-velocity
+                                               nse-amp<-pressure)
+                       (op-amp-keytrack:ir note nse-keyscale-key nse-keyscale-left
+                                           nse-keyscale-right))
+                  f (max con/min-noise-filter-cutoff  
                           (op-freq f0 penv nse-detune nse<-penv))
-
                    e (op-env nse-attack nse-decay1 nse-decay2 nse-release nse-peak
                              nse-breakpoint nse-sustain gate)
                    bw (qu/clamp nse-bw con/min-noise-filter-bw con/max-noise-filter-bw)
                    rq (/ bw f)
                    agc (qu/clamp (/ 48.0 bw) 5 1)]
-               (* e a agc (* (sin-osc:ar f)
+               (* e a agc nse-enable (* (sin-osc:ar f)
                              (bpf (white-noise:ar) f rq))))
         filter-in (+ op1 op2 op3 op4 op5 op6 op7 op8 nse bzz)
         filter-out (let [fe (cenv/addsr filter-attack 0 filter-decay filter-release 1.0 filter-sustain gate)
@@ -493,8 +479,7 @@
                          bp-rq (+ (* -7/32 moog-res) 1)
                          bp-out (bpf:ar filter-in bp-freq bp-rq)]
                      (x-fade2 moog-out bp-out filter-mode))]
-    (out:ar out-bus (* (qu/amp-modulator-depth genv1 amp<-genv1)
-                       filter-out))))
+    (out:ar out-bus filter-out)))
 
 (defn- create-performance [chanobj id keymode cc1 cc7 cca ccb]
   (let [bank (.clone cadejo.instruments.cobalt.program/bank)

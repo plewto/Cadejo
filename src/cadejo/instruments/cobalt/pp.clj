@@ -1,6 +1,9 @@
+
+
 (println "-->    cobalt pp")
 (ns cadejo.instruments.cobalt.pp
   (:require [cadejo.util.user-message :as umsg])
+  (:require [cadejo.util.string :as ustr])
   (:require [cadejo.instruments.cobalt.constants :as con])
 )
 
@@ -14,10 +17,13 @@
 (def bar ";; ------------------------------------------------------")
 
 
-(defn dump [patch data & args]
+(defn dump-filter [q]
+  (ustr/is-substring? "penv" (name q)))
+
+(defn dump [data & args]
   (println "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ " args)
   (println ";; COBALT PATCH DUMP")
-  (doseq [k (sort (keys data))]
+  (doseq [k (filter dump-filter (sort (keys data)))]
     (let [v (get data k)]
       (println (format ";;   [%-18s] -> %s" k v)))))
 
@@ -32,14 +38,12 @@
 
 (defn- env-prefix [id]
   (cond (integer? id)(format "op%d" id)
-        (= id :genv1) "genv1"
-        (= id :genv2) "genv2"
         (= id :xenv) "xenv"
         :default
         (umsg/warning (format "Illegal env prefix id %s" id))))
 
 ;; format general envelope s
-;; id -> :genv1, :genv2 or :xenv
+;; id -> :xenv
 ;;
 (defn- genv [id dmap]
   (let [prefix (env-prefix id)
@@ -119,11 +123,11 @@
         left (int (get dmap (param "-keyscale-left") 0))
         right (int (get dmap (param "-keyscale-right") 0))]
     (str (format "%s(%s %5.3f %5.3f\n" pad10 fname detune amp)
-         (format "%s:genv1 %4.2f :lfo1 %4.2f\n"
-                 pad15 ge1 lf1)
-         (format "%s:cca   %4.2f :ccb  %4.2f  :vel  %4.2f :prss %4.2f\n"
-                 pad15 cca ccb vel prss) 
-         (format "%s:penv  %5.3f\n" pad15 penv)
+         ;; (format "%s:genv1 %4.2f :lfo1 %4.2f\n"
+         ;;         pad15 ge1 lf1)
+         ;; (format "%s:cca   %4.2f :ccb  %4.2f  :vel  %4.2f :prss %4.2f\n"
+         ;;         pad15 cca ccb vel prss) 
+         ;; (format "%s:penv  %5.3f\n" pad15 penv)
          (format "%s:env  [:att %5.3f :dcy1 %5.3f :dcy2 %5.3f :rel %5.3f\n"
                  pad15 att dc1 dc2 rel)
          (format "%s:peak %4.3f :bp  %4.3f  :sus  %4.3f]"
@@ -222,7 +226,7 @@
           (int (get dmap :bzz-hp-track 1))
           (int (get dmap :bzz-hp-track<-env 0))))
 
-(defn- filter [dmap]
+(defn- filters [dmap]
   (let [freq (int (get dmap :filter-freq 10000))
         track (int (get dmap :filter-track 1))
         f<-env (float (get dmap :filter<-env 0))
@@ -238,7 +242,7 @@
         sus (float (get dmap :filter-sustain 1))
         mode (float (get dmap :filter-mode -1))
         offset (float (max 0 (get dmap :filter2-detune 1)))]
-  (str (format "%s(filter :freq  [%5d :track %2d :env %+5.2f :prss %+5.2f\n"
+  (str (format "%s(filters :freq  [%5d :track %2d :env %+5.2f :prss %+5.2f\n"
                pad15 freq track f<-env f<-prss)
        (format "%s:cca %+5.2f :ccb %+5.2f]\n"
                pad33 f<-cca f<-ccb)
@@ -287,27 +291,28 @@
           (float (get dmap :amp<-cc7 0))))
 
 (defn pp-cobalt [slot name dmap remarks]
+  ;(dump dmap)
   (str (header slot name remarks dmap)
-       (genv :genv1 dmap)
-       (genv :xenv dmap)
-       (penv dmap)
-       (vibrato dmap)
-       (lfo 1 dmap)
-       (lfo 2 dmap)
-       (lfo 3 dmap)
-       (op 1 dmap)(fm 1 dmap)
-       (op 2 dmap)(fm 2 dmap)
-       (op 3 dmap)(fm 3 dmap)
-       (op 4 dmap)(fm 4 dmap)
-       (op 5 dmap)
-       (op 6 dmap)
-       (op 7 dmap)
-       (op 8 dmap)
-       (noise dmap)
-       (buzz dmap)
-       (buzz-harmonics dmap)
-       (filter dmap)
-       (delay 1 dmap)
-       (delay 2 dmap)
+       ;; (genv :genv1 dmap)
+       ;; (genv :xenv dmap)
+       ;; (penv dmap)
+       ;; (vibrato dmap)
+       ;; (lfo 1 dmap)
+       ;; (lfo 2 dmap)
+       ;; (lfo 3 dmap)
+       ;; (op 1 dmap)(fm 1 dmap)
+       ;; (op 2 dmap)(fm 2 dmap)
+       ;; (op 3 dmap)(fm 3 dmap)
+       ;; (op 4 dmap)(fm 4 dmap)
+       ;; (op 5 dmap)
+       ;; (op 6 dmap)
+       ;; (op 7 dmap)
+       ;; (op 8 dmap)
+       ;; (noise dmap)
+       ;; (buzz dmap)
+       ;; (buzz-harmonics dmap)
+       ;; (filters dmap)
+       ;; (delay 1 dmap)
+       ;; (delay 2 dmap)
        (amp dmap)
        "))\n\n"))

@@ -2,6 +2,7 @@
 
 (ns cadejo.instruments.cobalt.constants)
 
+(def op-count 10)                       ; ops 1..8, + noise + buzz
 (def max-port-time 0.5)
 (def min-buzz-hp-freq 1)
 (def max-buzz-hp-freq 9999)
@@ -14,14 +15,14 @@
 (def max-keyscale-depth 12)             ; in db
 (def min-keyscale-depth (* -1 max-keyscale-depth))
 (def min-lfo-frequency 0.01)
-(def max-lfo-frequency 50)
+(def max-lfo-frequency 10)
 (def min-vibrato-sensitivity 0.001)
 (def max-vibrato-sensitivity 0.1)
 (def min-op-detune 0.1)
 (def max-op-detune 127)
 (def min-buzz-harmonics 1)
-(def max-buzz-harmonics 128)
-(def min-filter-cutoff 0)
+(def max-buzz-harmonics 64)
+(def min-filter-cutoff 50)
 (def max-filter-cutoff 12000)
 (def min-filter-track 0)
 (def max-filter-track 8)
@@ -29,18 +30,10 @@
 (def min-filter-res 0)
 (def max-filter-res 4)
 (def filter-res-scale max-filter-res)
-
+(def noise-amp-boost 6)  ; db
 
 (def initial-cobalt-program 
      {:port-time 0.0
-      :genv1-attack 1.0            ; general env genv1
-      :genv1-decay1 0.0
-      :genv1-decay2 0.0
-      :genv1-release 1.0
-      :genv1-peak 1.0
-      :genv1-breakpoint 1.0
-      :genv1-sustain 1.0
-      :amp<-genv1 0.0              ; application of genv1 to overall amp
       :pe-a0 0.00                ; pitch env          
       :pe-a1 0.00                ;     amp values -/+ 1.0 
       :pe-a2 0.00
@@ -49,12 +42,12 @@
       :pe-t2 1.00
       :pe-t3 1.00
       :lfo1-freq 5.00              ; lfo1
-      :lfo1<-genv1 0.0
       :lfo1<-cca 0.0
       :lfo1<-pressure 0.0
+      :lfo1-bleed 0.0
+      :lfo1-delay 2.0
       ;; OP1
       :op1-amp 1.000 
-      :op1-amp<-genv1 0.00
       :op1-amp<-lfo1 0.00
       :op1-amp<-cca 0.00
       :op1-amp<-ccb 0.00
@@ -80,7 +73,6 @@
       :fm1-keyscale-right 0
       ;; OP2
       :op2-amp 0.500 
-      :op2-amp<-genv1 0.00
       :op2-amp<-lfo1 0.00
       :op2-amp<-cca 0.00
       :op2-amp<-ccb 0.00
@@ -106,7 +98,6 @@
       :fm2-keyscale-right 0
       ;; OP3
       :op3-amp 0.333
-      :op3-amp<-genv1 0.00
       :op3-amp<-lfo1 0.00
       :op3-amp<-cca 0.00
       :op3-amp<-ccb 0.00
@@ -132,7 +123,6 @@
       :fm3-keyscale-right 0
       ;; OP4
       :op4-amp 0.250 
-      :op4-amp<-genv1 0.00
       :op4-amp<-lfo1 0.00
       :op4-amp<-cca 0.00
       :op4-amp<-ccb 0.00
@@ -158,7 +148,6 @@
       :fm4-keyscale-right 0
       ;; OP5
       :op5-amp 0.200               ; linear
-      :op5-amp<-genv1 0.00
       :op5-amp<-lfo1 0.00
       :op5-amp<-cca 0.00
       :op5-amp<-ccb 0.00
@@ -175,7 +164,6 @@
       :op5-sustain 1.00
       ;; OP6
       :op6-amp 0.167 
-      :op6-amp<-genv1 0.00
       :op6-amp<-lfo1 0.00
       :op6-amp<-cca 0.00
       :op6-amp<-ccb 0.00
@@ -192,7 +180,6 @@
       :op6-sustain 1.00
       ;; OP7
       :op7-amp 0.143 
-      :op7-amp<-genv1 0.00
       :op7-amp<-lfo1 0.00
       :op7-amp<-cca 0.00
       :op7-amp<-ccb 0.00
@@ -209,7 +196,6 @@
       :op7-sustain 1.00
       ;; OP8
       :op8-amp 0.125 
-      :op8-amp<-genv1 0.00
       :op8-amp<-lfo1 0.00
       :op8-amp<-cca 0.00
       :op8-amp<-ccb 0.00
@@ -225,7 +211,6 @@
       :op8-breakpoint 1.00
       :op8-sustain 1.00
       :bzz-amp 0.050               ; linear
-      :bzz-amp<-genv1 0.00
       :bzz-amp<-lfo1 0.00
       :bzz-amp<-cca 0.00
       :bzz-amp<-ccb 0.00
@@ -285,6 +270,7 @@
       :vibrato-sensitivity 0.10
       :vibrato-depth 0.00
       :vibrato<-pressure 0.00
+      :vibrato-delay 1.00
       :amp -18        ; overall amplitude (db)
       :amp<-velocity 0.00
       :amp<-cc7 0.00
@@ -335,7 +321,7 @@
       :delay2-pan<-xenv 0})
 
 (def ignore-extra-parameters 
-  [:nse-amp<-genv1 :nse-amp<-ccb])
+  [:nse-amp<-ccb])
 
 (def cobalt-parameters (flatten 
                         [ignore-extra-parameters
