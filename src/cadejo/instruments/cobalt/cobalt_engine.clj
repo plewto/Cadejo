@@ -23,8 +23,9 @@
 (def cobalt-descriptor
   (let [d (cadejo.instruments.descriptor/instrument-descriptor :cobalt "Cobalt" clipboard*)]
     (.add-controller! d :cc1 "Vibrato" 1)
-    (.add-controller! d :cc5 "PortTime" 16) ; ISSUE REVERT TO 5
+    (.add-controller! d :cc5 "PortTime" 5) 
     (.add-controller! d :cc7 "Volume" 7)
+    (.add-controller! d :cc9 "Pitch Env" 9)
     (.add-controller! d :cca "CCA" 98)  ; ISSUE REVERT TO 16
     (.add-controller! d :ccb "CCB" 99)  ; ISSUE REVERT TO 17
     (.set-editor-constructor! d cobalt-ed/cobalt-editor)
@@ -70,13 +71,14 @@
                        velocity 1.0
                        port-time 1.0
                        port-time<-cc5 1.0
-                       pe-a0 0.00                ; pitch env          
+                       pe-a0 0.50                ; pitch env          
                        pe-a1 0.00                ;     amp values -/+ 1.0 
-                       pe-a2 0.00
+                       pe-a2 -0.50
                        pe-a3 0.00
                        pe-t1 1.00                ;     time a0->a1
                        pe-t2 1.00
                        pe-t3 1.00
+                       pe<-cc9 0.0
                        lfo1-freq 5.00              ; lfo1
                        lfo1<-cca 0.0
                        lfo1<-pressure 0.0
@@ -93,7 +95,7 @@
                        op1-keyscale-left 0 
                        op1-keyscale-right 0
                        op1-detune 1.00
-                       op1<-penv 0.00
+                       op1<-penv 1.00
                        op1-attack 0.00
                        op1-decay1 0.00
                        op1-decay2 0.00
@@ -118,7 +120,7 @@
                        op2-keyscale-left 0 
                        op2-keyscale-right 0
                        op2-detune 2.00
-                       op2<-penv 0.00
+                       op2<-penv 1.00
                        op2-attack 0.00
                        op2-decay1 0.00
                        op2-decay2 0.00
@@ -143,7 +145,7 @@
                        op3-keyscale-left 0 
                        op3-keyscale-right 0
                        op3-detune 3.00
-                       op3<-penv 0.00
+                       op3<-penv 1.00
                        op3-attack 0.00
                        op3-decay1 0.00
                        op3-decay2 0.00
@@ -168,7 +170,7 @@
                        op4-keyscale-left 0 
                        op4-keyscale-right 0
                        op4-detune 4.00
-                       op4<-penv 0.00
+                       op4<-penv 1.00
                        op4-attack 0.00
                        op4-decay1 0.00
                        op4-decay2 0.00
@@ -190,7 +192,7 @@
                        op5-amp<-velocity 0.00
                        op5-amp<-pressure 0.00
                        op5-detune 5.00
-                       op5<-penv 0.00             ; -/+ 1
+                       op5<-penv 1.00
                        op5-attack 0.00
                        op5-decay1 0.00
                        op5-decay2 0.00
@@ -206,7 +208,7 @@
                        op6-amp<-velocity 0.00
                        op6-amp<-pressure 0.00
                        op6-detune 6.00
-                       op6<-penv 0.00
+                       op6<-penv 1.00
                        op6-attack 0.00
                        op6-decay1 0.00
                        op6-decay2 0.00
@@ -222,7 +224,7 @@
                        op7-amp<-velocity 0.00
                        op7-amp<-pressure 0.00
                        op7-detune 7.00
-                       op7<-penv 0.00
+                       op7<-penv 1.00
                        op7-attack 0.00
                        op7-decay1 0.00
                        op7-decay2 0.00
@@ -238,7 +240,7 @@
                        op8-amp<-velocity 0.00
                        op8-amp<-pressure 0.00
                        op8-detune 8.00
-                       op8<-penv 0.00
+                       op8<-penv 1.00
                        op8-attack 0.00
                        op8-decay1 0.00
                        op8-decay2 0.00
@@ -257,7 +259,7 @@
                        bzz-keyscale-left 0        ; db/octave
                        bzz-keyscale-right 0
                        bzz-detune 1.00
-                       bzz<-penv 0.00             ; -/+ 1
+                       bzz<-penv 1.00
                        bzz-attack 0.00
                        bzz-decay1 0.00
                        bzz-decay2 0.00
@@ -280,7 +282,7 @@
                        nse-keyscale-left 0
                        nse-keyscale-right 0
                        nse-detune 9.00
-                       nse<-penv 0.00
+                       nse<-penv 1.00
                        nse-attack 0.00
                        nse-decay1 0.00
                        nse-decay2 0.00
@@ -319,6 +321,7 @@
                        cca-bus 0
                        ccb-bus 0
                        cc5-bus 0        ; port time
+                       cc9-bus 0        ; penv depth
                        vibrato-bus 0
                        out-bus 0] 
   (let [bend (in:kr bend-bus)
@@ -326,12 +329,13 @@
         cca (in:kr cca-bus)
         ccb (in:kr ccb-bus)
         cc5 (in:kr cc5-bus)
+        cc9 (in:kr cc9-bus)
         ptime (* port-time (qu/amp-modulator-depth cc5 port-time<-cc5))
         vibrato (+ 1 (in:kr vibrato-bus))
         f0 (* (lag2:kr freq ptime) 
               bend vibrato)
-        
-        penv (pitch-env:kr pe-t1 pe-t2 pe-t3 pe-a0 pe-a1 pe-a2 pe-a3 gate)
+        penv (* (pitch-env:kr pe-t1 pe-t2 pe-t3 pe-a0 pe-a1 pe-a2 pe-a3 gate)
+                (qu/amp-modulator-depth cc9 pe<-cc9))
         lfo1-amp (+ (* cca lfo1<-cca)
                     (* pressure lfo1<-pressure)
                     (qu/amp-modulator-depth (lag2:kr gate (* 4 lfo1-delay))(- 1 lfo1-bleed)))
@@ -490,13 +494,14 @@
     (tap :ptime 5 ptime)
     (out:ar out-bus filter-out)))
 
-(defn- create-performance [chanobj id keymode cc1 cc5 cc7 cca ccb]
+(defn- create-performance [chanobj id keymode cc1 cc5 cc7 cc9 cca ccb]
   (let [bank (.clone cadejo.instruments.cobalt.program/bank)
         performance (cadejo.midi.performance/performance
                      chanobj id keymode bank cobalt-descriptor
                      [:cc1 cc1 :linear 0.0]
                      [:cc5 cc5 :linear 0.0]
                      [:cc7 cc7 :linear 1.0]
+                     [:cc9 cc9 :linear 0.0]
                      [:cca cca :linear 0.0]
                      [:ccb ccb :linear 0.0])]
     (.put-property! performance :instrument-type :cobalt)
@@ -513,22 +518,23 @@
   ([]
      (sleep nil)))
 
-(defn cobalt-mono [scene chan id & {:keys [cc1 cc5 cc7 cc1 cca ccb main-out]
+(defn cobalt-mono [scene chan id & {:keys [cc1 cc5 cc7 cc9 cc1 cca ccb main-out]
                                     :or {cc1 1
-                                         cc5 16 ; ISSUE revert to 5
+                                         cc5 5 
                                          cc7 7
-                                        
+                                         cc9 9
                                          cca 16
                                          ccb 17
                                          main-out 0}}]
   (let [chanobj (.channel scene chan)
         keymode (cadejo.midi.mono-mode/mono-keymode :cobalt)
-        performance (create-performance chanobj id keymode cc1 cc5 cc7 cca ccb)
+        performance (create-performance chanobj id keymode cc1 cc5 cc7 cc9 cca ccb)
         bend-bus (.control-bus performance :bend)
         pressure-bus (.control-bus performance :pressure)
         cc1-bus (.control-bus performance :cc1)
         cc5-bus (.control-bus performance :cc5)
         cc7-bus (.control-bus performance :cc7)
+        cc9-bus (.control-bus performance :cc9)
         cca-bus (.control-bus performance :cca)
         ccb-bus (.control-bus performance :ccb)
         vibrato-bus (.control-bus performance :vibrato)
@@ -538,7 +544,10 @@
                        :pressure-bus pressure-bus
                        :vibrato-bus vibrato-bus)
         voice (CobaltVoice :bend-bus bend-bus :pressure-bus pressure-bus
-                           :cca-bus cca-bus :ccb-bus ccb-bus :cc5-bus cc5-bus
+                           :cc5-bus cc5-bus
+                           :cc9-bus cc9-bus
+                           :cca-bus cca-bus
+                           :ccb-bus ccb-bus
                            :vibrato-bus vibrato-bus 
                            :out-bus efx-in-bus)
         efx-block (cadejo.instruments.cobalt.efx/CobaltEffects
@@ -555,22 +564,24 @@
     performance))
 
 
-(defn cobalt-poly [scene chan id & {:keys [cc1 cc5 cc7 cca ccb voice-count main-out]
+(defn cobalt-poly [scene chan id & {:keys [cc1 cc5 cc7 cc9 cca ccb voice-count main-out]
                                   :or {cc1 1
-                                       cc5 16 ; ISSUE revert to 5
+                                       cc5 5 
                                        cc7 7
+                                       cc9 9
                                        cca 99 ; ISSUE REVERT TO 16
                                        ccb 98 ; ISSUE REVERT TO 17
                                        voice-count 8
                                        main-out 0}}]
   (let [chanobj (.channel scene chan)
         keymode (cadejo.midi.poly-mode/poly-keymode :cobalt voice-count)
-        performance (create-performance chanobj id keymode cc1 cc5 cc7 cca ccb)
+        performance (create-performance chanobj id keymode cc1 cc5 cc7 cc9 cca ccb)
         bend-bus (.control-bus performance :bend)
         pressure-bus (.control-bus performance :pressure)
         cc1-bus (.control-bus performance :cc1)
         cc5-bus (.control-bus performance :cc5)
         cc7-bus (.control-bus performance :cc7)
+        cc9-bus (.control-bus performance :cc9)
         cca-bus (.control-bus performance :cca)
         ccb-bus (.control-bus performance :ccb)
         vibrato-bus (.control-bus performance :vibrato)
@@ -584,6 +595,7 @@
                   (let [v (CobaltVoice
                            :bend-bus bend-bus :pressure-bus pressure-bus
                            :cc5-bus cc5-bus
+                           :cc9-bus cc9-bus
                            :cca-bus cca-bus 
                            :ccb-bus ccb-bus
                            :vibrato-bus vibrato-bus
