@@ -15,6 +15,23 @@
 
 (def global-scenes* (atom {}))
 
+;;; START DEBUG
+;; (defn get-scene []
+;;   (let [skey (first (keys @global-scenes*))]
+;;     (get @global-scenes* skey)))
+;; (defn chan0 [](.channel (get-scene) 0))
+;; (defn performance [](first (.children (chan0))))
+;; (defn ?efx [key](.synth-tap? (performance) :efx key))
+;; (defn ctl [param val]
+;;   (println (format ";; ctl  [%s] -> %s" param val))
+;;   (doseq [s (.synths (performance))]
+;;     (Thread/sleep 10)
+;;     (ot/ctl s param val))
+;;   (doseq [v (.voices (performance))]
+;;     (Thread/sleep 10)
+;;     (ot/ctl v param val)))
+;;; END DEBUG
+
 (config/load-gui! true)
 
 (defn- splash-label []
@@ -148,7 +165,6 @@
                              :border (factory/padding 16)))]
       (ss/listen jb-create :action
                  (fn [_]
-                   (println (format "DEBUG *** create-scene start %s" (System/currentTimeMillis)))
                    (.working cframe true)
                    (.status! cframe "Creating scene")
                    (SwingUtilities/invokeLater
@@ -174,7 +190,6 @@
                           (.working cframe false)
                           (.doClick tb)
                           (swap! global-scenes* (fn [n](assoc n device s)))
-                          (println (format "DEBUG *** create-scene end   %s" (System/currentTimeMillis)))
                           (.status! cframe (format "Scene %s created" device))))))))
       pan-main)))
 

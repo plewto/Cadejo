@@ -15,3 +15,16 @@
       (let [frmt (format "%%-%ds" diff)]
         (format frmt s))
       s)))
+
+;; Return index of substring sub withing string str.
+;; -1 indicates sub is not contained in str
+;;
+(defn index-of [sub s]
+  (.indexOf (str s) (str sub) 0))
+
+;; Predicate returns true if sub is substring of str
+;;
+(defn is-substring? [sub str]
+  (let [i (index-of sub str)]
+    (not (= i -1))))
+  
