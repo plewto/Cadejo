@@ -23,9 +23,10 @@
 (def cobalt-descriptor
   (let [d (cadejo.instruments.descriptor/instrument-descriptor :cobalt "Cobalt" clipboard*)]
     (.add-controller! d :cc1 "Vibrato" 1)
+    (.add-controller! d :cc5 "PortTime" 16) ; ISSUE REVERT TO 5
     (.add-controller! d :cc7 "Volume" 7)
-    (.add-controller! d :cca "CCA" 16)
-    (.add-controller! d :ccb "CCB" 17)
+    (.add-controller! d :cca "CCA" 98)  ; ISSUE REVERT TO 16
+    (.add-controller! d :ccb "CCB" 99)  ; ISSUE REVERT TO 17
     (.set-editor-constructor! d cobalt-ed/cobalt-editor)
     (.initial-program! d con/initial-cobalt-program)
     (.program-generator! d genpatch/random-cobalt-program)
@@ -67,7 +68,8 @@
                        note 69
                        gate 0
                        velocity 1.0
-                       port-time 0.0
+                       port-time 1.0
+                       port-time<-cc5 1.0
                        pe-a0 0.00                ; pitch env          
                        pe-a1 0.00                ;     amp values -/+ 1.0 
                        pe-a2 0.00
@@ -316,14 +318,17 @@
                        pressure-bus 0
                        cca-bus 0
                        ccb-bus 0
+                       cc5-bus 0        ; port time
                        vibrato-bus 0
                        out-bus 0] 
   (let [bend (in:kr bend-bus)
         pressure (in:kr pressure-bus)
         cca (in:kr cca-bus)
         ccb (in:kr ccb-bus)
+        cc5 (in:kr cc5-bus)
+        ptime (* port-time (qu/amp-modulator-depth cc5 port-time<-cc5))
         vibrato (+ 1 (in:kr vibrato-bus))
-        f0 (* (lag2:kr freq port-time) 
+        f0 (* (lag2:kr freq ptime) 
               bend vibrato)
         
         penv (pitch-env:kr pe-t1 pe-t2 pe-t3 pe-a0 pe-a1 pe-a2 pe-a3 gate)
@@ -479,13 +484,18 @@
                          bp-rq (+ (* -7/32 moog-res) 1)
                          bp-out (bpf:ar filter-in bp-freq bp-rq)]
                      (x-fade2 moog-out bp-out filter-mode))]
+    (tap :cc5 5 cc5)
+    (tap :cc5-bus 5 cc5-bus)
+    (tap :port-time 5 port-time)
+    (tap :ptime 5 ptime)
     (out:ar out-bus filter-out)))
 
-(defn- create-performance [chanobj id keymode cc1 cc7 cca ccb]
+(defn- create-performance [chanobj id keymode cc1 cc5 cc7 cca ccb]
   (let [bank (.clone cadejo.instruments.cobalt.program/bank)
         performance (cadejo.midi.performance/performance
                      chanobj id keymode bank cobalt-descriptor
                      [:cc1 cc1 :linear 0.0]
+                     [:cc5 cc5 :linear 0.0]
                      [:cc7 cc7 :linear 1.0]
                      [:cca cca :linear 0.0]
                      [:ccb ccb :linear 0.0])]
@@ -503,18 +513,21 @@
   ([]
      (sleep nil)))
 
-(defn cobalt-mono [scene chan id & {:keys [cc1 cc7 cc1 cca ccb main-out]
+(defn cobalt-mono [scene chan id & {:keys [cc1 cc5 cc7 cc1 cca ccb main-out]
                                     :or {cc1 1
+                                         cc5 16 ; ISSUE revert to 5
                                          cc7 7
+                                        
                                          cca 16
                                          ccb 17
                                          main-out 0}}]
   (let [chanobj (.channel scene chan)
         keymode (cadejo.midi.mono-mode/mono-keymode :cobalt)
-        performance (create-performance chanobj id keymode cc1 cc7 cca ccb)
+        performance (create-performance chanobj id keymode cc1 cc5 cc7 cca ccb)
         bend-bus (.control-bus performance :bend)
         pressure-bus (.control-bus performance :pressure)
         cc1-bus (.control-bus performance :cc1)
+        cc5-bus (.control-bus performance :cc5)
         cc7-bus (.control-bus performance :cc7)
         cca-bus (.control-bus performance :cca)
         ccb-bus (.control-bus performance :ccb)
@@ -525,7 +538,7 @@
                        :pressure-bus pressure-bus
                        :vibrato-bus vibrato-bus)
         voice (CobaltVoice :bend-bus bend-bus :pressure-bus pressure-bus
-                           :cca-bus cca-bus :ccb-bus ccb-bus
+                           :cca-bus cca-bus :ccb-bus ccb-bus :cc5-bus cc5-bus
                            :vibrato-bus vibrato-bus 
                            :out-bus efx-in-bus)
         efx-block (cadejo.instruments.cobalt.efx/CobaltEffects
@@ -542,19 +555,21 @@
     performance))
 
 
-(defn cobalt-poly [scene chan id & {:keys [cc1 cc7 cca ccb voice-count main-out]
+(defn cobalt-poly [scene chan id & {:keys [cc1 cc5 cc7 cca ccb voice-count main-out]
                                   :or {cc1 1
+                                       cc5 16 ; ISSUE revert to 5
                                        cc7 7
-                                       cca 16
-                                       ccb 17
+                                       cca 99 ; ISSUE REVERT TO 16
+                                       ccb 98 ; ISSUE REVERT TO 17
                                        voice-count 8
                                        main-out 0}}]
   (let [chanobj (.channel scene chan)
         keymode (cadejo.midi.poly-mode/poly-keymode :cobalt voice-count)
-        performance (create-performance chanobj id keymode cc1 cc7 cca ccb)
+        performance (create-performance chanobj id keymode cc1 cc5 cc7 cca ccb)
         bend-bus (.control-bus performance :bend)
         pressure-bus (.control-bus performance :pressure)
         cc1-bus (.control-bus performance :cc1)
+        cc5-bus (.control-bus performance :cc5)
         cc7-bus (.control-bus performance :cc7)
         cca-bus (.control-bus performance :cca)
         ccb-bus (.control-bus performance :ccb)
@@ -568,7 +583,9 @@
                 (dotimes [i voice-count]
                   (let [v (CobaltVoice
                            :bend-bus bend-bus :pressure-bus pressure-bus
-                           :cca-bus cca-bus :ccb-bus ccb-bus
+                           :cc5-bus cc5-bus
+                           :cca-bus cca-bus 
+                           :ccb-bus ccb-bus
                            :vibrato-bus vibrato-bus
                            :out-bus efx-in-bus)]
                     (swap! acc* (fn [q](conj q v)))
@@ -580,6 +597,7 @@
                    :cc7-bus cc7-bus
                    :in-bus efx-in-bus
                    :out-bus main-out)]
+    (println (format "DEBUG cc5 bus is %s" cc5-bus))
     (.add-synth! performance :vibrato vibrato-block)
     (.add-synth! performance :efx efx-block)
     (doseq [v voices]
