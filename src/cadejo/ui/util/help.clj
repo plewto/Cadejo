@@ -19,7 +19,7 @@
     
 
 
-;;;; Temp online documentation
+;;;; Temp on-line documentation
 
 (defn- add-topic [topic text]
   (swap! docs* (fn [q](assoc q topic text))))
@@ -43,6 +43,7 @@ instruments. Initially 4 instruments are provided:
     MASA - a more complex organ loosely based on the Hammond B3
     Algo - an 8-operator FM synth
     Alias - a mono 'matrix-synth' with extensive modulation possibilities.
+    Cobalt - a hybrid additive/subtractive synth
 
      *** Trees, Nodes and Properties ***
 
@@ -429,7 +430,7 @@ Registration
    MIDI pedal controller. The pedal values are additive to the amp values
    but the over all partial amplitude never exceed 8. If a partial has an
    amplitude of 8 and a positive pedal value then movement of the pedal
-   will have no effect on the partial's amplitude. 
+   will have no effect on the partials amplitude. 
 
    The final partial control is the 'perc' or percussion button. If
    selected percussion changes the partial envelope from a gated contour to
@@ -625,7 +626,7 @@ Filters
 Effects
 
    Alias contains four effects which are each stereo and connected in
-   parallel. Matrix bus modulation may be applied to the pitch-shfiter
+   parallel. Matrix bus modulation may be applied to the pitch-shifter
    'ratio' and the flanger delay parameters. The two delay lines may each
    provide up to one second delay and both delay time and delay output may
    be modulated by the matrix.")
@@ -670,4 +671,83 @@ to default, randomize the envelope and copy and paste the envelope to the
 clipboard.")
 
    
+(add-topic :cobalt
+"Cobalt is a hybrid instrument utilizing both additive and subtractive
+techniques. The tone sources include 8 'operators'. Operators 1, 2, 3 and
+4 provide simple single carrier/modulator FM. Operators 5, 6, 7 and 8
+produce simple sine waves. Additionally there is a narrow-band noise source
+and a 'buzz' or 'blip' pulse generator.  These 10 signals are mixed and fed
+to parallel low and bandpass filters. After the filters with signal is
+processed through a 'folding' clipper and finally to dual delay stages. 
+
+Operators 1 through 4 provide simple single carrier/modulator FM
+and have the following parameters
+
+    amp               * Linear output amplitude [0 ... 1]
+    amp<-lfo1         * LFO1 amplitude modulation depth [0 ... 1] 
+    amp<-cca          * MIDI cc A amplitude modulation depth [0 ... 1]
+    amp<-velocity     * Velocity amplitude modulation depth [0 ... 1]
+    amp<-pressure     * MIDI pressure amplitude modulation depth [0 .. 1]
+    keyscale-key      * MIDI keyscale reference key, [0 ... 127]
+    keyscale-left     * Left keyscale depth in db/octave [-12 ... +12]
+    keyscale-right    * Right keyscale depth in db/octave [-12 ... +12]
+    detune            * Relative frequency [0 < detune]
+    op1<-penv         * Pitch envelope depth [-1 ... +1]
+                      *
+                      * Operator envelopes have 5-stages and may be configured
+                      * as either AADSR or ADDSR
+    attack            * Attack time [0 <= attack]
+    decay1            * Initial decay/second attack time [0 <= decay1] 
+    decay2            * Second decay time [0 <= decay2]
+    release           * Release time [0 <= release]
+    peak              * Peak amplitude after initial attack [0 <= peak <= 1]
+    breakpoint        * Amplitude after first decay [0 <= breakpoint <= 1]
+    sustain           * Sustain level [0 <= sustain <= 1]
+                      * 
+                      * Operators 1 through 4 provide simple FM. The 'fm' 
+                      * parameters apply to the modulator.
+    fm-detune         * Modulator frequency relative to carrier [0 ... ?]
+    fm-bias           * Fixed value added to modulator frequency [-? ... +?]
+    fm-amp            * Modulation depth. [0 <= amp]
+    fm<-env           * Depth of envelope control over modulation depth.
+                      * For fm-env = 0 the modulator has a fixed amplitude.
+                      * For fm-env = 1 the modulator amplitude is env*fm-amp
+    fm-keyscale-left  * Left modulation depth keyscale
+    fm-keyscale-right * Right modulation depth keyscale
+
+Operators 5 through 8 provide simple sine tones and have the same
+parameters as the fm operators with exception of key-scaling and fm
+controls.
+
+The noise source is band-pass filtered and then ring-modulated with a sine
+wave. The result is a cluster of tones centered on the sine frequency with
+the filter band-width controlling the tone spread. For low band-widths
+(~10) the noise source has a definite pitch and forms a quasi 9th
+operator. The noise parameters include most of the same parameters as
+operator 1, minus the fm controls.
+
+The final source is a pulse 'buzz' generator which generates the first n
+harmonics with equal amplitude. The number of harmonics may be modulated by
+the buzz envelope or external MIDI controller. Additionally there is a
+high-pass filter used to attenuate the lower harmonics. The buzz generator
+has most of the same parameters as operator 1.
+
+
+The filter section consist of parallel low and band pass filters. The
+frequencies of these two filters move in tandem. An offset may be
+applied to the band-pass filter such that it's frequency is some
+fraction/multiple of the low pass filter. The filter includes an integrated
+ADSR envelope generator and variable resonance. The 'mode' parameter sets
+the relative mix between the two filters.
+
+Following the filter is a simple 'folding' wave shaper. The mix parameter
+sets the wet/dry mix between the folder input and output. The pregain
+parameter amplifies the input signal and thus increase the clipping
+effect. There is some automatic amplitude scaling of the folder output as
+a function of the pregain value. 
+
+Cobalt includes 2 independent delay lines, each with a a maximum of 2
+seconds delay. A separate envelope 'xenv', and LFOs 3 and 4, are dedicated
+to the effects stage. These control signals may be used to modulate the
+time, mix and pan position of either delay line.")
 
