@@ -290,6 +290,8 @@
                        nse-peak 1.00
                        nse-breakpoint 1.00
                        nse-sustain 1.00
+                       nse-bw 10
+
                        filter-freq 0
                        filter-track 1
                        filter-res 0
@@ -305,13 +307,10 @@
                        filter-res<-ccb 0
                        filter-mode 0     ; -/+1   -1 -> lp   +1 -> bp
                        filter2-detune 1  ; bp filter freq rel to lp filter
-
                        dist-mix 1       ; 0 -> dry 1 -> wet
                        dist-pregain 1
                        dist<-cca 4
                        dist<-ccb 0
-                       
-
                        op1-enable 1
                        op2-enable 1
                        op3-enable 1
@@ -322,7 +321,6 @@
                        op8-enable 1
                        nse-enable 1
                        bzz-enable 1
-                       nse-bw 10
                        bend-bus 0                  ; control buses
                        pressure-bus 0
                        cca-bus 0
@@ -623,7 +621,6 @@
                    :cc7-bus cc7-bus
                    :in-bus efx-in-bus
                    :out-bus main-out)]
-    (println (format "DEBUG cc5 bus is %s" cc5-bus))
     (.add-synth! performance :vibrato vibrato-block)
     (.add-synth! performance :efx efx-block)
     (doseq [v voices]

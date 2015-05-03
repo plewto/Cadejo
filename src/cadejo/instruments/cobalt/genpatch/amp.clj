@@ -4,22 +4,19 @@
 
 (def test-mode false) ; in test-mode return registration [1 1/2 1/3 1/4 ...]
 
-(def p-use-fm 0.5)
-(def p-use-high-fm-indexes 0.3)
-(def p-use-noise 0.4)
-(def p-use-buzz 0.4)
+(def ^:private p-use-fm 0.5)
+(def ^:private p-use-high-fm-indexes 0.3)
+(def ^:private p-use-noise 0.4)
+(def ^:private p-use-buzz 0.4)
+(def ^:private clamp math/clamp)
+(def ^:private coin math/coin)
 
-(def clamp math/clamp)
-(def coin math/coin)
-
-
-(defn srand 
+(defn- srand 
   ([n]
    (let [s (coin 0.5 -1 1)]
      (* s (rand n))))
   ([]
    (srand 1)))
-
 
 (defn create-fm-indexes []
   (if test-mode
@@ -32,8 +29,6 @@
                                            (rand 3))))))
         (reset! acc* [0 0 0 0]))
       @acc*)))
-
-
 
 ;; Returns index of peak partail
 ;; gamut is used to inform selection.
@@ -53,7 +48,7 @@
         (swap! acc* (fn [q](conj q (repeat x i))))))
     (rand-nth (flatten @acc*))))
 
-(defn select-noise-and-buzz [alist]
+(defn- select-noise-and-buzz [alist]
   (let [acc* (atom [])
         nse (nth alist 8)
         bzz (if (> (count alist) 9) (nth alist 9)(rand))]
@@ -91,10 +86,10 @@
 ;; sensitivity.
 ;;
 
-(def p-use-velocity (if test-mode 0 0.5))
-(def p-low-op-velocity 0.40)
-(def p-mid-op-velocity 0.60)
-(def p-high-op-velocity 0.80)
+(def ^:private p-use-velocity (if test-mode 0 0.5))
+(def ^:private p-low-op-velocity 0.40)
+(def ^:private p-mid-op-velocity 0.60)
+(def ^:private p-high-op-velocity 0.80)
 
 (defn select-op-velocity-sensitivities [gamut]
   (if (coin p-use-velocity)
@@ -109,7 +104,7 @@
     (into [](repeat 10 0.0))))
         
   
-(def p-use-pressure (if test-mode 0 0.3))
+(def ^:private p-use-pressure (if test-mode 0 0.3))
 
 (defn select-op-pressure-sensitivities []
   (if (coin p-use-pressure)
@@ -119,7 +114,7 @@
       @acc*)
     (into [](repeat 10 0.0))))
   
-(def p-use-op-lfo (if test-mode 0 0.3))
+(def ^:private p-use-op-lfo (if test-mode 0 0.3))
 
 (defn select-op-lfo-depths []
   (if (coin p-use-op-lfo)
@@ -128,11 +123,3 @@
         (swap! acc* (fn [q](conj q (coin 0.50 (rand) 0.0)))))
       @acc*)
     (into [](repeat 10 0.0))))
-
-
-
-;; op8-amp<-lfo1 0.00
-;; op8-amp<-cca 0.00
-;; op8-amp<-ccb 0.00
-
-

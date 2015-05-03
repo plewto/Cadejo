@@ -1,7 +1,7 @@
 (println "-->    cobalt genpatch")
 (ns cadejo.instruments.cobalt.genpatch.genpatch
-  (:use [cadejo.instruments.cobalt.program])
   (:require [cadejo.instruments.cobalt.constants :as con])
+  (:require [cadejo.instruments.cobalt.program :as prog])
   (:require [cadejo.instruments.cobalt.genpatch.amp :as amp])
   (:require [cadejo.instruments.cobalt.genpatch.env :as env])
   (:require [cadejo.instruments.cobalt.genpatch.filter :as filter])
@@ -10,28 +10,25 @@
   (:require [cadejo.util.col :as col])
   (:require [cadejo.util.math :as math]))
 
-(def approx math/approx)
-(def coin math/coin)
+(def ^:private approx math/approx)
+(def ^:private coin math/coin)
+(defn- third [s](nth s 2))
+(defn- fourth [s](nth s 3))
 
 
-(defn third [s](nth s 2))
-(defn fourth [s](nth s 3))
+;; (defn- display-gamut [gamut]
+;;   (print ";; Gamut [")
+;;   (dotimes [i 8]
+;;     (printf "%6.3f " (float (nth gamut i))))
+;;   (printf "nse %6.3f bzz %6.3f]" (float (nth gamut 8))(float (nth gamut 9)))
+;;   (println))
 
-
-(defn display-gamut [gamut]
-  (print ";; Gamut [")
-  (dotimes [i 8]
-    (printf "%6.3f " (float (nth gamut i))))
-  (printf "nse %6.3f bzz %6.3f]" (float (nth gamut 8))(float (nth gamut 9)))
-  (println))
-
-(defn display-registration [registration]
-  (print ";; Registration [")
-  (dotimes [i 8]
-    (printf "%5.3f " (float (nth registration i))))
-  (printf "nse %5.3f bzz %5.3f]" (float (nth registration 8))(float (nth registration 9)))
-  (println))
-
+;; (defn- display-registration [registration]
+;;   (print ";; Registration [")
+;;   (dotimes [i 8]
+;;     (printf "%5.3f " (float (nth registration i))))
+;;   (printf "nse %5.3f bzz %5.3f]" (float (nth registration 8))(float (nth registration 9)))
+;;   (println))
 
 
 (defn random-cobalt-program []
@@ -64,114 +61,109 @@
                                (= pitch-env-mode :divergent)(sign pitch-env-depth)
                                (= pitch-env-mode :select-divergent)(coin 0.5 (sign pitch-env-depth) 0)
                                :default (sign (rand pitch-env-depth)))))]
-    ;; (display-gamut gamut)
-    (display-registration registration)
-    (println (format "Mean registration -> %4.2f   (db %s)" mean-registration (math/amp->db mean-registration)))
-    ;; (println (format "noise bw = %s" nbw))
-    ;; (println (format "Velocities %s" op-velocities))
-    ;; (println (format "Pressures  %s" op-pressures))
-    ;; (println (format "LFO        %s" op-lfo-depths))
-    ;; (println (format "bzz-harmonics    %s   env %s" bzz-harmonics bzz-harmonics<-env))
-    ;; (println (format "bzz-hp-track     %s   env %s" bzz-hp-track bzz-hp<-env))
-    (cobalt (port-time (coin 0.1 (rand 0.5) 0.0))
-            (let [map (col/alist->map (:xenv envmap))]
-              (xenv :att (:att map) :dcy1 (:dcy1 map) :dcy2 (:dcy2 map)
-                     :rel (:rel map) :peak (:peak map) :bp (:bp map) 
-                     :sus (:sus map)))
-            (env/select-pitch-env)
-            (lfo/select-lfo-and-delay)
-            (op1 (first gamut)(first registration)
-                 :vel (first op-velocities)
-                 :prss (first op-pressures)
-                 :lfo1 (first op-lfo-depths)
+    (prog/cobalt 
+     (prog/enable 1 2 3 4 5 6 7 8 :noise :buzz)
+     (prog/port-time (coin 0.1 (rand 0.5) 0.0))
+     (let [map (col/alist->map (:xenv envmap))]
+       (prog/xenv :att (:att map) :dcy1 (:dcy1 map) :dcy2 (:dcy2 map)
+                  :rel (:rel map) :peak (:peak map) :bp (:bp map) 
+                  :sus (:sus map)))
+     (env/select-pitch-env)
+     (lfo/select-lfo-and-delay)
+     (prog/op1 (first gamut)(first registration)
+               :vel (first op-velocities)
+               :prss (first op-pressures)
+               :lfo1 (first op-lfo-depths)
+               :cca   0.00 :ccb   0.00 
+               :penv (set-pitchenv)
+               :env (:op1 envmap)
+               :key 60 :left   0 :right   0)
+     (prog/op2 (second gamut)(second registration)
+               :vel (second op-velocities )
+               :prss (second op-pressures )
+               :lfo1 (second op-lfo-depths )
+               :cca   0.00 :ccb   0.00 
+               :penv (set-pitchenv)
+               :env (:op2 envmap) 
+               :key 60 :left   0 :right   0)
+     (prog/op3 (nth gamut 2)(nth registration 2)
+               :vel (nth op-velocities  2)
+               :prss (nth op-pressures  2)
+               :lfo1 (nth op-lfo-depths  2)
+               :cca   0.00 :ccb   0.00 
+               :penv (set-pitchenv)
+               :env (:op3 envmap) 
+               :key 60 :left   0 :right   0)
+     (prog/op4 (nth gamut 3)(nth registration 3)
+               :vel (nth op-velocities  3)
+               :prss (nth op-pressures  3)
+               :lfo1 (nth op-lfo-depths  3)
+               :cca   0.00 :ccb   0.00 
+               :penv (set-pitchenv)
+               :env (:op4 envmap) 
+               :key 60 :left   0 :right   0)
+     (prog/op5 (nth gamut 4)(nth registration 4)
+               :vel (nth op-velocities  4)
+               :prss (nth op-pressures  4)
+               :lfo1 (nth op-lfo-depths  4)
+               :cca   0.00 :ccb   0.00 
+               :penv (set-pitchenv)
+               :env (:op5 envmap) 
+               :key 60 :left   0 :right   0)
+     (prog/op6 (nth gamut 5)(nth registration 5)
+               :vel (nth op-velocities  5)
+               :prss (nth op-pressures  5)
+               :lfo1 (nth op-lfo-depths  5)
+               :cca   0.00 :ccb   0.00 
+               :penv (set-pitchenv)
+               :env (:op6 envmap) 
+               :key 60 :left   0 :right   0)
+     (prog/op7 (nth gamut 6)(nth registration 6)
+               :vel (nth op-velocities  6)
+               :prss (nth op-pressures  6)
+               :lfo1 (nth op-lfo-depths  6)
+               :cca   0.00 :ccb   0.00 
+               :penv (set-pitchenv)
+               :env (:op7 envmap) 
+               :key 60 :left   0 :right   0)
+     (prog/op8 (nth gamut 7)(nth registration 7)
+               :vel (nth op-velocities  7)
+               :prss (nth op-pressures  7)
+               :lfo1 (nth op-lfo-depths  7)
+               :cca   0.00 :ccb   0.00 
+               :penv (set-pitchenv)
+               :env (:op8 envmap) 
+               :key 60 :left   0 :right   0)
+     (prog/noise (nth gamut 8)(nth registration 8) 
+                 :vel (nth op-velocities 8)
+                 :prss (nth op-pressures 8)
+                 :lfo1 (nth op-lfo-depths 8)
+                 :cca 0.000 
+                 :penv (set-pitchenv)
+                 :env (:noise envmap)
+                 :key 60 :left   0 :right   0
+                 :bw nbw)
+     (prog/buzz  (nth gamut 9)
+                 (nth registration 9)
+                 :vel (nth op-velocities 9)
+                 :prss (nth op-pressures 9)
+                 :lfo1 (nth op-lfo-depths 9)
                  :cca   0.00 :ccb   0.00 
                  :penv (set-pitchenv)
-                 :env (:op1 envmap)
+                 :env (:buzz envmap)
                  :key 60 :left   0 :right   0)
-            (op2 (second gamut)(second registration)
-                 :vel (second op-velocities )
-                 :prss (second op-pressures )
-                 :lfo1 (second op-lfo-depths )
-                 :cca   0.00 :ccb   0.00 
-                 :penv (set-pitchenv)
-                 :env (:op2 envmap) 
-                 :key 60 :left   0 :right   0)
-            (op3 (nth gamut 2)(nth registration 2)
-                 :vel (nth op-velocities  2)
-                 :prss (nth op-pressures  2)
-                 :lfo1 (nth op-lfo-depths  2)
-                 :cca   0.00 :ccb   0.00 
-                 :penv (set-pitchenv)
-                 :env (:op3 envmap) 
-                 :key 60 :left   0 :right   0)
-            (op4 (nth gamut 3)(nth registration 3)
-                 :vel (nth op-velocities  3)
-                 :prss (nth op-pressures  3)
-                 :lfo1 (nth op-lfo-depths  3)
-                 :cca   0.00 :ccb   0.00 
-                 :penv (set-pitchenv)
-                 :env (:op4 envmap) 
-                 :key 60 :left   0 :right   0)
-            (op5 (nth gamut 4)(nth registration 4)
-                 :vel (nth op-velocities  4)
-                 :prss (nth op-pressures  4)
-                 :lfo1 (nth op-lfo-depths  4)
-                 :cca   0.00 :ccb   0.00 
-                 :penv (set-pitchenv)
-                 :env (:op5 envmap) 
-                 :key 60 :left   0 :right   0)
-            (op6 (nth gamut 5)(nth registration 5)
-                 :vel (nth op-velocities  5)
-                 :prss (nth op-pressures  5)
-                 :lfo1 (nth op-lfo-depths  5)
-                 :cca   0.00 :ccb   0.00 
-                 :penv (set-pitchenv)
-                 :env (:op6 envmap) 
-                 :key 60 :left   0 :right   0)
-            (op7 (nth gamut 6)(nth registration 6)
-                 :vel (nth op-velocities  6)
-                 :prss (nth op-pressures  6)
-                 :lfo1 (nth op-lfo-depths  6)
-                 :cca   0.00 :ccb   0.00 
-                 :penv (set-pitchenv)
-                 :env (:op7 envmap) 
-                 :key 60 :left   0 :right   0)
-            (op8 (nth gamut 7)(nth registration 7)
-                 :vel (nth op-velocities  7)
-                 :prss (nth op-pressures  7)
-                 :lfo1 (nth op-lfo-depths  7)
-                 :cca   0.00 :ccb   0.00 
-                 :penv (set-pitchenv)
-                 :env (:op8 envmap) 
-                 :key 60 :left   0 :right   0)
-            (noise (nth gamut 8)(nth registration 8) 
-                  :vel (nth op-velocities 8)
-                  :prss (nth op-pressures 8)
-                  :lfo1 (nth op-lfo-depths 8)
-                  :cca 0.000 
-                  :penv (set-pitchenv)
-                  :env (:noise envmap)
-                  :key 60 :left   0 :right   0
-                  :bw nbw)
-           (buzz  (nth gamut 9)
-                  (nth registration 9)
-                  :vel (nth op-velocities 9)
-                  :prss (nth op-pressures 9)
-                  :lfo1 (nth op-lfo-depths 9)
-                  :cca   0.00 :ccb   0.00 
-                  :penv (set-pitchenv)
-                  :env (:buzz envmap)
-                  :key 60 :left   0 :right   0)
-           (filter/select-filter (:filter envmap))
-           (fm1 (first fm)  (first fmi)  :bias (first fm-bias)  :env 1.0)
-           (fm2 (second fm) (second fmi) :bias (second fm-bias) :env 1.0)
-           (fm3 (third fm)  (third fmi)  :bias (third fm-bias)  :env 1.0)
-           (fm4 (fourth fm) (fourth fmi) :bias (fourth fm-bias) :env 1.0)
-           (buzz-harmonics bzz-harmonics 
-                           :env bzz-harmonics<-env
-                           :hp bzz-hp-track
-                           :hp<-env bzz-hp<-env)
-           (amp (cond (< mean-registration 0.5) -3
-                      :default -6))
-           ))) 
+     (filter/select-filter (:filter envmap))
+     (prog/fold :wet (coin 0.1 (rand) 0)
+                :gain (int (rand)))
+     (prog/fm1 (first fm)  (first fmi)  :bias (first fm-bias)  :env 1.0)
+     (prog/fm2 (second fm) (second fmi) :bias (second fm-bias) :env 1.0)
+     (prog/fm3 (third fm)  (third fmi)  :bias (third fm-bias)  :env 1.0)
+     (prog/fm4 (fourth fm) (fourth fmi) :bias (fourth fm-bias) :env 1.0)
+     (prog/buzz-harmonics bzz-harmonics 
+                          :env bzz-harmonics<-env
+                          :hp bzz-hp-track
+                          :hp<-env bzz-hp<-env)
+     (prog/amp (cond (< mean-registration 0.5) -3
+                     :default -6))
+     ))) 
 

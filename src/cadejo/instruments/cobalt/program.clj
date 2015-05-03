@@ -93,21 +93,23 @@
               :peak peak :bp bp :sus sus]))
 
 
-(defn penv [& {:keys [a0 a1 a2 a3 t1 t2 t3]
+(defn penv [& {:keys [a0 a1 a2 a3 t1 t2 t3 cc9]
                :or {a0 0.000
                     a1 0.000
                     a2 0.000
                     a3 0.000
                     t1 1.000
                     t2 1.000
-                    t3 1.000}}]
+                    t3 1.000
+                    cc9 0.00}}]
   (let [rs [:pe-a0 (sclamp a0)
             :pe-a1 (sclamp a1)
             :pe-a2 (sclamp a2)
             :pe-a3 (sclamp a3)
             :pe-t1 (float (max 0 t1))
             :pe-t2 (float (max 0 t2))
-            :pe-t3 (float (max 0 t3))]]
+            :pe-t3 (float (max 0 t3))
+            :pe<-cc9 0.0]]
     rs))
 
 
@@ -379,7 +381,6 @@
 
 (defn buzz [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
                          :or {lfo1 0.00
-                              lfo2 0.00
                               cca 0.00
                               ccb 0.00
                               vel 0.00
@@ -463,6 +464,16 @@
 (defn bp-filter [& {:keys [offset]
                     :or {offset 2}}]
   [:filter2-detune (float (max 0.125 offset))])
+
+(defn fold [& {:keys [wet gain cca ccb]
+               :or {wet 0.0
+                    gain 2.0
+                    cca 0.0
+                    ccb 0.0}}]
+  [:dist-mix (uclamp wet)
+   :dist-pregain (float (max 1 gain))
+   :dist<-cca (float (max 0 cca))
+   :dist<-ccb (float (max 0 ccb))])
 
 
 (defn delay1 [& {:keys [time amp pan fb xfb]
@@ -552,9 +563,22 @@
             :dry-pan (sclamp dry-pan)]]
     rs))
 
-(defn port-time [n]
-  [:port-time (clamp n 0.0 con/max-port-time)])
+(defn port-time [n & {:keys [cc5] :or {cc5 0.0}}]
+  [:port-time (clamp n 0.0 con/max-port-time)
+   :port-time<-cc5 (uclamp cc5)])
 
+(defn enable [& args]
+  (let [enabled? (fn [obj](if (col/member? obj args) 1.0 0.0))]
+    [:op1-enable (enabled? 1)
+     :op2-enable (enabled? 2)
+     :op3-enable (enabled? 3)
+     :op4-enable (enabled? 4)
+     :op5-enable (enabled? 5)
+     :op6-enable (enabled? 6)
+     :op7-enable (enabled? 7)
+     :op8-enable (enabled? 8)
+     :nse-enable (enabled? :noise)
+     :bzz-enable (enabled? :buzz)]))
 
 (defn cobalt [& data]
   (flatten data))

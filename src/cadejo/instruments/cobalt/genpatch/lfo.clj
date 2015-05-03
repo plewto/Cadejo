@@ -4,13 +4,13 @@
   (:require [cadejo.instruments.cobalt.constants :as con])
   (:require [cadejo.util.math :as math]))
 
-(def coin math/coin)
-(def clamp math/clamp)
+(def ^:private coin math/coin)
+(def ^:private clamp math/clamp)
 
-(defn select-vibrato-frequency []
+(defn- select-vibrato-frequency []
   (+ 3 (rand 4)))
 
-(defn select-lfo-frequency [vf sync?]
+(defn- select-lfo-frequency [vf sync?]
   (float (if sync?
            (let [n (rand-nth [1 2 3 4])
                  du (rand-nth [1 2 3 4 5 6 8 9])
@@ -21,7 +21,7 @@
            (+ con/min-lfo-frequency (rand (- con/max-lfo-frequency 
                                              con/min-lfo-frequency))))))
 
-(defn select-delay-time [vf sync range]
+(defn- select-delay-time [vf sync range]
   (let [period (/ 1.0 vf)
         dt (clamp (float (cond (= range :flanger)(max 0.0001 (rand 0.005))
                                (= range :short)(if sync 
@@ -59,7 +59,6 @@
 
         ;; delay 1
         dt1 (select-delay-time vf sync range1)
-        ;dl1-amp (coin 0.25 (int (* -3 (rand 8))) con/min-db)
         dl1-amp (if (or (= use-delay 1)(= use-delay 3))(int (* -3 (rand 8))) con/min-db)
         dl1-amp<-lfo2 (coin 0.1 (rand) 0.0)
         dl1-amp<-lfo3 (coin 0.1 (rand) 0.0)

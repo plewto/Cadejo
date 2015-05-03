@@ -5,10 +5,10 @@
   (:require [cadejo.util.math :as math])
   (:require [cadejo.instruments.cobalt.constants :as con]))
 
-(def test-mode false) ;; in test-mode return gamut [1 2 3 4 5 6 7 8 9 1]
 
-(def coin math/coin)
-(def approx math/approx)
+(def ^:private test-mode false) ;; in test-mode return gamut [1 2 3 4 5 6 7 8 9 1]
+(def ^:private coin math/coin)
+(def ^:private approx math/approx)
 
 ;; Generates harmonic gamut
 ;; skip      - int, harmonics to be skipped
@@ -26,7 +26,7 @@
 ;; The last partial (buzz) is randomly selected from the first 
 ;; 3 partials.
 ;;
-(defn harmonics [& {:keys [skip p-cluster chorus]
+(defn- harmonics [& {:keys [skip p-cluster chorus]
                    :or {skip nil
                         p-cluster 0
                         chorus 0.001}}]
@@ -54,7 +54,7 @@
 ;; The last partial (buzz) is randomly selected from the first 
 ;; 3 partials.
 ;;
-(defn semi-harmonic [& {:keys [skip p-cluster p-enharmonic]
+(defn- semi-harmonic [& {:keys [skip p-cluster p-enharmonic]
                         :or {skip nil
                              p-cluster 0
                              p-enharmonic 0.1}}]
@@ -70,7 +70,7 @@
 ;; p-swap, probability of exchange, default 0.25
 ;; Returns list of partials.
 ;;
-(defn swap-noise [g & {:keys [p-swap]
+(defn- swap-noise [g & {:keys [p-swap]
                        :or {p-swap 0.75}}]
   (if (coin p-swap true false)
     (let [pos (int (rand 4))
@@ -85,15 +85,15 @@
     g))
 
 
-(def harmonic-fm-ratios (flatten [(repeat  8 1/4)
-                                   (repeat 15 1/2)
-                                   (repeat 20 1/1)
-                                   (repeat 20 2/1)
-                                   (repeat 15 3/1)
-                                   (repeat  8 4/1)
-                                   (repeat  6 5/1)]))
-(defn fm-ratios [& {:keys [p-harmonic]
-                    :or {p-harmonic 0.80}}]
+(def ^:private harmonic-fm-ratios (flatten [(repeat  8 1/4)
+                                            (repeat 15 1/2)
+                                            (repeat 20 1/1)
+                                            (repeat 20 2/1)
+                                            (repeat 15 3/1)
+                                            (repeat  8 4/1)
+                                            (repeat  6 5/1)]))
+(defn- fm-ratios [& {:keys [p-harmonic]
+                     :or {p-harmonic 0.80}}]
   (let [use-harmonic (coin p-harmonic true false)
         acc* (atom [])]
     (if use-harmonic
@@ -103,7 +103,7 @@
         (swap! acc* (fn [q](conj q (coin 0.5 (rand-nth harmonic-fm-ratios)(rand 5)))))))
     (map float @acc*)))
   
-(defn fm-biases [& {:keys [p-harmonic p-use-bias]
+(defn- fm-biases [& {:keys [p-harmonic p-use-bias]
                     :or {p-harmonic 0.80
                          p-use-bias 1.0}}]
   (let [acc* (atom [])]
@@ -130,7 +130,6 @@
         fm (fm-ratios :p-harmonic (cond (= gtype :harmonic) 1.0
                                         (= gtype :semi-harmonic) 0.8
                                         :default 0.7))]
-    (println (format ";; Using %s gamut  skip = %s  p-cluster = %4.2f" (name gtype) skip cluster))
     (if (> (nth @gamut* 7) 12)
       (reset! gamut* (map (fn [q](* 0.5 q)) @gamut*)))
     (reset! gamut* (swap-noise @gamut*))

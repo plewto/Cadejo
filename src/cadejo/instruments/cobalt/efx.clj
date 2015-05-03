@@ -26,7 +26,6 @@
                          xenv-peak 1.00
                          xenv-breakpoint 1.00
                          xenv-sustain 1.00
-
                          lfo2-freq 1.00
                          lfo2-amp<-cca 0
                          lfo2-amp<-ccb 0
@@ -35,10 +34,8 @@
                          lfo3-amp<-cca 0
                          lfo3-amp<-ccb 0
                          lfo3-amp<-xenv 0
-
                          dry-amp 0
                          dry-pan 0
-
                          delay1-time 0.500
                          delay1-time<-lfo2 0
                          delay1-time<-lfo3 0
@@ -53,7 +50,6 @@
                          delay1-pan<-lfo2 0
                          delay1-pan<-lfo3 0
                          delay1-pan<-xenv 0
-
                          delay2-time 0.500
                          delay2-time<-lfo2 0
                          delay2-time<-lfo3 0

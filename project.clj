@@ -9,7 +9,4 @@
                  [com.github.insubstantial/substance "7.1"]
                  [overtone "0.9.1"]]
   :main cadejo.core
-  ;:main cadejo.test-core 
-  ;:main cadejo.instruments.cobalt.genpatch.amp
-  ;:main cadejo.util.string
-  )
+)
