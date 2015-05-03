@@ -144,7 +144,6 @@
                    :fm2 [f2-src f2-depth]
                    :wave1 [w1-src w1-depth]
                    :wave2 [w2-src w2-depth])]
-    ;(println (format "DEBUG LFO %d f1 [%s %s]  f2 [%s %s]  " n f1-src f1-depth f2-src f2-depth))
     (apply (if (= n 2) #'lfo2 #'lfo3) args)))
 
 
@@ -291,7 +290,6 @@
         adth (float (coin 0.80 0 (rand 16)))
         bsrc (coin 0.90 :off (rand-nth '(:a :c :d :e :f :g :h)))
         bdth (float (coin 0.5 (rand)(rand 8)))]
-        ;(println (format "***  DEBUG 1-wave %5.3f    [%s %5.3f]  [%s %5.3f]" bias asrc adth bsrc bdth))
     (osc1-wave bias :w1 [asrc adth] :w2 [bsrc bdth])))
 
 (defn pick-osc2-wave []
@@ -300,7 +298,6 @@
         adth (rand 0.5)
         bsrc (coin 0.80 :off (rand-nth '(:a :c :e :f :g :h)))
         bdth (flip (rand 0.5))]
-    ;(println (format "***  DEBUG 2-wave %5.3f    [%s %5.3f]  [%s %5.3f]" bias asrc adth bsrc bdth))
     (osc2-wave bias :w1 [asrc adth] :w2 [bsrc bdth])))
 
 (defn pick-osc3-wave []
@@ -309,7 +306,6 @@
         adth (float (coin 0.80 0 (coin 0.75 (rand)(rand 2))))
         bsrc (coin 0.90 :off (rand-nth '(:a :c :d :e :f :g :h)))
         bdth (float (if (= bsrc :off) 0 (coin 0.75 (rand)(rand 2))))]
-    ;(println (format "***  DEBUG 3-wave %5.3f    [%s %5.3f]  [%s %5.3f]" bias asrc adth bsrc bdth))
     (osc3-wave bias :w1 [asrc adth] :w2 [bsrc bdth])))
 
 (defn pick-osc-amp [n amp]
@@ -321,8 +317,6 @@
         d2 (if (= s2 :off) 0.0 (rand))
         l2 (if (= s2 :off) 0.0 (coin 0.50 (rand) 0.0))
         p (flip (rand))]
-    ;; (println (format ";; DEBUG osc%d-amp  %s  [%s %s %s] [%s %s %s] pan %s"
-    ;;                  n amp s1 d1 l1 s2 d2 l2 p))
     (cond (= n 1)
           (osc1-amp amp :am1 [s1 d1 l1] :am2 [s2 d2 l2] :pan p)
           (= n 2)

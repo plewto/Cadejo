@@ -29,7 +29,6 @@
   (:require [cadejo.instruments.algo.editor.efx-editor :as efxed]))
 
 (defn algo-editor [performance]
-  (println (format "DEBUG *** create algo editor start %s" (System/currentTimeMillis)))
   (println "--> Creating ALGO editor...")
   (let [ied (ied/instrument-editor performance)
         op1 (oped/op-editor 1 ied)
@@ -56,5 +55,4 @@
     (.add-sub-editor! ied "Effects" :general :fx "Effects editor" efx)
     (.show-card-number! ied 1)
     (.sync-ui! ied)
-    (println (format "DEBUG *** create algo editor end   %s" (System/currentTimeMillis)))
     ied))
