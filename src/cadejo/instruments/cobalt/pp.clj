@@ -45,8 +45,6 @@
         op4 (iget :op4-enable dmap)
         op5 (iget :op5-enable dmap)
         op6 (iget :op6-enable dmap)
-        op7 (iget :op7-enable dmap)
-        op8 (iget :op8-enable dmap)
         nse (iget :nse-enable dmap)
         bzz (iget :bzz-enable dmap)
         sb (StringBuilder. 80)]
@@ -54,12 +52,10 @@
     (.append sb (if (pos? op1) "1 " "  "))
     (.append sb (if (pos? op2) "2 " "  "))
     (.append sb (if (pos? op3) "3 " "  "))
-    (.append sb (if (pos? op4) "4 " "  "))
     (.append sb " ")
+    (.append sb (if (pos? op4) "4 " "  "))
     (.append sb (if (pos? op5) "5 " "  "))
     (.append sb (if (pos? op6) "6 " "  "))
-    (.append sb (if (pos? op7) "7 " "  "))
-    (.append sb (if (pos? op8) "8 " "  "))
     (.append sb " ")
     (.append sb (if (pos? nse) ":noise " " "))
     (.append sb (if (pos? bzz) ":buzz " " "))
@@ -163,42 +159,16 @@
                  (fval "-breakpoint")
                  (fval "-sustain"))
 
-         (format "%s(fm%d %6.4f %5.3f :bias %+6.3f :env %5.3f :left %-3d :right %-3d)\n"
+         (format "%s(fm%d %6.4f %5.3f :bias %+6.3f :env %5.3f :lag %5.3f :left %-3d :right %-3d)\n"
                  pad11 
                  n
                  (fget (keyword (format "fm%d-detune" n)) dmap)
                  (fget (keyword (format "fm%d-amp" n)) dmap)
                  (fget (keyword (format "fm%d-bias" n)) dmap)
                  (fget (keyword (format "fm%d<-env" n)) dmap)
+                 (fget (keyword (format "fm%d-lag" n)) dmap)
                  (iget (keyword (format "fm%d-keyscale-left" n)) dmap)
                  (iget (keyword (format "fm%d-keyscale-right" n)) dmap)))))
-
-(defn- op-b [n dmap]
-  (let [param (fn [p](keyword (format "op%d%s" n p)))
-        fval (fn [p](fget (param p) dmap))
-        ival (fn [p](iget (param p) dmap))]
-    (str (format "%s(op%d %6.4f %5.3f\n" pad11 n (fval "-detune")(fval "-amp"))
-         (format "%s:lfo1  %5.3f :cca %5.3f :ccb %5.3f :vel %5.3f :prss %5.3f\n"
-                 pad16 
-                 (fval "-amp<-lfo1")
-                 (fval "-amp<-cca")
-                 (fval "-amp<-ccb")
-                 (fval "-amp<-velocity")
-                 (fval "-amp<-pressure"))
-         (format "%s:penv %+7.4f\n"
-                 pad16 
-                 (fval "<-penv"))
-         (format "%s:env [:att  %5.3f :dcy1 %5.3f :dcy2 %5.3f :rel %5.3f\n"
-                 pad16
-                 (fval "-attack")
-                 (fval "-decay1")
-                 (fval "-decay2")
-                 (fval "-release"))
-         (format "%s:peak %5.3f :bp   %5.3f :sus  %5.3f])\n"
-                 pad22
-                 (fval "-peak")
-                 (fval "-breakpoint")
-                 (fval "-sustain")))))
 
 (defn- pp-noise [dmap]
   (str (format "%s(noise %6.4f %5.3f :bw %3d\n"
@@ -229,6 +199,14 @@
                (fget :nse-peak dmap)
                (fget :nse-breakpoint dmap)
                (fget :nse-sustain dmap))))
+
+(defn- pp-noise2 [dmap]
+  (format "%s(noise2 %6.4f %5.3f :bw %3d :lag %5.3f)\n"
+          pad11 
+          (fget :nse2-detune dmap)
+          (fget :nse2-amp dmap)
+          (iget :nse2-bw dmap)
+          (fget :nse2-lag dmap)))
 
 (defn- pp-buzz [dmap]
   (str (format "%s(buzz %6.4f %5.3f\n" 
@@ -353,11 +331,10 @@
        (op-a 2 dmap)
        (op-a 3 dmap)
        (op-a 4 dmap)
-       (op-b 5 dmap)
-       (op-b 6 dmap)
-       (op-b 7 dmap)
-       (op-b 8 dmap)
+       (op-a 5 dmap)
+       (op-a 6 dmap)
        (pp-noise dmap)
+       (pp-noise2 dmap)
        (pp-buzz dmap)
        (pp-filter dmap)
        (pp-fold dmap)

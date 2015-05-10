@@ -160,7 +160,7 @@
     rs))
 
 
-;; id --> :op1 :op2 :op3 :op4 :op5 :op6 :op7 :op8 :bzz :nse
+;; id --> :op1 :op2 :op3 :op4 :op5 :op6 :bzz :nse
 ;;
 (defn- op-amp-mod [id lfo1 cca ccb vel prss]
   (let [param (fn [p](keyword (format "%s-amp<-%s" 
@@ -194,15 +194,17 @@
             :op1<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn fm1 [detune amp & {:keys [bias env left right]
+(defn fm1 [detune amp & {:keys [bias env lag left right]
                          :or {bias 0.00
                               env 1.00
+                              lag 0.00
                               left 0
                               right 0}}]
   (let [rs [:fm1-detune (float detune)
             :fm1-bias (float bias)
             :fm1-amp (float amp)
             :fm1<-env (uclamp env)
+            :fm1-lag (clamp lag 0.0 con/max-fm-lag)
             :fm1-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
             :fm1-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
     rs))
@@ -229,15 +231,17 @@
             :op2<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn fm2 [detune amp & {:keys [bias env left right]
+(defn fm2 [detune amp & {:keys [bias env lag left right]
                          :or {bias 0.00
                               env 0.00
+                              lag 0.00
                               left 0
                               right 0}}]
   (let [rs [:fm2-detune (float detune)
             :fm2-bias (float bias)
             :fm2-amp (float amp)
             :fm2<-env (uclamp env)
+            :fm2-lag (clamp lag 0.0 con/max-fm-lag)
             :fm2-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
             :fm2-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
     rs))
@@ -264,15 +268,17 @@
             :op3<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn fm3 [detune amp & {:keys [bias env left right]
+(defn fm3 [detune amp & {:keys [bias env lag left right]
                          :or {bias 0.00
                               env 0.00
+                              lag 0.00
                               left 0
                               right 0}}]
   (let [rs [:fm3-detune (float detune)
             :fm3-bias (float bias)
             :fm3-amp (float amp)
             :fm3<-env (uclamp env)
+            :fm3-lag (clamp lag 0.0 con/max-fm-lag)
             :fm3-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
             :fm3-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
     rs))
@@ -299,20 +305,23 @@
             :op4<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn fm4 [detune amp & {:keys [bias env left right]
+(defn fm4 [detune amp & {:keys [bias env lag left right]
                          :or {bias 0.00
                               env 0.00
+                              lag 0.00
                               left 0
                               right 0}}]
   (let [rs [:fm4-detune (float detune)
             :fm4-bias (float bias)
             :fm4-amp (float amp)
             :fm4<-env (uclamp env)
+            :fm4-lag (clamp lag 0.0 con/max-fm-lag)
             :fm4-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
             :fm4-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
     rs))
 
-(defn op5 [detune amp & {:keys [lfo1 cca ccb vel prss env penv]
+
+(defn op5 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
                          :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
@@ -320,15 +329,37 @@
                               prss 0.00
                               env [:att 0.0 :dcy1 0.0 :dcy2 0.0 :rel 0.0
                                    :peak 1.0 :bp 1.0 :sus 1.0]
+                              key 60
+                              left 0
+                              right 0
                               penv 0.00}}]
   (let [rs [:op5-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op5-amp (float (min 1.0 amp))
             (op-amp-mod :op5 lfo1 cca ccb vel prss)
             (envn 5 env)
+            :op5-keyscale-key (int (clamp key 0 127))
+            :op5-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
+            :op5-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
             :op5<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn op6 [detune amp & {:keys [lfo1 cca ccb vel prss env penv]
+(defn fm5 [detune amp & {:keys [bias env lag left right]
+                         :or {bias 0.00
+                              env 0.00
+                              lag 0.00
+                              left 0
+                              right 0}}]
+  (let [rs [:fm5-detune (float detune)
+            :fm5-bias (float bias)
+            :fm5-amp (float amp)
+            :fm5<-env (uclamp env)
+            :fm5-lag (clamp lag 0.0 con/max-fm-lag)
+            :fm5-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
+            :fm5-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
+    rs))
+
+
+(defn op6 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
                          :or {lfo1 0.00
                               cca 0.00
                               ccb 0.00
@@ -336,48 +367,34 @@
                               prss 0.00
                               env [:att 0.0 :dcy1 0.0 :dcy2 0.0 :rel 0.0
                                    :peak 1.0 :bp 1.0 :sus 1.0]
+                              key 60
+                              left 0
+                              right 0
                               penv 0.00}}]
   (let [rs [:op6-detune (clamp detune con/min-op-detune con/max-op-detune)
             :op6-amp (float (min 1.0 amp))
             (op-amp-mod :op6 lfo1 cca ccb vel prss)
             (envn 6 env)
+            :op6-keyscale-key (int (clamp key 0 127))
+            :op6-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
+            :op6-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
             :op6<-penv (sclamp penv)]]
     (flatten rs)))
 
-(defn op7 [detune amp & {:keys [lfo1 cca ccb vel prss env penv]
-                         :or {lfo1 0.00
-                              cca 0.00
-                              ccb 0.00
-                              vel 0.00
-                              prss 0.00
-                              env [:att 0.0 :dcy1 0.0 :dcy2 0.0 :rel 0.0
-                                   :peak 1.0 :bp 1.0 :sus 1.0]
-                              penv 0.00}}]
-  (let [rs [:op7-detune (clamp detune con/min-op-detune con/max-op-detune)
-            :op7-amp (float (min 1.0 amp))
-            (op-amp-mod :op7 lfo1 cca ccb vel prss)
-            (envn 7 env)
-            :op7<-penv (sclamp penv)]]
-    (flatten rs)))
-
-(defn op8 [detune amp & {:keys [lfo1 cca ccb vel prss env penv]
-                         :or {lfo1 0.00
-                              cca 0.00
-                              ccb 0.00
-                              vel 0.00
-                              prss 0.00
-                              env [:att 0.0 :dcy1 0.0 :dcy2 0.0 :rel 0.0
-                                   :peak 1.0 :bp 1.0 :sus 1.0]
-                              penv 0.00}}]
-  (let [rs [:op8-detune (clamp detune con/min-op-detune con/max-op-detune)
-            :op8-amp (float (min 1.0 amp))
-            (op-amp-mod :op8 lfo1 cca ccb vel prss)
-            (envn 8 env)
-            :op8<-penv (sclamp penv)]]
-    (flatten rs)))
-            
-
-
+(defn fm6 [detune amp & {:keys [bias env lag left right]
+                         :or {bias 0.00
+                              env 0.00
+                              lag 0.00
+                              left 0
+                              right 0}}]
+  (let [rs [:fm6-detune (float detune)
+            :fm6-bias (float bias)
+            :fm6-amp (float amp)
+            :fm6<-env (uclamp env)
+            :fm6-lag (clamp lag 0.0 con/max-fm-lag)
+            :fm6-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
+            :fm6-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
+    rs))
 
 (defn buzz [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
                          :or {lfo1 0.00
@@ -436,6 +453,16 @@
             :nse-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
             :nse<-penv (sclamp penv)]]
     (flatten rs)))
+
+(defn noise2 [detune amp & {:keys [bw lag]
+                            :or {bw 10
+                                 lag 0.00}}]
+  (let [rs [:nse2-detune (clamp detune con/min-op-detune con/max-op-detune)
+            :nse2-amp (float (min 1.0 amp))
+            :nse2-bw (int (clamp bw con/min-noise-filter-bw con/max-noise-filter-bw))
+            :nse2-lag (float (clamp lag 0.0 con/max-noise-lag))]]
+    rs))
+
 
 (defn lp-filter [& {:keys [freq env res mode]
                     :or {freq [9999 :track 0 :env +0.00 :prss +0.00 :cca +0.00 :ccb +0.00]
@@ -568,17 +595,16 @@
    :port-time<-cc5 (uclamp cc5)])
 
 (defn enable [& args]
-  (let [enabled? (fn [obj](if (col/member? obj args) 1.0 0.0))]
-    [:op1-enable (enabled? 1)
-     :op2-enable (enabled? 2)
-     :op3-enable (enabled? 3)
-     :op4-enable (enabled? 4)
-     :op5-enable (enabled? 5)
-     :op6-enable (enabled? 6)
-     :op7-enable (enabled? 7)
-     :op8-enable (enabled? 8)
-     :nse-enable (enabled? :noise)
-     :bzz-enable (enabled? :buzz)]))
+  (let [enabled? (fn [obj](if (col/member? obj args) 1.0 0.0))
+       rs [:op1-enable (enabled? 1)
+           :op2-enable (enabled? 2)
+           :op3-enable (enabled? 3)
+           :op4-enable (enabled? 4)
+           :op5-enable (enabled? 5)
+           :op6-enable (enabled? 6)
+           :nse-enable (enabled? :noise)
+           :bzz-enable (enabled? :buzz)]]
+    rs))
 
 (defn cobalt [& data]
   (flatten data))

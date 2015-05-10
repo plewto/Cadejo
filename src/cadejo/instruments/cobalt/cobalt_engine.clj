@@ -14,7 +14,7 @@
   (:require [cadejo.instruments.cobalt.program])
   (:require [cadejo.instruments.cobalt.data])
   (:require [cadejo.instruments.cobalt.pp :as pp])
-  (:require [cadejo.instruments.cobalt.genpatch.genpatch :as genpatch])
+  (:require [cadejo.instruments.cobalt.randprog.random-program :as randprog])
   (:require [cadejo.instruments.cobalt.editor.cobalt-editor :as cobalt-ed])
 )
 
@@ -30,7 +30,7 @@
     (.add-controller! d :ccb "CCB" 17)
     (.set-editor-constructor! d cobalt-ed/cobalt-editor)
     (.initial-program! d con/initial-cobalt-program)
-    (.program-generator! d genpatch/random-cobalt-program)
+    (.program-generator! d randprog/random-cobalt-program)
     (.help-topic! d :cobalt)
     d))
 
@@ -107,6 +107,7 @@
                        fm1-bias 0.00
                        fm1-amp 0.00
                        fm1<-env 0.00
+                       fm1-lag 0.000
                        fm1-keyscale-left 0
                        fm1-keyscale-right 0
                        ;; OP2
@@ -132,6 +133,7 @@
                        fm2-bias 0.00
                        fm2-amp 0.00
                        fm2<-env 0.00
+                       fm2-lag 0.00
                        fm2-keyscale-left 0
                        fm2-keyscale-right 0
                        ;; OP3
@@ -157,6 +159,7 @@
                        fm3-bias 0.00
                        fm3-amp 0.00
                        fm3<-env 0.00
+                       fm3-lag 0.00
                        fm3-keyscale-left 0
                        fm3-keyscale-right 0
                        ;; OP4
@@ -182,16 +185,20 @@
                        fm4-bias 0.00
                        fm4-amp 0.00
                        fm4<-env 0.00
+                       fm4-lag 0.00
                        fm4-keyscale-left 0
                        fm4-keyscale-right 0
                        ;; OP5
-                       op5-amp 1.000               ; linear
+                       op5-amp 0.000 
                        op5-amp<-lfo1 0.00
                        op5-amp<-cca 0.00
                        op5-amp<-ccb 0.00
                        op5-amp<-velocity 0.00
                        op5-amp<-pressure 0.00
-                       op5-detune 5.00
+                       op5-keyscale-key 60 
+                       op5-keyscale-left 0 
+                       op5-keyscale-right 0
+                       op5-detune 4.00
                        op5<-penv 1.00
                        op5-attack 0.00
                        op5-decay1 0.00
@@ -200,6 +207,13 @@
                        op5-peak 1.00
                        op5-breakpoint 1.00
                        op5-sustain 1.00
+                       fm5-detune 1.00
+                       fm5-bias 0.00
+                       fm5-amp 0.00
+                       fm5<-env 0.00
+                       fm5-lag 0.00
+                       fm5-keyscale-left 0
+                       fm5-keyscale-right 0
                        ;; OP6
                        op6-amp 0.000 
                        op6-amp<-lfo1 0.00
@@ -207,7 +221,10 @@
                        op6-amp<-ccb 0.00
                        op6-amp<-velocity 0.00
                        op6-amp<-pressure 0.00
-                       op6-detune 6.00
+                       op6-keyscale-key 60 
+                       op6-keyscale-left 0 
+                       op6-keyscale-right 0
+                       op6-detune 4.00
                        op6<-penv 1.00
                        op6-attack 0.00
                        op6-decay1 0.00
@@ -216,38 +233,13 @@
                        op6-peak 1.00
                        op6-breakpoint 1.00
                        op6-sustain 1.00
-                       ;; OP7
-                       op7-amp 0.000 
-                       op7-amp<-lfo1 0.00
-                       op7-amp<-cca 0.00
-                       op7-amp<-ccb 0.00
-                       op7-amp<-velocity 0.00
-                       op7-amp<-pressure 0.00
-                       op7-detune 7.00
-                       op7<-penv 1.00
-                       op7-attack 0.00
-                       op7-decay1 0.00
-                       op7-decay2 0.00
-                       op7-release 0.00
-                       op7-peak 1.00
-                       op7-breakpoint 1.00
-                       op7-sustain 1.00
-                       ;; OP8
-                       op8-amp 0.000 
-                       op8-amp<-lfo1 0.00
-                       op8-amp<-cca 0.00
-                       op8-amp<-ccb 0.00
-                       op8-amp<-velocity 0.00
-                       op8-amp<-pressure 0.00
-                       op8-detune 8.00
-                       op8<-penv 1.00
-                       op8-attack 0.00
-                       op8-decay1 0.00
-                       op8-decay2 0.00
-                       op8-release 0.00
-                       op8-peak 1.00
-                       op8-breakpoint 1.00
-                       op8-sustain 1.00
+                       fm6-detune 1.00
+                       fm6-bias 0.00
+                       fm6-amp 0.00
+                       fm6<-env 0.00
+                       fm6-lag 0.00
+                       fm6-keyscale-left 0
+                       fm6-keyscale-right 0
                        ;; BUZZ
                        bzz-amp 1.000               ; linear
                        bzz-amp<-lfo1 0.00
@@ -292,6 +284,12 @@
                        nse-sustain 1.00
                        nse-bw 10
 
+                       nse2-amp 0.000
+                       nse2-detune 1.000
+                       nse2-bw 10
+                       nse2-lag 0.000
+
+
                        filter-freq 0
                        filter-track 1
                        filter-res 0
@@ -317,8 +315,6 @@
                        op4-enable 1
                        op5-enable 1
                        op6-enable 1
-                       op7-enable 1
-                       op8-enable 1
                        nse-enable 1
                        bzz-enable 1
                        bend-bus 0                  ; control buses
@@ -359,7 +355,7 @@
                   am (* fc fm1-amp 
                         (op-amp-keytrack:ir note op1-keyscale-key 
                                             fm1-keyscale-left fm1-keyscale-right)
-                        (qu/amp-modulator-depth e fm1<-env))]
+                        (qu/amp-modulator-depth (lag2:kr e fm1-lag) fm1<-env))]
               (* ac e op1-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
         op2 (let [ac (* (op-amp-modulators op2-amp lfo1 op2-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
@@ -374,7 +370,7 @@
                   am (* fc fm2-amp 
                         (op-amp-keytrack:ir note op2-keyscale-key 
                                             fm2-keyscale-left fm2-keyscale-right)
-                        (qu/amp-modulator-depth e fm2<-env))]
+                        (qu/amp-modulator-depth (lag2:ar e fm2-lag) fm2<-env))]
               (* ac e op2-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
         op3 (let [ac (* (op-amp-modulators op3-amp lfo1 op3-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
@@ -389,7 +385,7 @@
                   am (* fc fm3-amp 
                         (op-amp-keytrack:ir note op3-keyscale-key 
                                             fm3-keyscale-left fm3-keyscale-right)
-                        (qu/amp-modulator-depth e fm3<-env))]
+                        (qu/amp-modulator-depth (lag2:ar e fm3-lag) fm3<-env))]
               (* ac e op3-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
         op4 (let [ac (* (op-amp-modulators op4-amp lfo1 op4-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
@@ -404,40 +400,38 @@
                   am (* fc fm4-amp 
                         (op-amp-keytrack:ir note op4-keyscale-key 
                                             fm4-keyscale-left fm4-keyscale-right)
-                        (qu/amp-modulator-depth e fm4<-env))]
+                        (qu/amp-modulator-depth (lag2:ar e fm4-lag) fm4<-env))]
               (* ac e op4-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
-        op5 (let [a (* (op-amp-modulators op5-amp lfo1 op5-amp<-lfo1)
-                       (op-amp-midi-modulators cca ccb velocity pressure
-                                               op5-amp<-cca op5-amp<-ccb
-                                               op5-amp<-velocity op5-amp<-pressure))
-                  f (op-freq f0 penv op5-detune op5<-penv)
+        op5 (let [ac (* (op-amp-modulators op5-amp lfo1 op5-amp<-lfo1)
+                        (op-amp-midi-modulators cca ccb velocity pressure
+                                                op5-amp<-cca op5-amp<-ccb
+                                                op5-amp<-velocity op5-amp<-pressure)
+                        (op-amp-keytrack:ir note op5-keyscale-key 
+                                            op5-keyscale-left op5-keyscale-right))
                   e (op-env op5-attack op5-decay1 op5-decay2 op5-release
-                            op5-peak op5-breakpoint op5-sustain gate)]
-              (* a e op5-enable (sin-osc:ar f)))
-        op6 (let [a (* (op-amp-modulators op6-amp lfo1 op6-amp<-lfo1)
-                       (op-amp-midi-modulators cca ccb velocity pressure
-                                               op6-amp<-cca op6-amp<-ccb
-                                               op6-amp<-velocity op6-amp<-pressure))
-                  f (op-freq f0 penv op6-detune op6<-penv)
+                            op5-peak op5-breakpoint op5-sustain gate)
+                  fc (op-freq f0 penv op5-detune op5<-penv)
+                  fm (+ fm5-bias (* fm5-detune fc))
+                  am (* fc fm5-amp 
+                        (op-amp-keytrack:ir note op5-keyscale-key 
+                                            fm5-keyscale-left fm5-keyscale-right)
+                        (qu/amp-modulator-depth (lag2:ar e fm5-lag) fm5<-env))]
+              (* ac e op5-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
+        op6 (let [ac (* (op-amp-modulators op6-amp lfo1 op6-amp<-lfo1)
+                        (op-amp-midi-modulators cca ccb velocity pressure
+                                                op6-amp<-cca op6-amp<-ccb
+                                                op6-amp<-velocity op6-amp<-pressure)
+                        (op-amp-keytrack:ir note op6-keyscale-key 
+                                            op6-keyscale-left op6-keyscale-right))
                   e (op-env op6-attack op6-decay1 op6-decay2 op6-release
-                            op6-peak op6-breakpoint op6-sustain gate)]
-              (* a e op6-enable (sin-osc:ar f)))
-        op7 (let [a (* (op-amp-modulators op7-amp lfo1 op7-amp<-lfo1)
-                       (op-amp-midi-modulators cca ccb velocity pressure
-                                               op7-amp<-cca op7-amp<-ccb
-                                               op7-amp<-velocity op7-amp<-pressure))
-                  f (op-freq f0 penv op7-detune op7<-penv)
-                  e (op-env op7-attack op7-decay1 op7-decay2 op7-release
-                            op7-peak op7-breakpoint op7-sustain gate)]
-              (* a e op7-enable (sin-osc:ar f)))
-        op8 (let [a (* (op-amp-modulators op8-amp lfo1 op8-amp<-lfo1)
-                       (op-amp-midi-modulators cca ccb velocity pressure
-                                               op8-amp<-cca op8-amp<-ccb
-                                               op8-amp<-velocity op8-amp<-pressure))
-                  f (op-freq f0 penv op8-detune op8<-penv)
-                  e (op-env op8-attack op8-decay1 op8-decay2 op8-release
-                            op8-peak op8-breakpoint op8-sustain gate)]
-              (* a e op8-enable (sin-osc:ar f)))
+                            op6-peak op6-breakpoint op6-sustain gate)
+                  fc (op-freq f0 penv op6-detune op6<-penv)
+                  fm (+ fm6-bias (* fm6-detune fc))
+                  am (* fc fm6-amp 
+                        (op-amp-keytrack:ir note op6-keyscale-key 
+                                            fm6-keyscale-left fm6-keyscale-right)
+                        (qu/amp-modulator-depth (lag2:ar e fm6-lag) fm6<-env))]
+              (* ac e op6-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
         bzz (let [a (* (op-amp-modulators bzz-amp lfo1 bzz-amp<-lfo1)
                        (op-amp-midi-modulators cca ccb velocity pressure bzz-amp<-cca
                                                bzz-amp<-ccb bzz-amp<-velocity
@@ -455,23 +449,42 @@
                                       con/min-buzz-hp-freq
                                       con/max-buzz-hp-freq)]
               (* e a bzz-enable (hpf (blip:ar f h) hp-cutoff)))
-        nse (let [a (* (dbamp con/noise-amp-boost)
-                       (op-amp-modulators nse-amp lfo1 nse-amp<-lfo1 0)
-                       (op-amp-midi-modulators cca 0 velocity pressure nse-amp<-cca
-                                               0 nse-amp<-velocity
-                                               nse-amp<-pressure)
-                       (op-amp-keytrack:ir note nse-keyscale-key nse-keyscale-left
-                                           nse-keyscale-right))
-                  f (max con/min-noise-filter-cutoff  
+        nse (let [a1 (* (dbamp con/noise-amp-boost)
+                        (op-amp-modulators nse-amp lfo1 nse-amp<-lfo1 0)
+                        (op-amp-midi-modulators cca 0 velocity pressure nse-amp<-cca
+                                                0 nse-amp<-velocity
+                                                nse-amp<-pressure)
+                        (op-amp-keytrack:ir note nse-keyscale-key nse-keyscale-left
+                                            nse-keyscale-right))
+
+                  a2 (* (dbamp con/noise-amp-boost)
+                        (op-amp-modulators nse2-amp lfo1 nse-amp<-lfo1 0)
+                        (op-amp-midi-modulators cca 0 velocity pressure nse-amp<-cca
+                                                0 nse-amp<-velocity
+                                                nse-amp<-pressure)
+                        (op-amp-keytrack:ir note nse-keyscale-key nse-keyscale-left
+                                            nse-keyscale-right))
+
+
+                  f1 (max con/min-noise-filter-cutoff  
                           (op-freq f0 penv nse-detune nse<-penv))
-                   e (op-env nse-attack nse-decay1 nse-decay2 nse-release nse-peak
+
+                  f2 (max con/min-noise-filter-cutoff
+                           (op-freq f0 penv nse2-detune nse<-penv))
+
+                  e1 (op-env nse-attack nse-decay1 nse-decay2 nse-release nse-peak
                              nse-breakpoint nse-sustain gate)
-                   bw (qu/clamp nse-bw con/min-noise-filter-bw con/max-noise-filter-bw)
-                   rq (/ bw f)
-                   agc (qu/clamp (/ 48.0 bw) 5 1)]
-               (* e a agc nse-enable (* (sin-osc:ar f)
-                             (bpf (white-noise:ar) f rq))))
-        filter-in (+ op1 op2 op3 op4 op5 op6 op7 op8 nse bzz)
+                  e2 (lag2:kr e1 nse2-lag)
+                  bw1 (qu/clamp nse-bw con/min-noise-filter-bw con/max-noise-filter-bw)
+                  bw2 (qu/clamp nse2-bw con/min-noise-filter-bw con/max-noise-filter-bw)
+                  rq1 (/ bw1 f1)
+                  rq2 (/ bw2 f2)
+                  agc1 (qu/clamp (/ 48.0 bw1) 5 1)
+                  agc2 (qu/clamp (/ 48.0 bw2) 5 1)]
+              (* nse-enable (+ (* a1 e1 agc1 (* (sin-osc:ar f1)(bpf (white-noise:ar) f1 rq1)))
+                               (* a2 e1 agc2 (* (sin-osc:ar f2)(bpf (white-noise:ar) f2 rq2))))))
+                               
+        filter-in (+ op1 op2 op3 op4 op5 op6 nse bzz)
         filter-out (let [fe (cenv/addsr filter-attack 0 filter-decay filter-release 1.0 filter-sustain gate)
                          fenv (* fe fe)
                          ffreq (qu/clamp (+ filter-freq

@@ -30,7 +30,9 @@
 (def min-filter-res 0)
 (def max-filter-res 4)
 (def filter-res-scale max-filter-res)
-(def noise-amp-boost 6)  ; db
+(def noise-amp-boost 9)  ; db
+(def max-fm-lag 4.0)
+(def max-noise-lag max-fm-lag)
 
 (def initial-cobalt-program 
   {:vibrato-frequency 7.0     ; 
@@ -122,7 +124,8 @@
    :fm1-detune 1.0            ;    FM modulation ratio   
    :fm1-bias 0.0              ;
    :fm1-amp 1.0               ;    FM modulation depth
-   :fm1<-env 1.0              ;     
+   :fm1<-env 1.0              ;
+   :fm1-lag 0.00
    :fm1-keyscale-left 0       ;    FM keyscale db/oct
    :fm1-keyscale-right 0      ;
    :op2-amp 0.5               ; OP2 -------------------
@@ -147,6 +150,7 @@
    :fm2-bias 0.0              ;
    :fm2-amp 1.0               ;
    :fm2<-env 1.0              ;
+   :fm2-lag 0.00
    :fm2-keyscale-left 0       ;
    :fm2-keyscale-right 0      ;
    :op3-amp 0.333             ; OP3 -------------------
@@ -171,6 +175,7 @@
    :fm3-bias 0.0              ;
    :fm3-amp 1.0               ;
    :fm3<-env 1.0              ;
+   :fm3-lag 0.00
    :fm3-keyscale-left 0       ;
    :fm3-keyscale-right 0      ;
    :op4-amp 0.2500            ; OP4 -------------------
@@ -195,15 +200,19 @@
    :fm4-bias 0.0              ;
    :fm4-amp 1.0               ;
    :fm4<-env 1.0              ;
+   :fm4-lag 0.00
    :fm4-keyscale-left 0       ;
    :fm4-keyscale-right 0      ;
-   :op5-amp 0.2000            ; OP5 -------------------
+   :op5-amp 0.2500            ; OP5 -------------------
    :op5-amp<-lfo1 0.0         ;
    :op5-amp<-cca 0.0          ;
    :op5-amp<-ccb 0.0          ;
    :op5-amp<-velocity 0.0     ;
    :op5-amp<-pressure 0.0     ;
-   :op5-detune 5.00           ;
+   :op5-keyscale-key 60       ;
+   :op5-keyscale-left 0       ;
+   :op5-keyscale-right 0      ;
+   :op5-detune 4.00           ;
    :op5<-penv 0.0             ;
    :op5-attack 0.00           ;
    :op5-decay1 0.0            ;
@@ -212,13 +221,23 @@
    :op5-peak 1.0              ;
    :op5-breakpoint 1.0        ;
    :op5-sustain 1.0           ;
-   :op6-amp 0.167             ; OP6 -------------------
+   :fm5-detune 1.00           ;
+   :fm5-bias 0.0              ;
+   :fm5-amp 1.0               ;
+   :fm5<-env 1.0              ;
+   :fm5-lag 0.00
+   :fm5-keyscale-left 0       ;
+   :fm5-keyscale-right 0      ;
+   :op6-amp 0.2500            ; OP6 -------------------
    :op6-amp<-lfo1 0.0         ;
    :op6-amp<-cca 0.0          ;
    :op6-amp<-ccb 0.0          ;
    :op6-amp<-velocity 0.0     ;
    :op6-amp<-pressure 0.0     ;
-   :op6-detune 6.00           ;
+   :op6-keyscale-key 60       ;
+   :op6-keyscale-left 0       ;
+   :op6-keyscale-right 0      ;
+   :op6-detune 4.00           ;
    :op6<-penv 0.0             ;
    :op6-attack 0.00           ;
    :op6-decay1 0.0            ;
@@ -227,36 +246,13 @@
    :op6-peak 1.0              ;
    :op6-breakpoint 1.0        ;
    :op6-sustain 1.0           ;
-   :op7-amp 0.143             ; OP7 -------------------
-   :op7-amp<-lfo1 0.0         ;
-   :op7-amp<-cca 0.0          ;
-   :op7-amp<-ccb 0.0          ;
-   :op7-amp<-velocity 0.0     ;
-   :op7-amp<-pressure 0.0     ;
-   :op7-detune 7.00           ;
-   :op7<-penv 0.0             ;
-   :op7-attack 0.00           ;
-   :op7-decay1 0.0            ;
-   :op7-decay2 0.0            ;
-   :op7-release 0.0           ;
-   :op7-peak 1.0              ;
-   :op7-breakpoint 1.0        ;
-   :op7-sustain 1.0           ;
-   :op8-amp 0.125             ; OP8 -------------------
-   :op8-amp<-lfo1 0.0         ;
-   :op8-amp<-cca 0.0          ;
-   :op8-amp<-ccb 0.0          ;
-   :op8-amp<-velocity 0.0     ;
-   :op8-amp<-pressure 0.0     ;
-   :op8-detune 8.00           ;
-   :op8<-penv 0.0             ;
-   :op8-attack 0.00           ;
-   :op8-decay1 0.0            ;
-   :op8-decay2 0.0            ;
-   :op8-release 0.0           ;
-   :op8-peak 1.0              ;
-   :op8-breakpoint 1.0        ;
-   :op8-sustain 1.0           ;
+   :fm6-detune 1.00           ;
+   :fm6-bias 0.0              ;
+   :fm6-amp 1.0               ;
+   :fm6<-env 1.0              ;
+   :fm6-lag 0.00
+   :fm6-keyscale-left 0       ;
+   :fm6-keyscale-right 0      ;
    :bzz-amp 0.100             ; Buzz ------------------
    :bzz-amp<-lfo1 0.0         ;
    :bzz-amp<-cca 0.0          ;
@@ -280,7 +276,7 @@
    :bzz-harmonics<-cca 0.0    ;
    :bzz-hp-track 1.0          ;    HighPass filter keytrack
    :bzz-hp-track<-env 0.0     ;    Highpass filter modulation
-   :nse-amp 0.100             ; Noise -----------------
+   :nse-amp 1.000             ; Noise -----------------
    :nse-amp<-lfo1 0.0         ;
    :nse-amp<-cca 0.0          ;
    :nse-amp<-velocity 0.0     ;
@@ -288,16 +284,22 @@
    :nse-keyscale-key 60       ;
    :nse-keyscale-left 0       ;
    :nse-keyscale-right 0      ;
-   :nse-detune 1.00           ;
+   :nse-detune 6.00           ;
    :nse-bw 10                 ;    Noise Band Width
    :nse<-penv 0.0             ;
    :nse-attack 0.00           ;
    :nse-decay1 0.0            ;
    :nse-decay2 0.0            ;
-   :nse-release 0.0           ;
+   :nse-release 1.0           ;
    :nse-peak 1.0              ;
    :nse-breakpoint 1.0        ;
    :nse-sustain 1.0           ;
+
+   :nse2-amp 1.000
+   :nse2-detune 1.000
+   :nse2-bw 10
+   :nse2-lag 0.00
+
    :filter-freq 10000         ; Filter ----------------
    :filter-track 0            ;
    :filter-res 0.0            ;
@@ -323,10 +325,8 @@
    :op4-enable 1.0            ;
    :op5-enable 1.0            ;
    :op6-enable 1.0            ;
-   :op7-enable 1.0            ;
-   :op8-enable 1.0            ;
-   :nse-enable 1.0            ;
-   :bzz-enable 1.0})
+   :nse-enable 0.0            ;
+   :bzz-enable 0.0})
 
 (def ignore-extra-parameters 
   [:nse-amp<-ccb])
