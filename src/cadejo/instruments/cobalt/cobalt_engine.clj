@@ -370,7 +370,7 @@
                   am (* fc fm2-amp 
                         (op-amp-keytrack:ir note op2-keyscale-key 
                                             fm2-keyscale-left fm2-keyscale-right)
-                        (qu/amp-modulator-depth (lag2:ar e fm2-lag) fm2<-env))]
+                        (qu/amp-modulator-depth (lag2:kr e fm2-lag) fm2<-env))]
               (* ac e op2-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
         op3 (let [ac (* (op-amp-modulators op3-amp lfo1 op3-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
@@ -385,7 +385,7 @@
                   am (* fc fm3-amp 
                         (op-amp-keytrack:ir note op3-keyscale-key 
                                             fm3-keyscale-left fm3-keyscale-right)
-                        (qu/amp-modulator-depth (lag2:ar e fm3-lag) fm3<-env))]
+                        (qu/amp-modulator-depth (lag2:kr e fm3-lag) fm3<-env))]
               (* ac e op3-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
         op4 (let [ac (* (op-amp-modulators op4-amp lfo1 op4-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
@@ -400,7 +400,7 @@
                   am (* fc fm4-amp 
                         (op-amp-keytrack:ir note op4-keyscale-key 
                                             fm4-keyscale-left fm4-keyscale-right)
-                        (qu/amp-modulator-depth (lag2:ar e fm4-lag) fm4<-env))]
+                        (qu/amp-modulator-depth (lag2:kr e fm4-lag) fm4<-env))]
               (* ac e op4-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
         op5 (let [ac (* (op-amp-modulators op5-amp lfo1 op5-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
@@ -415,7 +415,7 @@
                   am (* fc fm5-amp 
                         (op-amp-keytrack:ir note op5-keyscale-key 
                                             fm5-keyscale-left fm5-keyscale-right)
-                        (qu/amp-modulator-depth (lag2:ar e fm5-lag) fm5<-env))]
+                        (qu/amp-modulator-depth (lag2:kr e fm5-lag) fm5<-env))]
               (* ac e op5-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
         op6 (let [ac (* (op-amp-modulators op6-amp lfo1 op6-amp<-lfo1)
                         (op-amp-midi-modulators cca ccb velocity pressure
@@ -430,7 +430,7 @@
                   am (* fc fm6-amp 
                         (op-amp-keytrack:ir note op6-keyscale-key 
                                             fm6-keyscale-left fm6-keyscale-right)
-                        (qu/amp-modulator-depth (lag2:ar e fm6-lag) fm6<-env))]
+                        (qu/amp-modulator-depth (lag2:kr e fm6-lag) fm6<-env))]
               (* ac e op6-enable (sin-osc:ar (+ fc (* am (sin-osc:ar fm))))))
         bzz (let [a (* (op-amp-modulators bzz-amp lfo1 bzz-amp<-lfo1)
                        (op-amp-midi-modulators cca ccb velocity pressure bzz-amp<-cca
