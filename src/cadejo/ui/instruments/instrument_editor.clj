@@ -3,7 +3,7 @@
 (ns cadejo.ui.instruments.instrument-editor
   (:require [cadejo.config :as config])
   (:require [cadejo.util.path :as path])
-  (:require [cadejo.ui.instruments.program-name-editor])
+  (:require [cadejo.ui.instruments.program-data-editor])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
@@ -269,9 +269,9 @@
                 
               ) ;; end ied
 
-        name-editor (cadejo.ui.instruments.program-name-editor/program-name-editor ied)]
+        data-editor (cadejo.ui.instruments.program-data-editor/program-data-editor ied)]
 
-    (.add-sub-editor! ied "Common" :edit :text "Edit program name" name-editor)
+    (.add-sub-editor! ied "Common" :edit :text "Edit program data" data-editor)
  
     (ss/listen jb-init :action (fn [_](.init! ied)))
 
@@ -319,7 +319,7 @@
 
     (ss/listen jb-save :action
                (fn [_]
-                 (let [pname (ss/config (.widget name-editor :txt-name) :text)
+                 (let [pname (ss/config (.widget data-editor :txt-name) :text)
                        default-file (path/append-extension pname
                                                            file-extension)
                        jfc (JFileChooser. @current-directory*)]

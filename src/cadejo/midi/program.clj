@@ -12,7 +12,7 @@
 
   (to-map 
     [this]
-    "Return contents of thie as map")
+    "Return contents of this as map")
 
   (from-map! 
     [this map]

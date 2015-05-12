@@ -1,7 +1,5 @@
 (ns cadejo.instruments.combo.constants)
 
-
-
 (def bypass-filter 0)
 (def lp-filter 1)
 (def hp-filter 2)
@@ -17,4 +15,3 @@
 (def max-flanger-fb (- min-flanger-fb))
 (def min-amp-db -48)
 (def max-amp-db 0)
-

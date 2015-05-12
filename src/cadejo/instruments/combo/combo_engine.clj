@@ -2,7 +2,7 @@
 
 (ns cadejo.instruments.combo.combo-engine
   (:use [overtone.core])
-  (:use [cadejo.instruments.combo.constants])
+  (:use [cadejo.instruments.combo.constants :as con])
   (:require [cadejo.modules.qugen :as qu])
   (:require [cadejo.instruments.descriptor])
   (:require [cadejo.instruments.combo.genpatch])
