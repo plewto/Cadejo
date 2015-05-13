@@ -3,7 +3,7 @@
 (ns cadejo.ui.instruments.instrument-editor
   (:require [cadejo.config :as config])
   (:require [cadejo.util.path :as path])
-  (:require [cadejo.ui.instruments.program-data-editor])
+  (:require [cadejo.ui.instruments.program-name-editor])
   (:require [cadejo.ui.instruments.subedit])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
@@ -269,7 +269,7 @@
                 
               ) ;; end ied
 
-        data-editor (cadejo.ui.instruments.program-data-editor/program-data-editor ied)]
+        data-editor (cadejo.ui.instruments.program-name-editor/program-name-editor ied)]
 
     (.add-sub-editor! ied "Common" :edit :text "Edit program data" data-editor)
  
