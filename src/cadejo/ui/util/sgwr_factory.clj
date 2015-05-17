@@ -149,6 +149,7 @@
                          :handle-size (or handle-size (lnf/handle-size))
                          :handle-style (or handle-style (lnf/handle-style))
                          :value-hook value-hook)]
+    (slider/set-slider-value! s v0)
     (.put-property! s :editor ieditor)
     s))
 
