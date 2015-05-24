@@ -1,7 +1,6 @@
 (println "--> cadejo.midi.pbank")
 
 (ns cadejo.midi.pbank
-  (:use [cadejo.util.trace])
   (:require [cadejo.midi.program])
   (:require [cadejo.config :as config])
   (:require [cadejo.midi.program])
@@ -229,13 +228,7 @@
                 
                 (current-slot [this] @current-slot*)
                 
-                (current-program [this]
-                  (trace-enter "pbank.current-program")
-                  (trace-mark (format "(current-slot ...) -> %s" (.current-slot this)))
-                  (trace-mark (format "@current-program* --> %s" @current-program*))
-                  (trace-exit)
-                  @current-program*
-                  )
+                (current-program [this] @current-program*)
                 
                 (current-program! [this prog]
                   (reset! current-program* prog)
