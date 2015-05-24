@@ -15,10 +15,6 @@
   (:require [sgwr.tools.multistate-button :as msb])
   (:require [sgwr.util.color :as uc]))
 
-
-
-
-
 ; ---------------------------------------------------------------------- 
 ;                            Borders and Regions
 
@@ -76,14 +72,17 @@
                :style style
                :size size)))
 
-(defn sub-title [drw p0 txt & {:keys [size style color]
+(defn sub-title [drw p0 txt & {:keys [size style color offset]
                                :or  {size 8.0
                                      style :sans-bold
-                                     color nil}}]
-  (text/text (.root drw) p0 (str txt)
-             :size size
-             :style style
-             :color (or color (lnf/title))))
+                                     color nil
+                                     offset [0 0]}}]
+  (let [x (+ (first p0)(first offset))
+        y (+ (second p0)(second offset))]
+    (text/text (.root drw) [x y] (str txt)
+               :size size
+               :style style
+               :color (or color (lnf/title)))))
 
 (defn label [drw p0 txt & {:keys [size style color offset]
                            :or {size 6.0
