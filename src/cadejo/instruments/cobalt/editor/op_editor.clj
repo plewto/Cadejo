@@ -1,0 +1,83 @@
+(ns cadejo.instruments.cobalt.editor.op-editor
+  (:require [cadejo.instruments.cobalt.editor.overview :as overview])
+  (:require [cadejo.instruments.cobalt.editor.op-freq-panel :as ofp])
+  (:require [cadejo.instruments.cobalt.editor.op-amp-panel :as oap])
+  (:require [cadejo.instruments.cobalt.editor.op-fm-panel :as fmp])
+  (:require [cadejo.instruments.cobalt.editor.op-env-panel :as env])
+  (:require [cadejo.ui.instruments.subedit :as subedit])
+  (:require [cadejo.ui.util.sgwr-factory :as sf])
+  (:require [sgwr.components.image :as image])
+  (:require [seesaw.core :as ss]))
+
+(def ^:private width 1300)
+(def ^:private height 600)
+(def ^:private bottom-margin 30)
+(def ^:private left-margin 30)
+
+(declare draw-op-background)
+(declare vertical-pos)
+
+(defn op-editor [op ied]
+  (let [p0 [0 height]
+        [x0 y0] p0
+        drw (let [d (sf/sgwr-drawing width height)]
+              (draw-op-background op d p0)
+              d)
+        freq-panel (ofp/freq-panel op drw ied p0)
+        amp-panel (oap/amp-panel op drw ied p0)
+        fm-panel (fmp/fm-panel op drw ied p0)
+        env-panel (env/env-panel op drw ied p0)
+        overview-panel (let [xv left-margin
+                             yv (vertical-pos :overview p0)]
+                         (overview/observer drw [xv yv] ied))
+        pan-main (ss/scrollable (ss/vertical-panel :items [(.canvas drw)]))
+        widget-map {:pan-main pan-main
+                    :drawing drw}
+        ed (reify subedit/InstrumentSubEditor
+             (widgets [this] widget-map)
+             (widget [this key](key widget-map))
+             (parent [this] ied)
+             (parent! [this _] ied) ;; ignore
+             (status! [this msg](.status! ied msg))
+             (warning! [this msg](.warning! ied msg))
+             (set-param! [this param value](.set-param! ied param value))
+             (init! [this]  ) ;; not implemented
+             (sync-ui! [this]
+               (let [dmap (.current-data (.bank (.parent-performance ied)))]
+                 (freq-panel dmap)
+                 (amp-panel dmap)
+                 (fm-panel dmap)
+                 (env-panel dmap)
+                 (.sync-ui! overview-panel)
+                 (.render drw))))]
+    ed))
+
+
+(defn- vertical-pos [item p0]
+  (let [y0 (second p0)
+        y-overview (- y0 bottom-margin)
+        y-border (- y0 height)
+        y-title (+ y-border 30)
+        map {:y0 y0
+             :overview y-overview
+             :title y-title
+             :border y-border}]
+  (get map item)))
+
+(defn- draw-op-background [op ddrw p0]
+  (let [bg (sf/sgwr-drawing width height)
+        [x0 y0] p0
+        x-border (+ x0 width)
+        y-border (vertical-pos :border p0)
+        x-title (+ x0 left-margin)
+        y-title (vertical-pos :title p0)]
+    (ofp/draw-freq-panel op bg p0)
+    (oap/draw-amp-panel op bg p0)
+    (fmp/draw-fm-panel op bg p0)
+    (env/draw-env-panel op bg p0)
+    (sf/title bg [x-title y-title] (format "OP %d" op) :size 12)
+    (.render bg)
+    (let [iobj (image/image (.root ddrw) [0 0] width height :id :background-omage)]
+      (.put-property! iobj :image (.image bg))
+      iobj)))
+  

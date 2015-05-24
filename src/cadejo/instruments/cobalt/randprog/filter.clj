@@ -21,7 +21,8 @@
                    :res [0.00 :cca 0.00 :ccb 0.00]
                    :env env
                    :mode -1.0)
-   (prog/bp-filter :offset 1)])
+   (prog/bp-filter :offset 1
+                   :lag (coin 0.5 (rand) 0.0))])
 
 (defn mixed-mode [env mode offset]
   [(prog/lp-filter :freq [(coin 0.75 10 (rand 400))

@@ -6,7 +6,7 @@
 ;; ------------------------------------------------------  0 "Zero"
 ;;
 (save-program  0 "Zero"
-   (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
+   (cobalt (enable   :noise)
            (port-time 0.000 :cc5  0.000)
            (vibrato 4.462 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
            (lfo1    0.892 :bleed 0.000 :cca  0.000 :prss  0.000 :delay 1.088)
@@ -52,24 +52,27 @@
                 :env [:att  3.133 :dcy1 0.105 :dcy2 0.000 :rel 6.297
                       :peak 1.000 :bp   0.664 :sus  0.664])
            (fm6 3.0000 0.000 :bias +0.000 :env 0.986 :lag 0.000 :left 6   :right 0  )
-           (noise 8.0000 0.250 :bw  18
+
+           (noise 8.0000 1.000 :bw  10
                   :lfo1 0.000   :cca 0.000 :vel 0.000 :prss 0.000
                   :penv +0.0000 :key  60   :left   +0 :right  -6
-                  :env [:att  5.538 :dcy1 0.213 :dcy2 0.000 :rel 5.501
-                        :peak 1.000 :bp   0.701 :sus  0.701])
-           (noise2 2.0000 1.000 :bw  16 :lag 0.000)
+                  :env [:att  0.538 :dcy1 0.213 :dcy2 0.000 :rel 2.501
+                        :peak 1.000 :bp   1.000 :sus  1.000])
+
+           (noise2 2.0000 1.000 :bw  10 :lag 0.000)
+
            (buzz 2.0000 1.000
                  :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
                  :penv +0.0000  :key  60 :left   +0 :right  +0
-                 :env [:att  5.753 :dcy1 5.061 :dcy2 0.000 :rel 5.998
-                       :peak 1.000 :bp   0.730 :sus  0.730])
+                 :env [:att  0.753 :dcy1 5.061 :dcy2 0.000 :rel 0.998
+                       :peak 1.000 :bp   1.000 :sus  1.000])
            (buzz-harmonics  14 :env   2 :cca   0 :hp   1 :hp<-env   0)
-           (lp-filter :freq [   50 :track  0 :env 0.376
+           (lp-filter :freq [9999 :track  0 :env 0.376
                              :prss 0.000 :cca 0.000 :ccb 0.000]
                       :res [0.205 :cca +0.000 :ccb +0.000]
                       :env [:att 3.653 :dcy 7.932 :rel 0.226 :sus 0.960]
-                      :mode -0.479)
-           (bp-filter :offset 4.000)
+                      :mode -1.000)
+           (bp-filter :offset 4.000 :lag 0.000)
            (fold      :wet 0.000 :gain  4 :cca  +0 :ccb  +0)
            (delay1    :time [0.5603 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-23    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -147,7 +150,7 @@
                       :res [0.360 :cca +0.000 :ccb +0.000]
                       :env [:att 2.349 :dcy 0.000 :rel 0.919 :sus 1.000]
                       :mode +0.132)
-           (bp-filter :offset 3.000)
+           (bp-filter :offset 3.000 :lag 0.000)
            (fold      :wet 0.000 :gain  2 :cca  +0 :ccb  +0)
            (delay1    :time [1.4468 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-28    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -225,7 +228,7 @@
                       :res [0.015 :cca +0.000 :ccb +0.000]
                       :env [:att 0.000 :dcy 5.015 :rel 10.030 :sus 0.096]
                       :mode +0.165)
-           (bp-filter :offset 3.000)
+           (bp-filter :offset 3.000 :lag 0.000)
            (fold      :wet 0.832 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [1.9472 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-28    :lfo2 0.000 :lfo3 0.000 :xenv 0.623]
@@ -303,7 +306,7 @@
                       :res [0.471 :cca +0.000 :ccb +0.000]
                       :env [:att 3.624 :dcy 0.000 :rel 0.302 :sus 1.000]
                       :mode +0.001)
-           (bp-filter :offset 3.000)
+           (bp-filter :offset 3.000 :lag 0.000)
            (fold      :wet 0.000 :gain  2 :cca  +0 :ccb  +0)
            (delay1    :time [1.6188 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-37    :lfo2 0.000 :lfo3 0.000 :xenv 0.595]
@@ -381,7 +384,7 @@
                       :res [0.182 :cca +0.000 :ccb +0.000]
                       :env [:att 1.491 :dcy 1.775 :rel 1.426 :sus 0.735]
                       :mode -0.038)
-           (bp-filter :offset 4.000)
+           (bp-filter :offset 4.000 :lag 0.000)
            (fold      :wet 0.000 :gain  4 :cca  +0 :ccb  +0)
            (delay1    :time [0.8972 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-59    :lfo2 0.000 :lfo3 0.000 :xenv 0.735]
@@ -459,7 +462,7 @@
                       :res [0.000 :cca +0.000 :ccb +0.000]
                       :env [:att 0.000 :dcy 0.044 :rel 1.000 :sus 0.241]
                       :mode -1.000)
-           (bp-filter :offset 1.000)
+           (bp-filter :offset 1.000 :lag 0.000)
            (fold      :wet 0.000 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [0.8471 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-45    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -537,7 +540,7 @@
                       :res [0.784 :cca +0.000 :ccb +0.000]
                       :env [:att 0.199 :dcy 0.000 :rel 0.415 :sus 1.000]
                       :mode -1.000)
-           (bp-filter :offset 1.000)
+           (bp-filter :offset 1.000 :lag 0.000)
            (fold      :wet 0.808 :gain  8 :cca  +0 :ccb  +0)
            (delay1    :time [0.5073 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-37    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -615,7 +618,7 @@
                       :res [0.177 :cca +0.000 :ccb +0.000]
                       :env [:att 0.432 :dcy 0.373 :rel 0.281 :sus 0.682]
                       :mode -0.166)
-           (bp-filter :offset 3.000)
+           (bp-filter :offset 3.000 :lag 0.000)
            (fold      :wet 0.000 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [1.2785 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-52    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -693,7 +696,7 @@
                       :res [0.075 :cca +0.000 :ccb +0.000]
                       :env [:att 0.000 :dcy 3.392 :rel 6.784 :sus 0.214]
                       :mode -0.242)
-           (bp-filter :offset 6.000)
+           (bp-filter :offset 6.000 :lag 0.000)
            (fold      :wet 0.000 :gain  2 :cca  +0 :ccb  +0)
            (delay1    :time [0.9762 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-17    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -771,7 +774,7 @@
                       :res [0.235 :cca +0.000 :ccb +0.000]
                       :env [:att 0.466 :dcy 0.000 :rel 0.368 :sus 1.000]
                       :mode -0.031)
-           (bp-filter :offset 6.000)
+           (bp-filter :offset 6.000 :lag 0.000)
            (fold      :wet 0.000 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [0.8228 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-51    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -849,7 +852,7 @@
                       :res [0.163 :cca +0.000 :ccb +0.000]
                       :env [:att 0.638 :dcy 0.957 :rel 0.546 :sus 0.051]
                       :mode -1.000)
-           (bp-filter :offset 1.000)
+           (bp-filter :offset 1.000 :lag 0.000)
            (fold      :wet 0.000 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [1.7661 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-20    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -927,7 +930,7 @@
                       :res [0.172 :cca +0.000 :ccb +0.000]
                       :env [:att 1.091 :dcy 1.302 :rel 0.987 :sus 0.903]
                       :mode -0.090)
-           (bp-filter :offset 3.000)
+           (bp-filter :offset 3.000 :lag 0.000)
            (fold      :wet 0.000 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [1.5802 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-32    :lfo2 0.000 :lfo3 0.000 :xenv 0.890]
@@ -1005,7 +1008,7 @@
                       :res [0.494 :cca +0.000 :ccb +0.000]
                       :env [:att 1.236 :dcy 3.256 :rel 1.813 :sus 0.847]
                       :mode +0.053)
-           (bp-filter :offset 3.000)
+           (bp-filter :offset 3.000 :lag 0.000)
            (fold      :wet 0.859 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [0.9286 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-47    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -1083,7 +1086,7 @@
                       :res [0.325 :cca +0.000 :ccb +0.000]
                       :env [:att 2.748 :dcy 0.000 :rel 2.552 :sus 1.000]
                       :mode -0.366)
-           (bp-filter :offset 2.000)
+           (bp-filter :offset 2.000 :lag 0.000)
            (fold      :wet 0.721 :gain  4 :cca  +0 :ccb  +0)
            (delay1    :time [1.4425 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-35    :lfo2 0.000 :lfo3 0.000 :xenv 0.816]
@@ -1163,7 +1166,7 @@
                       :res [0.275 :cca +0.000 :ccb +0.000]
                       :env [:att 0.000 :dcy 1.060 :rel 2.119 :sus 0.029]
                       :mode -1.000)
-           (bp-filter :offset 1.000)
+           (bp-filter :offset 1.000 :lag 0.000)
            (fold      :wet 0.000 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [1.5138 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-36    :lfo2 0.000 :lfo3 0.000 :xenv 0.898]
@@ -1241,7 +1244,7 @@
                       :res [0.551 :cca +0.000 :ccb +0.000]
                       :env [:att 8.322 :dcy 1.028 :rel 1.067 :sus 0.468]
                       :mode +0.069)
-           (bp-filter :offset 2.000)
+           (bp-filter :offset 2.000 :lag 0.000)
            (fold      :wet 0.000 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [0.4846 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-18    :lfo2 0.000 :lfo3 0.000 :xenv 0.879]
@@ -1319,7 +1322,7 @@
                       :res [0.844 :cca +0.000 :ccb +0.000]
                       :env [:att 0.177 :dcy 0.000 :rel 0.324 :sus 1.000]
                       :mode -1.000)
-           (bp-filter :offset 1.000)
+           (bp-filter :offset 1.000 :lag 0.000)
            (fold      :wet 0.000 :gain  2 :cca  +0 :ccb  +0)
            (delay1    :time [1.6859 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-48    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -1397,7 +1400,7 @@
                       :res [0.000 :cca +0.000 :ccb +0.000]
                       :env [:att 5.584 :dcy 0.000 :rel 1.449 :sus 1.000]
                       :mode -1.000)
-           (bp-filter :offset 1.000)
+           (bp-filter :offset 1.000 :lag 0.000)
            (fold      :wet 0.000 :gain  1 :cca  +0 :ccb  +0)
            (delay1    :time [0.9508 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-30    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -1475,7 +1478,7 @@
                       :res [0.806 :cca +0.000 :ccb +0.000]
                       :env [:att 0.204 :dcy 0.000 :rel 0.255 :sus 1.000]
                       :mode +0.072)
-           (bp-filter :offset 6.000)
+           (bp-filter :offset 6.000 :lag 0.000)
            (fold      :wet 0.000 :gain  4 :cca  +0 :ccb  +0)
            (delay1    :time [0.6232 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-44    :lfo2 0.000 :lfo3 0.000 :xenv 0.734]
@@ -1553,7 +1556,7 @@
                       :res [0.097 :cca +0.000 :ccb +0.000]
                       :env [:att 5.105 :dcy 0.000 :rel 4.427 :sus 1.000]
                       :mode -1.000)
-           (bp-filter :offset 1.000)
+           (bp-filter :offset 1.000 :lag 0.000)
            (fold      :wet 0.000 :gain  2 :cca  +0 :ccb  +0)
            (delay1    :time [0.3954 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-31    :lfo2 0.000 :lfo3 0.000 :xenv 0.969]
@@ -1631,7 +1634,7 @@
                       :res [0.480 :cca +0.000 :ccb +0.000]
                       :env [:att 1.160 :dcy 0.785 :rel 0.443 :sus 0.430]
                       :mode -1.000)
-           (bp-filter :offset 1.000)
+           (bp-filter :offset 1.000 :lag 0.000)
            (fold      :wet 0.000 :gain  4 :cca  +0 :ccb  +0)
            (delay1    :time [0.5115 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :amp  [-52    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
@@ -1642,4 +1645,160 @@
                       :pan  [+0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :fb    -0.626 :xfb +0.000)
            (amp   0   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+
+;; ------------------------------------------------------  20 
+;;
+(save-program  20 "Twenty"
+   (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
+           (port-time 0.000 :cc5  0.000)
+           (vibrato 6.227 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
+           (lfo1    0.259 :bleed 0.000 :cca  0.000 :prss  0.000 :delay 0.362)
+           (lfo2    0.346 :xenv  0.000 :cca  0.000 :ccb   0.000)
+           (lfo3    0.259 :xenv  0.000 :cca  0.000 :ccb   0.857)
+           (xenv :att  0.000 :dcy1 0.476 :dcy2 0.000 :rel 0.952
+                 :peak 1.000 :bp   0.032 :sus  0.032)
+           (penv :a0 +0.0000 :a1 +0.0000 :a2 +0.0000 :a3 +0.0000
+                 :t1 1.000   :t2 1.000   :t3 1.000   :cc9 0.000)
+           (op1 1.9981 1.000
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.900 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  +0
+                :env [:att  0.000 :dcy1 0.724 :dcy2 0.000 :rel 1.448
+                      :peak 1.000 :bp   0.013 :sus  0.013])
+           (fm1 3.0000 0.000 :bias +0.000 :env 0.784 :lag 0.357 :left 0   :right 0  )
+           (op2 2.0000 0.000
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  +0
+                :env [:att  0.000 :dcy1 0.244 :dcy2 0.000 :rel 0.489
+                      :peak 1.000 :bp   0.070 :sus  0.070])
+           (fm2 2.0000 0.000 :bias +0.000 :env 0.885 :lag 0.777 :left 0   :right 0  )
+           (op3 4.9754 0.402
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  -3
+                :env [:att  0.000 :dcy1 0.745 :dcy2 0.000 :rel 1.490
+                      :peak 1.000 :bp   0.032 :sus  0.032])
+           (fm3 3.0000 0.425 :bias +0.000 :env 0.972 :lag 0.000 :left 0   :right 0  )
+           (op4 5.0000 0.400
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  -9
+                :env [:att  0.000 :dcy1 0.598 :dcy2 0.000 :rel 1.195
+                      :peak 1.000 :bp   0.049 :sus  0.049])
+           (fm4 0.6966 0.188 :bias +0.000 :env 0.919 :lag 0.000 :left 9   :right 0  )
+           (op5 7.0000 0.285
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.118 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  -9
+                :env [:att  0.000 :dcy1 0.166 :dcy2 1.000 :rel 1.660
+                      :peak 1.000 :bp   0.705 :sus  0.100])
+           (fm5 0.5000 0.113 :bias +0.000 :env 0.979 :lag 0.193 :left 0   :right 0  )
+           (op6 7.9271 0.252
+                :lfo1  0.658 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  -6
+                :env [:att  0.000 :dcy1 0.711 :dcy2 0.000 :rel 1.423
+                      :peak 1.000 :bp   0.014 :sus  0.014])
+           (fm6 0.9466 1.475 :bias +0.000 :env 0.710 :lag 0.081 :left 0   :right 0  )
+           (noise 4.0000 0.500 :bw  17
+                  :lfo1 0.000   :cca 0.000 :vel 0.000 :prss 0.000
+                  :penv +0.0000 :key  60   :left   +0 :right  +0
+                  :env [:att  0.000 :dcy1 2.960 :dcy2 0.000 :rel 5.920
+                        :peak 1.000 :bp   0.056 :sus  0.056])
+           (noise2 1.0000 0.500 :bw  17 :lag 0.000)
+           (buzz 1.9981 1.000
+                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                 :penv +0.0000  :key  60 :left   +0 :right  +0
+                 :env [:att  0.049 :dcy1 0.402 :dcy2 0.000 :rel 0.804
+                       :peak 1.000 :bp   0.135 :sus  0.135])
+           (buzz-harmonics  27 :env -13 :cca   0 :hp   3 :hp<-env   3)
+           (lp-filter :freq [   10 :track  2 :env 0.362
+                             :prss 0.000 :cca 0.000 :ccb 0.000]
+                      :res [0.465 :cca +0.000 :ccb +0.000]
+                      :env [:att 0.000 :dcy 1.093 :rel 2.186 :sus 0.026]
+                      :mode -0.276)
+           (bp-filter :offset 2.000 :lag 0.000)
+           (fold      :wet 0.670 :gain  8 :cca  +0 :ccb  +0)
+           (delay1    :time [1.9269 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :amp  [-38    :lfo2 0.000 :lfo3 0.000 :xenv 0.776]
+                      :pan  [-0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :fb    +0.063 :xfb -0.319)
+           (delay2    :time [0.2409 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :amp  [-18    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :pan  [+0.700 :lfo2 0.473 :lfo3 0.000 :xenv 0.000]
+                      :fb    +0.380 :xfb -0.070)
+           (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+
+;; ------------------------------------------------------  21
+;;
+(save-program  21 "Twenty One"
+   (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
+           (port-time 0.000 :cc5  0.000)
+           (vibrato 4.370 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
+           (lfo1    0.546 :bleed 0.000 :cca  0.000 :prss  0.000 :delay 0.900)
+           (lfo2    1.092 :xenv  0.972 :cca  0.000 :ccb   0.000)
+           (lfo3    0.046 :xenv  0.000 :cca  0.000 :ccb   0.000)
+           (xenv :att  0.000 :dcy1 7.812 :dcy2 0.000 :rel 15.624
+                 :peak 1.000 :bp   0.052 :sus  0.052)
+           (penv :a0 -0.0321 :a1 +0.0176 :a2 -0.0451 :a3 +0.0747
+                 :t1 10.419   :t2 11.920   :t3 3.855   :cc9 0.000)
+           (op1 1.0000 1.000
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.835 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  +0
+                :env [:att  0.028 :dcy1 11.348 :dcy2 0.000 :rel 22.696
+                      :peak 1.000 :bp   0.059 :sus  0.059])
+           (fm1 0.5000 0.000 :bias +0.000 :env 0.856 :lag 0.000 :left 0   :right 0  )
+           (op2 1.0041 0.996
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  +0
+                :env [:att  0.000 :dcy1 1.157 :dcy2 0.000 :rel 2.313
+                      :peak 1.000 :bp   0.182 :sus  0.182])
+           (fm2 1.0000 0.000 :bias +0.000 :env 0.511 :lag 0.000 :left 6   :right 0  )
+           (op3 2.0000 0.500
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.609 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  +0
+                :env [:att  0.002 :dcy1 6.179 :dcy2 0.000 :rel 12.358
+                      :peak 1.000 :bp   0.159 :sus  0.159])
+           (fm3 1.0000 0.304 :bias +0.000 :env 0.940 :lag 0.336 :left 3   :right 0  )
+           (op4 3.0000 0.814
+                :lfo1  0.911 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  +0
+                :env [:att  0.000 :dcy1 0.370 :dcy2 16.588 :rel 20.837
+                      :peak 1.000 :bp   0.605 :sus  0.100])
+           (fm4 0.5000 0.000 :bias +0.000 :env 0.859 :lag 0.000 :left 0   :right -3 )
+           (op5 5.0135 0.199
+                :lfo1  0.813 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  -3
+                :env [:att  0.000 :dcy1 9.742 :dcy2 0.000 :rel 19.483
+                      :peak 1.000 :bp   0.097 :sus  0.097])
+           (fm5 1.0000 0.274 :bias +0.000 :env 0.512 :lag 0.098 :left 0   :right 0  )
+           (op6 5.9596 0.168
+                :lfo1  0.080 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  -3
+                :env [:att  0.000 :dcy1 8.480 :dcy2 0.000 :rel 16.961
+                      :peak 1.000 :bp   0.018 :sus  0.018])
+           (fm6 1.0000 0.000 :bias +0.000 :env 0.710 :lag 0.903 :left 0   :right -9 )
+           (noise 1.0019 0.998 :bw  15
+                  :lfo1 0.876   :cca 0.000 :vel 0.000 :prss 0.000
+                  :penv +0.0110 :key  60   :left   +0 :right  +0
+                  :env [:att  0.000 :dcy1 4.191 :dcy2 0.000 :rel 8.383
+                        :peak 1.000 :bp   0.203 :sus  0.203])
+           (noise2 5.0000 0.925 :bw  18 :lag 0.000)
+           (buzz 1.0019 0.998
+                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                 :penv -0.0096  :key  60 :left   +0 :right  +0
+                 :env [:att  0.000 :dcy1 9.074 :dcy2 0.000 :rel 18.147
+                       :peak 1.000 :bp   0.235 :sus  0.235])
+           (buzz-harmonics   3 :env  12 :cca   0 :hp   1 :hp<-env   0)
+           (lp-filter :freq [   10 :track  0 :env 0.838
+                             :prss 0.000 :cca 0.000 :ccb 0.000]
+                      :res [0.250 :cca +0.000 :ccb +0.000]
+                      :env [:att 0.000 :dcy 4.875 :rel 9.751 :sus 0.219]
+                      :mode -1.000)
+           (bp-filter :offset 1.000 :lag 0.000)
+           (fold      :wet 0.000 :gain  1 :cca  +0 :ccb  +0)
+           (delay1    :time [1.8308 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :amp  [-46    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :pan  [-0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :fb    +0.428 :xfb +0.267)
+           (delay2    :time [0.0005 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :amp  [-12    :lfo2 0.000 :lfo3 0.000 :xenv 0.998]
+                      :pan  [+0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :fb    +0.893 :xfb -0.073)
+           (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 

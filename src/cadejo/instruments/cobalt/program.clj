@@ -488,9 +488,11 @@
             :filter-mode (sclamp mode)]]
     rs))
 
-(defn bp-filter [& {:keys [offset]
-                    :or {offset 2}}]
-  [:filter2-detune (float (max 0.125 offset))])
+(defn bp-filter [& {:keys [offset lag]
+                    :or {offset 2
+                         lag 0.0}}]
+  [:filter2-detune (float (max 0.125 offset))
+   :filter2-lag (float (max lag 0.0))])
 
 (defn fold [& {:keys [wet gain cca ccb]
                :or {wet 0.0

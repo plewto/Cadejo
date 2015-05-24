@@ -85,10 +85,10 @@
         drysig (in:ar in-bus)
         [fb1 fb2](local-in:ar 2)
         dly1 (let [time (qu/clamp (+ delay1-time
+                                     (* env delay1-time<-xenv)
                                        (* 1/100 (+ (* lfo2 delay1-time<-lfo2)
-                                                    (* lfo3 delay1-time<-lfo3)
-                                                    (* env delay1-time<-xenv))))
-                                    0 con/max-delay-time)
+                                                   (* lfo3 delay1-time<-lfo3))))
+                                  0 con/max-delay-time)
                      insig (+ drysig (* fb1 delay1-fb)(* fb2 delay1-xfb))]
                  (delay-c insig con/max-delay-time time))
        
@@ -102,10 +102,10 @@
                                 (* env delay1-pan<-xenv))
                              -1 1)
         dly2 (let [time (qu/clamp (+ delay2-time
-                                       (* 1/100 (+ (* lfo2 delay2-time<-lfo2)
-                                                    (* lfo3 delay2-time<-lfo3)
-                                                    (* env delay2-time<-xenv))))
-                                    0 con/max-delay-time)
+                                     (* env delay2-time<-xenv)
+                                     (* 1/100 (+ (* lfo2 delay2-time<-lfo2)
+                                                 (* lfo3 delay2-time<-lfo3))))
+                                  0 con/max-delay-time)
                      insig (+ drysig (* fb1 delay2-fb)(* fb2 delay2-xfb))]
                  (delay-c insig con/max-delay-time time))
         dly2-amp (* (dbamp delay2-amp)

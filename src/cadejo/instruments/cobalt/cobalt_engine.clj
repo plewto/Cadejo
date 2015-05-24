@@ -59,8 +59,8 @@
 
 (defcgen pitch-env [t1 t2 t3 a0 a1 a2 a3 gate]
   (:kr 
-   (env-gen:kr (envelope [a0 a1 a2 a3]
-                         [t1 t2 t3]
+   (env-gen:kr (envelope [0 a0 a1 a2 a3]
+                         [t1 t2 t3 t3]
                          :linear 2 2)
                :gate gate
                :action NO-ACTION)))
@@ -283,13 +283,10 @@
                        nse-breakpoint 1.00
                        nse-sustain 1.00
                        nse-bw 10
-
                        nse2-amp 0.000
                        nse2-detune 1.000
                        nse2-bw 10
                        nse2-lag 0.000
-
-
                        filter-freq 0
                        filter-track 1
                        filter-res 0
@@ -305,6 +302,7 @@
                        filter-res<-ccb 0
                        filter-mode 0     ; -/+1   -1 -> lp   +1 -> bp
                        filter2-detune 1  ; bp filter freq rel to lp filter
+                       filter2-lag 0.0
                        dist-mix 1       ; 0 -> dry 1 -> wet
                        dist-pregain 1
                        dist<-cca 4
@@ -337,9 +335,19 @@
               bend vibrato)
         penv (* (pitch-env:kr pe-t1 pe-t2 pe-t3 pe-a0 pe-a1 pe-a2 pe-a3 gate)
                 (qu/amp-modulator-depth cc9 pe<-cc9))
-        lfo1-amp (+ (* cca lfo1<-cca)
-                    (* pressure lfo1<-pressure)
-                    (qu/amp-modulator-depth (lag2:kr gate (* 4 lfo1-delay))(- 1 lfo1-bleed)))
+        ;; lfo1-amp (+ (* cca lfo1<-cca)
+        ;;             (* pressure lfo1<-pressure)
+        ;;             (qu/amp-modulator-depth (lag2:kr gate (* 4 lfo1-delay))(- 1 lfo1-bleed)))
+        ;; lfo1-amp (lag2:kr (+ (* (qu/amp-modulator-depth cca lfo1<-cca)
+        ;;                         (qu/amp-modulator-depth pressure lfo1<-pressure))
+        ;;                      lfo1-bleed)
+        ;;                   (* lfo1-delay 4))
+        lfo1-amp (+ (* pressure lfo1<-pressure)
+                    (* cca lfo1<-cca)
+                    (* lfo1-bleed
+                       (cenv/delay-env lfo1-delay (* 1/2 lfo1-delay) gate)))
+
+
         lfo1 (* lfo1-amp
                 (sin-osc:kr lfo1-freq))
         op1 (let [ac (* (op-amp-modulators op1-amp lfo1 op1-amp<-lfo1)
@@ -482,7 +490,7 @@
                   agc1 (qu/clamp (/ 48.0 bw1) 5 1)
                   agc2 (qu/clamp (/ 48.0 bw2) 5 1)]
               (* nse-enable (+ (* a1 e1 agc1 (* (sin-osc:ar f1)(bpf (white-noise:ar) f1 rq1)))
-                               (* a2 e1 agc2 (* (sin-osc:ar f2)(bpf (white-noise:ar) f2 rq2))))))
+                               (* a2 e2 agc2 (* (sin-osc:ar f2)(bpf (white-noise:ar) f2 rq2))))))
                                
         filter-in (+ op1 op2 op3 op4 op5 op6 nse bzz)
         filter-out (let [fe (cenv/addsr filter-attack 0 filter-decay filter-release 1.0 filter-sustain gate)
@@ -501,8 +509,9 @@
                                              (* ccb filter-res<-ccb)))
                                        con/min-filter-res con/max-filter-res)
                          moog-out (moog-ff filter-in ffreq moog-res)
-                         bp-freq (qu/clamp (* ffreq filter2-detune)
+                         bp-freq (lag:kr (qu/clamp (* ffreq filter2-detune)
                                            con/min-filter-cutoff con/max-filter-cutoff)
+                                         filter2-lag)
                          bp-rq (+ (* -7/32 moog-res) 1)
                          bp-out (bpf:ar filter-in bp-freq bp-rq)]
                      (x-fade2 moog-out bp-out filter-mode))

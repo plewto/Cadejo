@@ -3,26 +3,26 @@
 (ns cadejo.instruments.cobalt.constants)
 
 (def op-count 10)                       ; ops 1..8, + noise + buzz
-(def max-port-time 0.5)
+(def max-port-time 1.0)
 (def min-buzz-hp-freq 1)
 (def max-buzz-hp-freq 9999)
 (def min-noise-filter-cutoff 50)        ; Must be > 0
-(def min-noise-filter-bw 3)
+(def min-noise-filter-bw 10)
 (def max-noise-filter-bw 100)
 (def max-delay-time 2.00)
 (def max-db 0)
 (def min-db -60)
 (def max-keyscale-depth 12)             ; in db
 (def min-keyscale-depth (* -1 max-keyscale-depth))
-(def min-lfo-frequency 0.01)
+(def min-lfo-frequency 0.001)
 (def max-lfo-frequency 10)
-(def min-vibrato-sensitivity 0.001)
+(def min-vibrato-sensitivity 0.0)
 (def max-vibrato-sensitivity 0.1)
 (def min-op-detune 0.1)
 (def max-op-detune 127)
 (def min-buzz-harmonics 1)
 (def max-buzz-harmonics 64)
-(def min-filter-cutoff 50)
+(def min-filter-cutoff 1)
 (def max-filter-cutoff 12000)
 (def min-filter-track 0)
 (def max-filter-track 8)
@@ -30,7 +30,7 @@
 (def min-filter-res 0)
 (def max-filter-res 4)
 (def filter-res-scale max-filter-res)
-(def noise-amp-boost 9)  ; db
+(def noise-amp-boost 15)  ; db
 (def max-fm-lag 4.0)
 (def max-noise-lag max-fm-lag)
 
@@ -315,6 +315,7 @@
    :filter-res<-ccb 0.0       ;
    :filter-mode -1.0          ;     -1.0 -> Lowpass   +1.0 -> Bandpass
    :filter2-detune 1.0        ;      Bandpass center freq relative to lowpass
+   :filter2-lag 0.0
    :dist-mix 0.0              ; Distortion ------------ 
    :dist-pregain 1.0          ;      mix = 0 -> dry   mix = 1 -> wet
    :dist<-cca 0.0             ;

@@ -271,9 +271,10 @@
        (format "%s:mode %+6.3f)\n"
                pad22
                (fget :filter-mode dmap))
-       (format "%s(bp-filter :offset %5.3f)\n"
+       (format "%s(bp-filter :offset %5.3f :lag %5.3f)\n"
                pad11
-               (fget :filter2-detune dmap))))
+               (fget :filter2-detune dmap)
+               (fget :filter2-lag dmap))))
 
 (defn- pp-fold [dmap]
   (format "%s(fold      :wet %5.3f :gain %2d :cca %+3d :ccb %+3d)\n"
