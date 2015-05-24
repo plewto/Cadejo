@@ -45,7 +45,7 @@
         (-amp-pos item p0))))
         
 
-(defn- draw-amp-panel [bg p0]
+(defn draw-amp-panel [bg p0]
   (let [positions [(amp-pos :lfo p0)(amp-pos :vel p0)(amp-pos :prss p0)
                    (amp-pos :cca p0)(amp-pos :lag p0)]
         y1 (second (first positions))

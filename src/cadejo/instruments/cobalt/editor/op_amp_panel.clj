@@ -6,9 +6,9 @@
   (:require [sgwr.tools.multistate-button :as msb])
   (:require [sgwr.tools.slider :as slider]))
 
-(def ^:private left-margin 30)
+(def left-margin 30)
 
-(def ^:private keyscale-states [[:n12 "-12" :red]
+(def keyscale-states [[:n12 "-12" :red]
                       [:n9  "-9"  :red]
                       [:n6  "-6"  :red]
                       [:n3  "-3"  :red]
@@ -18,14 +18,14 @@
                       [:9   "+9"  :green]
                       [:12  "+12" :green]])
 
-(def ^:private keyscale-key-states [[:36 "C1 " :green]
+(def keyscale-key-states [[:36 "C1 " :green]
                           [:48 "C2 " :green]
                           [:60 "C3 " :green]
                           [:72 "C4 " :green]
                           [:84 "C5 " :green]
                           [:96 "C6 " :green]])
 
-(defn- amp-pos [item p0]
+(defn amp-pos [item p0]
   (let [pan-width 410
         pan-height 240
         x-offset left-margin
@@ -65,7 +65,7 @@
           :right [x-keyscale y-right]}
           item)))
 
-(defn- draw-amp-panel [op bg p0]
+(defn draw-amp-panel [op bg p0]
   (let [positions [(amp-pos :lfo p0)(amp-pos :vel p0)(amp-pos :prss p0)
                    (amp-pos :cca p0)(amp-pos :ccb p0)]
         y1 (second (first positions))

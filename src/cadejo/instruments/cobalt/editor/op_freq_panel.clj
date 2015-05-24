@@ -31,7 +31,7 @@
           :penv-label [x-label (+ y-penv 20)]}
          item)))
 
-(defn- draw-freq-panel [op bg p0]
+(defn draw-freq-panel [op bg p0]
   (sf/label bg (freq-pos :freq-label p0) "Freq")
   (sf/label bg (freq-pos :penv-label p0) "P.Env")
   (sf/minor-border bg (freq-pos :p0 p0)(freq-pos :border p0)))

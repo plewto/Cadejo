@@ -116,7 +116,7 @@
           :paste [x-paste y-paste]}
          item)))
 
-(defn- draw-env-panel [op bg p0]
+(defn draw-env-panel [op bg p0]
   (sf/minor-border bg (env-pos op :p0 p0)(env-pos op :border p0))
   (sf/label bg (env-pos op :attack p0) "Att" :offset [-10 20])
   (sf/label bg (env-pos op :decay1 p0) "Dcy1" :offset [-12 20])

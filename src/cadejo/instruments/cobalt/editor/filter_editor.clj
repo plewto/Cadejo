@@ -1,4 +1,3 @@
-(println "DEBUG loading filter")
 (ns cadejo.instruments.cobalt.editor.filter-editor
   (:require [cadejo.instruments.cobalt.constants :as con])
   (:require [cadejo.ui.instruments.subedit :as subedit])

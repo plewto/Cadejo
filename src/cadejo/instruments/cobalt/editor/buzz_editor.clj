@@ -85,7 +85,7 @@
       (.put-property! iobj :image (.image bg))
       iobj)))
 
-(defn-harm-pos [item p0]
+(defn- harm-pos [item p0]
   (let [pan-width 350
         pan-height 360
         x-offset (+ left-margin 410)
@@ -148,7 +148,7 @@
                          :step 8
                          :frmt "%+3d")))
 
-(defn-harmonic-panel [drw ied p0]
+(defn- harmonic-panel [drw ied p0]
   (let [param-harmonics :bzz-harmonics
         param-env :bzz-harmonics<-env
         param-cca :bzz-harmonics<-cca

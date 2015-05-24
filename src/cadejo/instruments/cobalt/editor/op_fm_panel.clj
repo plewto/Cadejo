@@ -62,7 +62,7 @@
          item)))
 
 
-(defn- draw-fm-panel [op bg p0]
+(defn draw-fm-panel [op bg p0]
   (sf/label bg (fm-pos :freq-label p0) "FM" :offset [0 -15] :size 8)
   (sf/label bg (fm-pos :freq-label p0) "Freq")
   (sf/label bg (fm-pos :bias-label p0) "Bias")

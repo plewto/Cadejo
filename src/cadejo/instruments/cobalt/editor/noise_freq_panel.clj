@@ -36,7 +36,7 @@
           :penv-label [x-label (+ y-penv 20)]}
          item)))
 
-(defn- draw-freq-panel [bg p0]
+(defn draw-freq-panel [bg p0]
   (sf/label bg (freq-pos :freq1-label p0) "Freq 1")
   (sf/label bg (freq-pos :freq2-label p0) "Freq 2")
   (sf/label bg (freq-pos :penv-label p0) "Penv"))
