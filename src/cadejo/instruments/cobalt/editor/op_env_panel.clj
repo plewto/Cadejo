@@ -76,9 +76,8 @@
 (defn- env-pos [op item p0]
   (let [pan-width 440
         pan-height 360
-        [x-offset y-offset](if (number? op)
-                             [(+ left-margin 760) 190]
-                             [0 0])
+        [x-offset y-offset](cond (or (number? op)(= op :bzz)(= op :nse)) [(+ left-margin 760) 190]
+                                 :default [0 0])
         x0 (+ (first p0) x-offset)
         x-border (+ x0 pan-width)
         slider-space 50

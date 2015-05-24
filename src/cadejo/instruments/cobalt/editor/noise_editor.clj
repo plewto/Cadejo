@@ -23,6 +23,8 @@
               d)
         freq-panel (nfp/freq-panel drw ied p0)
         amp-panel (nap/amp-panel drw ied p0)
+        ;; env-panel (let [penv [(+ (first p0) 350)(- (second p0) 190)]]
+        ;;             (env/env-panel :nse drw ied penv))
         env-panel (env/env-panel :nse drw ied p0)
         overview-panel (let [xv left-margin
                              yv (vertical-pos :overview p0)]

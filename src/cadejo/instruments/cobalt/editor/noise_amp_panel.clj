@@ -50,8 +50,6 @@
                    (amp-pos :cca p0)(amp-pos :lag p0)]
         y1 (second (first positions))
         y2 (- y1 sf/slider-length)]
-    (sf/fpo bg (amp-pos :p0 p0) :color :green)
-    (sf/fpo bg (amp-pos :border p0) :color :red)
     (sf/minor-border bg (amp-pos :p0 p0)(amp-pos :border p0))
     (sf/label bg (amp-pos :amp1-label p0) "Amp 1")
     (sf/label bg (amp-pos :amp2-label p0) "Amp 2")
