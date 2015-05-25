@@ -5,7 +5,7 @@
   (:require [cadejo.util.midi])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel))
 
-(def ^:private +VERSION+ "0.2.1-SNAPSHOT")
+(def ^:private +VERSION+ "0.2.1")
 
 (def ^:private available-skins (map str (keys (SubstanceLookAndFeel/getAllSkins))))
 
@@ -69,12 +69,6 @@
   (enable-pp!
     [this flag]
     "Enable/disable pretty-printer hook on MIDI program change")
-
-  (maximum-scene-count
-    [this])
-  
-  (maximum-scene-count!
-    [this n])
 
   (maximum-undo-count 
     [this]
@@ -161,7 +155,6 @@
         load-gui* (atom false)
         initial-skin* (atom "Dust")
         current-skin* (atom "Dust")
-        max-scene-count* (atom 4)
         enable-pp* (atom true)
         max-undo-count* (atom 10)
         exit-warn* (atom true)
@@ -218,11 +211,6 @@
 
                 (enable-pp! [this flag]
                   (reset! enable-pp* flag))
-                
-                (maximum-scene-count [this] @max-scene-count*)
-
-                (maximum-scene-count! [this n]
-                  (reset! max-scene-count* (int n)))
 
                 (maximum-undo-count [this]
                   @max-undo-count*)
@@ -351,12 +339,6 @@
 (defn enable-pp! [flag]
   (.enable-pp! @current-config* flag))
 
-(defn maximum-scene-count []
-  (.maximum-scene-count @current-config*))
-
-(defn maximum-scene-count! [n]
-  (.maximum-scene-count! @current-config* n))
-
 (defn maximum-undo-count []
   (.maximum-undo-count @current-config*))
 
@@ -453,9 +435,8 @@
 
 (load-gui! true)
 (initial-skin! "Twilight")
-(displaybar-style! nil)    ; nil -> use lnf
+(displaybar-style! :basic)    ; nil -> use lnf
 (enable-pp! true)
-(maximum-scene-count! 2)   ; ISSUE check if max-scene-count is respected
 (maximum-undo-count! 10)
 (warn-on-exit! false)
 (warn-on-file-overwrite! true)
