@@ -10,7 +10,7 @@
 
 (def p-gamut-harmonic* (atom 0.60))
 (def p-gamut-semi-harmonic* (atom 0.30))
-(def p-gamut-enharmonic* (atom 0.10))
+(def p-gamut-inharmonic* (atom 0.10))
 (def p-gamut-cluster* (atom 0.3))
 (def test-gamut* (atom [1 2 3 4 5 6  7 8 1]))
 
