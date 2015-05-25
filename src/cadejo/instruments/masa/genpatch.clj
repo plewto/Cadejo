@@ -11,10 +11,10 @@
                                       :odd :odd :odd
                                       :harmonic :harmoinc
                                       :prime
-                                      :semi-enharmonic
-                                      :enharmonic]))
+                                      :semi-harmonic
+                                      :inharmonic]))
         rand-amp (fn [](int (rand 9)))
-        rand-enharm (fn [](+ 0.5 (rand 8)))
+        rand-inharm (fn [](+ 0.5 (rand 8)))
         rand-harm (fn [n]
                     (let [f (math/coin 0.8 n (+ n (rand)))]
                       f))
@@ -26,14 +26,14 @@
                       (= harmonic-type :odd) odd
                       (= harmonic-type :harmonic) harmonic
                       (= harmonic-type :prime) prime
-                      (= harmonic-type :semi-enharmonic)
+                      (= harmonic-type :semi-harmonic)
                       (sort [(rand-harm 0.5)(rand-harm 1)(rand-harm 2)
                              (rand-harm 3)(rand-harm 4)(rand-harm 5)
                              (rand-harm 6)(rand-harm 8)(rand-harm 9)])
                       :default
-                      (sort [(rand-enharm)(rand-enharm)(rand-enharm)
-                             (rand-enharm)(rand-enharm)(rand-enharm)
-                             (rand-enharm)(rand-enharm)(rand-enharm)]))
+                      (sort [(rand-inharm)(rand-inharm)(rand-inharm)
+                             (rand-inharm)(rand-inharm)(rand-inharm)
+                             (rand-inharm)(rand-inharm)(rand-inharm)]))
      :registration [(rand-amp)(rand-amp)(rand-amp)
                     (rand-amp)(rand-amp)(rand-amp)
                     (rand-amp)(rand-amp)(rand-amp)]

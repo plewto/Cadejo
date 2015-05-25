@@ -8,10 +8,10 @@
 (defn- build-gamut-selection-list []
   (flatten [(repeat (* 10 @config/p-gamut-harmonic*) :harmonic)
             (repeat (* 10 @config/p-gamut-semi-harmonic*) :semi-harmonic)
-            (repeat (* 10 @config/p-gamut-enharmonic*) :enharmonic)]))
+            (repeat (* 10 @config/p-gamut-inharmonic*) :inharmonic)]))
 
 ;; Returns keyword selecting one of three possible gamut types 
-;; :harmonic :semi-harmonic or :enharmonic
+;; :harmonic :semi-harmonic or :inharmonic
 ;;
 (defn- select-gamut-type []
   (if @config/test-mode*
@@ -34,7 +34,7 @@
 
 ;; Returns sorted list of n random values
 ;;
-(defn- generate-enharmonic-list [n]
+(defn- generate-inharmonic-list [n]
   (let [acc* (atom [])]
     (dotimes [i n]
       (swap! acc* (fn [q](conj q (+ 0.125 (rand 12))))))
@@ -131,13 +131,13 @@
                                   (map float @fm*)
                                   (map float @bias*)])
                                  
-                                 (= gtype :enharmonic)
+                                 (= gtype :inharmonic)
                                  (let [fm* (atom [])
                                        bias* (atom [])]
                                    (dotimes [i 6]
                                      (swap! fm* (fn [q](conj q (coin 0.5 1.0 (rand)))))
                                      (swap! bias* (fn [q](conj q (coin 0.05 (rand 100) 0.0)))))
-                                   [(normalize (mangle (generate-enharmonic-list 12)
+                                   [(normalize (mangle (generate-inharmonic-list 12)
                                                        @config/p-gamut-cluster* 0.1 1.0)
                                                (rand-nth [1 2 3]))
                                     @fm* 

@@ -58,7 +58,7 @@
 
 ;; A 0 value indicates op bias should be used.
 ;;
-(defn pick-enharmonic-op-frequencies []
+(defn pick-inharmonic-op-frequencies []
   (let [acc* (atom [])]
     (dotimes [i op-count]
       (let [f (math/coin 0.05 0 (+ 0.25 (rand 8)))]
@@ -70,11 +70,11 @@
   (let [gamut (rand-nth '[:harmonic :harmonic :harmonic :harmonic 
                            :harmonic :harmonic :harmonic :harmonic 
                            :semi-harmonic  :semi-harmonic :semi-harmonic
-                           :enharmonic])]
+                           :inharmonic])]
     (println (format ";; frequency gamut %s" gamut))
     (cond (= gamut :harmonic)(pick-harmonic-op-frequencies)
           (= gamut :semi-harmonic)(pick-semi-harmonic-op-frequencies)
-          :default (pick-enharmonic-op-frequencies))))
+          :default (pick-inharmonic-op-frequencies))))
 
 ; Picks random op bias iff corresponding detune is 0
 ;;
