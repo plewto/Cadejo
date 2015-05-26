@@ -286,7 +286,7 @@
 
                 (sync-ui! [this]
                   (.removeAll tbar-performance)
-                  (.add tbar-performance (ss/label :text "Shift/Click to remove "))
+                  ;(.add tbar-performance (ss/label :text "Shift/Click to remove "))  ;; BUGGY
                   (doseq [p (.children chanobj)]
                     (let [itype (.get-property p :instrument-type)
                           id (.get-property p :id)
