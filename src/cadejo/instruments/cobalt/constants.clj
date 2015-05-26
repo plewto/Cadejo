@@ -2,7 +2,7 @@
 
 (ns cadejo.instruments.cobalt.constants)
 
-(def op-count 10)                       ; ops 1..8, + noise + buzz
+(def op-count 6)                        ; Does not include noise or buzz
 (def max-port-time 1.0)
 (def min-buzz-hp-freq 1)
 (def max-buzz-hp-freq 9999)

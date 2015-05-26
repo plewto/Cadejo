@@ -6,20 +6,19 @@
   (:require [cadejo.instruments.cobalt.editor.filter-editor :as fed])
   (:require [cadejo.instruments.cobalt.editor.vibrato-editor :as ved])
   (:require [cadejo.instruments.cobalt.editor.efx-editor :as fxed])
-  (:require [cadejo.ui.instruments.instrument-editor :as ied])
- )
+  (:require [cadejo.ui.instruments.instrument-editor :as ied]))
 
 
 (defn cobalt-editor [performance]
+  (println "Creating cobalt editor")
   (let [ied (ied/instrument-editor performance)
-        fed (do (println "-->        Filter") (fed/filter-editor ied))
-        ved (do (println "-->        Vibrato & LFO") (ved/vibrato-editor ied))
-        xed (do (println "-->        Effects")(fxed/efx-editor ied))
-       ]
+        fed (do (println "-->    Filter") (fed/filter-editor ied))
+        ved (do (println "-->    Vibrato & LFO") (ved/vibrato-editor ied))
+        xed (do (println "-->    Effects")(fxed/efx-editor ied))]
     (doseq [op [1 2 3 4 5 6 :nse :bzz]]
-      (println (format "-->        %s" (cond (= op :nse) "Noise"
-                                      (= op :bzz) "Buzz"
-                                      :default (format "OP%d" op))))
+      (println (format "-->    %s" (cond (= op :nse) "Noise"
+                                         (= op :bzz) "Buzz"
+                                         :default (format "OP%d" op))))
       (cond (= op :nse)
             (let [ed (ned/noise-editor ied)]
               (.add-sub-editor! ied "Noise" :wave :noise "Noise" ed))
