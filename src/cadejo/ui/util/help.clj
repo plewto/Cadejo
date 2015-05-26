@@ -377,7 +377,7 @@ specific MIDI channel. As long as the dialog is visible all other Cadejo
 windows are disabled. The dialog provides the following options:
 
    key mode
-      Selects if this instrument is to be mono or poly phonic. Note not
+      Selects if this instrument is to be mono or polyphonic. Note not
       all instruments support polyphonic mode.
 
    Output bus
@@ -672,82 +672,141 @@ clipboard.")
 
    
 (add-topic :cobalt
-"Cobalt is a hybrid instrument utilizing both additive and subtractive
-techniques. The tone sources include 8 'operators'. Operators 1, 2, 3 and
-4 provide simple single carrier/modulator FM. Operators 5, 6, 7 and 8
-produce simple sine waves. Additionally there is a narrow-band noise source
-and a 'buzz' or 'blip' pulse generator.  These 10 signals are mixed and fed
-to parallel low and bandpass filters. After the filters with signal is
-processed through a 'folding' clipper and finally to dual delay stages. 
+"Cobalt is a hybrid instrument utilizing additive, fm and subtractive
+techniques. The instrument contains 6 FM pairs, a tuned noise source, a
+pulse generator, two filters, clipper, and two delay lines. Control
+elements consist of 4 sine wave LFOs (one general, one vibrato and two for
+effects), 13 envelopes (1 each for 6 operators, noise, pulse, filter,
+effects and pitch), and external MIDI controllers.
 
-Operators 1 through 4 provide simple single carrier/modulator FM
-and have the following parameters
 
-    amp               * Linear output amplitude [0 ... 1]
-    amp<-lfo1         * LFO1 amplitude modulation depth [0 ... 1] 
-    amp<-cca          * MIDI cc A amplitude modulation depth [0 ... 1]
-    amp<-velocity     * Velocity amplitude modulation depth [0 ... 1]
-    amp<-pressure     * MIDI pressure amplitude modulation depth [0 .. 1]
-    keyscale-key      * MIDI keyscale reference key, [0 ... 127]
-    keyscale-left     * Left keyscale depth in db/octave [-12 ... +12]
-    keyscale-right    * Right keyscale depth in db/octave [-12 ... +12]
-    detune            * Relative frequency [0 < detune]
-    op1<-penv         * Pitch envelope depth [-1 ... +1]
-                      *
-                      * Operator envelopes have 5-stages and may be configured
-                      * as either AADSR or ADDSR
-    attack            * Attack time [0 <= attack]
-    decay1            * Initial decay/second attack time [0 <= decay1] 
-    decay2            * Second decay time [0 <= decay2]
-    release           * Release time [0 <= release]
-    peak              * Peak amplitude after initial attack [0 <= peak <= 1]
-    breakpoint        * Amplitude after first decay [0 <= breakpoint <= 1]
-    sustain           * Sustain level [0 <= sustain <= 1]
-                      * 
-                      * Operators 1 through 4 provide simple FM. The 'fm' 
-                      * parameters apply to the modulator.
-    fm-detune         * Modulator frequency relative to carrier [0 ... ?]
-    fm-bias           * Fixed value added to modulator frequency [-? ... +?]
-    fm-amp            * Modulation depth. [0 <= amp]
-    fm<-env           * Depth of envelope control over modulation depth.
-                      * For fm-env = 0 the modulator has a fixed amplitude.
-                      * For fm-env = 1 the modulator amplitude is env*fm-amp
-    fm-keyscale-left  * Left modulation depth keyscale
-    fm-keyscale-right * Right modulation depth keyscale
+-------------------------------------------------------------------------
+Operators
 
-Operators 5 through 8 provide simple sine tones and have the same
-parameters as the fm operators with exception of key-scaling and fm
+The 6 operators are identical and consist of a single FM carrier/modulator
+pairs.  Parameters include
+
+Freq      - Relative frequency
+P.Env     - Pitch envelope amount
+Amp       - Linear amplitude 
+Amp LFO1  - LFO1 amp mod depth
+Amp Vel   - Velocity amp mod depth
+Amp Prss  - Key pressure (aftertouch) amp mod depth
+Amp CCA   - MIDI controller A amp mod depth
+Amp CCB   - MIDI controller B amp mod depth
+Amp Key   - Keyscale key, (C1, C2, C3, .... C6)
+Amp Left  - Left amp keyscale db/octave (-12db ... +12db) in 3db steps
+Amp Right - Right amp keyscale
+FM Freq   - FM modulator frequency relative to carrier frequency
+FM Bias   - Fixed value added to FM frequency
+FM Depth  - FM modulation depth
+FM Env    - Envelope applied to FM depth. Each operator has a
+            envelope generator which is shared by the carrier and
+            modulator. The FM Env control sets how much effect the envelope
+            has on FM depth. If FM Env is set to 0 the depth will be static.
+FM Lag    - The FM envelope lag processor is used to delay/smooth the
+            envelope applied to the modulation depth. 
+FM Left   - Modulation depth left key scale. The modulator uses the same key
+            as the carrier
+FM Right  - Modulation right keyscale
+Env Att   - Envelope attack time
+Env Dcy1  - Envelope initial decay time
+Env Dcy2  - Envelope second decay time
+Env Rel   - Envelope release time
+Env Peak  - Envelope peak value sets the level between the attack stage and
+            decay1 stage.
+Env BP    - Envelope breakpoint sets the level between the decay1 and
+            decay2 stages
+Env Sus   - Envelope sustain level sets the level after the decay2 stage
+Env Scale - The envelope scale button changes the maximum value of the time
+            sliders. 
+
+-------------------------------------------------------------------------
+Tuned Noise source
+
+The noise generator produces two tuned noise signals with variable
+frequency and band widths.  With exception of frequency, amp and band width
+the two signals share all other parameters.  The available noise parameters
+are identical to those of the 6 FM operators minus the FM values and CCB
+amplitude control. Unique to the noise generator are the band width and lag
 controls.
 
-The noise source is band-pass filtered and then ring-modulated with a sine
-wave. The result is a cluster of tones centered on the sine frequency with
-the filter band-width controlling the tone spread. For low band-widths
-(~10) the noise source has a definite pitch and forms a quasi 9th
-operator. The noise parameters include most of the same parameters as
-operator 1, minus the fm controls.
+noise bw1  - Band width in HZ of signal 1
+noise bw2  - Band width signal 2
+noise lag2 - Lag applied to noise 2 envelope
 
-The final source is a pulse 'buzz' generator which generates the first n
-harmonics with equal amplitude. The number of harmonics may be modulated by
-the buzz envelope or external MIDI controller. Additionally there is a
-high-pass filter used to attenuate the lower harmonics. The buzz generator
-has most of the same parameters as operator 1.
+At low band width values the noise signals are quasi tonal with definite
+pitch and an airy sound. 
 
+-------------------------------------------------------------------------
+Buzz (Pulse) generator 
 
-The filter section consist of parallel low and band pass filters. The
-frequencies of these two filters move in tandem. An offset may be
-applied to the band-pass filter such that it's frequency is some
-fraction/multiple of the low pass filter. The filter includes an integrated
-ADSR envelope generator and variable resonance. The 'mode' parameter sets
-the relative mix between the two filters.
+The buzz generator produces pulse waves with n equal amplitude
+harmonics. Like the noise source, the buzz generator shares most of the
+same parameters as the FM operators minus the FM values. 
 
-Following the filter is a simple 'folding' wave shaper. The mix parameter
-sets the wet/dry mix between the folder input and output. The pregain
-parameter amplifies the input signal and thus increase the clipping
-effect. There is some automatic amplitude scaling of the folder output as
-a function of the pregain value. 
+Harmonics N    - Initial number of harmonics
+Harmonics Env  - Envelope applied to harmonic count
+Harmonics CCA  - MIDI controller A applied to harmonic count
+HighPass Track - Highpass filter key track 
+HighPass Env   - Envelope applied to highpass filter
 
-Cobalt includes 2 independent delay lines, each with a a maximum of 2
-seconds delay. A separate envelope 'xenv', and LFOs 3 and 4, are dedicated
-to the effects stage. These control signals may be used to modulate the
-time, mix and pan position of either delay line.")
+-------------------------------------------------------------------------
+Filters
 
+Cobalt uses two filters; one low-pass and one band-pass. The filters share
+most of same parameters and always track in parallel.
+
+Freq       - Lowpass frequency
+Freq Track - Filter keytrack amount
+Freq Env   - Envelope applied to frequency
+Freq Prss  - MIDI pressure applied to frequency
+Freq CCA   - MIDI controller A applied to frequency
+Freq CCB   - MIDI controller B applied to frequency
+Res        - Resonance
+Res CCA    - MIDI controller A applied to resonance
+Res CCB    - MIDI controller A applied to resonance
+BP Offset  - Bandpass offset relative to lowpass filter
+BP Lag     - Amount of lag applied to band pass freq changes
+BP Mix     - Mix between two filters.
+Env Att    - The filter uses simpler ADSR style envelope
+Env Dcy
+Env Rel
+Env Sus
+
+Distortion is post filter and achieved using signal folding. 
+
+dist Gain - gain applied to signal pre filter, in effect distortion amount 
+dist CCA  - MIDI controller A applied to distortion mix
+dist CCB  - MIDI controller B applied to distortion mix
+dist Mix  - Wet/dry distortion mix. 
+
+-------------------------------------------------------------------------
+Vibrato
+
+The vibrato tab contains misc control elements.
+
+Port time - Portamento time
+Port CC5  - MIDI CC5 applied to port time
+
+Vib Freq  - Vibrato frequency
+Vib Sens  - Vibrato sensitivity
+Vib Prss  - MIDI pressure applied to vibrato depth
+Vib Bleed - Minimum amount of vibrato signal
+Vib Delay - Delay time applied to bleed signal onset.
+
+LFO1 Freq
+LFO1 Prss
+LFO1 CCA
+LFO1 Bleed
+LFO1 Delay 
+
+The Pitch Envelope has 4 stages with levels L0 L1 l2 and L3 and times T1 T2
+and T3. Levels are bipolar.
+
+-------------------------------------------------------------------------
+Effects
+
+The effects section contains 2 delay lines, 2 LFOs and an ADDSR envelope. 
+The LFO and envelope may be applied to delay time, amplitude and pan."
+)
