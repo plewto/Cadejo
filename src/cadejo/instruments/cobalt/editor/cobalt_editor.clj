@@ -12,10 +12,10 @@
 (defn cobalt-editor [performance]
   (println "Creating cobalt editor")
   (let [ied (ied/instrument-editor performance)
-        ;; fed (do (println "-->    Filter") (fed/filter-editor ied))
-        ;; ved (do (println "-->    Vibrato & LFO") (ved/vibrato-editor ied))
+        fed (do (println "-->    Filter") (fed/filter-editor ied))
+        ved (do (println "-->    Vibrato & LFO") (ved/vibrato-editor ied))
         xed (do (println "-->    Effects")(fxed/efx-editor ied))]
-    (doseq [op [1 :nse :bzz]] ; [1 2 3 4 5 6 :nse :bzz]]
+    (doseq [op [1 2 3 4 5 6 :nse :bzz]]
       (println (format "-->    %s" (cond (= op :nse) "Noise"
                                          (= op :bzz) "Buzz"
                                          :default (format "OP%d" op))))
@@ -29,7 +29,7 @@
             (let [ed (oped/op-editor op ied)
                   name (format "OP %d" op)]
               (.add-sub-editor! ied name :wave :fm name ed))))
-    ;; (.add-sub-editor! ied "Filter" :filter :low "Filter" fed)
-    ;; (.add-sub-editor! ied "Vibrato" :wave :sine "Portamento, Vibrato, LFO1, Pitch Envelope" ved)
+    (.add-sub-editor! ied "Filter" :filter :low "Filter" fed)
+    (.add-sub-editor! ied "Vibrato" :wave :sine "Portamento, Vibrato, LFO1, Pitch Envelope" ved)
     (.add-sub-editor! ied "Effects" :general :fx "Effects" xed)
     ied))
