@@ -9,15 +9,15 @@
 
 
 (def ^:private left-margin 30)
-(def ^:private keyscale-states [[:n12 "-12" :red]
-                                [:n9  "-9"  :red]
-                                [:n6  "-6"  :red]
-                                [:n3  "-3"  :red]
-                                [:0   " 0"  :green]
-                                [:3   "+3"  :green]
-                                [:6   "+6"  :green]
-                                [:9   "+9"  :green]
-                                [:12  "+12" :green]])
+(def ^:private keyscale-states [[:n12 "-12" :green]
+                                [:n9  "-9"  :green]
+                                [:n6  "-6"  :green]
+                                [:n3  "-3"  :green]
+                                [:0   " 0"  :orange]
+                                [:3   "+3"  :orange]
+                                [:6   "+6"  :orange]
+                                [:9   "+9"  :orange]
+                                [:12  "+12" :red]])
 
 (defn- fm-pos [item p0]
   (let [pan-width 350

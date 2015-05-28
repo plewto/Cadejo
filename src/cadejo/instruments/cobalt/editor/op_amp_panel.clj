@@ -8,22 +8,68 @@
 
 (def left-margin 30)
 
-(def keyscale-states [[:n12 "-12" :red]
-                      [:n9  "-9"  :red]
-                      [:n6  "-6"  :red]
-                      [:n3  "-3"  :red]
-                      [:0   " 0"  :green]
-                      [:3   "+3"  :green]
-                      [:6   "+6"  :green]
-                      [:9   "+9"  :green]
-                      [:12  "+12" :green]])
+;; Map keyscale depth (in db) to button state index
+;;
+(def keyscale-depth-map {-999 0
+                         -18 1
+                         -15 2
+                         -12 3
+                         -9 4
+                         -6 5
+                         -3 6
+                          0 7
+                         +3 8
+                         +6 9
+                         +9 10
+                         +12 11})
 
-(def keyscale-key-states [[:36 "C1 " :green]
-                          [:48 "C2 " :green]
-                          [:60 "C3 " :green]
-                          [:72 "C4 " :green]
-                          [:84 "C5 " :green]
-                          [:96 "C6 " :green]])
+(def reverse-keyscale-depth-map (let [acc* (atom {})]
+                                  (doseq [[k v](seq keyscale-depth-map )]
+                                    (swap! acc* (fn [q](assoc q v k))))
+                                  @acc*))
+
+(def keyscale-states [[:n99 "Cut" :lime]
+                      [:n18 "-18" :green]
+                      [:n15 "-15" :green]
+                      [:n12 "-12" :green]
+                      [:n9  "-9"  :green]
+                      [:n6  "-6"  :green]
+                      [:n3  "-3"  :green]
+                      [:0   " 0"  :orange]
+                      [:3   "+3"  :orange]
+                      [:6   "+6"  :orange]
+                      [:9   "+9"  :orange]
+                      [:12  "+12" :red]])
+
+;; Map MIDI key number to button state index
+;;
+(def keynum-map (let [acc* (atom {})
+                      index* (atom 0)
+                      keynum* (atom 36)
+                      increment 6]
+                  (while (< @index* 102)
+                    (swap! acc* (fn [q](assoc q @keynum* @index*)))
+                    (swap! keynum* (fn [q](+ q increment)))
+                    (swap! index* inc))
+                  @acc*))
+
+(def reverse-keynum-map (let [acc* (atom {})]
+                          (doseq [[k v](seq keynum-map )]
+                            (swap! acc* (fn [q](assoc q v k))))
+                          @acc*))                
+
+(def keyscale-key-states [[:36 "C1 " :lime]
+                          [:42 "F#1" :yellow]
+                          [:48 "C2 " :lime]
+                          [:54 "F#2" :yellow]
+                          [:60 "C3 " :lime]
+                          [:66 "F#3" :yellow]
+                          [:72 "C4 " :lime]
+                          [:78 "F#4" :yellow]
+                          [:84 "C5 " :lime]
+                          [:90 "F#5" :yellow]
+                          [:96 "C6 " :lime]
+                          [:102 "F#6" :yellow]])
 
 (defn amp-pos [item p0]
   (let [pan-width 410
@@ -130,9 +176,9 @@
         s-prss (sf/vslider drw ied param-prss (amp-pos :prss p0) 0.0 1.0 slider-action)
         s-ccb (sf/vslider drw ied param-ccb (amp-pos :ccb p0) 0.0 1.0 slider-action)
         keynum-action (fn [b _]
-                          (let [n (first (msb/current-multistate-button-state b))
-                                keynum (+ 36 (* n 12))]
-                            (.set-param! ied param-key keynum)))
+                        (let [index (first (msb/current-multistate-button-state b))
+                              keynum (get reverse-keynum-map index)]
+                          (.set-param! ied param-key keynum)))
         msb-key (msb/text-multistate-button (.tool-root drw)
                                             (amp-pos :key p0)
                                             keyscale-key-states
@@ -142,9 +188,11 @@
                                             :gap 6)
         keyscale-action (fn [b _]
                           (let [index (first (msb/current-multistate-button-state b))
-                                db (- (* 3 index) 12)
+                                db (get reverse-keyscale-depth-map index)
                                 param (.get-property b :id)]
                             (.set-param! ied param db)))
+                            
+
 
         msb-left (msb/text-multistate-button (.tool-root drw)
                                              (amp-pos :left p0)
@@ -167,12 +215,15 @@
           cca (param-cca dmap)
           ccb (param-ccb dmap)
           lfo (param-lfo dmap)
-          key (let [v (param-key dmap)]
-                (math/clamp (- (int (/ v 12)) 3) 0 5))
-          left (let [v (param-left dmap)]
-                 (int (math/clamp (+ (* 1/3 v) 4) 0 8)))
-          right (let [v (param-right dmap)]
-                 (int (math/clamp (+ (* 1/3 v) 4) 0 8)))]
+          key (let [v (int (param-key dmap))]
+                (get keynum-map v 4))
+
+          left-index (let [db (int (param-left dmap))
+                           index (get keyscale-depth-map db 0)] ; default -99 db
+                       index)
+          right-index (let [db (int (param-right dmap))
+                            index (get keyscale-depth-map db 0)] ; default -99 db
+                        index)]
       (slider/set-slider-value! s-vel (float vel) false)
       (slider/set-slider-value! s-prss (float prss) false)
       (slider/set-slider-value! s-cca (float cca) false)
@@ -180,6 +231,6 @@
       (slider/set-slider-value! s-lfo (float lfo) false)
       (.display! dbar-amp (format "%5.3f" (float amp)) false)
       (msb/set-multistate-button-state! msb-key key false)
-      (msb/set-multistate-button-state! msb-left left false)
-      (msb/set-multistate-button-state! msb-right right false))))) 
+      (msb/set-multistate-button-state! msb-left left-index false)
+      (msb/set-multistate-button-state! msb-right right-index false))))) 
       
