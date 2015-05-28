@@ -5,7 +5,7 @@
   (:require [cadejo.util.midi])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel))
 
-(def ^:private +VERSION+ "0.2.1")
+(def ^:private +VERSION+ "0.3.0")
 
 (def ^:private available-skins (map str (keys (SubstanceLookAndFeel/getAllSkins))))
 
@@ -436,7 +436,7 @@
 (load-gui! true)
 (initial-skin! "Twilight")
 (displaybar-style! :basic)    ; nil -> use lnf
-(enable-pp! true)
+(enable-pp! false)
 (maximum-undo-count! 10)
 (warn-on-exit! false)
 (warn-on-file-overwrite! true)
