@@ -6,7 +6,7 @@
   (:require [cadejo.ui.midi.bank-editor])
   (:require [cadejo.ui.midi.cc-properties-panel])
   (:require [cadejo.ui.midi.node-editor])
-  (:require [cadejo.ui.midi.program-bar])
+  ;(:require [cadejo.ui.midi.program-bar])
   (:require [cadejo.ui.midi.properties-panel])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -59,10 +59,15 @@
         instrument-editor* (atom nil) ;; editor created only if needed
         toolbar (.widget basic-ed :toolbar)
         bank (.bank performance)
-        program-bar (cadejo.ui.midi.program-bar/program-bar performance)
-        bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank program-bar)]
+
+        ;; bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank program-bar)]
+        ;;           (.editor! bank bed)
+        ;;           bed)
+        ;; program-bar (cadejo.ui.midi.program-bar/program-bar performance)
+        bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank)]
                   (.editor! bank bed)
                   bed)
+        program-bar (.widget bank-ed :program-bar)
         properties-panel (cadejo.ui.midi.properties-panel/midi-properties-panel)
         card-buttons* (atom [])
         card-group (ss/button-group)
@@ -156,7 +161,8 @@
                  (sync-ui! [this]
                    (.sync-ui! bank-ed)
                    (.sync-ui! properties-panel)
-                   (.sync-ui! program-bar)
+                   ;(.sync-ui! program-bar)
+                   ((:syncfn program-bar))
                    (.sync-ui! @cced*)) )]
       (.set-parent-editor! properties-panel ped)
       (.set-parent-editor! bank-ed ped)
@@ -194,6 +200,6 @@
                                      card-id (.getClientProperty src :card)]
                                  (ss/show-card! pan-cards card-id)
                                  (.revalidate pan-cards)))))
-      (.add (.widget basic-ed :pan-center)(.widget program-bar :pan-main) BorderLayout/SOUTH)
+      (.add (.widget basic-ed :pan-center)(:pan-main program-bar) BorderLayout/SOUTH)
       (.putClientProperty (.widget basic-ed :jb-help) :topic :performance)
       ped))) 

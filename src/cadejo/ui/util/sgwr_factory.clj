@@ -292,8 +292,58 @@
                            :id id
                            :click-action action))
 
+(defn mini-chevron-up-button [drw p0 id action]
+  (button/mini-icon-button (.tool-root drw) p0 (icon-prefix) :up1
+                           :id id
+                           :click-action action))
+
+(defn mini-chevron-up2-button [drw p0 id action]
+  (button/mini-icon-button (.tool-root drw) p0 (icon-prefix) :up2
+                           :id id
+                           :click-action action))
+
+(defn mini-chevron-down-button [drw p0 id action]
+  (button/mini-icon-button (.tool-root drw) p0 (icon-prefix) :down1
+                           :id id
+                           :click-action action))
+
+(defn mini-chevron-down2-button [drw p0 id action]
+  (button/mini-icon-button (.tool-root drw) p0 (icon-prefix) :down2
+                           :id id
+                           :click-action action))
+
 (defn init-button [drw p0 id action]
   (button/icon-button (.tool-root drw) p0 (icon-prefix) :general :reset
+                      :id id
+                      :click-action action
+                      :rim-color [0 0 0 0]))
+
+(defn name-edit-button [drw p0 id action]
+  (button/icon-button (.tool-root drw) p0 (icon-prefix) :edit :text
+                      :id id
+                      :click-action action
+                      :rim-color [0 0 0 0]))
+
+(defn open-button [drw p0 id action]
+  (button/icon-button (.tool-root drw) p0 (icon-prefix) :general :open
+                      :id id
+                      :click-action action
+                      :rim-color [0 0 0 0]))
+
+(defn save-button [drw p0 id action]
+  (button/icon-button (.tool-root drw) p0 (icon-prefix) :general :save
+                      :id id
+                      :click-action action
+                      :rim-color [0 0 0 0]))
+
+(defn undo-button [drw p0 id action]
+  (button/icon-button (.tool-root drw) p0 (icon-prefix) :general :undo
+                      :id id
+                      :click-action action
+                      :rim-color [0 0 0 0]))
+
+(defn redo-button [drw p0 id action]
+  (button/icon-button (.tool-root drw) p0 (icon-prefix) :general :redo
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
@@ -345,6 +395,13 @@
                       :id curve
                       :click-action action
                       :rim-color [0 0 0 0]))
+
+(defn program-store-button [drw p0 id action]
+  (button/icon-button (.tool-root drw) p0 (icon-prefix) :general :bankstore
+                      :id id
+                      :click-action action
+                      :rim-color [0 0 0 0]))
+
 
 (defn blank-button [drw p0 p1 id action]
   (let [[x0 y0] p0

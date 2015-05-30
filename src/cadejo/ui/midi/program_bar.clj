@@ -1,147 +1,134 @@
 (println "--> cadejo.ui.midi.program-bar")
 
 (ns cadejo.ui.midi.program-bar
-  "The program bar is a JPanel with a large display for the current 
-   program name and number. It also includes contans buttons for storing 
-   the current program into a program bank slot. A low priority thread
-   updates the program-name display to indicate if the current program has
-   unsaved data."
-  (:require [cadejo.util.user-message :as umsg])
-  (:require [cadejo.ui.util.color-utilities :as cutil])
-  (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.config :as config])
+  (:require [cadejo.ui.util.sgwr-factory :as sf :reload true ])
+  (:require [cadejo.util.math :as math])
   (:require [seesaw.core :as ss])
-  (:require [sgwr.components.drawing])
-  (:require [sgwr.components.point])
-  (:require [sgwr.indicators.displaybar])
-  (:require [sgwr.tools.button :as sb])
+  (:require [cadejo.util.path :as path])
+  (:require [cadejo.ui.util.overwrite-warning])
   (:require [clojure.string])
-  (:require [cadejo.ui.util.lnf :as lnf])
-  (:require [sgwr.util.color :as uc])
-  (:import javax.swing.Box))
+  (:require [cadejo.ui.util.lnf :as lnf]))
 
-(def ^:private name-length 12)
-(def ^:private name-drawing-width 370)
-(def ^:private name-drawing-height 65)
-(def ^:private prognum-drawing-width 100)
-(def ^:private prognum-drawing-height name-drawing-height)
-(def ^:private pan-east-size [385 :by 65])
-(def ^:private update-period 10000) ;; 'modified' indicator update period in ms
+(def ^:private width 1800)
+(def ^:private height 140)
+(def ^:private program-name-count 16)
+(def ^:private x-slot 40)
+(def ^:private x-inc8 (+ x-slot 90))
+(def ^:private x-inc1 (+ x-inc8 30))
+(def ^:private x-store (+ x-inc1 40))
+(def ^:private x-name (+ x-slot 220))
+(def ^:private x-modified (- x-name 0))
+(def ^:private x-init (+ x-slot 720))
+(def ^:private x-open (+ x-init 50))
+(def ^:private x-save (+ x-open 50))
+(def ^:private x-undo (+ x-save 50))
+(def ^:private x-redo (+ x-undo 50))
+(def ^:private y-dbar 50)
+(def ^:private y-inc (- y-dbar 15))
+(def ^:private y-dec (+ y-dbar 15))
+(def ^:private y-store (- y-inc 0))
+(def ^:private y-modified (- y-dbar 10))
+(def ^:private y-init (- y-dbar 10))
+(def ^:private y-open y-init)
+(def ^:private y-save y-init)
+(def ^:private y-undo y-init)
+(def ^:private y-redo y-init)
+(def ^:private update-period 4000)
 
-(defprotocol ProgramBar
-
-  (widgets
-    [this])
-
-  (widget 
-    [this key])
-  
-  (sync-ui!
-    [this]))
-
-
-(defn program-bar [performance]
-  (let [prognum* (atom 0)
-        bank (.bank performance)
-        [bg inactive active alt][(lnf/background)
-                                 (lnf/dbar-inactive)
-                                 (lnf/dbar-active)
-                                 (uc/complement (lnf/dbar-active))]
-                                 
-        drawing (let [drw (sgwr.components.drawing/native-drawing 611 65)]
-                  (.background! drw bg)
-                  drw)
-        root (.root drawing)
-        tool-root (.tool-root drawing)
-        modified-marker (let [pnt (sgwr.components.point/point root [234 16] 
-                                                             :color inactive
-                                                             :style [:triangle]
-                                                             :size 3)]
-                          (.color! pnt :dirty active)
-                          (.color! pnt :clean inactive)
-                          (.use-attributes! pnt :clean)
-                          pnt)
-
-        dbar-prognum (sgwr.indicators.displaybar/displaybar root 6 16 3 (lnf/dbar-style))
-        dbar-name (sgwr.indicators.displaybar/displaybar root 250 16 name-length (lnf/dbar-style))
-       
-        pan-center (ss/horizontal-panel :items [(.canvas drawing)]
-                                        :border (factory/padding))
-        pan-main (ss/border-panel :center pan-center)
-        display-prognum (fn [render?]
-                          (.display! dbar-prognum (format "%03d" @prognum*) render?))
-
-        inc-prognum (fn [n]
-                      (swap! prognum* (fn [p](min (+ p n) 127)))
-                      (display-prognum :render))
+(defn program-bar [bank-editor]
+  (let [drw (sf/sgwr-drawing width height)
+        bank (.bank bank-editor)
+        file-extension (.toLowerCase (name (.data-format bank)))
+        current-slot* (atom 0)
+        increment-slot (fn [x]
+                         (swap! current-slot* (fn [q]
+                                                (math/clamp (+ q x) 0 127))))
+        dbar-slot (let [db (sf/displaybar drw [x-slot y-dbar] 3)]
+                    (.display! db (format "%3d" @current-slot*) false)
+                    db)
         
-        dec-prognum (fn [n]
-                      (swap! prognum* (fn [p](max (- p n) 0)))
-                      (display-prognum :render))
+        txt-modified (let [txtobj (sf/label drw [x-modified y-modified] "Modified"
+                                           :size 5.0)]
+                       (.color! txtobj :dirty (lnf/text))
+                       (.color! txtobj :clean (lnf/background))
+                       txtobj)
 
-        store-program (fn [& _]
-                        (let [bank-ed (.editor bank)
-                              prog (.current-program bank)
-                              slot @prognum*]
-                          (.push-undo-state! bank-ed
-                                             (format "Store program %s" slot))
-                          (.store! bank slot (.clone prog))
-                          (.sync-ui! bank-ed)
-                          (.status! (.get-editor performance)
-                                    (format "Stored program %s" slot))))
+        program-store-action (fn [& _] 
+                               (let [prog (.current-program bank)
+                                     slot @current-slot*]
+                                 (.push-undo-state! bank-editor (format "Store Program %s" slot))
+                                 (.store! bank slot (.clone prog))
+                                 (.sync-ui! bank-editor)
+                                 (.status! bank-editor (format "Stored Program %s" slot))))
 
-        sb-prefix (let [cs (config/current-skin)]
-                    (cond (= cs "Twilight") :gray
-                          :default  (lnf/icon-prefix)))
-        sb-inc (sb/mini-icon-button tool-root [107 4] sb-prefix :up1 
-                                    :click-action (fn [& _](inc-prognum 1)))
-        sb-dec (sb/mini-icon-button tool-root [107 34] sb-prefix :down1
-                                    :click-action (fn [& _](dec-prognum 1)))
-        sb-inc-page (sb/mini-icon-button tool-root [137 4] sb-prefix :up2
-                                         :click-action (fn [& _](inc-prognum 8)))
-        sb-dec-page (sb/mini-icon-button tool-root [137 34] sb-prefix :down2
-                                         :click-action (fn [& _](dec-prognum 8)))
-        sb-store (sb/icon-button tool-root [170 10] sb-prefix :general :bankstore
-                                 :click-action store-program)
 
-        cpb (reify ProgramBar
+        dbar-name (let [db (sf/displaybar drw [x-name y-dbar] program-name-count)]
+                    (.display! db "CADEJO" false)
+                    db)
 
-              (widgets [this]
-                {:pan-main pan-main})
+        init-action (fn [& _]
+                      (.init-bank! bank-editor))
 
-              (widget [this key]
-                (or (get (.widgets this) key)
-                    (umsg/warning (format "ProgramBar does not have %s widget" key))))
+        
+        open-action (fn [& _]
+                      (.open-bank-dialog! bank-editor))
+        
+        save-action (fn [& _]
+                      (.save-bank-dialog bank-editor))
 
-              (sync-ui! [this]
-                (let [modified (.modified? bank)
-                      prog (.current-program bank)
-                      pname (clojure.string/upper-case (or (and prog (.program-name prog)) "---"))
-                      name-limit (min name-length (count pname))]
-                  (reset! prognum* (or (.current-slot bank) 0))
-                  (display-prognum false)
-                  (.display! dbar-name (subs pname 0 name-limit) false)
-                  (.render drawing))))
+
+        undo-action (fn [& _](.undo! bank-editor))
+        
+        redo-action (fn [& _](.redo! bank-editor))
+
+        syncfn (fn [] 
+                 (let [modified (.modified? bank)
+                       prog (.current-program bank)
+                       pname (clojure.string/upper-case (or (and prog (.program-name prog)) "---"))
+                       name-limit (min program-name-count (count pname))
+                       prognum (or (.current-slot bank) 0)]
+                   (.display! dbar-slot (format "%3d" prognum) false)
+                   (.display! dbar-name (subs pname 0 name-limit) false)
+                   (.render drw)))
 
         update-thread (proxy [Thread][]
-                             (run []
-                               (while true
-                                 (let [modified (.modified? bank)
-                                       current-color (.color modified-marker)]
-                                   (if modified
-                                     (.use-attributes! modified-marker :dirty)
-                                     (.use-attributes! modified-marker :clean))
-                                   (if (not (= (.color modified-marker) current-color))
-                                     (.render drawing))
-                                   (Thread/sleep update-period)))))]
-    (let [[bg inactive active alt] [(lnf/background)
-                                    (lnf/dbar-inactive)
-                                    (lnf/dbar-active)
-                                    (uc/complement (lnf/dbar-active))]]
-      (.colors! dbar-name inactive active)
-      (.colors! dbar-prognum inactive active)
-      (.setName update-thread "ProgramBar-update")
-      (.setPriority update-thread 1)
-      (.setDaemon update-thread true)
-      (.start update-thread)
-      cpb)))
+                          (run []
+                            (while true
+                              (.use-attributes! txt-modified (if (.modified? bank) :dirty :clean))
+                              (.render drw)
+                              (Thread/sleep update-period))))]
+
+    ;; slot increment buttons
+    (let [slot-action (fn [b _]
+                         (let [id (.get-property b :id)
+                               value (get {:up1 1, :up8 8, :down1 -1, :down8 -8} id)]
+                           (increment-slot value)
+                           (.display! dbar-slot (format "%3d" @current-slot*) true)))]
+         (sf/mini-chevron-up-button  drw [x-inc1 y-inc] :up1 slot-action)
+         (sf/mini-chevron-up2-button drw [x-inc8 y-inc] :up8 slot-action)
+         (sf/mini-chevron-down-button drw [x-inc1 y-dec] :down1 slot-action)
+         (sf/mini-chevron-down2-button drw [x-inc8 y-dec] :down8 slot-action))
+    (sf/program-store-button drw [x-store y-store] :progam-store program-store-action)
+    (sf/init-button drw [x-init y-init] :bank-init init-action)
+    (sf/open-button drw [x-open y-open] :bank-open open-action)
+    (sf/save-button drw [x-save y-save] :bank-save save-action)
+    (sf/undo-button drw [x-undo y-undo] :bank-undo undo-action)
+    (sf/redo-button drw [x-redo y-redo] :bank-redo redo-action)
+    (sf/label drw [x-slot y-dbar] "Program Slot" :size 5.0 :offset [0 50])
+    (sf/label drw [x-store y-store] "Store" :size 5.0 :offset [0 50])
+    (sf/label drw [x-init y-init] "Init" :size 5.0 :offset [12 55])
+    (sf/label drw [x-open y-open] "Open" :size 5.0 :offset [12 55])
+    (sf/label drw [x-save y-save] "Save" :size 5.0 :offset [12 55])
+    (sf/label drw [x-undo y-undo] "Undo" :size 5.0 :offset [12 55])
+    (sf/label drw [x-redo y-redo] "Redo" :size 5.0 :offset [12 55])
+    (.render drw)
+    (.setName update-thread "ProgramBar-update")
+    (.setPriority update-thread 1)
+    (.setDaemon update-thread true)
+    (.start update-thread)
+    (let [pbar {:pan-main (ss/border-panel :center (.canvas drw))
+                :drawing drw
+                :syncfn syncfn}]
+      (.set-program-bar! bank-editor pbar)
+      pbar))) 

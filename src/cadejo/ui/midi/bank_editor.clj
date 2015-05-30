@@ -3,6 +3,7 @@
 (ns cadejo.ui.midi.bank-editor
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.util.path :as path])
+  (:require [cadejo.ui.midi.program-bar :as progbar])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.overwrite-warning])
@@ -13,6 +14,8 @@
            javax.swing.SwingUtilities))
 
 (def ^:private program-count 128) 
+
+
 
 (defprotocol BankEditor
 
@@ -43,6 +46,8 @@
   (set-parent-editor! 
     [this parent])
 
+  (set-program-bar! [this pbar])
+
   (working
     [this flag])
 
@@ -62,6 +67,17 @@
   (instrument-editor
     [this]
     "Return instrument editor or nil")
+
+  (init-bank! [this])
+
+  (save-bank-dialog [this])
+
+  (open-bank-dialog! [this])
+  
+  (copy [this])
+
+  (paste [this])
+
 )
 
 (defn- format-program-cell [pnum programs]
@@ -76,35 +92,25 @@
       (swap! acc* (fn [n](conj n (format-program-cell p programs)))))
     @acc*))
 
-(defn bank-editor [bnk program-bar]
+(defn bank-editor [bnk]
   (let [parent* (atom nil)
         enabled* (atom true)
+        file-extension (.toLowerCase (name (.data-format bnk)))
         instrument-editor* (atom nil)
         enable-list-selection-listener* (atom true)
         undo-stack (cadejo.ui.util.undo-stack/undo-stack "Undo")
         redo-stack (cadejo.ui.util.undo-stack/undo-stack "Redo")
-        jb-init (factory/button "Init" :general :reset "Initialize bank")
-        jb-name (factory/button "Name" :edit :text "Edit bank name & remarks")
-        jb-open (factory/button "Open" :general :open "Open bank file")
-        jb-save (factory/button "Save" :general :save "Save bank file")
-        jb-undo (.get-button undo-stack)
-        jb-redo (.get-button redo-stack)
-        jb-help (factory/button "Help" :general :help "Program bank help")
-        tbar1 (ss/toolbar :floatable? false
-                          :items [jb-init jb-name 
-                                  jb-open jb-save
-                                  :separator jb-undo jb-redo 
-                                  :separator jb-help])
         lab-filename (ss/label :text "Bank File : "
                                :border (factory/bevel))
         pan-info (ss/grid-panel :rows 1
                                 :items [lab-filename])
-        pan-south (ss/grid-panel :columns 1
-                                 :items [pan-info])
+        ;; pan-south (ss/grid-panel :columns 1 
+        ;;                          :items [pan-info])
+        pan-south (ss/border-panel)
         lst-programs (ss/listbox :model (create-program-list bnk))
         pan-center (ss/horizontal-panel :items [(ss/scrollable lst-programs)]
                                         :border (factory/padding))
-        pan-main (ss/border-panel :north tbar1
+        pan-main (ss/border-panel ;:north tbar1
                                   :center pan-center
                                   :south pan-south)
         file-extension (.toLowerCase (name (.data-format bnk)))
@@ -113,12 +119,8 @@
                      (format "%s Bank" file-extension)
                      (fn [f] 
                        (path/has-extension? (.getAbsolutePath f) file-extension)))
-        widget-map {:jb-init jb-init
-                    :jb-name jb-name
-                    :jb-open jb-open
-                    :jb-save jb-save
-                    :jb-help jb-help
-                    :lab-filename lab-filename
+        program-bar* (atom nil)
+        widget-map {:lab-filename lab-filename
                     :list-programs lst-programs
                     :pan-main pan-main}
         bank-ed (reify BankEditor
@@ -126,12 +128,17 @@
                   (widgets [this] widget-map)
 
                   (widget [this key]
-                    (or (get widget-map key)
-                        (umsg/warning (format "BankEditor does not have %s widget" key))))
+                    (cond (= key :program-bar) @program-bar*
+                          :default
+                          (or (get widget-map key)
+                              (umsg/warning (format "BankEditor does not have %s widget" key)))))
 
                   (set-parent-editor! [this ed]
                     (reset! parent* ed))
                   
+                  (set-program-bar! [this pbar]
+                    (reset! program-bar* pbar))
+
                   (bank [this] bnk)
 
                   (performance [this]
@@ -162,13 +169,18 @@
                         (.warning! this "Nothing to Redo"))))
                   
                   (working [this flag]
-                    (.working @parent* flag))
+                    (and @parent*
+                         (.working @parent* flag)))
 
                   (status! [this msg]
-                    (.status! @parent* msg))
+                    (if @parent*
+                      (.status! @parent* msg)
+                      (umsg/message (format "BankEditor status %s"msg))))
 
                   (warning! [this msg]
-                    (.warning! @parent* msg))
+                    (if @parent*
+                      (.warning! @parent* msg)
+                      (umsg/warning (format "BankEditor %s" msg))))
 
                   (sync-ui! [this]
                     (if @enabled*
@@ -184,7 +196,7 @@
                         ;;   (catch Exception ex
                         ;;     (umsg/warning "Caught exception BankEditor.sync-ui!"
                         ;;                   "ensureIndexIsVisible")))
-                        (.sync-ui! program-bar)
+                        ((:syncfn @program-bar*))
                         (if @instrument-editor*
                           (.sync-ui! @instrument-editor*))
                         (reset! enable-list-selection-listener* true))))
@@ -196,8 +208,58 @@
                     (or @instrument-editor*
                         (do (.warning! this "Instrument editor not defined")
                             nil))) 
+
+                  (init-bank! [this]
+                    (.push-undo-state! this "Initialize Bank")
+                    (.init! bnk)
+                    (if @instrument-editor* (.init! @instrument-editor*))
+                    (.sync-ui! this)
+                    (.status! this "Initialized Bank"))
+
+                  (save-bank-dialog [this]
+                    (let [cancel (fn [& _] (.status! this "Bank Save Canceled"))
+                          success (fn [_ f]
+                                   (let [abs (path/append-extension (.getAbsolutePath f) file-extension)]
+                                     (if (cadejo.ui.util.overwrite-warning/overwrite-warning pan-main "Bank" abs)
+                                       (if (.write-bank bnk abs)
+                                         (do 
+                                           (ss/config! lab-filename :text (format "Bank File : '%s'" abs))
+                                           (.status! this (format "Bank Saved to '%s'" abs)))
+                                         (.warning! this (format "Can not save bank to '%s'" abs)))
+                                       (cancel))))
+                          dia (seesaw.chooser/choose-file
+                               :type (format "Save %s Bank" (name (.data-format bnk)))
+                               :multi? false
+                               :selection-mode :files-only
+                               :filters [file-filter]
+                               :remember-directory? true
+                               :success-fn success
+                               :cancel-fn cancel)]))
+                  
+                  (open-bank-dialog! [this]
+                    (let [cancel (fn [& _](.status! this "Bank Read Canceled"))
+                          success (fn [_ f]
+                                    (let [abs (.getAbsolutePath f)]
+                                      (.push-undo-state! this "Open Bank")
+                                      (if (.read-bank! bnk abs)
+                                        (do
+                                          (ss/config! lab-filename :text (format "Bank File : '%s'" abs))
+                                          (.sync-ui! this)
+                                          (.status! this (format "Read Bank File '%s'" abs)))
+                                        (.warning! this (format "Can not open '%s' as %s bank"
+                                                                abs (.data-format bnk))))))
+                          default-file (ss/config lab-filename :text)
+                          dia (seesaw.chooser/choose-file
+                               :type (format "Open %s Bank" file-extension)
+                               :dir default-file
+                               :multi? false
+                               :selection-mode :files-only
+                               :filters [file-filter]
+                               :remember-directory? true
+                               :success-fn success
+                               :cancel-fn cancel)]))
                   ) ;; end bank-ed
-        
+
         create-instrument-editor (fn []
                                    (println ";; Creating instrument editor ...")
                                    (.working bank-ed true)
@@ -214,6 +276,9 @@
                                             (catch NullPointerException ex
                                               (.warning! bank-ed "Instrument Editor not defined")))
                                           (.working bank-ed false))))))]
+    (reset! program-bar* (progbar/program-bar bank-ed))
+    ;(ss/config! pan-south :center (:pan-main @program-bar*))
+    (ss/config! pan-south :south pan-info)
     (.addListSelectionListener 
      lst-programs
      (proxy [ListSelectionListener][]
@@ -225,127 +290,12 @@
           @enable-list-selection-listener* ;; program-change
           (let [slot (.getSelectedIndex lst-programs)]
             (.recall bnk slot)
-            (.sync-ui! program-bar)
-            ;; (if @instrument-editor*
-            ;;   (let [ied @instrument-editor*
-            ;;         prog (.current-program bnk)]
-            ;;     (if prog
-            ;;       (do 
-            ;;         (.set-store-location! ied slot)
-            ;;         (.sync-ui! ied)
-            ;;         )) 
-                )
-
+            ((:syncfn @program-bar*))
+            )
+         
           :default                      ; do nothing
           nil)))) 
                                
-    (ss/listen jb-init :action (fn [_]
-                                 (.working bank-ed true)
-                                 (SwingUtilities/invokeLater
-                                  (proxy [Runnable][]
-                                    (run []
-                                      (let [ied (.instrument-editor bank-ed)]
-                                        (.push-undo-state! bank-ed "Initialize Bank")
-                                        (.init! bnk)
-                                        (if ied (.init! ied))
-                                        (.sync-ui! bank-ed)
-                                        (.status! bank-ed "Initialized Bank")
-                                        (.working bank-ed false)))))))
-
-    (ss/listen jb-name :action (fn [_]
-                                 (let [ref-name (.bank-name bnk)
-                                       ref-rem (.bank-remarks bnk)
-                                       tx-name (ss/text :multi-line? false
-                                                        :editable? true
-                                                        :text ref-name)
-                                       pan-name (ss/vertical-panel :items [tx-name]
-                                                                   :border (factory/title "Name"))
-                                       tx-remarks (ss/text :multi-line? true
-                                                           :editable? true
-                                                           :text ref-rem)
-                                       pan-remarks (ss/vertical-panel
-                                                    :items [(ss/scrollable tx-remarks)]
-                                                    :border (factory/title "Remarks"))
-                                       jb-cancel (ss/button :text "Cancel")
-                                       jb-save (ss/button :text "Save")
-                                       pan-main (ss/border-panel :north pan-name
-                                                                 :center pan-remarks)
-                                       dia (ss/dialog 
-                                            :title "Bank Name"
-                                            :content pan-main
-                                            :type :plain
-                                            :options [jb-save jb-cancel]
-                                            :default-option jb-save
-                                            :size [300 :by 300])]
-                                   (ss/listen jb-cancel :action (fn [_]
-                                                                  (ss/return-from-dialog dia false)))
-                                   (ss/listen jb-save :action (fn [_]
-                                                                (let [n (ss/config tx-name :text)
-                                                                      r (ss/config tx-remarks :text)]
-                                                                  (if (or (not (= n ref-name))(not (= r ref-rem)))
-                                                                    (do 
-                                                                      (.push-undo-state! bank-ed "Name/Remarks")
-                                                                      (.bank-name! bnk n)
-                                                                      (.bank-remarks! bnk r))))
-                                                                (ss/return-from-dialog dia true)))
-                                   (ss/show! dia))))
-    (ss/listen jb-save :action
-               (fn [_] 
-                 (let [ext file-extension
-                       success (fn [jfc f]
-                                 (let [abs (path/append-extension (.getAbsolutePath f) ext)]
-                                   (if (cadejo.ui.util.overwrite-warning/overwrite-warning
-                                        pan-main "Bank" abs)
-                                     (if (.write-bank bnk abs)
-                                       (do 
-                                         (ss/config! lab-filename :text (format "Bank File : '%s'" abs))
-                                         (.status! bank-ed "Saved Bank"))
-                                       (.warning! bank-ed (format "Can not save bank to \"%s\"" abs)))
-                                     (.status! bank-ed "Bank Save Canceled"))))
-                       cancel (fn [jfc]
-                                (.status! bank-ed "Bank Save Canceled"))
-                       ;default-file (ss/config lab-filename :text)
-                       dia (seesaw.chooser/choose-file
-                            :type (format "Save %s Bank" (name (.data-format bnk)))
-                            ;:dir default-file
-                            :multi? false
-                            :selection-mode :files-only
-                            :filters [file-filter]
-                            :remember-directory? true
-                            :success-fn success
-                            :cancel-fn cancel)] )))
-    
-    (ss/listen jb-open :action
-               (fn [_]
-                 (let [ext file-extension
-                       success (fn [jfc f]
-                                 (let [abs (.getAbsolutePath f)]
-                                   (.push-undo-state! bank-ed "Open bank")
-                                   (if (.read-bank! bnk abs)
-                                     (do 
-                                       (ss/config! lab-filename :text abs)
-                                       (.sync-ui! bank-ed)
-                                       (.status! bank-ed "Bank read"))
-                                     (.warning! bank-ed (format "Can not open \"%s\" as %s bank"
-                                                       abs (.data-format bnk))))))
-                       cancel (fn [jfc]
-                                (.status! bank-ed "Bank read canceled"))
-                       default-file (ss/config lab-filename :text)
-                       dia (seesaw.chooser/choose-file
-                            :type (format "Open %s Bank" ext)
-                            :dir default-file
-                            :multi? false
-                            :selection-mode :files-only
-                            :filters [file-filter]
-                            :remember-directory? true
-                            :success-fn success
-                            :cancel-fn cancel)] )))
-
-    (ss/listen jb-undo :action (fn [_](.undo! bank-ed)))
-
-    (ss/listen jb-redo :action (fn [_](.redo! bank-ed)))
    
-    (.putClientProperty jb-help :topic :bank-editor)
-    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     (.sync-ui! bank-ed)
     bank-ed))
