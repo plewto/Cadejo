@@ -199,9 +199,9 @@
                   (reset! current-skin* skin-name))
 
                 (displaybar-style! [this sty]
-                  (let [s (if (ucol/member? sty [nil :matrix :sixteen :basic])
+                  (let [s (if (ucol/member? sty [nil :matrix :sixteen :twilight :basic])
                             sty
-                            (umsg/warning (format "Invalid config displaybar-stykle %s  Using default." sty)))]
+                            (umsg/warning (format "Invalid config displaybar-style %s  Using default." sty)))]
                     (reset! displaybar-style* s)))
 
                 (displaybar-style [this]
@@ -435,7 +435,7 @@
 
 (load-gui! true)
 (initial-skin! "Twilight")
-(displaybar-style! :basic)    ; nil -> use lnf
+(displaybar-style! :twilight)    ; nil -> use lnf
 (enable-pp! false)
 (maximum-undo-count! 10)
 (warn-on-exit! false)

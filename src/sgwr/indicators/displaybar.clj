@@ -7,6 +7,7 @@
   (:require [sgwr.indicators.basic-cell :as basic])
   (:require [sgwr.indicators.dot-matrix :as matrix])
   (:require [sgwr.indicators.sixteen :as sixteen])
+  (:require [sgwr.indicators.twilight :as twilight])
   (:require [sgwr.util.color :as uc])
   (:require [sgwr.util.utilities :as utilities])
   (:import javax.swing.JOptionPane))
@@ -66,6 +67,7 @@
       (get {:basic basic/basic-cell
             :sixteen sixteen/cell-16
             16 sixteen/cell-16
+            :twilight twilight/twilight-cell
             :matrix matrix/matrix-cell}
            selector
            basic/basic-cell)))

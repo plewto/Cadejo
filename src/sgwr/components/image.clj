@@ -102,6 +102,12 @@
      (if parent (.set-parent! obj parent))
      obj)))
 
+
+(defn set-image! [iobj img-src]
+  (if img-src 
+    (.put-property! iobj :image (clone-buffered-image img-src))))
+
+
 (defn read-image [parent p0 filename & {:keys [id w h]
                                         :or {id nil
                                              w nil
