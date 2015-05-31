@@ -43,7 +43,6 @@
 
 (defn save-program 
   ([slot pname remarks data]
-   (println (format "DEBUG savre-program slot %s  name %s" slot pname))
    (let [prog (cadejo.midi.program/program pname remarks (col/alist->map data))]
      (integrity-test data)
      (.store! bank slot prog)))
