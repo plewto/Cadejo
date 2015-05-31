@@ -10,7 +10,7 @@
 (def min-noise-filter-bw 10)
 (def max-noise-filter-bw 100)
 (def max-delay-time 2.00)
-(def max-db 0)
+(def max-db 6)
 (def min-db -60)
 ;; (def max-keyscale-depth 12)             ; in db
 ;; (def min-keyscale-depth (* -1 max-keyscale-depth))

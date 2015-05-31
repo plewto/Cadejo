@@ -93,11 +93,11 @@
         param-right (keyword (format "fm%d-keyscale-right" op))
         dbar-freq (sf/displaybar drw (fm-pos :freq p0) 7)
         freq-edit-action (fn [& _]
-                           (let [prompt (format "FM%d Frequency (0 < f < 32)" op)]
+                           (let [prompt (format "FM%d Frequency (0 <= f < 32)" op)]
                              (dbar/displaybar-dialog
                               dbar-freq prompt
                               :validator (fn [q](let [f (math/str->float q)]
-                                                  (and f (< 0 f)(< f 32))))
+                                                  (and f (<= 0 f)(< f 32))))
                               :callback (fn [_](let [s (.current-display dbar-freq)
                                                      f (math/str->float s)]
                                                  (.set-param! ied param-freq f))))))
