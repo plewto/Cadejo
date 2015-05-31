@@ -88,6 +88,7 @@
                        pname (clojure.string/upper-case (or (and prog (.program-name prog)) "---"))
                        name-limit (min program-name-count (count pname))
                        prognum (or (.current-slot bank) 0)]
+                   (reset! current-slot* prognum)
                    (.display! dbar-slot (format "%3d" prognum) false)
                    (.display! dbar-name (subs pname 0 name-limit) false)
                    (.render drw)))
