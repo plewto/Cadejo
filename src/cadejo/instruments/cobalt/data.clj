@@ -3,9 +3,89 @@
 (ns cadejo.instruments.cobalt.data
   (:use [cadejo.instruments.cobalt.program]))
 
-;; ------------------------------------------------------  0 "Zero"
+;; ------------------------------------------------------   0
 ;;
-(save-program  0 "Zero"
+(save-program   0 "Zero"
+   (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
+           (port-time 0.000 :cc5  0.000)
+           (vibrato 4.147 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
+           (lfo1    5.529 :bleed 0.000 :cca  0.000 :prss  0.000 :delay 0.715)
+           (lfo2    0.922 :xenv  0.817 :cca  0.537 :ccb   0.000)
+           (lfo3    0.115 :xenv  0.000 :cca  0.000 :ccb   0.000)
+           (xenv :att  1.156 :dcy1 0.000 :dcy2 0.000 :rel 7.112
+                 :peak 1.000 :bp   1.000 :sus  1.000)
+           (penv :a0 +0.0000 :a1 +0.0000 :a2 +0.0000 :a3 +0.0000
+                 :t1 1.000   :t2 1.000   :t3 1.000   :cc9 0.000)
+           (op1 0.5000 0.333
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  +0
+                :env [:att  0.160 :dcy1 0.000 :dcy2 0.000 :rel 1.067
+                      :peak 1.000 :bp   1.000 :sus  1.000])
+           (fm1 2.0000 1.631 :bias +0.000 :env 0.659 :lag 0.000 :left 0   :right 0  )
+           (op2 2.5030 0.599
+                :lfo1  0.370 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  -6
+                :env [:att  0.116 :dcy1 0.000 :dcy2 0.000 :rel 0.309
+                      :peak 1.000 :bp   1.000 :sus  1.000])
+           (fm2 3.0000 0.000 :bias +0.000 :env 0.733 :lag 0.000 :left 9   :right -9 )
+           (op3 3.5000 0.429
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.984 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  -9
+                :env [:att  1.529 :dcy1 0.000 :dcy2 0.000 :rel 10.926
+                      :peak 1.000 :bp   1.000 :sus  1.000])
+           (fm3 1.0000 0.274 :bias +0.000 :env 0.993 :lag 0.000 :left 9   :right 0  )
+           (op4 3.5100 0.427
+                :lfo1  0.843 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  -9
+                :env [:att  0.000 :dcy1 2.602 :dcy2 0.000 :rel 5.205
+                      :peak 1.000 :bp   0.040 :sus  0.040])
+           (fm4 1.0000 0.000 :bias +0.000 :env 0.651 :lag 0.000 :left 0   :right -3 )
+           (op5 4.5000 0.333
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right -12
+                :env [:att  0.245 :dcy1 0.000 :dcy2 0.000 :rel 0.473
+                      :peak 1.000 :bp   1.000 :sus  1.000])
+           (fm5 2.0000 1.592 :bias +0.000 :env 0.578 :lag 0.000 :left 3   :right 0  )
+           (op6 5.5000 0.273
+                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right -12
+                :env [:att  2.578 :dcy1 0.000 :dcy2 0.000 :rel 0.948
+                      :peak 1.000 :bp   1.000 :sus  1.000])
+           (fm6 3.0000 0.444 :bias +0.000 :env 0.861 :lag 0.000 :left 0   :right 0  )
+           (noise 3.0000 1.000 :bw  11
+                  :lfo1 0.000   :cca 0.000 :vel 0.000 :prss 0.000
+                  :penv +0.0000 :key  60   :left   +0 :right  +0
+                  :env [:att  0.826 :dcy1 0.000 :dcy2 0.000 :rel 0.901
+                        :peak 1.000 :bp   1.000 :sus  1.000])
+           (noise2 5.0000 0.600 :bw  16 :lag 0.000)
+           (buzz 1.5000 0.200
+                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
+                 :penv +0.0000  :key  60 :left   +0 :right  +0
+                 :env [:att  1.366 :dcy1 0.000 :dcy2 0.000 :rel 1.506
+                       :peak 1.000 :bp   1.000 :sus  1.000])
+           (buzz-harmonics  22 :env -21 :cca   0 :hp   1 :hp<-env   0)
+           (lp-filter :freq [   50 :track  0 :env 0.612
+                             :prss 0.000 :cca 0.000 :ccb 0.000]
+                      :res [0.360 :cca +0.000 :ccb +0.000]
+                      :env [:att 2.349 :dcy 0.000 :rel 0.919 :sus 1.000]
+                      :mode +0.132)
+           (bp-filter :offset 3.000 :lag 0.000)
+           (fold      :wet 0.000 :gain  2 :cca  +0 :ccb  +0)
+           (delay1    :time [1.4468 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :amp  [-28    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :pan  [-0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :fb    +0.859 :xfb +0.045)
+           (delay2    :time [0.0002 :lfo2 0.000 :lfo3 0.000 :xenv 0.799]
+                      :amp  [-15    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :pan  [+0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :fb    +0.535 :xfb -0.258)
+           (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+
+
+
+;; ------------------------------------------------------  1 
+;;
+(save-program  1 "Hydrogen"
    (cobalt (enable   :noise)
            (port-time 0.000 :cc5  0.000)
            (vibrato 4.462 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -54,7 +134,7 @@
            (fm6 3.0000 0.000 :bias +0.000 :env 0.986 :lag 0.000 :left 6   :right 0  )
            (noise 8.0000 1.000 :bw  10
                   :lfo1 0.000   :cca 0.000 :vel 0.000 :prss 0.000
-                  :penv +0.0000 :key  60   :left   +0 :right  -6
+                  :penv +0.0000 :key  60   :left   +0 :right  0
                   :env [:att  0.538 :dcy1 0.213 :dcy2 0.000 :rel 2.501
                         :peak 1.000 :bp   1.000 :sus  1.000])
            (noise2 2.0000 1.000 :bw  10 :lag 0.000)
@@ -81,87 +161,11 @@
                       :fb    +0.567 :xfb +0.000)
            (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
-;; ------------------------------------------------------  1 One
-;;
-(save-program  1 "One"
-   (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
-           (port-time 0.000 :cc5  0.000)
-           (vibrato 4.147 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
-           (lfo1    5.529 :bleed 0.000 :cca  0.000 :prss  0.000 :delay 0.715)
-           (lfo2    0.922 :xenv  0.817 :cca  0.537 :ccb   0.000)
-           (lfo3    0.115 :xenv  0.000 :cca  0.000 :ccb   0.000)
-           (xenv :att  1.156 :dcy1 0.000 :dcy2 0.000 :rel 7.112
-                 :peak 1.000 :bp   1.000 :sus  1.000)
-           (penv :a0 +0.0000 :a1 +0.0000 :a2 +0.0000 :a3 +0.0000
-                 :t1 1.000   :t2 1.000   :t3 1.000   :cc9 0.000)
-           (op1 1.0000 0.333
-                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
-                :penv +0.0000  :key  60 :left   +0 :right  +0
-                :env [:att  0.975 :dcy1 0.000 :dcy2 0.000 :rel 1.067
-                      :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm1 2.0000 1.631 :bias +0.000 :env 0.659 :lag 0.000 :left 0   :right 0  )
-           (op2 5.0059 0.599
-                :lfo1  0.370 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
-                :penv +0.0000  :key  60 :left   +0 :right  -3
-                :env [:att  1.347 :dcy1 0.000 :dcy2 0.000 :rel 1.237
-                      :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm2 3.0000 0.000 :bias +0.000 :env 0.733 :lag 0.000 :left 9   :right -9 )
-           (op3 7.0000 0.429
-                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.984 :prss 0.000
-                :penv +0.0000  :key  60 :left   +0 :right  -3
-                :env [:att  1.529 :dcy1 0.000 :dcy2 0.000 :rel 10.926
-                      :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm3 1.0000 0.274 :bias +0.000 :env 0.993 :lag 0.000 :left 9   :right 0  )
-           (op4 7.0208 0.427
-                :lfo1  0.843 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
-                :penv +0.0000  :key  60 :left   +0 :right  -9
-                :env [:att  0.000 :dcy1 2.602 :dcy2 0.000 :rel 5.205
-                      :peak 1.000 :bp   0.040 :sus  0.040])
-           (fm4 1.0000 0.000 :bias +0.000 :env 0.651 :lag 0.000 :left 0   :right -3 )
-           (op5 9.0000 0.333
-                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
-                :penv +0.0000  :key  60 :left   +0 :right  -9
-                :env [:att  0.245 :dcy1 0.000 :dcy2 0.000 :rel 0.473
-                      :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm5 2.0000 1.592 :bias +0.000 :env 0.578 :lag 0.000 :left 3   :right 0  )
-           (op6 11.0000 0.273
-                :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
-                :penv +0.0000  :key  60 :left   +0 :right  -9
-                :env [:att  2.578 :dcy1 0.000 :dcy2 0.000 :rel 0.948
-                      :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm6 3.0000 0.444 :bias +0.000 :env 0.861 :lag 0.000 :left 0   :right 0  )
-           (noise 3.0000 1.000 :bw  11
-                  :lfo1 0.000   :cca 0.000 :vel 0.000 :prss 0.000
-                  :penv +0.0000 :key  60   :left   +0 :right  +0
-                  :env [:att  0.826 :dcy1 0.000 :dcy2 0.000 :rel 0.901
-                        :peak 1.000 :bp   1.000 :sus  1.000])
-           (noise2 5.0000 0.600 :bw  16 :lag 0.000)
-           (buzz 3.0000 1.000
-                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
-                 :penv +0.0000  :key  60 :left   +0 :right  +0
-                 :env [:att  1.366 :dcy1 0.000 :dcy2 0.000 :rel 1.506
-                       :peak 1.000 :bp   1.000 :sus  1.000])
-           (buzz-harmonics  22 :env -21 :cca   0 :hp   1 :hp<-env   0)
-           (lp-filter :freq [   50 :track  0 :env 0.612
-                             :prss 0.000 :cca 0.000 :ccb 0.000]
-                      :res [0.360 :cca +0.000 :ccb +0.000]
-                      :env [:att 2.349 :dcy 0.000 :rel 0.919 :sus 1.000]
-                      :mode +0.132)
-           (bp-filter :offset 3.000 :lag 0.000)
-           (fold      :wet 0.000 :gain  2 :cca  +0 :ccb  +0)
-           (delay1    :time [1.4468 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
-                      :amp  [-28    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
-                      :pan  [-0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
-                      :fb    +0.859 :xfb +0.045)
-           (delay2    :time [0.0002 :lfo2 0.000 :lfo3 0.000 :xenv 0.799]
-                      :amp  [-15    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
-                      :pan  [+0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
-                      :fb    +0.535 :xfb -0.258)
-           (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+
 
 ;; ------------------------------------------------------   2
 ;;
-(save-program   2 "Two"
+(save-program   2  "Helium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 4.804 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -237,9 +241,10 @@
                       :fb    +0.602 :xfb +0.196)
            (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
-;; ------------------------------------------------------  3 Three
+;; ------------------------------------------------------   3 'Lithium'
 ;;
-(save-program  3 "Three" "CCA -> filter cutoff"
+(save-program   3 "Lithium"
+   "CCA -> filter cutoff"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 6.178 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -315,9 +320,10 @@
                       :fb    -0.830 :xfb +0.093)
            (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
+
 ;; ------------------------------------------------------  4 Four
 ;;
-(save-program  4 "Four"
+(save-program  4 "Beryllium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 6.687 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -393,9 +399,9 @@
                       :fb    +0.640 :xfb -0.205)
            (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
-;; ------------------------------------------------------  5 Five
+;; ------------------------------------------------------   5 'Boron'
 ;;
-(save-program  5 "Five"
+(save-program   5 "Boron" "CCA -> Even harmonics"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 4.722 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -473,7 +479,7 @@
 
 ;; ------------------------------------------------------  6 Six
 ;;
-(save-program  6 "Six"
+(save-program  6 "Carbon"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 6.571 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -551,7 +557,7 @@
 
 ;; ------------------------------------------------------  7 "Seven"
 ;;
-(save-program  7 "Seven"
+(save-program  7 "Nitrogen"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 7.822 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -629,7 +635,7 @@
 
 ;; ------------------------------------------------------  8 Eight
 ;;
-(save-program  8 "Eight"
+(save-program  8 "Oxygen"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 5.122 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -707,7 +713,7 @@
 
 ;; ------------------------------------------------------  9 Nine
 ;;
-(save-program  9 "Nine"
+(save-program  9 "Oxygen"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 6.077 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -785,7 +791,7 @@
 
 ;; ------------------------------------------------------  9 Nine
 ;;
-(save-program  9 "Nine"
+(save-program  9 "Fluorine"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 4.530 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -861,9 +867,9 @@
                       :fb    +0.558 :xfb +0.254)
            (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
-;; ------------------------------------------------------  10 Ten
+ ;; ------------------------------------------------------  10 'Neon'
 ;;
-(save-program  10 "Ten"
+(save-program  10 "Neon"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 7.594 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -939,9 +945,10 @@
                       :fb    +0.842 :xfb -0.063)
            (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
+
 ;; ------------------------------------------------------  11 Eleven
 ;;
-(save-program  11 "Eleven"
+(save-program  11 "Sodium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 6.462 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1019,7 +1026,7 @@
 
 ;; ------------------------------------------------------  12 Twelve
 ;;
-(save-program  12 "Twelve"
+(save-program  12 "Magnesium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 5.546 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1093,13 +1100,13 @@
                       :amp  [-28    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :pan  [+0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :fb    +0.520 :xfb +0.000)
-           (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+           (amp   -12   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
 
 
 ;; ------------------------------------------------------  13 Thirteen
 ;;
-(save-program  13 "Thirteen"
+(save-program  13 "Aluminium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 7.927 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1177,7 +1184,7 @@
 
 ;; ------------------------------------------------------  14 Fourteen
 ;;
-(save-program  14 "Fourteen"
+(save-program  14 "Silicon"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 4.127 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1255,85 +1262,86 @@
 
 ;; ------------------------------------------------------  15 Fifteen
 ;;
-(save-program  15 "Fifteen"
-   (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
+(save-program  15 "Phosphorus" "CCA -> HArmonics, CCB -> Minor 3rd"
+    (cobalt (enable  1 2           :noise :buzz )
            (port-time 0.000 :cc5  0.000)
-           (vibrato 4.745 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
-           (lfo1    1.582 :bleed 0.000 :cca  0.000 :prss  0.000 :delay 0.536)
-           (lfo2    1.186 :xenv  0.000 :cca  0.000 :ccb   0.000)
-           (lfo3    0.099 :xenv  0.000 :cca  0.000 :ccb   0.000)
-           (xenv :att  0.006 :dcy1 0.000 :dcy2 0.000 :rel 0.086
+           (vibrato 7.000 :sens  0.087 :prss 0.000 :depth 0.000 :delay 3.000)
+           (lfo1    5.000 :bleed 0.000 :cca  0.000 :prss  0.000 :delay 0.000)
+           (lfo2    5.000 :xenv  0.000 :cca  0.000 :ccb   0.000)
+           (lfo3    1.000 :xenv  0.000 :cca  0.000 :ccb   0.000)
+           (xenv :att  0.000 :dcy1 0.000 :dcy2 0.000 :rel 0.000
                  :peak 1.000 :bp   1.000 :sus  1.000)
            (penv :a0 +0.0000 :a1 +0.0000 :a2 +0.0000 :a3 +0.0000
                  :t1 1.000   :t2 1.000   :t3 1.000   :cc9 0.000)
-           (op1 1.0000 0.253
+           (op1 1.5000 0.500
+                :lfo1  0.000 :cca 0.980 :ccb 0.000 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  +0
+                :env [:att  0.000 :dcy1 0.000 :dcy2 0.000 :rel 0.000
+                      :peak 1.000 :bp   1.000 :sus  1.000])
+           (fm1 1.0000 4.000 :bias +1.000 :env 1.000 :lag 1.360 :left 0   :right 0  )
+           (op2 1.2000 0.500
+                :lfo1  0.000 :cca 0.000 :ccb 0.987 :vel 0.000 :prss 0.000
+                :penv +0.0000  :key  60 :left   +0 :right  +0
+                :env [:att  0.000 :dcy1 0.000 :dcy2 0.000 :rel 0.000
+                      :peak 1.000 :bp   1.000 :sus  1.000])
+           (fm2 0.5000 5.000 :bias +2.000 :env 1.000 :lag 2.533 :left 0   :right 0  )
+           (op3 3.0000 0.333
                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
                 :penv +0.0000  :key  60 :left   +0 :right  +0
-                :env [:att  0.176 :dcy1 0.000 :dcy2 0.000 :rel 0.226
+                :env [:att  0.000 :dcy1 0.000 :dcy2 0.000 :rel 0.000
                       :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm1 2.0000 1.000 :bias +0.000 :env 0.848 :lag 0.209 :left 9   :right 0  )
-           (op2 1.9864 0.997
-                :lfo1  0.804 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
-                :penv +0.0000  :key  60 :left   +0 :right  +0
-                :env [:att  0.137 :dcy1 0.000 :dcy2 0.000 :rel 0.076
-                      :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm2 1.0000 1.000 :bias +0.000 :env 0.857 :lag 0.369 :left 9   :right 0  )
-           (op3 1.9891 1.000
+           (fm3 1.0000 1.000 :bias +0.000 :env 1.000 :lag 0.000 :left 0   :right 0  )
+           (op4 4.0000 0.250
                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
                 :penv +0.0000  :key  60 :left   +0 :right  +0
-                :env [:att  0.131 :dcy1 0.000 :dcy2 0.000 :rel 0.124
+                :env [:att  0.000 :dcy1 0.000 :dcy2 0.000 :rel 0.000
                       :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm3 1.0000 1.758 :bias +0.000 :env 0.608 :lag 0.575 :left 0   :right 0  )
-           (op4 1.9943 0.995
+           (fm4 1.0000 1.000 :bias +0.000 :env 1.000 :lag 0.000 :left 0   :right 0  )
+           (op5 4.0000 0.250
                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
                 :penv +0.0000  :key  60 :left   +0 :right  +0
-                :env [:att  0.177 :dcy1 0.000 :dcy2 0.000 :rel 0.105
+                :env [:att  0.000 :dcy1 0.000 :dcy2 0.000 :rel 0.000
                       :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm4 0.5000 0.208 :bias +0.000 :env 0.880 :lag 0.000 :left 0   :right 0  )
-           (op5 2.0000 0.989
+           (fm5 1.0000 1.000 :bias +0.000 :env 1.000 :lag 0.000 :left 0   :right 0  )
+           (op6 4.0000 0.250
                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
                 :penv +0.0000  :key  60 :left   +0 :right  +0
-                :env [:att  0.126 :dcy1 0.000 :dcy2 0.000 :rel 0.069
+                :env [:att  0.000 :dcy1 0.000 :dcy2 0.000 :rel 0.000
                       :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm5 1.0000 0.989 :bias +0.000 :env 0.764 :lag 0.422 :left 3   :right 0  )
-           (op6 3.0000 0.440
-                :lfo1  0.852 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
-                :penv +0.0000  :key  60 :left   +0 :right  +0
-                :env [:att  0.321 :dcy1 0.000 :dcy2 0.000 :rel 0.166
-                      :peak 1.000 :bp   1.000 :sus  1.000])
-           (fm6 2.0000 0.900 :bias +0.000 :env 0.597 :lag 0.000 :left 0   :right 0  )
-           (noise 2.0191 0.971 :bw  15
+           (fm6 1.0000 1.000 :bias +0.000 :env 1.000 :lag 0.000 :left 0   :right 0  )
+           (noise 6.0000 1.000 :bw  10
                   :lfo1 0.000   :cca 0.000 :vel 0.000 :prss 0.000
                   :penv +0.0000 :key  60   :left   +0 :right  +0
-                  :env [:att  0.142 :dcy1 0.000 :dcy2 0.000 :rel 2.732
+                  :env [:att  0.000 :dcy1 0.000 :dcy2 0.000 :rel 1.000
                         :peak 1.000 :bp   1.000 :sus  1.000])
-           (noise2 4.0000 0.247 :bw  18 :lag 0.277)
-           (buzz 1.9864 0.000
-                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.156 :prss 0.000
+           (noise2 1.0000 1.000 :bw  10 :lag 2.133)
+           (buzz 0.5000 1.000
+                 :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
                  :penv +0.0000  :key  60 :left   +0 :right  +0
-                 :env [:att  0.181 :dcy1 0.000 :dcy2 0.000 :rel 0.396
+                 :env [:att  0.000 :dcy1 0.000 :dcy2 0.000 :rel 0.000
                        :peak 1.000 :bp   1.000 :sus  1.000])
-           (buzz-harmonics   7 :env  19 :cca   0 :hp   1 :hp<-env   5)
-           (lp-filter :freq [  161 :track  2 :env 0.339
+           (buzz-harmonics   3 :env   0 :cca  60 :hp   1 :hp<-env   0)
+           (lp-filter :freq [10000 :track  0 :env 0.000
                              :prss 0.000 :cca 0.000 :ccb 0.000]
-                      :res [0.844 :cca +0.000 :ccb +0.000]
-                      :env [:att 0.177 :dcy 0.000 :rel 0.324 :sus 1.000]
+                      :res [0.000 :cca +0.000 :ccb +0.000]
+                      :env [:att 0.000 :dcy 0.000 :rel 0.000 :sus 1.000]
                       :mode -1.000)
            (bp-filter :offset 1.000 :lag 0.000)
-           (fold      :wet 0.000 :gain  2 :cca  +0 :ccb  +0)
-           (delay1    :time [1.6859 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
-                      :amp  [-48    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+           (fold      :wet 0.613 :gain  4 :cca  +0 :ccb  +0)
+           (delay1    :time [1.0000 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :amp  [-60    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :pan  [-0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
-                      :fb    +0.879 :xfb +0.082)
-           (delay2    :time [0.0007 :lfo2 0.000 :lfo3 0.781 :xenv 0.000]
-                      :amp  [-48    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :fb    +0.500 :xfb +0.000)
+           (delay2    :time [0.7500 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
+                      :amp  [-60    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :pan  [+0.700 :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
-                      :fb    +0.733 :xfb -0.072)
-           (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+                      :fb    +0.500 :xfb +0.000)
+           (amp   -9   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+
 
 ;; ------------------------------------------------------  16 Sixteen
 ;;
-(save-program  16 "Sixteen"
+(save-program  16 "Sulfur"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 4.207 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1411,7 +1419,7 @@
 
 ;; ------------------------------------------------------  17 Seventeen
 ;;
-(save-program  17 "Seventeen"
+(save-program  17 "Chlorine"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 5.348 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1489,7 +1497,7 @@
 
 ;; ------------------------------------------------------  18 Eighteen
 ;;
-(save-program  18 "Eighteen"
+(save-program  18 "Argon"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 5.059 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1563,11 +1571,11 @@
                       :amp  [-18    :lfo2 0.000 :lfo3 0.000 :xenv 0.651]
                       :pan  [+0.700 :lfo2 0.405 :lfo3 0.000 :xenv 0.000]
                       :fb    +0.702 :xfb +0.190)
-           (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+           (amp   -12   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
 ;; ------------------------------------------------------  19 Nineteen
 ;;
-(save-program  19 "Nineteen"
+(save-program  19 "Potassium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 7.821 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1645,7 +1653,7 @@
 
 ;; ------------------------------------------------------  20 
 ;;
-(save-program  20 "Twenty"
+(save-program  20 "Calcium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 6.227 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1723,10 +1731,10 @@
 
 ;; ------------------------------------------------------  21
 ;;
-(save-program  21 "Twenty One"
+(save-program  21 "Scandium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
-           (vibrato 4.370 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
+           (vibrato 6.555 :sens  0.05 :prss 0.000 :depth 0.000 :delay 2.000)
            (lfo1    0.546 :bleed 0.000 :cca  0.000 :prss  0.000 :delay 0.900)
            (lfo2    1.092 :xenv  0.972 :cca  0.000 :ccb   0.000)
            (lfo3    0.046 :xenv  0.000 :cca  0.000 :ccb   0.000)
@@ -1801,7 +1809,7 @@
 
 ;; ------------------------------------------------------  22
 ;;
-(save-program  22 "Twenty Two"
+(save-program  22 "Titanium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 6.197 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1879,8 +1887,7 @@
 
 ;; ------------------------------------------------------   23
 ;;
-(save-program   23 "Twenty Three"
-   "Randomly generated"
+(save-program   23 "Vanadium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 5.679 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -1954,11 +1961,11 @@
                       :amp  [-14    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :pan  [+0.700 :lfo2 0.000 :lfo3 0.520 :xenv 0.000]
                       :fb    +0.827 :xfb -0.360)
-           (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+           (amp   0   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
  ;; ------------------------------------------------------   24 
 ;;
-(save-program  24 "Twenty Four"
+(save-program  24 "Chromium"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 4.030 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -2032,11 +2039,11 @@
                       :amp  [ -7    :lfo2 0.000 :lfo3 0.000 :xenv 0.000]
                       :pan  [+0.700 :lfo2 0.000 :lfo3 0.583 :xenv 0.000]
                       :fb    +0.813 :xfb +0.000)
-           (amp   -6   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
+           (amp   -9   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
 ;; ------------------------------------------------------   25
 ;;
-(save-program   25 "Twenty Five"
+(save-program   25 "Manganese"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 6.163 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -2115,8 +2122,7 @@
 
 ;; ------------------------------------------------------   26
 ;;
-(save-program   26 "Twenty Six"
-   "Randomly generated"
+(save-program   26 "Iron"
    (cobalt (enable  1 2    4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 4.415 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -2196,7 +2202,7 @@
 
 ;; ------------------------------------------------------   27
 ;;
-(save-program   27 "Twenty Seven"
+(save-program   27 "Cobalt"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 5.326 :sens  0.038 :prss 0.000 :depth 0.427 :delay 2.000)
@@ -2275,7 +2281,7 @@
 
 ;; ------------------------------------------------------   28 
 ;;
-(save-program   28 "Twenty Eight"
+(save-program   28 "Nickel"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 5.154 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -2353,7 +2359,7 @@
 
  ;; ------------------------------------------------------   29
 ;;
-(save-program   29 "Twenty Nine"
+(save-program   29 "Copper"
    (cobalt (enable  1 2 3  4 5 6  :noise :buzz )
            (port-time 0.000 :cc5  0.000)
            (vibrato 5.037 :sens  0.010 :prss 0.000 :depth 0.000 :delay 2.000)
@@ -2431,7 +2437,7 @@
 
 ;; ------------------------------------------------------   30
 ;;
-(save-program   30 "Thirty"
+(save-program   30 "Zinc"
    (cobalt (enable  1 2 3         :noise  )
            (port-time 0.000 :cc5  0.000)
            (vibrato 7.000 :sens  0.010 :prss 0.000 :depth 0.000 :delay 3.000)
@@ -2508,3 +2514,93 @@
            (amp   -9   :dry  +0 :dry-pan +0.000 :cc7 0.000)))
 
  
+
+;;  mark31   Gallium
+;;  mark32   Germanium
+;;  mark33   Arsenic
+;;  mark34   Selenium
+;;  mark35   Bromine
+;;  mark36   Krypton
+;;  mark37   Rubidium
+;;  mark38   Strontium
+;;  mark39   Yttrium
+;;  mark40   Zirconium
+;;  mark41   Niobium
+;;  mark42   Molybdenum
+;;  mark43   Technetium
+;;  mark44   Ruthenium
+;;  mark45   Rhodium
+;;  mark46   Palladium
+;;  mark47   Silver
+;;  mark48   Cadmium
+;;  mark49   Indium
+;;  mark50   Tin
+;;  mark51   Antimony
+;;  mark52   Tellurium
+;;  mark53   Iodine
+;;  mark54   Xenon
+;;  mark55   Caesium
+;;  mark56   Barium
+;;  mark57   Lanthanum
+;;  mark58   Cerium
+;;  mark59   Praseodymium
+;;  mark60   Neodymium
+;;  mark61   Promethium
+;;  mark62   Samarium
+;;  mark63   Europium
+;;  mark64   Gadolinium
+;;  mark65   Terbium
+;;  mark66   Dysprosium
+;;  mark67   Holmium
+;;  mark68   Erbium
+;;  mark69   Thulium
+;;  mark70   Ytterbium
+;;  mark71   Lutetium
+;;  mark72   Hafnium
+;;  mark73   Tantalum
+;;  mark74   Tungsten
+;;  mark75   Rhenium
+;;  mark76   Osmium
+;;  mark77   Iridium
+;;  mark78   Platinum
+;;  mark79   Gold
+;;  mark80   Mercury
+;;  mark81   Thallium
+;;  mark82   Lead
+;;  mark83   Bismuth
+;;  mark84   Polonium
+;;  mark85   Astatine
+;;  mark86   Radon
+;;  mark87   Francium
+;;  mark88   Radium
+;;  mark89   Actinium
+;;  mark90   Thorium
+;;  mark91   Protactinium
+;;  mark92   Uranium
+;;  mark93   Neptunium
+;;  mark94   Plutonium
+;;  mark95   Americium
+;;  mark96   Curium
+;;  mark97   Berkelium
+;;  mark98   Californium
+;;  mark99   Einsteinium
+;;  mark100  Fermium
+;;  mark101  Mendelevium
+;;  mark102  Nobelium
+;;  mark103  Lawrencium
+;;  mark104  Rutherfordium
+;;  mark105  Dubnium
+;;  mark106  Seaborgium
+;;  mark107  Bohrium
+;;  mark108  Hassium
+;;  mark109  Meitnerium
+;;  mark110  Darmstadtium
+;;  mark111  Roentgenium
+;;  mark112  Copernicium
+;;  mark113  Ununtrium
+;;  mark114  Flerovium
+;;  mark115  Ununpentium
+;;  mark116  Livermorium
+;;  mark117  Ununseptium
+;;  mark118  Ununoctium
+
