@@ -43,13 +43,13 @@
           :perc2 (flatten [:adsr  :addsr (repeat 6 :perc)])
           :perc3 [:perc  :perc2]}))
 
-(def p-env-style-asr    (atom 0.16))
-(def p-env-style-adsr   (atom 0.16))
-(def p-env-style-addsr  (atom 0.16))
-(def p-env-style-aadsr  (atom 0.00))
-(def p-env-style-perc   (atom 0.16))
-(def p-env-style-perc2  (atom 0.00))
-(def p-env-style-perc3  (atom 0.00))
+(def p-env-style-asr*       (atom 0.16))
+(def p-env-style-adsr*      (atom 0.16))
+(def p-env-style-addsr*     (atom 0.16))
+(def p-env-style-aadsr*     (atom 0.00))
+(def p-env-style-perc*      (atom 0.16))
+(def p-env-style-perc2*     (atom 0.00))
+(def p-env-style-perc3*     (atom 0.00))
 (def p-env-alternate-style* (atom 0.10))
 
 
@@ -127,10 +127,10 @@
 ; ---------------------------------------------------------------------- 
 ;                                  Filter
 
-(def p-filter-bypass   (atom 0.20))
-(def p-filter-lowpass  (atom 0.30))
-(def p-filter-mixed    (atom 0.40))
-(def p-filter-bandpass (atom 0.00))
+(def p-filter-bypass*   (atom 0.20))
+(def p-filter-lowpass*  (atom 0.30))
+(def p-filter-mixed*    (atom 0.40))
+(def p-filter-bandpass* (atom 0.00))
 
 
 (def p-filter-cca* (atom 0.3))

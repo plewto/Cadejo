@@ -88,13 +88,13 @@
 
 (defn- build-env-style-selection-list []
   (reset! env-style-selection-list* 
-          (flatten [(repeat (* 100 @config/p-env-style-asr) :asr)
-                    (repeat (* 100 @config/p-env-style-adsr) :adsr)
-                    (repeat (* 100 @config/p-env-style-addsr) :addsr)
-                    (repeat (* 100 @config/p-env-style-aadsr) :aadsr)
-                    (repeat (* 100 @config/p-env-style-perc) :perc)
-                    (repeat (* 100 @config/p-env-style-perc2) :perc2)
-                    (repeat (* 100 @config/p-env-style-perc3) :perc3)])))
+          (flatten [(repeat (* 100 @config/p-env-style-asr*) :asr)
+                    (repeat (* 100 @config/p-env-style-adsr*) :adsr)
+                    (repeat (* 100 @config/p-env-style-addsr*) :addsr)
+                    (repeat (* 100 @config/p-env-style-aadsr*) :aadsr)
+                    (repeat (* 100 @config/p-env-style-perc*) :perc)
+                    (repeat (* 100 @config/p-env-style-perc2*) :perc2)
+                    (repeat (* 100 @config/p-env-style-perc3*) :perc3)])))
 
 (build-env-style-selection-list)
 

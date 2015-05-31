@@ -6,10 +6,10 @@
 (def ^:private coin math/coin)
 
 (defn build-mode-selection-list []
-  (flatten [(repeat (* 100 @config/p-filter-bypass) :bypass)
-            (repeat (* 100 @config/p-filter-lowpass) :low-pass)
-            (repeat (* 100 @config/p-filter-mixed) :mixed)
-            (repeat (* 100 @config/p-filter-bandpass) :band-pass)]))
+  (flatten [(repeat (* 100 @config/p-filter-bypass*) :bypass)
+            (repeat (* 100 @config/p-filter-lowpass*) :low-pass)
+            (repeat (* 100 @config/p-filter-mixed*) :mixed)
+            (repeat (* 100 @config/p-filter-bandpass*) :band-pass)]))
 
 (defn pick-filter-mode []
   (rand-nth (build-mode-selection-list)))
