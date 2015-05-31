@@ -12,8 +12,8 @@
 (def max-delay-time 2.00)
 (def max-db 0)
 (def min-db -60)
-(def max-keyscale-depth 12)             ; in db
-(def min-keyscale-depth (* -1 max-keyscale-depth))
+;; (def max-keyscale-depth 12)             ; in db
+;; (def min-keyscale-depth (* -1 max-keyscale-depth))
 (def min-lfo-frequency 0.001)
 (def max-lfo-frequency 10)
 (def min-vibrato-sensitivity 0.0)
@@ -33,6 +33,9 @@
 (def noise-amp-boost 15)  ; db
 (def max-fm-lag 4.0)
 (def max-noise-lag max-fm-lag)
+
+
+(def allowd-keyscale-depths [-999 -18 -15 -12 -9 -6 -3 0 3 6 9 12])
 
 (def initial-cobalt-program 
   {:vibrato-frequency 7.0     ; 

@@ -172,6 +172,9 @@
             (param "pressure")(uclamp prss)]]
     rs))
 
+(defn- clamp-keyscale-depth [n]
+  (or (and (col/member? n con/allowd-keyscale-depths) n) 0))
+
 (defn op1 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
                          :or {lfo1 0.00
                               cca 0.00
@@ -189,8 +192,8 @@
             (op-amp-mod :op1 lfo1 cca ccb vel prss)
             (envn 1 env)
             :op1-keyscale-key (int (clamp key 0 127))
-            :op1-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
-            :op1-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
+            :op1-keyscale-left (clamp-keyscale-depth left)
+            :op1-keyscale-right (clamp-keyscale-depth right)
             :op1<-penv (sclamp penv)]]
     (flatten rs)))
 
@@ -205,8 +208,8 @@
             :fm1-amp (float amp)
             :fm1<-env (uclamp env)
             :fm1-lag (clamp lag 0.0 con/max-fm-lag)
-            :fm1-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
-            :fm1-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
+            :fm1-keyscale-left (clamp-keyscale-depth left)
+            :fm1-keyscale-right (clamp-keyscale-depth right)]]
     rs))
 
 (defn op2 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
@@ -226,8 +229,8 @@
             (op-amp-mod :op2 lfo1 cca ccb vel prss)
             (envn 2 env)
             :op2-keyscale-key (int (clamp key 0 127))
-            :op2-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
-            :op2-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
+            :op2-keyscale-left (clamp-keyscale-depth left)
+            :op2-keyscale-right (clamp-keyscale-depth right)
             :op2<-penv (sclamp penv)]]
     (flatten rs)))
 
@@ -242,8 +245,8 @@
             :fm2-amp (float amp)
             :fm2<-env (uclamp env)
             :fm2-lag (clamp lag 0.0 con/max-fm-lag)
-            :fm2-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
-            :fm2-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
+            :fm2-keyscale-left (clamp-keyscale-depth left)
+            :fm2-keyscale-right (clamp-keyscale-depth right)]]
     rs))
 
 (defn op3 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
@@ -263,8 +266,8 @@
             (op-amp-mod :op3 lfo1 cca ccb vel prss)
             (envn 3 env)
             :op3-keyscale-key (int (clamp key 0 127))
-            :op3-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
-            :op3-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
+            :op3-keyscale-left (clamp-keyscale-depth left)
+            :op3-keyscale-right (clamp-keyscale-depth right)
             :op3<-penv (sclamp penv)]]
     (flatten rs)))
 
@@ -279,8 +282,8 @@
             :fm3-amp (float amp)
             :fm3<-env (uclamp env)
             :fm3-lag (clamp lag 0.0 con/max-fm-lag)
-            :fm3-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
-            :fm3-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
+            :fm3-keyscale-left (clamp-keyscale-depth left)
+            :fm3-keyscale-right (clamp-keyscale-depth right)]]
     rs))
 
 (defn op4 [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
@@ -300,8 +303,8 @@
             (op-amp-mod :op4 lfo1 cca ccb vel prss)
             (envn 4 env)
             :op4-keyscale-key (int (clamp key 0 127))
-            :op4-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
-            :op4-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
+            :op4-keyscale-left (clamp-keyscale-depth left)
+            :op4-keyscale-right (clamp-keyscale-depth right)
             :op4<-penv (sclamp penv)]]
     (flatten rs)))
 
@@ -316,8 +319,8 @@
             :fm4-amp (float amp)
             :fm4<-env (uclamp env)
             :fm4-lag (clamp lag 0.0 con/max-fm-lag)
-            :fm4-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
-            :fm4-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
+            :fm4-keyscale-left (clamp-keyscale-depth left)
+            :fm4-keyscale-right (clamp-keyscale-depth right)]]
     rs))
 
 
@@ -338,8 +341,8 @@
             (op-amp-mod :op5 lfo1 cca ccb vel prss)
             (envn 5 env)
             :op5-keyscale-key (int (clamp key 0 127))
-            :op5-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
-            :op5-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
+            :op5-keyscale-left (clamp-keyscale-depth left)
+            :op5-keyscale-right (clamp-keyscale-depth right)
             :op5<-penv (sclamp penv)]]
     (flatten rs)))
 
@@ -354,8 +357,8 @@
             :fm5-amp (float amp)
             :fm5<-env (uclamp env)
             :fm5-lag (clamp lag 0.0 con/max-fm-lag)
-            :fm5-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
-            :fm5-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
+            :fm5-keyscale-left (clamp-keyscale-depth left)
+            :fm5-keyscale-right (clamp-keyscale-depth right)]]
     rs))
 
 
@@ -376,8 +379,8 @@
             (op-amp-mod :op6 lfo1 cca ccb vel prss)
             (envn 6 env)
             :op6-keyscale-key (int (clamp key 0 127))
-            :op6-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
-            :op6-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
+            :op6-keyscale-left (clamp-keyscale-depth left)
+            :op6-keyscale-right (clamp-keyscale-depth right)
             :op6<-penv (sclamp penv)]]
     (flatten rs)))
 
@@ -392,8 +395,8 @@
             :fm6-amp (float amp)
             :fm6<-env (uclamp env)
             :fm6-lag (clamp lag 0.0 con/max-fm-lag)
-            :fm6-keyscale-left (int (clamp left con/min-keyscale-depth con/max-keyscale-depth))
-            :fm6-keyscale-right (int (clamp right con/min-keyscale-depth con/max-keyscale-depth))]]
+            :fm6-keyscale-left (clamp-keyscale-depth left)
+            :fm6-keyscale-right (clamp-keyscale-depth right)]]
     rs))
 
 (defn buzz [detune amp & {:keys [lfo1 cca ccb vel prss env penv key left right]
@@ -413,8 +416,8 @@
             (op-amp-mod :bzz lfo1 cca ccb vel prss)
             (envn :bzz env)
             :bzz-keyscale-key (int (clamp key 0 127))
-            :bzz-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
-            :bzz-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
+            :bzz-keyscale-left (clamp-keyscale-depth left)
+            :bzz-keyscale-right (clamp-keyscale-depth right)
             :bzz<-penv (sclamp penv)]]
     (flatten rs)))
 
@@ -449,8 +452,8 @@
             (envn :nse env)
             :nse-bw (int (clamp bw con/min-noise-filter-bw con/max-noise-filter-bw)) 
             :nse-keyscale-key (int (clamp key 0 127))
-            :nse-keyscale-left (clamp left con/min-keyscale-depth con/max-keyscale-depth)
-            :nse-keyscale-right (clamp right con/min-keyscale-depth con/max-keyscale-depth)
+            :nse-keyscale-left (clamp-keyscale-depth left)
+            :nse-keyscale-right (clamp-keyscale-depth right)
             :nse<-penv (sclamp penv)]]
     (flatten rs)))
 

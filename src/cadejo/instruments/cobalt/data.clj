@@ -52,15 +52,12 @@
                 :env [:att  3.133 :dcy1 0.105 :dcy2 0.000 :rel 6.297
                       :peak 1.000 :bp   0.664 :sus  0.664])
            (fm6 3.0000 0.000 :bias +0.000 :env 0.986 :lag 0.000 :left 6   :right 0  )
-
            (noise 8.0000 1.000 :bw  10
                   :lfo1 0.000   :cca 0.000 :vel 0.000 :prss 0.000
                   :penv +0.0000 :key  60   :left   +0 :right  -6
                   :env [:att  0.538 :dcy1 0.213 :dcy2 0.000 :rel 2.501
                         :peak 1.000 :bp   1.000 :sus  1.000])
-
            (noise2 2.0000 1.000 :bw  10 :lag 0.000)
-
            (buzz 2.0000 1.000
                  :lfo1  0.000 :cca 0.000 :ccb 0.000 :vel 0.000 :prss 0.000
                  :penv +0.0000  :key  60 :left   +0 :right  +0
