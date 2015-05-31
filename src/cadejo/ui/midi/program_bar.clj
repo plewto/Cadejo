@@ -8,7 +8,8 @@
   (:require [cadejo.util.path :as path])
   (:require [cadejo.ui.util.overwrite-warning])
   (:require [clojure.string])
-  (:require [cadejo.ui.util.lnf :as lnf]))
+  (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [sgwr.components.line :as line]))
 
 (def ^:private width 1800)
 (def ^:private height 140)
@@ -123,6 +124,15 @@
     (sf/label drw [x-save y-save] "Save" :size 5.0 :offset [12 55])
     (sf/label drw [x-undo y-undo] "Undo" :size 5.0 :offset [12 55])
     (sf/label drw [x-redo y-redo] "Redo" :size 5.0 :offset [12 55])
+    (sf/label drw [x-init y-init] "Bank" :size 7.0 :offset [105 80])
+    (let [x1 x-init
+          x2 (- x-save 10)
+          x3 (+ x-save 50)
+          x4 (+ x-redo 43)
+          y1 (+ y-init 76)
+          c (lnf/minor-border)]
+      (line/line (.root drw) [x1 y1][x2 y1] :color c)
+      (line/line (.root drw) [x3 y1][x4 y1] :color c))
     (.render drw)
     (.setName update-thread "ProgramBar-update")
     (.setPriority update-thread 1)
