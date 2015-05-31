@@ -196,7 +196,7 @@
         [x0 y0] (if (= n 1) delay1-position delay2-position)
         pan-height (int (* 0.5 height))
         x-dbar (+ x0 70)
-        x-edit-time (+ x-dbar 190)
+        x-edit-time (+ x-dbar 220)
         x-init (+ x-edit-time 100)
         x-time-lfo2 (+ x0 70)
         x-time-lfo3 (+ x-time-lfo2 50)
