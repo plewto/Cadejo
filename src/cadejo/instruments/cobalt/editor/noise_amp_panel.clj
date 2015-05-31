@@ -1,5 +1,5 @@
 (ns cadejo.instruments.cobalt.editor.noise-amp-panel
-  (:require [cadejo.instruments.cobalt.constants :as con :reload true])
+  (:require [cadejo.instruments.cobalt.constants :as con])
   (:require [cadejo.instruments.cobalt.editor.op-amp-panel :as oap])
   (:require [cadejo.ui.util.sgwr-factory :as sf])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -9,8 +9,15 @@
   (:require [sgwr.tools.slider :as slider]))
 
 (def ^:private left-margin oap/left-margin)
+
 (def ^:private keyscale-states oap/keyscale-states)
+(def ^:private keyscale-depth-map oap/keyscale-depth-map)
+(def ^:private reverse-keyscale-depth-map oap/reverse-keyscale-depth-map)
+
+(def ^:private keynum-map oap/keynum-map)
+(def ^:private reverse-keynum-map oap/reverse-keynum-map)
 (def ^:private keyscale-key-states oap/keyscale-key-states)
+
 (def ^:private -amp-pos oap/amp-pos)
 
 (defn- amp-pos [item p0]
@@ -115,10 +122,14 @@
         s-bw1 (sf/vslider drw ied param-bw1 (amp-pos :bw1 p0) con/min-noise-filter-bw con/max-noise-filter-bw slider-action)
         s-bw2 (sf/vslider drw ied param-bw2 (amp-pos :bw2 p0) con/min-noise-filter-bw con/max-noise-filter-bw slider-action)
         s-lag (sf/vslider drw ied param-lag (amp-pos :lag p0) 0 con/max-noise-lag slider-action)
+         ;; keynum-action (fn [b _]
+         ;;                  (let [n (first (msb/current-multistate-button-state b))
+         ;;                        keynum (+ 36 (* n 12))]
+         ;;                    (.set-param! ied param-key keynum)))
          keynum-action (fn [b _]
-                          (let [n (first (msb/current-multistate-button-state b))
-                                keynum (+ 36 (* n 12))]
-                            (.set-param! ied param-key keynum)))
+                        (let [index (first (msb/current-multistate-button-state b))
+                              keynum (get reverse-keynum-map index)]
+                          (.set-param! ied param-key keynum)))
         msb-key (msb/text-multistate-button (.tool-root drw)
                                             (amp-pos :key p0)
                                             keyscale-key-states
@@ -126,11 +137,18 @@
                                             :click-action keynum-action
                                             :rim-color (lnf/button-border)
                                             :gap 6)
+        ;; keyscale-action (fn [b _]
+        ;;                   (let [index (first (msb/current-multistate-button-state b))
+        ;;                         db (- (* 3 index) 12)
+        ;;                         param (.get-property b :id)]
+        ;;                     (.set-param! ied param db)))
+        
         keyscale-action (fn [b _]
                           (let [index (first (msb/current-multistate-button-state b))
-                                db (- (* 3 index) 12)
+                                db (get reverse-keyscale-depth-map index)
                                 param (.get-property b :id)]
                             (.set-param! ied param db)))
+        
 
         msb-left (msb/text-multistate-button (.tool-root drw)
                                              (amp-pos :left p0)
@@ -156,13 +174,21 @@
             bw1 (param-bw1 dmap)
             bw2 (param-bw2 dmap)
             lag (param-lag dmap)
-            key (let [v (param-key dmap)]
-                  (math/clamp (- (int (/ v 12)) 3) 0 5))
-            left (let [v (param-left dmap)]
-                   (int (math/clamp (+ (* 1/3 v) 4) 0 8)))
-            right (let [v (param-right dmap)]
-                    (int (math/clamp (+ (* 1/3 v) 4) 0 8)))]
-        
+            ;; key (let [v (param-key dmap)]
+            ;;       (math/clamp (- (int (/ v 12)) 3) 0 5))
+            ;; left (let [v (param-left dmap)]
+            ;;        (int (math/clamp (+ (* 1/3 v) 4) 0 8)))
+            ;; right (let [v (param-right dmap)]
+            ;;         (int (math/clamp (+ (* 1/3 v) 4) 0 8)))
+
+            key-index (let [v (int (param-key dmap))]
+                        (get keynum-map v 4))
+            left-index (let [db (int (param-left dmap))
+                           index (get keyscale-depth-map db 0)]
+                         index)
+            right-index (let [db (int (param-right dmap))
+                              index (get keyscale-depth-map db 0)]
+                          index)]
         (.display! dbar-amp1 (format "%6.4f" (float a1)) false)
         (.display! dbar-amp2 (format "%6.4f" (float a2)) false)
         (slider/set-slider-value! s-lfo (float lfo) false)
@@ -172,6 +198,6 @@
         (slider/set-slider-value! s-lag (float lag) false)
         (slider/set-slider-value! s-bw1 (int bw1) false)
         (slider/set-slider-value! s-bw2 (int bw2) false)
-        (msb/set-multistate-button-state! msb-key key false)
-        (msb/set-multistate-button-state! msb-left left false)
-        (msb/set-multistate-button-state! msb-right right false)))))
+        (msb/set-multistate-button-state! msb-key key-index false)
+        (msb/set-multistate-button-state! msb-left left-index false)
+        (msb/set-multistate-button-state! msb-right right-index false)))))

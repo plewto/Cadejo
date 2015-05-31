@@ -215,14 +215,13 @@
           cca (param-cca dmap)
           ccb (param-ccb dmap)
           lfo (param-lfo dmap)
-          key (let [v (int (param-key dmap))]
+          key-index (let [v (int (param-key dmap))]
                 (get keynum-map v 4))
-
           left-index (let [db (int (param-left dmap))
-                           index (get keyscale-depth-map db 0)] ; default -99 db
+                           index (get keyscale-depth-map db 0)]
                        index)
           right-index (let [db (int (param-right dmap))
-                            index (get keyscale-depth-map db 0)] ; default -99 db
+                            index (get keyscale-depth-map db 0)]
                         index)]
       (slider/set-slider-value! s-vel (float vel) false)
       (slider/set-slider-value! s-prss (float prss) false)
@@ -230,7 +229,7 @@
       (slider/set-slider-value! s-ccb (float ccb) false)
       (slider/set-slider-value! s-lfo (float lfo) false)
       (.display! dbar-amp (format "%5.3f" (float amp)) false)
-      (msb/set-multistate-button-state! msb-key key false)
+      (msb/set-multistate-button-state! msb-key key-index false)
       (msb/set-multistate-button-state! msb-left left-index false)
       (msb/set-multistate-button-state! msb-right right-index false))))) 
       
