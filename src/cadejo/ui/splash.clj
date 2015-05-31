@@ -177,7 +177,8 @@
                               device (.getClientProperty button :device)
                               s (cadejo.midi.scene/scene device)
                               sed (.get-editor s)
-                              tb (ss/toggle :text (format "(%s %s)" name device) :group bgroup :user-data device)]
+                              tb (factory/toggle (format "(%s %s)" name device) :general :scene "Show scene" bgroup)]
+                          (ss/config! tb :user-data device)
                           (.frame! sed cframe)
                           (ss/config! button :enabled? false :selected? false)
                           (ss/config! jb-create :enabled? false)
@@ -237,7 +238,8 @@
         toolbar (let [tbar (ss/toolbar :floatable? false
                                        :orientation :horizontal)]
                       (.add (.widget cframe :toolbar) tbar)
-                  (ss/config! tbar :items [tb-server tb-new-scene toolbar-scenes :separator jb-config jb-skin :separator ])
+                  ;(ss/config! tbar :items [tb-server tb-new-scene toolbar-scenes :separator jb-config jb-skin :separator ])
+                      (ss/config! tbar :items [tb-server tb-new-scene toolbar-scenes :separator jb-skin :separator ])
                   tbar)
        
         pan-server (create-server-panel tb-server tb-new-scene cframe)

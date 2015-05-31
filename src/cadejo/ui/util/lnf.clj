@@ -698,7 +698,7 @@
                                              :handle-style  [:chevron-w :dash]
                                              :minor-tick    :medium
                                              :env-background :ultra-dark
-                                             :dbar-style    :sixteen
+                                             :dbar-style    :twilight
                                              :dbar-inactive :dark
                                              :dbar-active   :light))
 (def ^:private schemes 
