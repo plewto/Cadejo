@@ -1,4 +1,4 @@
-(defproject cadejo "0.2.1-SNAPSHOT"
+(defproject cadejo "0.3.0"
   :description "MIDI management tool for Overtone"
   :url "https://github.com/plewto/cadejo"
   :license {:name "Eclipse Public License"
