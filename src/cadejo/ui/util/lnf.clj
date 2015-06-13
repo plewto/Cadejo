@@ -695,7 +695,7 @@
                                              :background    :ultra-dark
                                              :passive-track :dark
                                              :active-track  :light
-                                             :handle-style  [:chevron-w :dash]
+                                             :handle-style  [:triangle]
                                              :minor-tick    :medium
                                              :env-background :ultra-dark
                                              :dbar-style    :twilight

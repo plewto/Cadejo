@@ -435,12 +435,12 @@
 
 (load-gui! true)
 (initial-skin! "Twilight")
-(displaybar-style! :twilight)    ; nil -> use lnf
-(enable-pp! false)
+(displaybar-style! nil)    ; nil -> use lnf
+(enable-pp! true)
 (maximum-undo-count! 10)
-(warn-on-exit! false)
+(warn-on-exit! true)
 (warn-on-file-overwrite! true)
-(warn-on-unsaved-data! true)
+(warn-on-unsaved-data! true)  ;; ISSUE not honored
 (enable-tooltips! true)
 (enable-button-text! true)
 (enable-button-icons! true)

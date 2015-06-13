@@ -168,7 +168,7 @@
                            (.status! @ed* (format "[:bend-range] -> %s" r))
                            (.put-property! (get-node) :bend-range r)))
         dbar (displaybar root (+ x0 17)(+ y0 92) 5)
-        b-edit (edit-button tool [(+ x0 130)(+ y0 92)] dbar 
+        b-edit (edit-button tool [(+ x0 140)(+ y0 92)] dbar 
                             "Bend Range in Cents +/- 2400"
                             range-validator
                             range-callback)
@@ -266,7 +266,7 @@
                         (let [r (math/str->float (.current-display dbar))]
                           (.status! @ed* (format "[:pressure-bias] -> %s" r))
                           (.put-property! (get-node) :pressure-bias r)))
-        b-edit-bias (edit-button tool [(+ x0 125)(+ y0 90)] dbar-bias
+        b-edit-bias (edit-button tool [(+ x0 135)(+ y0 90)] dbar-bias
                                  "Pressure Bias +/- 1.0"
                                  bias-validator
                                  bias-callback)
@@ -279,7 +279,7 @@
                          (let [r (math/str->float (.current-display dbar))]
                            (.status! @ed* (format "[:pressure-scale] -> %s" r))
                            (.put-property! (get-node) :pressure-scale r)))
-        b-edit-scale (edit-button tool [(+ x0 125)(+ y0 142)] dbar-scale
+        b-edit-scale (edit-button tool [(+ x0 135)(+ y0 142)] dbar-scale
                                   "Pressure Scale (0.0 4.0)"
                                   scale-validator
                                   scale-callback)
@@ -447,7 +447,7 @@
                        (dbar/displaybar-dialog dbar "Transpose -/+ 36"
                                                :validator validator
                                                :callback callback))
-        b-edit (edit-button tool [(+ x0 110)(+ y0 42)] dbar
+        b-edit (edit-button tool [(+ x0 120)(+ y0 42)] dbar
                             "Transpose -/+ 36"
                             validator
                             callback)
@@ -615,7 +615,7 @@
         callback (fn [dbar]   ;; ISSUE NOT IMPLEMENTED
                    (umsg/warning "properties-panel create-scale-selection-panel callback is NOT IMPLEMENTED")
                    )
-        b-edit (edit-button tool [(+ x0 290)(+ y0 40)] dbar
+        b-edit (edit-button tool [(+ x0 300)(+ y0 40)] dbar
                                      "Enter Tuning Tabel Name"
                                      validator
                                      callback)
