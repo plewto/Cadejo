@@ -49,20 +49,42 @@
     [this verbose]
     [this]))
 
-(deftype Channel [parent-scene children* properties* editor*]
+(deftype Channel [parent-scene* children* properties* editor*]
 
   cadejo.midi.node/Node
 
   (node-type [this] :channel)
 
-  (is-root? [this] (not parent-scene))
+  (is-root? [this] (not @parent-scene*))
 
   (parent [this]
-    parent-scene)
+    @parent-scene*)
 
   (children [this]
     (map second (seq @children*)))
 
+  (is-child? [this obj]
+    (ucol/member? obj @children*))
+
+  (add-child! [this obj]
+    (if (and (not (.is-child? this obj))
+             (= (.node-type obj) :performance))
+      (do
+        (.add-performance! this (.get-property obj :id) obj)
+        true)
+      false))
+
+  (remove-child! [this obj]
+    (if (.is-child? this obj)
+      (do
+        (.remove-performance! this obj)
+        (._orphan! obj)
+        true)
+      false))
+
+  (_orphan! [this]
+    (reset! parent-scene* nil))
+  
   (put-property! [this key value]
     (let [k (keyword key)]
       (swap! properties* (fn [n](assoc n k value)))
@@ -75,8 +97,8 @@
  
   (get-property [this key default]
     (let [value (or (get @properties* key)
-                    (and parent-scene
-                         (.get-property parent-scene key default))
+                    (and @parent-scene*
+                         (.get-property @parent-scene* key default))
                     default)]
       (if (= value :fail)
         (umsg/warning (format "Channel %s does not have property %s"
@@ -91,8 +113,8 @@
 
   (properties [this local-only]
     (set (concat (keys @properties*)
-                 (if (and parent-scene (not local-only))
-                   (.properties parent-scene)
+                 (if (and @parent-scene* (not local-only))
+                   (.properties @parent-scene*)
                    nil))))
   
   (properties [this]
@@ -174,13 +196,13 @@
    Channels are not typically created directly. Instead the parent Scene
    calls the function to create it's channels."
   (println (format "--> channel %02d" (cadejo.util.math/abs (- ci 16))))
-  (let [children (atom {})
-        properties (atom {:id (int ci)
+  (let [children* (atom {})
+        properties* (atom {:id (int ci)
                           :channel (int ci)})
         editor* (atom nil)
-        cobj (Channel. parent
-                       children
-                       properties
+        cobj (Channel. (atom parent)
+                       children*
+                       properties*
                        editor*)]
     (reset! editor* (load-editor cobj))
     cobj))

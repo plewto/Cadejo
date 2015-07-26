@@ -27,7 +27,7 @@
     "Returns true if this is a root node.
      A root node is a node whose parent is nil.")
 
-  (parent 
+  (parent
     [this]
     "Returns the parent of this node. If this is a root node return nil.")
 
@@ -35,6 +35,24 @@
     [this]
     "Returns a list of children node of this.")
 
+  (is-child? [this obj]
+    "Predicate returns true if obj is a child node of this")
+
+  (add-child! [this obj]
+    "Adds obj as a child node of this, but only if it is not already a child.
+     Returns Boolean true iff child was actually added to list.
+     Note some node types may restrict the type of node which may be added as a child.")
+
+  (remove-child! [this obj]
+    "Removes obj as a child node of this.
+     Returns Boolean true if obj actually removed.
+     Not all node types allow child nodes to be removed.")
+
+  (_orphan! [this]
+    "Set parent node to nil.
+     _orphan! should be called by remove-child!, do not call directly.")
+     
+  
   (put-property!
     [this key value]
     "Creates an assignment between key and value. 

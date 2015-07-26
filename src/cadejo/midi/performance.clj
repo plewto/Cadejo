@@ -30,7 +30,7 @@
     "Sets program bank for this.
      See cadejo.midi.program-bank/Bank")
 
-  (bank 
+  (bank
     [this]
     "Returns the program bank.")
  
@@ -221,7 +221,7 @@
 )
 
 
-(deftype Performance [parent-channel properties* bank* 
+(deftype Performance [parent-channel* properties* bank* 
                       control-buses* audio-buses* 
                       synths* voices* keymode
                       bend-handler*
@@ -233,12 +233,23 @@
 
     (node-type [this] :performance)
 
-    (is-root? [this] (not parent-channel))
+    (is-root? [this] (not @parent-channel*))
 
     (children [this] [])
 
-    (parent [this] parent-channel)
+    (is-child? [this obj] false)
 
+    (add-child! [this obj]
+      false)
+
+    (remove-child! [this obj]
+      false)
+    
+    (parent [this] @parent-channel*)
+
+    (_orphan! [this]
+      (reset! parent-channel* nil))
+    
     (put-property! [this key value]
       (let [k (keyword key)]
         (swap! properties* (fn [n](assoc n k value)))
@@ -251,8 +262,8 @@
 
     (get-property [this key default]
       (let [value (or (get @properties* key)
-                      (and parent-channel
-                           (.get-property parent-channel key default))
+                      (and @parent-channel*
+                           (.get-property @parent-channel* key default))
                       default)]
         (if (= value :fail)
           (umsg/warning (format "Performance %s does not have property %s"
@@ -267,8 +278,8 @@
 
     (properties [this local-only]
       (set (concat (keys @properties*)
-                   (if (and parent-channel (not local-only))
-                     (.properties parent-channel)
+                   (if (and @parent-channel* (not local-only))
+                     (.properties @parent-channel*)
                      nil))))
     
     (properties [this]
@@ -543,7 +554,7 @@
         pressure-handler* (atom nil)
         editor* (atom nil)
         csuite (cadejo.midi.cc.controller-suite/controller-suite)
-        pobj (Performance. parent-channel 
+        pobj (Performance. (atom parent-channel)
                            (atom {})    ; local properties
                            (atom bank)
                            (atom {})    ; control buses

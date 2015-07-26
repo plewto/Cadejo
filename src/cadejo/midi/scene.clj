@@ -5,6 +5,7 @@
   (:require [cadejo.config])
   (:require [cadejo.midi.node])
   (:require [cadejo.midi.channel])
+  ;(:require [cadejo.midi.input-port])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.string])
@@ -46,17 +47,33 @@
               be a list holding the channels to display.
      verbose - flag indicating if additional information is to be included."))
  
-(deftype Scene [channels* properties* sregistry editor*]
+(deftype Scene [parent* channels* properties* sregistry editor*]
     cadejo.midi.node/Node
 
     (node-type [this] :scene)
 
-    (is-root? [this] true)
+    (is-root? [this] (not @parent*))
 
-    (parent [this] nil)
+    (parent [this] @parent*)
 
     (children [this] @channels*)
 
+    (is-child? [this obj]
+      (ucol/member? obj @channels*))
+
+    (add-child! [this obj]
+      (if (and (not (.is-child? this obj))
+               (= (.node-type obj) :channel))
+        (do (swap! channels* (fn [q](conj q obj)))
+            true)
+        false))
+
+    (remove-child! [this obj]
+      false)
+
+    (_orphan! [this]
+      (reset! parent* nil))
+    
     (put-property! [this key value]
       (let [k (keyword key)]
         (swap! properties* (fn [n](assoc n k value)))
@@ -187,7 +204,8 @@
                            :pressure-scale 1.0
                            :pressure-bias 0})
         sregistry (cadejo.scale.registry/scale-registry)
-        sobj (Scene. channels* properties* sregistry editor*)]
+        parent* (atom nil)
+        sobj (Scene. parent* channels* properties* sregistry editor*)]
     (reset! editor* (load-editor sobj))
     (dotimes [ci channel-count]
       (let [cobj (cadejo.midi.channel/channel sobj ci)]
