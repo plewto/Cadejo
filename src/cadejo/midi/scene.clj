@@ -65,6 +65,7 @@
       (if (and (not (.is-child? this obj))
                (= (.node-type obj) :channel))
         (do (swap! channels* (fn [q](conj q obj)))
+            (.set-parent! obj this)
             true)
         false))
 
@@ -73,6 +74,9 @@
 
     (_orphan! [this]
       (reset! parent* nil))
+
+    (_set-parent! [this parent]
+      (reset! parent* parent))
     
     (put-property! [this key value]
       (let [k (keyword key)]

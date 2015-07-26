@@ -64,13 +64,14 @@
     (map second (seq @children*)))
 
   (is-child? [this obj]
-    (ucol/member? obj @children*))
+    (ucol/member? obj (vals @children*)))
 
   (add-child! [this obj]
     (if (and (not (.is-child? this obj))
              (= (.node-type obj) :performance))
       (do
         (.add-performance! this (.get-property obj :id) obj)
+        (._set-parent! obj this)
         true)
       false))
 
@@ -84,6 +85,9 @@
 
   (_orphan! [this]
     (reset! parent-scene* nil))
+
+  (_set-parent! [this parent]
+    (reset! parent-scene* parent))
   
   (put-property! [this key value]
     (let [k (keyword key)]

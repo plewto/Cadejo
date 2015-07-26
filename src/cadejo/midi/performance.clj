@@ -249,6 +249,9 @@
 
     (_orphan! [this]
       (reset! parent-channel* nil))
+
+    (_set-parent! [this parent]
+      (reset! parent-channel* parent))
     
     (put-property! [this key value]
       (let [k (keyword key)]

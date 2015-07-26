@@ -50,8 +50,12 @@
 
   (_orphan! [this]
     "Set parent node to nil.
-     _orphan! should be called by remove-child!, do not call directly.")
-     
+     _orphan! is called by remove-child!, do not call directly.")
+
+  (_set-parent! [this parent]
+    "Set parent nod for this.
+     _set-parent! is called by add-child! and should not be called directly.")
+  
   
   (put-property!
     [this key value]
