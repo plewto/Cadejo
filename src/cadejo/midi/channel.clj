@@ -40,11 +40,6 @@
     "Return child performance with matching id
      If no such performance exist display warning and return nil")
 
-  (handle-event 
-    [this event]
-    "Handle MIDI channel event.
-     event should represent a MIDI channel event for this channel.")
-
   (reset 
     [this]
     "reset all control buses to their initial value.")
@@ -103,6 +98,12 @@
   (properties [this]
     (.properties this false))
 
+  (event-dispatcher [this]
+    (fn [event]
+      (doseq [p (.children this)]
+        ((.event-dispatcher p) event))))
+      
+  
   (get-editor [this]
     @editor*)
 
@@ -137,10 +138,6 @@
     (or (get @children* id)
         (umsg/warning (format "Channel %s does not have performance %s"
                               (.get-property this :channel) id))))
-
-  (handle-event [this event]
-    (doseq [p (.children this)]
-      (.handle-event p event)))
 
   (reset [this]
     (doseq [p (.children this)]

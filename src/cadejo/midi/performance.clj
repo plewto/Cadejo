@@ -190,9 +190,6 @@
   (reset
     [this])
 
-  (handle-event 
-    [this event])
-
   (buses? 
     [this]
     "Diagnostic, display current control bus values")
@@ -276,6 +273,41 @@
     
     (properties [this]
       (.properties this false))
+
+    (event-dispatcher [this]
+      (fn [event]
+        (let [cmd (:command event)]
+        ;; :note-on
+        ;; :note-off
+        ;; :pitch-bend
+        ;; :channel-pressure
+        ;; :control-change
+        ;; :program-change
+        (cond (= cmd :note-on)
+              (.key-down keymode event)
+
+              (= cmd :note-off)
+              (.key-up keymode event)
+
+              (= cmd :pitch-bend)
+              (.handle-event @bend-handler* event)
+
+              (= cmd :channel-pressure)
+              (.handle-event @pressure-handler* event)
+                 
+              (= cmd :control-change)
+              (.handle-event controller-suite event)
+
+              ;; (= cmd :program-change)
+              ;; (.handle-event @bank* event)
+              (= cmd :program-change)
+              (.program-change @bank* event)
+
+              :default
+              ;; Should never see this!
+              (umsg/error "Performance.handle-event cond default"
+                          (format "channel = %s  command = %s"
+                                  (:channel event) cmd))))))
     
     (get-editor [this]
       @editor*)
@@ -422,40 +454,6 @@
       (.reset @bend-handler*)
       (.reset @pressure-handler*)
       (.program-change @bank* 0))
-
-    (handle-event [this event]
-      (let [cmd (:command event)]
-        ;; :note-on
-        ;; :note-off
-        ;; :pitch-bend
-        ;; :channel-pressure
-        ;; :control-change
-        ;; :program-change
-        (cond (= cmd :note-on)
-              (.key-down keymode event)
-
-              (= cmd :note-off)
-              (.key-up keymode event)
-
-              (= cmd :pitch-bend)
-              (.handle-event @bend-handler* event)
-
-              (= cmd :channel-pressure)
-              (.handle-event @pressure-handler* event)
-                 
-              (= cmd :control-change)
-              (.handle-event controller-suite event)
-
-              ;; (= cmd :program-change)
-              ;; (.handle-event @bank* event)
-              (= cmd :program-change)
-              (.program-change @bank* event)
-
-              :default
-              ;; Should never see this!
-              (umsg/error "Performance.handle-event cond default"
-                          (format "channel = %s  command = %s"
-                                  (:channel event) cmd)))) )
      
     (buses? [this]
       (println "Performance control bus state")

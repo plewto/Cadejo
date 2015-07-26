@@ -21,11 +21,6 @@
     [this ci]
     "Returns the channel object with MIDI channel ci 
      0 <= ci < 16, The result is an instance of cadejo.midi.channel/Channel")
-
-  (channel-dispatch 
-    [this]
-    "returns a function used to dispatch MIDI events to the appropriate 
-     Channel objects.")
   
   (scale-registry
     [this])
@@ -97,21 +92,22 @@
     (get-editor [this]
       @editor*)
 
-    SceneProtocol 
-
-    (channel [this ci]
-      (nth @channels* ci))
-
-    (channel-dispatch [this]
+    (event-dispatcher [this]
       (fn [event]
         (let [ci (:channel event)]
           (if ci
-            (let [chanobj (.channel this ci)]
-              (.handle-event chanobj event))
+            (let [chanobj (.channel this ci)
+                  channel-event-handler (.event-dispatcher chanobj)]
+              (channel-event-handler event))
             (do
               ;; FUTURE handle non-channel events here
               )
             ))))
+    
+    SceneProtocol 
+
+    (channel [this ci]
+      (nth @channels* ci))
 
     (scale-registry [this]
       sregistry)
@@ -196,6 +192,6 @@
     (dotimes [ci channel-count]
       (let [cobj (cadejo.midi.channel/channel sobj ci)]
         (swap! channels* (fn [n](conj n cobj)))))
-    (midi/midi-handle-events input-device (.channel-dispatch sobj))
+    (midi/midi-handle-events input-device (.event-dispatcher sobj))
     sobj))
 

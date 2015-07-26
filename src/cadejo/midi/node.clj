@@ -60,7 +60,6 @@
     "Return local value of property key
      Return nil if key has no local value")
 
-
   (properties 
     [this local-only]
     [this]
@@ -68,12 +67,16 @@
      is true only include assignments made directly in this node, otherwise
      include all assignments for all parents of this node.")
 
+  (event-dispatcher [this]
+    "Returns function to handle MIDI events. 
+     As of version 0.3.1.SNAPSHOT
+     (fn [event] ....)")
+  
   (get-editor
     [this]
     "Returns gut editor, if any, for this node.
      Returns nil if no editor is present")
 
   (rep-tree
-    [this depth])
+    [this depth]))
 
-  )
