@@ -5,7 +5,7 @@
   (:require [cadejo.config])
   (:require [cadejo.midi.node])
   (:require [cadejo.midi.channel])
-  ;(:require [cadejo.midi.input-port])
+  (:require [cadejo.midi.input-port :as mip])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.math :as math])
   (:require [cadejo.util.string])
@@ -182,38 +182,50 @@
     (cadejo.ui.midi.scene-editor/scene-editor scene)
     nil))
 
+(defn scene
+  "Creates new scene object optionally connected to MIDI input-port or 
+other node
+Without arguments returns a scene object without parent node.
 
+With single string argument a MIDI input port is created for the device
+named in the string. This input port serves as the parent node for the scene.
 
-;; ISSUE: 
-;; IllegalArgumentException if midi-input-device-name does not exists
-;; MidiUnavailableException if device in use
-;;
-(defn scene [midi-input-device-name]
-  "Creates new Scene object connected to specified MIDI input port. 
-   Either an IllegalArgumentException or a MidiUnavaliableException may be
-   thrown if for some reason the specified port can not be connected."
-  (println (format "Creating scene %s" midi-input-device-name))
-  (let [input-device (midi/midi-in midi-input-device-name)
-        channels* (atom [])
-        editor* (atom nil)
-        properties* (atom {:id (str midi-input-device-name)
-                           :velocity-map :linear
-                           :scale-id :eq-12
-                           :dbscale 0
-                           :transpose 0
-                           :key-range [0 127]
-                           :bend-curve :linear
-                           :bend-range 200
-                           :pressure-curve :linear
-                           :pressure-scale 1.0
-                           :pressure-bias 0})
-        sregistry (cadejo.scale.registry/scale-registry)
-        parent* (atom nil)
-        sobj (Scene. parent* channels* properties* sregistry editor*)]
-    (reset! editor* (load-editor sobj))
-    (dotimes [ci channel-count]
-      (let [cobj (cadejo.midi.channel/channel sobj ci)]
-        (swap! channels* (fn [n](conj n cobj)))))
-    (midi/midi-handle-events input-device (.event-dispatcher sobj))
-    sobj))
+If the argument is not a string it is assumed to be an appropriate node
+which serves as the parent node for scene.
+
+NOTE possible exceptions:  
+  IllegalArgumentException if midi-input-device-name does not exists
+  MidiUnavailableException if device in use"
+  ([parent-or-device-name]
+   (let [parent (cond (string? parent-or-device-name)
+                      (mip/midi-input-port parent-or-device-name)
+                      :default ;; assume arg is node
+                      parent-or-device-name)]
+     (println (format "Creating scene %s" (.get-property parent :id)))
+     (let [sobj (scene)]
+       (.put-property! sobj :id (.get-property parent :id))
+       (.add-child! parent sobj)
+       sobj)))
+  ([]
+   (let [channels* (atom [])
+         editor* (atom nil)
+         properties* (atom {:id :new-scene
+                            :velocity-map :linear
+                            :scale-id :eq-12
+                            :dbscale 0
+                            :transpose 0
+                            :key-range [0 127]
+                            :bend-curve :linear
+                            :bend-range 200
+                            :pressure-curve :linear
+                            :pressure-scale 1.0
+                            :pressure-bias 0})
+         sregistry (cadejo.scale.registry/scale-registry)
+         parent* (atom nil)
+         sobj (Scene. parent* channels* properties* sregistry editor*)]
+     (reset! editor* (load-editor sobj))
+     (dotimes [ci channel-count]
+       (let [cobj (cadejo.midi.channel/channel sobj ci)]
+         (swap! channels* (fn [n](conj n cobj)))))
+     sobj)))
 
