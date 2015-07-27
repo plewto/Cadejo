@@ -13,7 +13,8 @@
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.slider :as slider])
   (:require [sgwr.tools.multistate-button :as msb])
-  (:require [sgwr.util.color :as uc]))
+  (:require [sgwr.util.color :as uc])
+  (:require [seesaw.color :as ssc]))
 
 ; ---------------------------------------------------------------------- 
 ;                            Borders and Regions
@@ -312,11 +313,19 @@
                            :id id
                            :click-action action))
 
+(defn mini-delete-button [drw p0 id action]
+  (button/mini-icon-button (.tool-root drw) p0 (icon-prefix) :delete
+                           :id id
+                           :click-action action
+                           :rim-color (ssc/color 0 0 0 0)))
+
 (defn init-button [drw p0 id action]
   (button/icon-button (.tool-root drw) p0 (icon-prefix) :general :reset
                       :id id
                       :click-action action
                       :rim-color [0 0 0 0]))
+
+
 
 (defn name-edit-button [drw p0 id action]
   (button/icon-button (.tool-root drw) p0 (icon-prefix) :edit :text

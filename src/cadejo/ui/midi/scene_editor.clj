@@ -9,7 +9,8 @@
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [seesaw.core :as ss])
-  (:import java.awt.BorderLayout))
+  (:import java.awt.BorderLayout
+           java.awt.event.ActionListener))
 
 (def channel-count (cadejo.config/channel-count))
 
@@ -40,6 +41,9 @@
   (frame 
     [this])
 
+  (show-vkbd  ;; if defined make virtual keyboard visible
+    [this])
+  
   (show-hide-channel 
     [this id])
     
@@ -48,6 +52,7 @@
 
 (defn scene-editor [scene]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :scene scene false)
+        jb-vkbd (factory/icon-button :keyboard :virtual "Show Virtual Keyboard")
         pan-main (ss/border-panel)
         jb-channels (let [acc* (atom [])]
                       (dotimes [i channel-count]
@@ -58,7 +63,8 @@
                       @acc*)
         pan-channels  (ss/toolbar :orientation :horizontal
                                   :floatable? false
-                                  :items [(ss/grid-panel :rows 2 :items jb-channels
+                                  :items [jb-vkbd
+                                          (ss/grid-panel :rows 2 :items jb-channels
                                                          :border (factory/title "Channels"))])
         reged (cadejo.ui.scale.registry-editor/registry-editor scene)
 
@@ -77,7 +83,6 @@
                  :border (factory/padding))]
     (.add pan-main pan-channels BorderLayout/SOUTH)
     (.add pan-main pan-tab BorderLayout/CENTER)
-
     (.set-path-text! basic-ed (format "MIDI device %s" (.get-property scene :id)))
     (.set-icon! basic-ed (icon/logo "scene" :tiny))
     (let [sed (reify SceneEditor 
@@ -108,6 +113,12 @@
                 (frame! [this f]
                   (.frame! basic-ed f))
 
+                (show-vkbd [this]
+                  (let [vkbd (.get-property scene :vkbd)]
+                    (if vkbd
+                      ((:show (.get-editor vkbd)))
+                      (.status this "Virtual keyboard not defined"))))
+                
                 (show-hide-channel [this id]
                   (let [cobj (.channel scene id)
                         ced (.get-editor cobj)
@@ -137,4 +148,7 @@
                                 (let [src (.getSource ev)
                                       cid (.getClientProperty src :channel)]
                                   (.show-hide-channel sed cid)))))
+      (.addActionListener jb-vkbd (proxy [ActionListener][]
+                                    (actionPerformed [_] (.show-vkbd sed))))
+      
       sed)))

@@ -12,7 +12,9 @@
   (:require [cadejo.util.user-message :as umsg])  
   (:require [cadejo.scale.registry])
   (:require [cadejo.ui.midi.scene-editor])
+  (:require [cadejo.ui.vkbd :as vkbd])
   (:require [overtone.midi :as midi]))
+
 
 (def channel-count (cadejo.config/channel-count))
 
@@ -197,14 +199,19 @@ NOTE possible exceptions:
   IllegalArgumentException if midi-input-device-name does not exists
   MidiUnavailableException if device in use"
   ([parent-or-device-name]
-   (let [parent (cond (string? parent-or-device-name)
-                      (mip/midi-input-port parent-or-device-name)
-                      :default ;; assume arg is node
-                      parent-or-device-name)]
-     (println (format "Creating scene %s" (.get-property parent :id)))
-     (let [sobj (scene)]
-       (.put-property! sobj :id (.get-property parent :id))
-       (.add-child! parent sobj)
+   (let [in-port (cond (string? parent-or-device-name)
+                       (mip/midi-input-port parent-or-device-name)
+
+                       (= nil parent-or-device-name)
+                       nil 
+
+                       :default ;; assume arg is node
+                       parent-or-device-name)]
+     (println (format "Creating scene %s" (.get-property in-port :id)))
+     (let [sobj (scene)
+           vkbd (vkbd/vkbd in-port sobj)]
+       (.put-property! sobj :id (.get-property in-port :id))
+       (.put-property! sobj :vkbd vkbd)
        sobj)))
   ([]
    (let [channels* (atom [])
