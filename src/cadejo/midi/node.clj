@@ -27,6 +27,10 @@
     "Returns true if this is a root node.
      A root node is a node whose parent is nil.")
 
+  (find-root
+    [this]
+    "Returns the root node for tree to which this node belongs")
+  
   (parent
     [this]
     "Returns the parent of this node. If this is a root node return nil.")

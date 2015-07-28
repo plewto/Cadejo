@@ -235,6 +235,11 @@
 
     (is-root? [this] (not @parent-channel*))
 
+    (find-root [this]
+      (if (.is-root? this)
+        this
+        (.find-root (.parent this))))
+    
     (children [this] [])
 
     (is-child? [this obj] false)

@@ -22,7 +22,7 @@
     (stack/clear-stack keystack*))
   
   (key-down [this event]
-    (let [keynum (:data1 event)]
+    (let [keynum (:note event)]
       (if (.key-in-range? @parent* keynum)
         (let [xkeynum (min (max (+ keynum (.transpose @parent*)) 0) 127)
               dbscale (.db-scale @parent*)
@@ -37,7 +37,7 @@
                            (:channel event) keynum vel freq)))))))
 
   (key-up [this event]
-    (let [keynum (:data1 event)]
+    (let [keynum (:note event)]
       (if (.key-in-range? @parent* keynum)
         (let [synths (concat (.synths @parent*)(.voices @parent*))]
            (stack/stack-pop keystack* keynum)

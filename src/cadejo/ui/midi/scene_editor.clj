@@ -141,7 +141,8 @@
                         (ss/config! jb :text (format "%02d" chan)))
                       (.sync-ui! (.get-editor cobj))))
                   (.sync-ui! reged)
-                  (ss/config! txt-tree :text (.rep-tree scene 0))
+                                        ;(ss/config! txt-tree :text (.rep-tree scene 0))
+                  (ss/config! txt-tree :text (.rep-tree (.find-root scene) 0))
                   (.revalidate (.widget basic-ed :frame))) )]
       (doseq [jb jb-channels]
         (ss/listen jb :action (fn [ev]

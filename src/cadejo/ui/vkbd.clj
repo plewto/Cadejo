@@ -1,6 +1,7 @@
 (ns cadejo.ui.vkbd
   (:require [seesaw.core :as ss])
   (:require [seesaw.color :as ssc])
+    (:require [cadejo.util.string])
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory])
   (:require [cadejo.util.col :as ucol])
@@ -88,14 +89,14 @@
     (let [ivel (min (max (int (* 128 vel)) 0) 127)
           c0 (bit-and chan0 15)
           kn (min (max keynum 0) 127)
-          ev {:channel c0 :command :note-on :note kn :data2 ivel}]
+          ev {:channel c0 :command :note-on :note kn :data1 kn :data2 ivel}]
       (.status this (format "Chan %2d  Key %3d  Vel %3d" (inc c0) kn ivel))
       ((.event-dispatcher this) ev)))
 
   (note-off [this chan0 keynum]
     (let [c0 (bit-and chan0 15)
           kn (min (max keynum 0) 127)
-          ev {:channel c0 :command :note-off :note kn :data2 0}]
+          ev {:channel c0 :command :note-off :note kn :data1 kn :data2 0}]
       ((.event-dispatcher this) ev)))
   
   cadejo.midi.node/Node
@@ -104,6 +105,11 @@
 
   (is-root? [this] (not (.parent this)))
 
+  (find-root [this]
+    (if (.is-root? this)
+      this
+      (.find-root (.parent this))))
+  
   (parent [this] @parent*)
 
   (children [this] @children*)
@@ -112,10 +118,9 @@
     (ucol/member? obj @children*))
 
   (add-child! [this obj]
-    (if (and (not (.is-child? this obj))
-             (= (.node-type obj) :channel))
+    (if (not (.is-child? this obj))
       (do (swap! children* (fn [q](conj q obj)))
-          (.set-parent! obj this)
+          (._set-parent! obj this)
           true)
       false))
 
@@ -168,7 +173,17 @@
     (event-dispatcher [this]
       (fn [event]
         (doseq [c (.children this)]
-          ((.event-dispatcher c) event)))) )
+          ((.event-dispatcher c) event))))
+
+    (rep-tree [this depth]
+      (let [pad (cadejo.util.string/tab depth)
+            sb (StringBuilder.)]
+        (.append sb (format "%sVirtual Keyboard\n" pad))
+        (doseq [p (.children this)]
+          (.append sb (.rep-tree p (inc depth))))
+        (.toString sb)))
+    )
+    
       
 
     

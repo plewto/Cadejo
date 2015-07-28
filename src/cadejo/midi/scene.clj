@@ -56,6 +56,12 @@
 
     (is-root? [this] (not @parent*))
 
+    (find-root [this]
+      (let [rs (if (.is-root? this)
+                 this
+                 (.find-root (.parent this)))]
+        rs))
+    
     (parent [this] @parent*)
 
     (children [this] @channels*)
@@ -67,7 +73,7 @@
       (if (and (not (.is-child? this obj))
                (= (.node-type obj) :channel))
         (do (swap! channels* (fn [q](conj q obj)))
-            (.set-parent! obj this)
+            (._set-parent! obj this)
             true)
         false))
 
@@ -184,55 +190,38 @@
     (cadejo.ui.midi.scene-editor/scene-editor scene)
     nil))
 
-(defn scene
-  "Creates new scene object optionally connected to MIDI input-port or 
-other node
-Without arguments returns a scene object without parent node.
+(defn scene [parent]
+  (println (format "Creating scene %s" parent))
+  (let [in-port (cond (string? parent)
+                      (mip/midi-input-port parent)
 
-With single string argument a MIDI input port is created for the device
-named in the string. This input port serves as the parent node for the scene.
+                      (= nil parent)
+                      nil
 
-If the argument is not a string it is assumed to be an appropriate node
-which serves as the parent node for scene.
-
-NOTE possible exceptions:  
-  IllegalArgumentException if midi-input-device-name does not exists
-  MidiUnavailableException if device in use"
-  ([parent-or-device-name]
-   (let [in-port (cond (string? parent-or-device-name)
-                       (mip/midi-input-port parent-or-device-name)
-
-                       (= nil parent-or-device-name)
-                       nil 
-
-                       :default ;; assume arg is node
-                       parent-or-device-name)]
-     (println (format "Creating scene %s" (.get-property in-port :id)))
-     (let [sobj (scene)
-           vkbd (vkbd/vkbd in-port sobj)]
-       (.put-property! sobj :id (.get-property in-port :id))
-       (.put-property! sobj :vkbd vkbd)
-       sobj)))
-  ([]
-   (let [channels* (atom [])
-         editor* (atom nil)
-         properties* (atom {:id :new-scene
-                            :velocity-map :linear
-                            :scale-id :eq-12
-                            :dbscale 0
-                            :transpose 0
-                            :key-range [0 127]
-                            :bend-curve :linear
-                            :bend-range 200
-                            :pressure-curve :linear
-                            :pressure-scale 1.0
-                            :pressure-bias 0})
-         sregistry (cadejo.scale.registry/scale-registry)
-         parent* (atom nil)
-         sobj (Scene. parent* channels* properties* sregistry editor*)]
-     (reset! editor* (load-editor sobj))
-     (dotimes [ci channel-count]
-       (let [cobj (cadejo.midi.channel/channel sobj ci)]
-         (swap! channels* (fn [n](conj n cobj)))))
-     sobj)))
-
+                      :default
+                      parent)
+        channels* (atom [])
+        properties* (atom {:id :new-scene
+                           :velocity-map :linear
+                           :scale-id :eq-12
+                           :dbscale 0
+                           :transpose 0
+                           :key-range [0 127]
+                           :bend-curve :linear
+                           :bend-range 200 ; cents
+                           :pressure-curve :linear
+                           :pressure-scale 1.0
+                           :pressure-bias 0})
+        sregistry (cadejo.scale.registry/scale-registry)
+        vkbd (vkbd/vkbd nil nil)
+        parent* (atom vkbd)
+        editor* (atom nil)
+        sobj (Scene. parent* channels* properties* sregistry editor*)]
+    (reset! editor* (load-editor sobj))
+    (dotimes [ci channel-count]
+      (let [cobj (cadejo.midi.channel/channel sobj ci)]
+        (.add-child! sobj cobj)))
+    (.add-child! in-port vkbd)
+    (.add-child! vkbd sobj)
+    (.put-property! sobj :vkbd vkbd)
+    sobj))

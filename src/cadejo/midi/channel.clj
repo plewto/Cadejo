@@ -57,6 +57,11 @@
 
   (is-root? [this] (not @parent-scene*))
 
+  (find-root [this]
+    (if (.is-root? this)
+      this
+      (.find-root (.parent this))))
+  
   (parent [this]
     @parent-scene*)
 

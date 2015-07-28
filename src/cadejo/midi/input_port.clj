@@ -13,6 +13,11 @@
 
   (is-root? [this] (= (.parent this) nil))
 
+  (find-root [this]
+    (if (.is-root? this)
+      this
+      (.find-root (.parent this))))
+  
   (parent [this] @parent*)
 
   (children [this] @children*)
@@ -96,10 +101,11 @@
 
 (defn midi-input-port
   ([parent device-name]
-   (let [children* (atom [])
+   (let [parent* (atom parent)
+         children* (atom [])
          properties* (atom {})
          midi-device (midi/midi-in device-name)
-         port-node (MidiInputPort. parent children* properties*)]
+         port-node (MidiInputPort. parent* children* properties*)]
      (.put-property! port-node :id device-name)
      (.put-property! port-node :midi-device midi-device)
      (midi/midi-handle-events midi-device (.event-dispatcher port-node))
