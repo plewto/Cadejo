@@ -35,10 +35,10 @@
   (warning!
     [this msg])
 
-  (frame!
+  (cframe!
     [this f])
 
-  (frame 
+  (cframe 
     [this])
 
   (show-vkbd  ;; if defined make virtual keyboard visible
@@ -107,11 +107,11 @@
                 (warning! [this msg]
                   (.warning! basic-ed msg))
 
-                (frame [this]
-                  (.widget basic-ed :frame))
+                (cframe [this]
+                  (.widget basic-ed :cframe))
 
-                (frame! [this f]
-                  (.frame! basic-ed f))
+                (cframe! [this f]
+                  (.cframe! basic-ed f))
 
                 (show-vkbd [this]
                   (let [vkbd (.get-property scene :vkbd)]

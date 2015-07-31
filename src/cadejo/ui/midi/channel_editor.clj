@@ -274,9 +274,6 @@
                 (warning! [this msg]
                   (.warning! basic-ed msg))
 
-                ;; (frame [this]
-                ;;   (.widget this :frame))
-
                 (show-scene [this]
                   (let [scene (.parent chanobj)
                         sed (.get-editor scene)
@@ -334,7 +331,7 @@
                  :action (fn [_]
                            (let [scene (.parent chanobj)
                                  sed (.get-editor scene)
-                                 sframe (.frame sed)]
+                                 sframe (.jframe (.cframe sed))]
                              (ss/show! sframe)
                              (.toFront sframe))))
       (.set-parent-editor! midi-properties-panel ced)

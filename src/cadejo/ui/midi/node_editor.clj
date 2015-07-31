@@ -14,13 +14,17 @@
 
 (defprotocol NodeEditor
 
-  (frame! 
+  (cframe! 
     [this cframe embed]
     [this cframe])
 
-  (frame
+  (cframe
     [this])
 
+  (jframe
+    [this])
+    
+  
   (set-icon! 
     [this ico])
 
@@ -86,16 +90,20 @@
         widgets* (atom {})
         ed (reify NodeEditor
              
-             (frame! [this cframe embed]
+             (cframe! [this cframe embed]
                (reset! cframe* cframe)
                ;; (if embed
                ;;   (let [pan (.widget cframe :pan-center)]
                ;;     (reset! pan-main* pan)))
                )
 
-             (frame! [this cframe]
-               (.frame! this cframe true))
+             (cframe! [this cframe]
+               (.cframe! this cframe true))
 
+             (jframe [this]
+               (let [cf (.cframe this)]
+                 (and cf (.jframe cf))))
+             
              (set-icon! [this ico]
                (and @cframe* (.set-icon! @cframe* ico)))
 

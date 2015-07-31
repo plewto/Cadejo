@@ -272,7 +272,7 @@
                                               ied (.create-editor descriptor performance)]
                                           (reset! instrument-editor* ied)
                                           (try
-                                            (ss/show! (.widget ied :frame))
+                                            (ss/show! (.widget ied :jframe))
                                             (catch NullPointerException ex
                                               (.warning! bank-ed "Instrument Editor not defined")))
                                           (.working bank-ed false))))))]

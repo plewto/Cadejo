@@ -159,15 +159,15 @@
         pan-main (ss/border-panel :north pan-north
                                   :center pan-cards
                                   )
-        frame (ss/frame :title (format "%s Editor" (name id))
-                        :content pan-main
-                        :on-close :hide
-                        :size [1050 :by 650]
-                        :icon (.logo descriptor :tiny))
+        jframe (ss/frame :title (format "%s Editor" (name id))
+                         :content pan-main
+                         :on-close :hide
+                         :size [1050 :by 650]
+                         :icon (.logo descriptor :tiny))
         widget-map {:jb-help jb-help
                     :pan-main pan-main
                     :pan-cards pan-cards
-                    :frame frame}
+                    :jframe jframe}
         ied (reify InstrumentEditor
               
               (parent-performance [this] performance)

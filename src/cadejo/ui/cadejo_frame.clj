@@ -36,6 +36,9 @@
     [this key]
     "Returns widget specified by key")
 
+  (jframe
+    [this])
+  
   (show!
     [this]
     "Make frame visible")
@@ -116,6 +119,9 @@
                    (or (get (.widgets this) key)
                        (umsg/warning (format "CadejoFrame does not have %s widget" key))))
 
+                 (jframe [this]
+                   (:jframe @widgets*))
+                 
                  (show! [this]
                    (ss/show! jframe))
 

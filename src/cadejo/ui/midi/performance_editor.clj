@@ -37,7 +37,7 @@
   (warning!
     [this msg])
 
-  (frame 
+  (jframe 
     [this])
 
   (show-channel
@@ -53,7 +53,7 @@
                        iname (.instrument-name descriptor)
                        id (.get-property performance :id)]
                    (.set-icon! bed logo)
-                   (ss/config! (.widget bed :frame) :title (name id))
+                   (ss/config! (.widget bed :jframe) :title (name id))
                    (ss/config! (.widget bed :lab-id) :text (name id))
                    bed)
         instrument-editor* (atom nil) ;; editor created only if needed
@@ -129,7 +129,7 @@
                                  (catch NullPointerException ex
                                    (.warning! basic-ed "Editor not defined"))))))
       (.add toolbar b))
-    (ss/config! (.widget basic-ed :frame) :on-close :hide)
+    (ss/config! (.widget basic-ed :jframe) :on-close :hide)
     (let [ped (reify PerformanceEditor
                  (widgets [this] (.widgets basic-ed))
 
@@ -148,8 +148,8 @@
                  (warning! [this msg]
                    (.warning! basic-ed msg))
                  
-                 (frame [this]
-                   (.widget this :frame))
+                 (jframe [this]
+                   (.widget this :jframe))
 
                  (show-channel [this]
                    (let [chanobj (.parent performance)
@@ -169,7 +169,7 @@
       (.set-parent-editor! bank-ed ped)
       (.put-property! performance :bank-editor bank-ed)
       (.set-parent-editor! @cced* ped)
-      (ss/config! (.frame ped) :size frame-size)
+      (ss/config! (.jframe ped) :size frame-size)
       (ss/listen (.widget ped :jb-parent)
                  :action (fn [_]
                            (let [chanobj (.parent performance)
