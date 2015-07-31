@@ -102,7 +102,8 @@
              (widgets [this]
                (if @cframe*
                  (assoc @widgets*
-                        :frame (.widget @cframe* :frame)
+                        :cframe @cframe*
+                        :jframe (.widget @cframe* :jframe)
                         :pan-main (.widget @cframe* :pan-main)
                         :pan-center (.widget @cframe* :pan-center)
                         :jb-parent (.widget @cframe* :jb-parent)

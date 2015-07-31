@@ -222,8 +222,8 @@
   (warning!
     [this msg])
 
-  (frame 
-    [this])
+  ;; (frame 
+  ;;   [this])
 
   (show-scene
    [this])
@@ -253,8 +253,8 @@
         ]
     (.add toolbar jb-add)
     (.add toolbar jb-midi)
-    (ss/config! (.widget basic-ed :frame) :on-close :hide)
-    (ss/config! (.widget basic-ed :frame) :title (format "Cadejo Channel %d" (inc (.channel-number chanobj))))
+    (ss/config! (.widget basic-ed :jframe) :on-close :hide)
+    (ss/config! (.widget basic-ed :jframe) :title (format "Cadejo Channel %d" (inc (.channel-number chanobj))))
     (let [ced (reify ChannelEditor
                 
                 (widgets [this] (.widgets basic-ed))
@@ -274,8 +274,8 @@
                 (warning! [this msg]
                   (.warning! basic-ed msg))
 
-                (frame [this]
-                  (.widget this :frame))
+                ;; (frame [this]
+                ;;   (.widget this :frame))
 
                 (show-scene [this]
                   (let [scene (.parent chanobj)
@@ -297,7 +297,7 @@
                                                     mods (.getModifiers ev)
                                                     performance (.getClientProperty jb :performance)
                                                     ped (.get-editor performance)
-                                                    pframe (.widget ped :frame)
+                                                    pframe (.widget ped :jframe)
                                                     chaned (.get-editor chanobj)
                                                     sed (.get-editor (.get-scene performance))
                                                     id (.getClientProperty src :id)]
@@ -326,7 +326,7 @@
                       (.sync-ui! (.get-editor p))))
 
                   (.sync-ui! midi-properties-panel)
-                  (.revalidate (.widget basic-ed :frame))) )]
+                  (.revalidate (.widget basic-ed :jframe))) )]
       (ss/config! lab-id 
                   :text (format "Channel %s " (inc (.channel-number chanobj)))
                   :font id-font)
@@ -340,8 +340,9 @@
       (.set-parent-editor! midi-properties-panel ced)
       (.add pan-center pan-cards BorderLayout/CENTER)
       (.add pan-center tbar-performance BorderLayout/SOUTH)
-      (ss/config! (.frame ced) :size frame-size)
-      (.addWindowListener (.widget ced :frame)
+                                        ;(ss/config! (.frame ced) :size frame-size)
+      (ss/config! (.widget ced :jframe) :size frame-size)
+      (.addWindowListener (.widget ced :jframe)
                           (proxy [WindowListener][]
                             (windowClosed [_] nil)
                             (windowClosing [_] nil)

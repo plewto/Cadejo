@@ -30,7 +30,7 @@
      :jb-help - context help button
      :toolbar - instance of JToolbar, the client's toolbar
      :pan-center - instance of Jpanel with Borderlayout
-     :frame - instance of JFrame")
+     :jframe - instance of JFrame")
 
   (widget
     [this key]
@@ -97,33 +97,33 @@
                   :north pan-north
                   :south pan-south
                   :center pan-center)
-        frame (ss/frame :title (format "Cadejo %s" title)
-                        :content pan-main
-                        :size [700 :by 300])
+        jframe (ss/frame :title (format "Cadejo %s" title)
+                         :content pan-main
+                         :size [700 :by 300])
+        widgets* (atom  {:jb-parent jb-parent
+                         :jb-help jb-help
+                         :toolbar tbar-client
+                         :toolbar-east tbar-east
+                         :pan-main pan-main
+                         :pan-center pan-center
+                         :lab-id lab-id
+                         :jframe jframe})
         cframe (reify CadejoFrame
 
-                 (widgets [this]
-                   {:jb-parent jb-parent
-                    :jb-help jb-help
-                    :toolbar tbar-client
-                    :toolbar-east tbar-east
-                    :pan-main pan-main
-                    :pan-center pan-center
-                    :lab-id lab-id
-                    :frame frame})
+                 (widgets [this] @widgets*)
 
                  (widget [this key]
                    (or (get (.widgets this) key)
                        (umsg/warning (format "CadejoFrame does not have %s widget" key))))
 
                  (show! [this]
-                   (ss/show! frame))
+                   (ss/show! jframe))
 
                  (hide! [this]
-                   (ss/hide! frame))
+                   (ss/hide! jframe))
 
                  (set-icon! [this ico]
-                   (ss/config! frame :icon ico)
+                   (ss/config! jframe :icon ico)
                    (ss/config! lab-id :icon ico))
 
                  (set-id-text! [this msg]
@@ -140,5 +140,4 @@
 
                  (warning! [this msg]
                    (.status! this (format "WARNING: %s" msg))))]
-    (ss/listen jb-help :action (fn [_] (println (ss/config frame :size))))  ;; DEBUG ONLY
     cframe)) 

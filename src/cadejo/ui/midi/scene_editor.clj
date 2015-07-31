@@ -122,12 +122,12 @@
                 (show-hide-channel [this id]
                   (let [cobj (.channel scene id)
                         ced (.get-editor cobj)
-                        cframe (.widget ced :frame)]
-                    (if (.isVisible cframe)
-                      (ss/hide! cframe)
+                        jframe (.widget ced :jframe)]
+                    (if (.isVisible jframe)
+                      (ss/hide! jframe)
                       (do 
-                        (ss/show! cframe)
-                        (.toFront cframe)))))
+                        (ss/show! jframe)
+                        (.toFront jframe)))))
 
                 (sync-ui! [this]
                   ;; update channel buttons
@@ -143,7 +143,7 @@
                   (.sync-ui! reged)
                                         ;(ss/config! txt-tree :text (.rep-tree scene 0))
                   (ss/config! txt-tree :text (.rep-tree (.find-root scene) 0))
-                  (.revalidate (.widget basic-ed :frame))) )]
+                  (.revalidate (.widget basic-ed :jframe))) )]
       (doseq [jb jb-channels]
         (ss/listen jb :action (fn [ev]
                                 (let [src (.getSource ev)

@@ -154,9 +154,10 @@
                  (show-channel [this]
                    (let [chanobj (.parent performance)
                          ced (.get-editor chanobj)
-                         cframe (.frame ced)]
-                     (ss/show! cframe)
-                     (.toFront cframe)))
+                                        ;cframe (.frame ced)]
+                         jframe (.widget ced :jframe)]
+                     (ss/show! jframe)
+                     (.toFront jframe)))
                  
                  (sync-ui! [this]
                    (.sync-ui! bank-ed)
@@ -173,10 +174,11 @@
                  :action (fn [_]
                            (let [chanobj (.parent performance)
                                  ced (.get-editor chanobj)
-                                 cframe (.frame ced)]
-                             (ss/show! cframe)
-                             (.toFront cframe))))
-      (.addWindowListener (.widget ped :frame)
+                                        ;cframe (.frame ced)]
+                                 jframe (.widget ced :jframe)]
+                             (ss/show! jframe)
+                             (.toFront jframe))))
+      (.addWindowListener (.widget ped :jframe)
                           (proxy [WindowListener][]
                             (windowClosed [_] nil)
                             (windowClosing [_] nil)
