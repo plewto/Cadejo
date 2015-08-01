@@ -49,7 +49,15 @@
 
 
 ;; Filename for splash screen image
-(def ^:private splash-filename (path/join logo-path
-                                (format "splash2.%s" logo-extension)))
+;; (def ^:private splash-filename (path/join logo-path
+;;                                (format "splash2.%s" logo-extension)))
 
-(def splash-image (seesaw.icon/icon (File. splash-filename)))
+;(def splash-image (seesaw.icon/icon (File. splash-filename)))
+
+(defn splash-image
+  ([n]
+   (let [filename (path/join logo-path
+                             (format "splash%d.%s" n logo-extension))]
+     (seesaw.icon/icon (File. filename))))
+  ([]
+   (splash-image 1)))

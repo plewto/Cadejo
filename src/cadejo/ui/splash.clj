@@ -1,8 +1,8 @@
 (ns cadejo.ui.splash
-  (:require [cadejo.about])
   (:require [cadejo.config :as config])
   (:require [cadejo.midi.scene])
   (:require [cadejo.ui.cadejo-frame])
+  (:require [cadejo.ui.util.about-dialog :as about])
   (:require [cadejo.ui.util.exit-dialog :as exit])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.icon])
@@ -38,7 +38,7 @@
 (config/load-gui! true)
 
 (defn- splash-label []
-  (ss/label :icon cadejo.ui.util.icon/splash-image))
+  (ss/label :icon (cadejo.ui.util.icon/splash-image)))
 
 (def ^:private big-button-size [637 :by 233])
 (def ^:private splash-frame-size [1027 :by 720])
@@ -169,19 +169,7 @@
                           (swap! global-scenes* (fn [n](assoc n device s)))
                           (.status! cframe (format "Scene %s created" device))))))))
       pan-main)))
-
-    
-(defn- create-about-panel []
-  (let [txt-about (ss/text :multi-line? true
-                           :editable? false
-                           :text cadejo.about/about-text)
-        pan-main (ss/border-panel :north (splash-label)
-                                  :center (ss/vertical-panel :items [txt-about]
-                                                             :border (factory/padding 16)))]
-    pan-main))
-
-
-
+ 
 (defn- splash-screen []
   (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame (config/cadejo-version) "")
         bgroup (ss/button-group)
@@ -194,7 +182,7 @@
                        (ss/config! b :enabled? false)
                        (.setDisabledIcon b (lnf/read-icon "gray" :midi :plug))
                        b)
-        tb-about (factory/toggle "About" :general :info "Display about text" bgroup)
+        jb-about (factory/button "About" :general :info "Display About Text")
         jb-config (factory/button "Config" :general :config "Open configuration editor")
         jb-skin (factory/button "Skin" :general :skin "Open skin selector")
         jb-exit (factory/button "Exit" :general :exit "Exit Cadejo/Overtone")
@@ -202,7 +190,7 @@
         toolbar-east (let [tbar (.widget cframe :toolbar-east)
                            jb-parent (.widget cframe :jb-parent)]
                        (.remove tbar jb-parent)
-                       (.add tbar tb-about)
+                       (.add tbar jb-about)
                        (.add tbar jb-exit)
                        tbar)
         toolbar-scenes (ss/toolbar :floatable? false
@@ -210,26 +198,23 @@
         toolbar (let [tbar (ss/toolbar :floatable? false
                                        :orientation :horizontal)]
                       (.add (.widget cframe :toolbar) tbar)
-                  ;(ss/config! tbar :items [tb-server tb-new-scene toolbar-scenes :separator jb-config jb-skin :separator ])
                       (ss/config! tbar :items [tb-server tb-new-scene toolbar-scenes :separator jb-skin :separator ])
                   tbar)
        
         pan-server (create-server-panel tb-server tb-new-scene cframe)
         pan-cards (ss/card-panel)
         pan-midi (create-midi-panel cframe pan-cards toolbar-scenes bgroup)
-        pan-about (create-about-panel)
         show-card (fn [button]
                     (let [id (ss/user-data button)]
                       (ss/show-card! pan-cards id)))]
     (ss/config! pan-cards :items [[pan-server "server"]
-                                  [pan-midi "midi"]
-                                  [pan-about "about"]])
+                                  [pan-midi "midi"]])
     (ss/listen jb-exit :action exit/exit-cadejo)
     (ss/listen jb-skin :action (fn [_](lnf/skin-dialog)))
     (ss/config! tb-server :user-data "server")
     (ss/config! tb-new-scene :user-data "midi")
-    (ss/config! tb-about :user-data "about")
-    (doseq [b [tb-server tb-new-scene tb-about]]
+    (ss/listen jb-about :action about/about-dialog)
+    (doseq [b [tb-server tb-new-scene]]
       (ss/listen b :action (fn [ev]
                              (let [src (.getSource ev)]
                                (.set-path-text! cframe "Root")
@@ -249,5 +234,6 @@
 (def global-splash-frame (splash-screen))
 (lnf/set-initial-skin)
 (.show! global-splash-frame)
+
 
 
