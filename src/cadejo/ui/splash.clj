@@ -3,6 +3,7 @@
   (:require [cadejo.config :as config])
   (:require [cadejo.midi.scene])
   (:require [cadejo.ui.cadejo-frame])
+  (:require [cadejo.ui.util.exit-dialog :as exit])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.icon])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -45,33 +46,6 @@
 (defn- vertical-strut 
   ([n](Box/createVerticalStrut n))
   ([](vertical-strut 16)))
-
-(defn- exit-warning-dialog []
-  (let [flag* (atom false)]
-    (if (config/warn-on-exit)
-      (let [dia (ss/dialog :content (ss/label :text "Exit Overtone ?")
-                           :option-type :yes-no
-                           :default-option :no
-                           :success-fn (fn [_]
-                                         (reset! flag* true))
-                           :no-fn (fn [_]
-                                    (reset! flag* false)))]
-        (ss/config! dia :size [200 :by 200])
-        (ss/show! dia)
-        @flag*)
-      true)))
-
-(defn- cadejo-exit [ev]
-  (let [src (.getSource ev)
-        cframe (ss/config src :user-data)]
-    (if (exit-warning-dialog)
-      (do
-        (println "Exiting Cadejo ...")
-        (.status! cframe "Exiting Cadejo ...")
-        (System/exit 0))
-      (do
-        (println ";; Cadejo exit canceled")
-        (.status! cframe "Exit canceled")))))
   
 (defn- create-server-panel [tb-server tb-midi cframe]
   (let [lab-title (ss/label :text "Select Server")
@@ -223,9 +197,7 @@
         tb-about (factory/toggle "About" :general :info "Display about text" bgroup)
         jb-config (factory/button "Config" :general :config "Open configuration editor")
         jb-skin (factory/button "Skin" :general :skin "Open skin selector")
-        jb-exit (let [b (factory/button "Exit" :general :exit "Exit Cadejo/Overtone")]
-                  (ss/config! b :user-data cframe)
-                  b)
+        jb-exit (factory/button "Exit" :general :exit "Exit Cadejo/Overtone")
         jb-help (.widget cframe :jb-help)
         toolbar-east (let [tbar (.widget cframe :toolbar-east)
                            jb-parent (.widget cframe :jb-parent)]
@@ -252,7 +224,7 @@
     (ss/config! pan-cards :items [[pan-server "server"]
                                   [pan-midi "midi"]
                                   [pan-about "about"]])
-    (ss/listen jb-exit :action cadejo-exit)
+    (ss/listen jb-exit :action exit/exit-cadejo)
     (ss/listen jb-skin :action (fn [_](lnf/skin-dialog)))
     (ss/config! tb-server :user-data "server")
     (ss/config! tb-new-scene :user-data "midi")
