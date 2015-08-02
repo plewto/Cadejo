@@ -313,6 +313,11 @@
                            :id id
                            :click-action action))
 
+(defn mini-help-button [drw p0 id action]
+  (button/mini-icon-button (.tool-root drw) p0 (icon-prefix) :help
+                           :id id
+                           :click-action action))
+
 (defn mini-delete-button [drw p0 id action]
   (button/mini-icon-button (.tool-root drw) p0 (icon-prefix) :delete
                            :id id

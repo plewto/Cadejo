@@ -4,6 +4,7 @@
   (:require [cadejo.ui.scale.registry-editor])
   (:require [cadejo.config])
   (:require [cadejo.util.user-message :as umsg])
+  (:require [cadejo.ui.cadejo-frame])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.util.icon :as icon])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -51,7 +52,8 @@
     [this]))
 
 (defn scene-editor [scene]
-  (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :scene scene false)
+  (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :scene scene true)
+        cframe (.cframe basic-ed)
         jb-vkbd (factory/icon-button :keyboard :virtual "Show Virtual Keyboard")
         pan-main (ss/border-panel)
         jb-channels (let [acc* (atom [])]
@@ -85,6 +87,7 @@
     (.add pan-main pan-tab BorderLayout/CENTER)
     (.set-path-text! basic-ed (format "MIDI device %s" (.get-property scene :id)))
     (.set-icon! basic-ed (icon/logo "scene" :tiny))
+    (ss/config! (.widget cframe :pan-center) :center pan-main)
     (let [sed (reify SceneEditor 
                 
                 (widgets [this]
@@ -151,5 +154,4 @@
                                   (.show-hide-channel sed cid)))))
       (.addActionListener jb-vkbd (proxy [ActionListener][]
                                     (actionPerformed [_] (.show-vkbd sed))))
-      
       sed)))

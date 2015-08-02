@@ -1,17 +1,18 @@
+
 (ns cadejo.ui.vkbd
-  (:require [seesaw.core :as ss])
-  (:require [seesaw.color :as ssc])
-    (:require [cadejo.util.string])
   (:require [cadejo.midi.node])
-  (:require [cadejo.ui.util.sgwr-factory :as sfactory])
-  (:require [cadejo.util.col :as ucol])
-  (:require [cadejo.util.user-message :as umsg])
-  (:require [cadejo.ui.util.factory :as factory])
+  (:require [cadejo.ui.cadejo-frame :as cframe])
+  (:require [cadejo.ui.util.help :as help])
   (:require [cadejo.ui.util.lnf :as lnf])
-  (:require [sgwr.components.image])
+  (:require [cadejo.ui.util.sgwr-factory :as sfactory :reload true])
+  (:require [cadejo.util.col :as ucol])
+  (:require [cadejo.util.math :as math])
+  (:require [cadejo.util.user-message :as umsg])
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.multistate-button :as msb])
-  (:import java.awt.BorderLayout))
+  (:require [seesaw.core :as ss])
+  (:require [seesaw.color :as ssc])
+ )
 
 (def ^:private width 640)
 (def ^:private height 120)
@@ -44,201 +45,221 @@
 (def ^:private pos-channel-label (point+ pos-octave-label  0  40))
 (def ^:private pos-channel-button (point+ pos-channel-label 60 -20))
 (def ^:private pos-left-white-key [130 110])
-(def ^:private pos-panic-label (point+ pos-left-white-key 470 -55))
-(def ^:private pos-panic-button (point+ pos-panic-label -4 -35))
+(def ^:private pos-panic-button (point+ pos-left-white-key 475 -30))
+(def ^:private pos-panic-label (point+ pos-panic-button 4 32))
+(def ^:private pos-help-button (point+ pos-left-white-key 475 -60))
+(def ^:private pos-parent-button (point+ pos-left-white-key 475 -90))
+
+
+(defn- help-action [& _]
+  (help/display-topic :virtual-keyboard))
 
 (defprotocol VKbdProtocol
 
-  (channel [this] )
+  (channel
+    [this]
+    "Returns MIDI transmit channel (1..16)")
 
-  (channel! [this c])
-  
-  (status [this msg])
+  (channel!
+    [this c1]
+    "Sets MIDI transmit channel (1..16) 
+    Returns channel number")
 
-  (panic [this])
+  (status!
+    [this msg]
+    "Set status line text")
 
-  ;; chan0 - MIDI channel 0-indexed [0,15]
-  ;; keynum [0, 127]
-  ;; vel - Normalized velocity [0.0 1.0]
-  (note-on [this chan0 keynum vel])
+  (panic
+    [this]
+    "Send all notes off on current channel
+     Returns true")
 
-  (note-off [this chan0 keynum]))
-  
+  (note-on
+    [this keynum vel]
+    "Transmits note-on event current channel
+     for given keynum (0..127) and velocity (0..1).
+     Returns map {:channel c0 :data1 keynum :note keynum :vel (* vel 127)}")
+     
 
-(deftype VKbd [parent* children* properties* editor*]
+  (note-off
+    [this keynum]
+    "Transmits note-off event on current channel
+     Returns map {:channel c0 :data1 keynum :note keynum :data2 127}")
+  )
+
+(deftype VKbd [parent* children* properties* cframe]
 
   VKbdProtocol
-
-  (channel [this]
-    ((:get-channel @editor*)))
-
-  (channel! [this c1]
-    ((:set-channel! @editor*) c1))
   
-  (status [this msg]
-    ((:status @editor*) msg))
+  (channel [this]
+    (:channel @properties*))
+ 
+  (channel! [this c1]
+    (let [c0 (rem (math/abs (dec c1)) 15)]
+      (swap! properties* (fn [q](assoc q :channel (inc c0))))
+      (inc c0)))
+
+  (status! [this msg]
+    (.status! cframe msg))
 
   (panic [this]
-    (.status this "All Notes Off")
-    (let [c0 (dec (.channel this))]
-      (dotimes [k 128]
-        (.note-off this c0 k)
-        (Thread/sleep 1))))
+    (dotimes [kn 127]
+      (.note-off this kn)
+      (Thread/sleep 1))
+    (.status! this "All notes off"))
 
-  (note-on [this chan0 keynum vel]
-    (let [ivel (min (max (int (* 128 vel)) 0) 127)
-          c0 (bit-and chan0 15)
-          kn (min (max keynum 0) 127)
-          ev {:channel c0 :command :note-on :note kn :data1 kn :data2 ivel}]
-      (.status this (format "Chan %2d  Key %3d  Vel %3d" (inc c0) kn ivel))
-      ((.event-dispatcher this) ev)))
+  (note-on [this kn vel]
+    (let [c0 (dec (.channel this))
+          v127 (int (math/clamp (* vel 127) 0 127))
+          ev {:channel c0 :command :note-on :note kn :data1 kn :data2 v127}]
+      ((.event-dispatcher this) ev)
+      ev))
 
-  (note-off [this chan0 keynum]
-    (let [c0 (bit-and chan0 15)
-          kn (min (max keynum 0) 127)
-          ev {:channel c0 :command :note-off :note kn :data1 kn :data2 0}]
-      ((.event-dispatcher this) ev)))
-  
+  (note-off [this kn]
+    (let [c0 (dec (.channel this))
+          ev {:channel c0 :command :note-off :note kn :data1 kn :data2 127}]
+      ((.event-dispatcher this) ev)
+      ev))
+
   cadejo.midi.node/Node
 
-  (node-type [this] :VKbd)
+  (node-type [this] :vkbd)
 
-  (is-root? [this] (not (.parent this)))
+  (is-root? [this]
+    (not @parent*))
 
   (find-root [this]
     (if (.is-root? this)
       this
-      (.find-root (.parent this))))
-  
-  (parent [this] @parent*)
+      (.find-root @parent*)))
 
-  (children [this] @children*)
+  (parent [this]
+    @parent*)
 
-  (is-child? [this obj]
-    (ucol/member? obj @children*))
+  (children [this]
+    @children*)
 
-  (add-child! [this obj]
-    (if (not (.is-child? this obj))
-      (do (swap! children* (fn [q](conj q obj)))
-          (._set-parent! obj this)
-          true)
+  (is-child? [this other]
+    (ucol/member? other (.children this)))
+
+  (add-child! [this other]
+    (if (not (.is-child? this other))
+      (do
+        (swap! children* (fn [q](conj q other)))
+        (._set-parent! other this)
+        true)
       false))
 
-   (remove-child! [this obj]
-      false)
+  (remove-child! [this other]
+    (if (.is-child? this other)
+      (let [predicate (fn [r](not (= r other)))]
+        (swap! children* (fn [q](into [](filter predicate q))))
+        (._orphan! other)
+        true)
+      false))
 
-    (_orphan! [this]
-      (reset! parent* nil))
+  (_set-parent! [this p]
+    (reset! parent* p))
+  
+  (_orphan! [this]
+    (._set-parent! this nil))
 
-    (_set-parent! [this parent]
-      (reset! parent* parent))
-    
-    (put-property! [this key value]
-      (let [k (keyword key)]
-        (swap! properties* (fn [n](assoc n k value)))
-        k))
+  (put-property! [this key value]
+    (let [k (keyword key)]
+      (swap! properties* (fn [n](assoc n k value)))
+      k))
 
-    (remove-property! [this key]
-      (let [k (keyword key)]
-        (swap! properties* (fn [n](dissoc n (keyword k))))
-        k))
-
-    (get-property [this key default]
-      (let [value (get @properties* key default)]
-        (if (= value :fail)
-          (do 
-            (umsg/warning (format "Scene %s does not have property %s"
-                                  (get @properties* :id "?") key))
-            nil)
-          value)))
-
-    (get-property [this key]
-      (.get-property this key :fail))
-
-    (local-property [this key]
-      (get @properties* key))
-
-   (properties [this local-only]
-     (set (concat (keys @properties*)
-                  (if (and @parent* (not local-only))
-                    (.properties @parent*)
+  (remove-property! [this key]
+    (let [k (keyword key)]
+      (swap! properties* (fn [n](dissoc n k)))
+      k))
+ 
+  (get-property [this key default]
+    (let [value (or (get @properties* key)
+                    (and (.parent this)
+                         (.get-property (.parent this) key default))
+                    default)]
+      (if (= value :fail)
+        (umsg/warning (format "Channel %s does not have property %s"
+                              (.channel-number this) key))
+        value)))
+  
+  (get-property [this key]
+    (.get-property this key :fail))
+  
+  (local-property [this key]
+    (get @properties* key))
+  
+  (properties [this local-only]
+    (set (concat (keys @properties*)
+                 (if (and (.parent this) (not local-only))
+                   (.properties (.parent this))
                    nil))))
-   
-    (properties [this]
-      (.properties this true))
+  
+  (properties [this]
+    (.properties this false))
+  
+  (event-dispatcher [this]
+    (fn [event]
+      (doseq [c (.children this)]
+        ((.event-dispatcher c) event))))
+  
+  (get-editor [this]
+    this)
 
-    (get-editor [this]
-      @editor*)
+  (rep-tree [this depth]
+    (let [pad (cadejo.util.string/tab depth)
+          sb (StringBuilder.)]
+      (.append sb (format "%sMidiInputPort +%s\n" pad (.get-property this :id)))
+      (doseq [p (.children this)]
+        (.append sb (.rep-tree p (inc depth))))
+      (.toString sb))) )
 
-    (event-dispatcher [this]
-      (fn [event]
-        (doseq [c (.children this)]
-          ((.event-dispatcher c) event))))
 
-    (rep-tree [this depth]
-      (let [pad (cadejo.util.string/tab depth)
-            sb (StringBuilder.)]
-        (.append sb (format "%sVirtual Keyboard\n" pad))
-        (doseq [p (.children this)]
-          (.append sb (.rep-tree p (inc depth))))
-        (.toString sb)))
-    )
-    
-      
-
-    
 (defn vkbd [parent child]
-  (let [lab-status (ss/label :text "")
-        lab-path (ss/label :text (if parent
-                                   (format "%s.vkbd" (.get-property parent :id))
-                                   "vkbd (no input port)"))
+  (let [cframe (cframe/cadejo-frame "Cadejo Virtual Keyboard" "" [:progress-bar :pan-north])
         properties* (atom {:channel 1,
                            :octave 0,
                            :id :VKBD})
-        editor* (atom nil)
-        vkbd-node (VKbd. (atom parent)
-                         (atom (if child [child] []))
-                         properties*
-                         editor*)
+        parent* (atom parent)
+        children* (atom (if child [child] []))
+        vnode (VKbd. parent* children* properties* cframe)
         drw (sfactory/sgwr-drawing width height)
-                                        ;octave*  (atom 0)
+
         octave-action (fn [b _]
                         (let [cbs (msb/current-multistate-button-state b)
                               oct (first cbs)]
                           (swap! properties* (fn [q](assoc q :octave oct)))
-                          (ss/config! lab-status :text (format "Octave -> %s" oct))))
+                          (.status! vnode (format "Octave -> %s" oct))))
         msb-octave (msb/text-multistate-button (.tool-root drw)
                                                pos-octave-button
                                                octave-button-states
                                                :click-action octave-action
                                                :w 30 :h 30 :gap 10
                                                :rim-radius 0)
+
         channel-action (fn [b _]
                          (let [cbs (msb/current-multistate-button-state b)
                                chan0 (first cbs)]
                            (swap! properties* (fn [q](assoc q :channel (inc chan0))))
-                           (ss/config! lab-status :text (format "Output channel is %s" (get @properties* :channel)))))
+                           (.status! vnode (format "Transmit Channel -> %s" (get @properties* :channel)))))
         msb-channel (msb/text-multistate-button (.tool-root drw)
                                                 pos-channel-button
                                                 channel-button-states
                                                 :click-action channel-action
                                                 :w 40 :h 30 :gap 10
                                                 :rim-radius 0)
-        action-panic (fn [b _]
-                       (.panic vkbd-node))
         b-panic (sfactory/mini-delete-button drw pos-panic-button
-                                             :panic action-panic)
+                                             :panic (fn [& _](.panic vnode)))
+        b-help (sfactory/mini-help-button drw pos-help-button
+                                          :help help-action)
+        b-parent (sfactory/mini-chevron-up-button drw pos-parent-button
+                                                  :parent (fn [& _]
+                                                            (let [p (.parent vnode)]
+                                                              (if p (.show! (.get-editor p))))))
         
-        pan-south (ss/grid-panel :rows 1 :columns 2
-                                 :items [(ss/vertical-panel :items [lab-status] :border (factory/bevel 2))
-                                         (ss/vertical-panel :items [lab-path] :border (factory/bevel 2))])
-        pan-main (ss/border-panel
-                  :center (.canvas drw)
-                  :south pan-south)
-        f (ss/frame :title "Cadejo VKbd"
-                    :content pan-main
-                    :on-close :hide
-                    :size frame-size)]
+        ]
+    ;; Draw keys
     (let [rim-color (ssc/color 0 0 0 0)
           x* (atom (first pos-left-white-key))
           y0 (second pos-left-white-key)
@@ -265,15 +286,17 @@
                               mouse-y (.getY ev)
                               map-y (.get-property b :fn-y-pos->val)
                               vel (map-y mouse-y)
-                              c0 (dec (get @properties* :channel))]
-                          (.note-on vkbd-node c0 keynum vel)))
+                              v127 (int (* vel 127))
+                              c1 (get @properties* :channel)]
+                          (.note-on vnode keynum vel)
+                          (.status! vnode (format "Chan %2d  Key %3d  Vel %3d" c1 keynum v127))))
           
           up-action (fn [b _]
                       (let [id (.get-property b :id)
                             octave (get @properties* :octave)
                             keynum (+ (* 12 octave) id)
-                            c0 (dec (get @properties* :channel))]
-                        (.note-off vkbd-node c0 keynum)))]
+                            c1 (get @properties* :channel)]
+                        (.note-off vnode keynum)))]
       
       (dotimes [i white-key-count]
         (let [p0 [@x* y0]
@@ -306,14 +329,25 @@
           (sgwr.components.image/read-image (.root drw)
                                             (point+ p0 0 (- black-key-height))
                                             "resources/keys/up_black.png"))) )
+    (.put-property! b-help :rim-radius 0)
+    (.put-property! b-parent :rim-radius 0)
+    (.size! cframe (+ width 10)(+ height 70))
     (sfactory/label drw pos-octave-label "Octave")
     (sfactory/label drw pos-channel-label "Channel")
     (sfactory/label drw pos-panic-label "Off" :size 5.0)
+    (ss/config! (.widget cframe :pan-center) :center (.canvas drw))
     (.render drw)
-    (ss/show! f)
-    (reset! editor* {:show (fn [](ss/show! f))
-                     :status (fn [msg](ss/config! lab-status :text (str msg)))
-                     :get-channel (fn [](get @properties* :channel))
-                     :set-channel! (fn [c1]
-                                     (swap! properties* (fn [q](assoc q c1))))})
-    vkbd-node))
+    (.show! cframe)
+    vnode
+    ))
+
+
+
+;;;; TEST DEBUG TEST DEBUG TEST DEBUG TEST DEBUG TEST DEBUG TEST DEBUG
+
+(def foo (vkbd nil nil))
+      
+
+  
+
+    

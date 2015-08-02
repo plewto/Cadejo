@@ -82,6 +82,10 @@
     [this]
     "Hide frame")
 
+  (size!
+    [this w h]
+    "Set size of JFrame")
+  
   (set-icon!
     [this icn]
     "Set frame and id-label icon")
@@ -135,8 +139,10 @@
                              path labels."
   ([title]
    (cadejo-frame title nil [:lab-id]))
+
   ([title id]
    (cadejo-frame title id nil))
+
    ([title id exclude]
     (let [exclude? (fn [key obj]
                      (if (ucol/member? key exclude)
@@ -158,9 +164,13 @@
           jb-skin (exclude? :skin (let [jb (factory/button "Skin" :general :skin "Open skin selector")]
                                     (ss/listen jb :action lnf/skin-dialog)
                                     jb))
-          lab-status (exclude? :status (ss/label :text ""))
-          lab-path (exclude? :path (ss/label :text ""))
+          lab-status (exclude? :status (ss/label :text "<status>"))
+          pan-status (and lab-status (ss/vertical-panel :items [lab-status] :border (factory/bevel 2)))
+                                        
+          lab-path (exclude? :path (ss/label :text "<path>"))
+          pan-path (and lab-path (ss/vertical-panel :items [lab-path] :border (factory/bevel 2)))
           progbar (exclude? :progress-bar (ss/progress-bar :indeterminate? false))
+          pan-progbar (and progbar (ss/vertical-panel :items [progbar] :border (factory/bevel 2)))
           tbar-east (exclude? :toolbar-east (ss/toolbar :floatable? false 
                                                      :items (filter (fn [q] q)
                                                                     [:separator jb-parent jb-skin jb-help jb-about jb-exit nil])))
@@ -178,12 +188,12 @@
                               (ss/grid-panel 
                                :rows 1
                                :items (filter (fn [q] q)
-                                              [(and lab-status (ss/vertical-panel :items [lab-status] :border (factory/bevel 2)))
-                                               (and progbar (ss/vertical-panel :items [progbar] :border (factory/bevel 2)))
-                                               (and lab-path (ss/vertical-panel :items [lab-path] :border (factory/bevel 2)))])
+                                              ;; [(and lab-status (ss/vertical-panel :items [lab-status] :border (factory/bevel 2)))
+                                              ;;  (and progbar (ss/vertical-panel :items [progbar] :border (factory/bevel 2)))
+                                              ;;  (and lab-path (ss/vertical-panel :items [lab-path] :border (factory/bevel 2)))])
+                                              [pan-status pan-progbar pan-path])
                                :border (factory/bevel 4)))
           pan-main (let [pn (ss/border-panel :center pan-center)]
-                     (println (and pan-south))
                      (if pan-north (ss/config! pn :north pan-north))
                      (if pan-south (ss/config! pn :south pan-south))
                      pn)
@@ -225,6 +235,9 @@
                    
                    (hide! [this]
                      (ss/hide! jframe))
+
+                   (size! [this w h]
+                     (ss/config! jframe :size [w :by h]))
                    
                    (set-icon! [this ico]
                      (ss/config! jframe :icon ico)

@@ -53,7 +53,7 @@
                                                         lab-title
                                                         (vertical-strut)
                                                         buttons]))
-        jb-start (ss/button :text (if server-up? "USe Existing Server" "Start Server")
+        jb-start (ss/button :text (if server-up? "Use Existing Server" "Start Server")
                             :enabled? true
                             :size big-button-size)
         pan-main (ss/border-panel
@@ -88,29 +88,15 @@
                                     (ot/boot-external-server)
                                     :default ;; should never see this
                                     nil)
-                              (doseq [b (conj buttons jb-start)](ss/config! b :enabled? false))
-                              (.status! cframe (format "%s server started" (name server)))
-                              (.working cframe false)))))))
+                              (.working cframe false)
+                              (.hide! cframe)
+                              (.dispose (.jframe cframe))))))))
     pan-main))
 
 (defn- splash-screen []
-  (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame (config/cadejo-version) "")
+  (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame (config/cadejo-version) "" [:parent])
         bgroup (ss/button-group)
-        jb-about (factory/button "About" :general :info "Display About Text")
-        jb-skin (factory/button "Skin" :general :skin "Open skin selector")
-        jb-exit (factory/button "Exit" :general :exit "Exit Cadejo/Overtone")
-        jb-help (.widget cframe :jb-help)
-        toolbar (let [tbar (.widget cframe :toolbar-east)
-                           jb-parent (.widget cframe :jb-parent)]
-                       (.remove tbar jb-parent)
-                       (.add tbar jb-skin)
-                       (.add tbar jb-about)
-                       (.add tbar jb-exit)
-                       tbar)
         pan-server (create-server-panel cframe)]
-    (ss/listen jb-exit :action exit/exit-cadejo)
-    (ss/listen jb-skin :action lnf/skin-dialog)
-    (ss/listen jb-about :action about/about-dialog)
     (ss/config! (.widget cframe :jframe) :on-close :nothing)
     (ss/config! (.widget cframe :jframe) :icon (cadejo.ui.util.icon/logo "cadejo" :tiny))
     (ss/config! (.widget cframe :jframe) :size splash-frame-size)

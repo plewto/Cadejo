@@ -77,81 +77,82 @@
 
  
 (defn basic-node-editor 
-  ([type-id client-node create-frame]
   "Provides basic framework for 'editor' panels."
-  
-   
-  (let [node* (atom client-node)
-        cframe* (atom (if create-frame
-                       (let [cf (cframe/cadejo-frame (format "Cadejo %s" type-id)
-                                                     (.get-property client-node :id))]
-                         cf)
-                       nil))
-        widgets* (atom {})
-        ed (reify NodeEditor
-             
-             (cframe! [this cframe embed]
-               (reset! cframe* cframe)
-               ;; (if embed
-               ;;   (let [pan (.widget cframe :pan-center)]
-               ;;     (reset! pan-main* pan)))
-               )
+  ([type-id client-node create-frame]
+   (let [node* (atom client-node)
+         cframe* (atom (if create-frame
+                         (let [cf (cframe/cadejo-frame (format "Cadejo %s" type-id)
+                                                       (.get-property client-node :id))]
+                           cf)
+                         nil))
+         widgets* (atom {})
+         ed (reify NodeEditor
+              
+              (cframe! [this cframe embed]
+                (reset! cframe* cframe)
+                ;; (if embed
+                ;;   (let [pan (.widget cframe :pan-center)]
+                ;;     (reset! pan-main* pan)))
+                )
+              
+              (cframe! [this cframe]
+                (.cframe! this cframe true))
 
-             (cframe! [this cframe]
-               (.cframe! this cframe true))
-
-             (jframe [this]
-               (let [cf (.cframe this)]
-                 (and cf (.jframe cf))))
-             
-             (set-icon! [this ico]
-               (and @cframe* (.set-icon! @cframe* ico)))
-
-             (widgets [this]
-               (if @cframe*
-                 (assoc @widgets*
-                        :cframe @cframe*
-                        :jframe (.widget @cframe* :jframe)
-                        :pan-main (.widget @cframe* :pan-main)
-                        :pan-center (.widget @cframe* :pan-center)
-                        :jb-parent (.widget @cframe* :jb-parent)
-                        :jb-help (.widget @cframe* :jb-help)
-                        :toolbar (.widget @cframe* :toolbar)
-                        :lab-id (.widget @cframe* :lab-id))
-                 @widgets*))
-
-             (widget [this key]
-               (or (get (.widgets this) key)
-                   (umsg/warning 
-                    (format "%s NodeEditor does not have %s widget"
-                            type-id key))))
-             
-             (add-widget! [this key obj]
-               (swap! widgets* (fn [n](assoc n key obj))))
-
-             (node [this] @node*)
-
-             (set-node! [this n]
-               (reset! node* n))
-
-             (working [this flag]
-               (and @cframe* (.working @cframe* flag)))
-
-             (set-path-text! [this msg]
-               (and @cframe* (.set-path-text! @cframe* msg)))
-
-             ;; (info-text! [this msg]
-             ;;   (umsg/warning "NodeEditor.info-text! depreciated use set-path-text!")
-             ;;   (.set-path-text! this msg))
-
-             (status! [this msg]
-               (and @cframe* (.status! @cframe* msg))
-               msg)
-
-             (warning! [this msg]
-               (and @cframe* (.warning! @cframe* msg))
-               msg) )]
-    ed))
+              (cframe [this]
+                @cframe*)
+              
+              (jframe [this]
+                (let [cf (.cframe this)]
+                  (and cf (.jframe cf))))
+              
+              (set-icon! [this ico]
+                (and @cframe* (.set-icon! @cframe* ico)))
+              
+              (widgets [this]
+                (if @cframe*
+                  (assoc @widgets*
+                         :cframe @cframe*
+                         :jframe (.widget @cframe* :jframe)
+                         :pan-main (.widget @cframe* :pan-main)
+                         :pan-center (.widget @cframe* :pan-center)
+                         :jb-parent (.widget @cframe* :jb-parent)
+                         :jb-help (.widget @cframe* :jb-help)
+                         :toolbar (.widget @cframe* :toolbar)
+                         :lab-id (.widget @cframe* :lab-id))
+                  @widgets*))
+              
+              (widget [this key]
+                (or (get (.widgets this) key)
+                    (umsg/warning 
+                     (format "%s NodeEditor does not have %s widget"
+                             type-id key))))
+              
+              (add-widget! [this key obj]
+                (swap! widgets* (fn [n](assoc n key obj))))
+              
+              (node [this] @node*)
+              
+              (set-node! [this n]
+                (reset! node* n))
+              
+              (working [this flag]
+                (and @cframe* (.working @cframe* flag)))
+              
+              (set-path-text! [this msg]
+                (and @cframe* (.set-path-text! @cframe* msg)))
+              
+              ;; (info-text! [this msg]
+              ;;   (umsg/warning "NodeEditor.info-text! depreciated use set-path-text!")
+              ;;   (.set-path-text! this msg))
+              
+              (status! [this msg]
+                (and @cframe* (.status! @cframe* msg))
+                msg)
+              
+              (warning! [this msg]
+                (and @cframe* (.warning! @cframe* msg))
+                msg) )]
+     ed))
   ([type-id client-node]
    (basic-node-editor type-id client-node true)))
 
