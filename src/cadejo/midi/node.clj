@@ -145,6 +145,8 @@
        (.append sb "/"))
      (.toString sb))))
 
+
+(comment <<<<<<<<<<<<<<<<<<<<< node test code
 ;; Return a node object useful for testing.
 ;;
 (defn dummy-node [id]
@@ -223,7 +225,6 @@
                  nil))]
     node))
                  
-(defn rl [](use 'cadejo.midi.node :reload))
 
 (def u (dummy-node :living))
 (def p1 (dummy-node :plants))
@@ -245,3 +246,4 @@
 (.add-child! birds dove)
 
 (println (rep-tree u 0))
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> end node test code)
