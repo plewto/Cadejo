@@ -7,7 +7,7 @@
 
 (ns cadejo.midi.node
   "Node defines the basic component for building trees."
-  (:require [cadejo.util.string :as strutil])
+  (:require [cadejo.util.string])
   (:require [cadejo.util.user-message :as umsg]))
 
 (defprotocol Node
@@ -103,6 +103,19 @@
     "Returns gut editor, if any, for this node.
      Returns nil if no editor is present")
 
-  (rep-tree
-    [this depth]))
+  ;; (rep-tree
+  ;;   [this depth])
+  )
+
+
+(defn rep-tree [node depth]
+  (let [pad (cadejo.util.string/tab depth)
+        sb (StringBuilder. 300)
+        ntype (.node-type node)
+        id (.get-property node :id)]
+    (.append sb (format "%s%s %s\n" pad ntype id))
+    (doseq [c (.children node)]
+      (.append (sb (rep-tree c (inc depth)))))
+    (.toString sb)))
+             
 

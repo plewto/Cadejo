@@ -11,12 +11,13 @@
   (:require [cadejo.util.string])
   (:require [cadejo.util.user-message :as umsg])  
   (:require [cadejo.scale.registry])
-  (:require [cadejo.ui.midi.scene-editor])
+  (:require [cadejo.ui.midi.scene-editor :reload true])  ;; ISSUE Reload for test only
   (:require [cadejo.ui.vkbd :as vkbd])
+  (:require [overtone.core :as ot]) ;; ISSUE For test only
   (:require [overtone.midi :as midi]))
 
 
-(def channel-count (cadejo.config/channel-count))
+(def channel-count 1) ; (cadejo.config/channel-count))  ;; ISSUE revert to confing value after testing
 
 (defprotocol SceneProtocol 
   
@@ -148,14 +149,14 @@
       (doseq [c (.children this)]
         (.reset c)))
 
-    (rep-tree [this depth]
-      (let [pad (cadejo.util.string/tab depth)
-            sb (StringBuilder. 300)]
-        (.append sb (format "%sScene %s\n" pad (.get-property this :id)))
-        (doseq [c (.children this)]
-          (if (pos? (count (.performance-ids c)))
-            (.append sb (.rep-tree c (inc depth)))))
-        (.toString sb)))
+    ;; (rep-tree [this depth]
+    ;;   (let [pad (cadejo.util.string/tab depth)
+    ;;         sb (StringBuilder. 300)]
+    ;;     (.append sb (format "%sScene %s\n" pad (.get-property this :id)))
+    ;;     (doseq [c (.children this)]
+    ;;       (if (pos? (count (.performance-ids c)))
+    ;;         (.append sb (.rep-tree c (inc depth)))))
+    ;;     (.toString sb)))
                             
 
     (dump [this chan-filter verbose depth]
@@ -190,17 +191,45 @@
     (cadejo.ui.midi.scene-editor/scene-editor scene)
     nil))
 
-(defn scene [parent]
-  (println (format "Creating scene %s" parent))
-  (let [in-port (cond (string? parent)
-                      (mip/midi-input-port parent)
+;; (defn scene [parent]
+;;   (println (format "Creating scene %s" parent))
+;;   (let [in-port (cond (string? parent)
+;;                       (mip/midi-input-port parent)
+;;
+;;                       (= nil parent)
+;;                       nil
+;;
+;;                       :default
+;;                       parent)
+;;         channels* (atom [])
+;;         properties* (atom {:id :new-scene
+;;                            :velocity-map :linear
+;;                            :scale-id :eq-12
+;;                            :dbscale 0
+;;                            :transpose 0
+;;                            :key-range [0 127]
+;;                            :bend-curve :linear
+;;                            :bend-range 200 ; cents
+;;                            :pressure-curve :linear
+;;                            :pressure-scale 1.0
+;;                            :pressure-bias 0})
+;;         sregistry (cadejo.scale.registry/scale-registry)
+;;         vkbd (vkbd/vkbd nil nil)
+;;         parent* (atom vkbd)
+;;         editor* (atom nil)
+;;         sobj (Scene. parent* channels* properties* sregistry editor*)]
+;;     (reset! editor* (load-editor sobj))
+;;     (dotimes [ci channel-count]
+;;       (let [cobj (cadejo.midi.channel/channel sobj ci)]
+;;         (.add-child! sobj cobj)))
+;;     (.add-child! in-port vkbd)
+;;     (.add-child! vkbd sobj)
+;;     (.put-property! sobj :vkbd vkbd)
+;;     sobj))
 
-                      (= nil parent)
-                      nil
-
-                      :default
-                      parent)
-        channels* (atom [])
+(defn scene []
+  (println ";; Creating Scene Object")
+  (let [channels* (atom [])
         properties* (atom {:id :new-scene
                            :velocity-map :linear
                            :scale-id :eq-12
@@ -214,14 +243,26 @@
                            :pressure-bias 0})
         sregistry (cadejo.scale.registry/scale-registry)
         vkbd (vkbd/vkbd nil nil)
-        parent* (atom vkbd)
+        parent* (atom nil)
         editor* (atom nil)
         sobj (Scene. parent* channels* properties* sregistry editor*)]
     (reset! editor* (load-editor sobj))
     (dotimes [ci channel-count]
       (let [cobj (cadejo.midi.channel/channel sobj ci)]
         (.add-child! sobj cobj)))
-    (.add-child! in-port vkbd)
+    ;(.add-child! in-port vkbd)
     (.add-child! vkbd sobj)
     (.put-property! sobj :vkbd vkbd)
     sobj))
+
+
+;;;; START DEBUG
+(if (not (ot/server-connected?))
+  (do 
+    (ot/boot-server)
+    (Thread/sleep 4000)))
+(def s (scene))
+(def sed (.get-editor s))
+(def cframe (.cframe sed))
+(.show! cframe)
+

@@ -3,6 +3,7 @@
 (ns cadejo.ui.midi.scene-editor
   (:require [cadejo.ui.scale.registry-editor])
   (:require [cadejo.config])
+  (:require [cadejo.midi.node])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.cadejo-frame])
   (:require [cadejo.ui.midi.node-editor])
@@ -144,8 +145,9 @@
                         (ss/config! jb :text (format "%02d" chan)))
                       (.sync-ui! (.get-editor cobj))))
                   (.sync-ui! reged)
-                                        ;(ss/config! txt-tree :text (.rep-tree scene 0))
-                  (ss/config! txt-tree :text (.rep-tree (.find-root scene) 0))
+                  ;;(ss/config! txt-tree :text (.rep-tree (.find-root scene) 0))
+                  (ss/config! txt-tree :text
+                              (cadejo.midi.node/rep-tree (.find-root scene) 0))
                   (.revalidate (.widget basic-ed :jframe))) )]
       (doseq [jb jb-channels]
         (ss/listen jb :action (fn [ev]
