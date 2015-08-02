@@ -131,7 +131,7 @@
                        :on-close :dispose
                        :size [400 :by 500])]
     (.putClientProperty jb-help :topic :add-instrument)
-    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
+    ;(ss/listen jb-help :action cadejo.ui.util.help/help-listener)
 
     (ss/listen jb-cancel :action 
                (fn [_]
@@ -354,5 +354,5 @@
                                   chan (inc (.channel-number chanobj))] 
                                   (format "Root / %s / chan %s" sid chan)))
       (.set-icon! basic-ed (lnf/read-channel-icon (inc (.channel-number chanobj))))
-      (.putClientProperty (.widget basic-ed :jb-help) :topic :channel)
+      ;(.putClientProperty (.widget basic-ed :jb-help) :topic :channel)
       ced)))

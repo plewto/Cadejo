@@ -381,6 +381,6 @@
               (.warning! ed "Detail editor not implemented")))
 
     (.putClientProperty jb-help :topic :scale-registry)
-    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
+    ;(ss/listen jb-help :action cadejo.ui.util.help/help-listener)
 
     ed))

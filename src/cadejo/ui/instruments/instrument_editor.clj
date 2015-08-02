@@ -347,7 +347,7 @@
                                            "default cond executed")
                              (.warning! ied "Unknown save error")))))))
     (.putClientProperty jb-help :topic (.help-topic descriptor))
-    (ss/listen jb-help :action cadejo.ui.util.help/help-listener)
+    ;(ss/listen jb-help :action cadejo.ui.util.help/help-listener)
     ied))
                 
                       
