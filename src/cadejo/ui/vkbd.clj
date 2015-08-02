@@ -206,14 +206,8 @@
   
   (get-editor [this]
     this)
-
-  (rep-tree [this depth]
-    (let [pad (cadejo.util.string/tab depth)
-          sb (StringBuilder.)]
-      (.append sb (format "%sMidiInputPort +%s\n" pad (.get-property this :id)))
-      (doseq [p (.children this)]
-        (.append sb (.rep-tree p (inc depth))))
-      (.toString sb))) )
+ 
+  )
 
 
 (defn vkbd [parent child]
