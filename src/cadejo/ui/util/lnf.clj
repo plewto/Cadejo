@@ -121,7 +121,7 @@
                                         
 ;; Pop up skin selection dialog.
 ;;                  
-(defn skin-dialog []
+(defn skin-dialog [& _]
   (let [pan-main 
         (swingx/titled-panel
          :title "Substance Skins"

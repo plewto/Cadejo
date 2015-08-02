@@ -5,7 +5,7 @@
 (def ^:private docs* (atom {}))
 
 
-(defn help-listener [ev]
+(defn help-action [ev]
   (let [src (.getSource ev)
         topic (.getClientProperty src :topic)]
     (display-topic topic)))
