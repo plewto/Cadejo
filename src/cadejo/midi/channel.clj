@@ -44,10 +44,11 @@
     [this]
     "reset all control buses to their initial value.")
 
-  (dump 
-    [this verbose depth]
-    [this verbose]
-    [this]))
+  ;; (dump 
+  ;;   [this verbose depth]
+  ;;   [this verbose]
+  ;;   [this])
+  )
 
 (deftype Channel [parent-scene* children* properties* editor*]
 
@@ -174,24 +175,25 @@
     (doseq [p (.children this)]
       (.reset p)))
 
-  (dump [this verbose depth]
-    (let [depth2 (inc depth)
-          pad (cadejo.util.string/tab depth)
-          pad2 (cadejo.util.string/tab depth2)]
-      (printf "%sChannel %s\n" pad (.channel-number this))
-      (if verbose
-        (do
-          (doseq [k (sort (.properties this :local-only))]
-            (printf "%s[%-12s] --> %s\n" pad2 k (.get-property this k "?")))))
-      (doseq [pid (.performance-ids this)]
-        (let [pobj (get @children* pid)]
-          (.dump pobj verbose depth2)))))
+  ;; (dump [this verbose depth]
+  ;;   (let [depth2 (inc depth)
+  ;;         pad (cadejo.util.string/tab depth)
+  ;;         pad2 (cadejo.util.string/tab depth2)]
+  ;;     (printf "%sChannel %s\n" pad (.channel-number this))
+  ;;     (if verbose
+  ;;       (do
+  ;;         (doseq [k (sort (.properties this :local-only))]
+  ;;           (printf "%s[%-12s] --> %s\n" pad2 k (.get-property this k "?")))))
+  ;;     (doseq [pid (.performance-ids this)]
+  ;;       (let [pobj (get @children* pid)]
+  ;;         (.dump pobj verbose depth2)))))
   
-  (dump [this verbose]
-    (.dump this verbose 0))
+  ;; (dump [this verbose]
+  ;;   (.dump this verbose 0))
 
-  (dump [this]
-    (.dump this true 0))) 
+  ;; (dump [this]
+  ;;   (.dump this true 0))
+  ) 
 
 (defn- load-editor [chanobj]
   (if (cadejo.config/load-gui)

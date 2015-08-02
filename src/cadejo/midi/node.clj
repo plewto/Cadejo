@@ -8,7 +8,7 @@
 (ns cadejo.midi.node
   "Node defines the basic component for building trees."
   (:require [cadejo.util.string])
-  (:require [cadejo.util.user-message :as umsg]))
+  (:require [cadejo.util.col :as ucol]))
 
 (defprotocol Node
   
@@ -102,9 +102,7 @@
     [this]
     "Returns gut editor, if any, for this node.
      Returns nil if no editor is present")
-
-  ;; (rep-tree
-  ;;   [this depth])
+ 
   )
 
 
@@ -115,7 +113,135 @@
         id (.get-property node :id)]
     (.append sb (format "%s%s %s\n" pad ntype id))
     (doseq [c (.children node)]
-      (.append (sb (rep-tree c (inc depth)))))
+      (.append sb (rep-tree c (inc depth))))
     (.toString sb)))
-             
 
+(defn trace-path
+  "Returns list of all nodes on the path between the root and node.
+   The root node appears at the head of the list"
+  [node]
+  (let [acc* (atom (list node))
+        parent* (atom (.parent node))]
+    (while @parent*
+      (swap! acc* (fn [q](cons @parent* q)))
+      (reset! parent* (.parent @parent*)))
+    @acc*))
+
+
+(defn rep-path
+  "Returns a string representation of path between root and node.
+   Each node is separated by forward slash /.
+   If type is true  include node-type information (default false)
+   if id is true include each node's id (default true)"
+   
+  ([node & {:keys [type id]
+            :or {type nil
+                 id true}}]
+   (let [path (trace-path node)
+         sb (StringBuilder. 300)]
+     (doseq [n path]
+       (if type (.append sb (format "%s " (.node-type n))))
+       (if id (.append sb (format "%s" (.get-property n :id))))
+       (.append sb "/"))
+     (.toString sb))))
+
+;; Return a node object useful for testing.
+;;
+(defn dummy-node [id]
+  (let [parent* (atom nil)
+        properties* (atom {:id id})
+        children* (atom [])
+        node (reify Node
+
+               (node-type [this] :dummy)
+
+               (is-root? [this](not @parent*))
+
+               (find-root [this]
+                 (if (.is-root? this)
+                   this
+                   (.find-root @parent*)))
+
+               (parent [this] @parent*)
+
+               (children [this] @children*)
+
+               (is-child? [this other]
+                 (ucol/member? other @children*))
+
+               (add-child! [this other]
+                 (if (not (.is-child? this other))
+                   (do
+                     (swap! children* (fn [q](conj q other)))
+                     (._set-parent! other this)
+                     true)
+                   false))
+
+               (remove-child! [this other]
+                 (if (.is-child? this other)
+                   (let [predicate (fn [r](not (= r other)))]
+                     (reset! children* (filter predicate @children*))
+                     true)
+                   false))
+
+               (_set-parent! [this p]
+                 (reset! parent* p))
+
+               (_orphan! [this]
+                 (._set-parent! this nil))
+
+               (put-property! [this key value]
+                 (swap! properties* (fn [q](assoc q key value))))
+
+               (get-property [this key default]
+                 (let [lp (get @properties* key)]
+                   (if lp
+                     lp
+                     (if (.is-root? this)
+                       default
+                       (.get-property @parent* key default)))))
+
+               (get-property [this key]
+                 (.get-property this key nil))
+
+               (local-property [this key]
+                 (get @properties* key))
+             
+               (properties [this local-only]
+                 (set (concat (keys @properties*)
+                              (if (and @parent* (not local-only))
+                                (.properties @parent*)
+                                nil))))
+
+               (event-dispatcher [this]
+                 (fn [ev]
+                   (println (format ":dummy-node event-dispatcher %s" ev))
+                   (doseq [c (.children this)]
+                     ((.event-dispatcher c) ev))))
+
+               (get-editor [this]
+                 nil))]
+    node))
+                 
+(defn rl [](use 'cadejo.midi.node :reload))
+
+(def u (dummy-node :living))
+(def p1 (dummy-node :plants))
+(def a1 (dummy-node :animlas))
+(def cats (dummy-node :cats))
+(def lion (dummy-node :lion))
+(def tiger (dummy-node :tiger))
+(def birds (dummy-node :birds))
+(def crow (dummy-node :crow))
+(def dove (dummy-node :dove))
+
+(.add-child! u p1)
+(.add-child! u a1)
+(.add-child! a1 cats)
+(.add-child! a1 birds)
+(.add-child! cats lion)
+(.add-child! cats tiger)
+(.add-child! birds crow)
+(.add-child! birds dove)
+
+(println (rep-tree u 0))

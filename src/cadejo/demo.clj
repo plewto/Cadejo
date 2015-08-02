@@ -52,7 +52,7 @@
     (.reset scene)
     (doseq [c '[0 1 2 3]]
       (prog 0 c))
-    (.dump scene [0 1 2 3])
+    ;(.dump scene [0 1 2 3])
     (println "Ready ....")
     (list algo alias masa combo)))
 
@@ -73,7 +73,7 @@
     (.reset scene)
     (doseq [c '[0 1]]
       (prog 0 c))
-    (.dump scene [0 1])
+    ;(.dump scene [0 1])
     (println "Ready ....")
     (list algo-0 alias-0 algo-1 masa-1)))
 

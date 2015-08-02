@@ -214,10 +214,10 @@
   ;;   [this pnum]
   ;;   "List program pnum parameters")
 
-  (dump 
-    [this verbose depth]
-    [this verbose]
-    [this])
+  ;; (dump 
+  ;;   [this verbose depth]
+  ;;   [this verbose]
+  ;;   [this])
 )
 
 
@@ -524,23 +524,25 @@
     ;;         (printf "\t[%-16f] --> %s\n" k v)))
     ;;     (println)))
                
-    (dump [this verbose depth]
-      (let [depth2 (inc depth)
-            pad (cadejo.util.string/tab depth)
-            pad2 (cadejo.util.string/tab depth2)]
-        (printf "%sPerformance %s\n" pad (.get-property this :id))
-        (if verbose
-          (do 
-            (doseq [k (.properties this :local-only)]
-              (printf "%s[%-12s] --> %s\n"
-                      pad2 k (.get-property this k)))
-            (.dump controller-suite verbose (inc depth))))))
+    ;; (dump [this verbose depth]
+    ;;   (let [depth2 (inc depth)
+    ;;         pad (cadejo.util.string/tab depth)
+    ;;         pad2 (cadejo.util.string/tab depth2)]
+    ;;     (printf "%sPerformance %s\n" pad (.get-property this :id))
+    ;;     (if verbose
+    ;;       (do 
+    ;;         (doseq [k (.properties this :local-only)]
+    ;;           (printf "%s[%-12s] --> %s\n"
+    ;;                   pad2 k (.get-property this k)))
+    ;;         (.dump controller-suite verbose (inc depth))))))
 
-    (dump [this verbose]
-      (.dump this verbose 0))
+    ;; (dump [this verbose]
+    ;;   (.dump this verbose 0))
 
-    (dump [this]
-      (.dump this true 0)))
+    ;; (dump [this]
+    ;;   (.dump this true 0))
+
+    )
 
 (defn- load-editor [pobj]
   (if (cadejo.config/load-gui)

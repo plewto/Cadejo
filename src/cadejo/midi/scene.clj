@@ -38,17 +38,18 @@
     "Resets all channels which in turn resets all performances to initial 
      conditions.")
 
-  (dump 
-    [this filter verbose depth]
-    [this filter verbose]
-    [this filter]
-    [this]
-    "Displays information about this scene and it's child channels.
-     The form with the depth argument is used internally.
-     filter - Filter selects which channels to included. If filter
-              is nil then all 16 channels are dumped. Otherwise channel must 
-              be a list holding the channels to display.
-     verbose - flag indicating if additional information is to be included."))
+  ;; (dump 
+  ;;   [this filter verbose depth]
+  ;;   [this filter verbose]
+  ;;   [this filter]
+  ;;   [this]
+  ;;   "Displays information about this scene and it's child channels.
+  ;;    The form with the depth argument is used internally.
+  ;;    filter - Filter selects which channels to included. If filter
+  ;;             is nil then all 16 channels are dumped. Otherwise channel must 
+  ;;             be a list holding the channels to display.
+  ;;    verbose - flag indicating if additional information is to be included.")
+  )
  
 (deftype Scene [parent* channels* properties* sregistry editor*]
     cadejo.midi.node/Node
@@ -159,22 +160,22 @@
     ;;     (.toString sb)))
                             
 
-    (dump [this chan-filter verbose depth]
-      (let [depth2 (inc depth)
-            pad (cadejo.util.string/tab depth)
-            pad2 (cadejo.util.string/tab depth2)
-            filter (if chan-filter
-                     (fn [n](let [chan (.get-property n :channel)]
-                              (ucol/member? chan chan-filter)))
-                     (fn [n] true))]
-        (printf "%sScene %s\n" pad (.get-property this :id))
-        (if verbose 
-          (doseq [k (sort (.properties this))]
-            (printf "%s[%-12s] --> %s\n" 
-                    pad2 k (.get-property this k true))))
-        (doseq [chanobj @channels*]
-          (if (filter chanobj)
-            (.dump chanobj verbose depth2)))))
+    ;; (dump [this chan-filter verbose depth]
+    ;;   (let [depth2 (inc depth)
+    ;;         pad (cadejo.util.string/tab depth)
+    ;;         pad2 (cadejo.util.string/tab depth2)
+    ;;         filter (if chan-filter
+    ;;                  (fn [n](let [chan (.get-property n :channel)]
+    ;;                           (ucol/member? chan chan-filter)))
+    ;;                  (fn [n] true))]
+    ;;     (printf "%sScene %s\n" pad (.get-property this :id))
+    ;;     (if verbose 
+    ;;       (doseq [k (sort (.properties this))]
+    ;;         (printf "%s[%-12s] --> %s\n" 
+    ;;                 pad2 k (.get-property this k true))))
+    ;;     (doseq [chanobj @channels*]
+    ;;       (if (filter chanobj)
+    ;;         (.dump chanobj verbose depth2)))))
 
     (dump [this filter verbose]
       (.dump this filter verbose 0))
