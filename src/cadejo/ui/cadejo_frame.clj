@@ -10,6 +10,8 @@
   The toolbar optionally contains the following buttons:
   jb-parent - Open frame for parent node. 
               Parent button does not have pre-defined action
+  jb-child  - Open dialog to display child nodes for this
+              Child button does not have pre-defined action
   jb-skin   - Open a skin dialog.
   jb-help   - Open context help
   jb-about  - Display about dialog
@@ -30,8 +32,6 @@
 
   Widgets which are excluded from the cadejo-frame still have keys in
   the widgets dictionary, their values however will be nil"
-
-
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.util.about-dialog])
@@ -42,13 +42,13 @@
   (:require [seesaw.core :as ss]))
 
 (defprotocol CadejoFrame
-
   (widgets
     [this]
     "Returns dictionary with following keys
      :jb-exit
      :jb-about
      :jb-parent
+     :jb-child
      :jb-help
      :jb-skin
      :lab-id
@@ -121,6 +121,7 @@
              :about  - Do not include about button
              :help   - Do not include help button
              :parent - Do not include parent button
+             :child  - Do not include child button
              :skin   - Do not include skin button
              :status - Do not include status label
              :path   - Do not include path label
@@ -161,6 +162,7 @@
                                     (ss/listen jb :action cadejo.ui.util.help/help-action)
                                     jb))
           jb-parent (exclude? :parent (factory/button "Parent" :tree :up "Display parent"))
+          jb-child (exclude? :child (factory/button "Child" :tree :down "Display child"))
           jb-skin (exclude? :skin (let [jb (factory/button "Skin" :general :skin "Open skin selector")]
                                     (ss/listen jb :action lnf/skin-dialog)
                                     jb))
@@ -173,7 +175,7 @@
           pan-progbar (and progbar (ss/vertical-panel :items [progbar] :border (factory/bevel 2)))
           tbar-east (exclude? :toolbar-east (ss/toolbar :floatable? false 
                                                      :items (filter (fn [q] q)
-                                                                    [:separator jb-parent jb-skin jb-help jb-about jb-exit nil])))
+                                                                    [:separator jb-parent jb-child jb-skin jb-help jb-about jb-exit nil])))
           tbar-client (exclude? :toolbar (ss/toolbar :floatable? false 
                                                          :items []))
           pan-north (exclude? :pan-north (let [pn (ss/border-panel)]
@@ -201,6 +203,7 @@
           widgets* (atom {:jb-exit jb-exit
                           :jb-about jb-about
                           :jb-parent jb-parent
+                          :jb-child jb-child
                           :jb-help jb-help
                           :jb-skin jb-skin
                           :lab-id lab-id

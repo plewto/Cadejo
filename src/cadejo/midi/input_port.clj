@@ -2,6 +2,7 @@
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.cadejo-frame])
   (:require [cadejo.ui.midi.node-editor])
+  (:require [cadejo.ui.util.child-dialog])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.midi :as midi-util])
@@ -11,7 +12,7 @@
   (:require [seesaw.core :as ss])
   (:require [seesaw.font :as ssf])
 
-  (:require [cadejo.ui.vkbd]) ;; issue for test only
+  (:require [cadejo.ui.vkbd :reload true]) ;; issue for test only
   )
 
 
@@ -157,6 +158,7 @@
   (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame "MIDI Input" ""
                                                     [:progress-bar :status])
         jb-parent (.widget cframe :jb-parent)
+        jb-child (.widget cframe :jb-child)
         device (.get-property mip :midi-device)
         device-info (fn []
                       (let [info (.getDeviceInfo device)
@@ -178,10 +180,12 @@
         jb-tree (factory/icon-button :tree :info "Update tree info")
         ed (InputPortEditor. cframe mip)]
     
-    ;; (ss/listen jb-parent :action (fn [_]
-    ;;                                (let [pn (.parent mip)
-    ;;                                      ped (and pn (.get-editor pn))]
-    ;;                                  (and ped (.show! ped)))))
+    (ss/listen jb-parent :action (fn [& _]
+                                   (let [p (.parent mip)
+                                         ped (and p (.get-editor p))]
+                                     (and ped (.show! ped)))))
+    (ss/listen jb-child :action (fn [& _]
+                                  (cadejo.ui.util.child-dialog/child-dialog mip)))
                                      
     (ss/listen jb-tree :action (fn [& _]
                                  (let [s (str (device-info)
@@ -223,7 +227,8 @@
 (defonce mip (midi-input-port nil "[hw:1,0,0]"))
 (def ed (mip-editor mip))
 
-(def vkb (cadejo.ui.vkbd/vkbd mip nil))
+(def vkb1 (cadejo.ui.vkbd/vkbd mip nil))
 
-(.show! ed)
-(.show! vkb)
+(.show! vkb1)
+
+

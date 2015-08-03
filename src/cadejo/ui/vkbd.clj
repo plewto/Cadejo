@@ -4,6 +4,7 @@
   (:require [cadejo.ui.cadejo-frame :as cframe])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.util.help :as help])
+  (:require [cadejo.ui.util.child-dialog :as child])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory :reload true])
   (:require [cadejo.util.col :as ucol])
@@ -14,7 +15,7 @@
   (:require [seesaw.core :as ss])
   (:require [seesaw.color :as ssc]))
 
-(def ^:private width 640)
+(def ^:private width 670)
 (def ^:private height 120)
 (def ^:private frame-size [640 :by 170])
 (def ^:private c1 (lnf/text))           ; Colors
@@ -45,10 +46,14 @@
 (def ^:private pos-channel-label (point+ pos-octave-label  0  40))
 (def ^:private pos-channel-button (point+ pos-channel-label 60 -20))
 (def ^:private pos-left-white-key [130 110])
-(def ^:private pos-panic-button (point+ pos-left-white-key 475 -30))
-(def ^:private pos-panic-label (point+ pos-panic-button 4 32))
-(def ^:private pos-help-button (point+ pos-left-white-key 475 -60))
 (def ^:private pos-parent-button (point+ pos-left-white-key 475 -90))
+(def ^:private pos-child-button (point+ pos-parent-button 30 0))
+
+(def ^:private pos-help-button (point+ pos-child-button 0 30))
+(def ^:private pos-panic-button (point+ pos-parent-button 0 30))
+(def ^:private pos-panic-label (point+ pos-panic-button 4 32))
+
+
 
 
 (defn- help-action [& _]
@@ -292,7 +297,12 @@
                                                   :parent (fn [& _]
                                                             (let [p (.parent vnode)
                                                                   ped (and p (.get-editor p))]
-                                                              (and ped (.show! ped))))) ]
+                                                              (and ped (.show! ped)))))
+        b-child (sfactory/mini-chevron-down-button drw pos-child-button
+                                                   :child (fn [& _]
+                                                            (cadejo.ui.util.child-dialog/child-dialog vnode)))]
+
+        
     ;; Draw keys
     (let [rim-color (ssc/color 0 0 0 0)
           x* (atom (first pos-left-white-key))
@@ -373,5 +383,5 @@
     (sfactory/label drw pos-panic-label "Off" :size 5.0)
     (ss/config! (.widget cframe :pan-center) :center (.canvas drw))
     (.render drw)
-    (.show! cframe)
+    ;(.show! cframe)
     vnode))

@@ -6,6 +6,7 @@
   (:require [cadejo.midi.node])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.cadejo-frame :as cframe])
+  (:require [cadejo.ui.util.child-dialog])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.help])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -87,11 +88,16 @@
          cframe* (atom (if create-frame
                          (let [cf (cframe/cadejo-frame (format "Cadejo %s" type-id)
                                                        (.get-property client-node :id))
-                               jb-parent (.widget cf :jb-parent)]
-                           (ss/listen jb-parent :action (fn [_]
-                                                          (let [pnode (.parent @node*)
-                                                                ped (and pnode (.get-editor pnode))]
-                                                            (and ped (.show! ped)))))
+                               jb-parent (.widget cf :jb-parent)
+                               jb-child (.widget cf :jb-child)]
+                           (if jb-parent
+                             (ss/listen jb-parent :action (fn [_]
+                                                            (let [pnode (.parent @node*)
+                                                                  ped (and pnode (.get-editor pnode))]
+                                                              (and ped (.show! ped))))))
+                           (if jb-child
+                             (ss/listen jb-child :action (fn [_]
+                                                           (cadejo.ui.util.child-dialog/child-dialog @node*))))
                            cf)
                          nil))
          widgets* (atom {})
