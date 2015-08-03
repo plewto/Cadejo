@@ -1,4 +1,6 @@
 (ns cadejo.midi.input-port
+  "Defines MIDI input port"
+  (:require [cadejo.config :as config])
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.cadejo-frame])
   (:require [cadejo.ui.midi.node-editor])
@@ -10,13 +12,11 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [overtone.midi :as ot-midi])
   (:require [seesaw.core :as ss])
-  (:require [seesaw.font :as ssf])
-
-  (:require [cadejo.ui.vkbd :reload true]) ;; issue for test only
-  )
-
+  (:require [seesaw.font :as ssf]))
 
 (def ^:private font (ssf/font :name :monospaced :style :bold :size 16))
+(def ^:private width 580)
+(def ^:private height 470)
 
 (deftype MidiInputPort [parent* children* properties* editor*]
   cadejo.midi.node/Node
@@ -102,10 +102,7 @@
   (get-editor [this] @editor*)
 
   (set-editor! [this ed]
-    (reset! editor* ed))
-)
-
-
+    (reset! editor* ed)) )
 
 
 (deftype InputPortEditor [cframe mip]
@@ -150,11 +147,9 @@
       (.set-path-text! cframe pt)
       (doseq [c (.children mip)]
         (let [ced (.get-editor c)]
-          (if ced (.update-path-text ced))))))
-  )
+          (if ced (.update-path-text ced)))))) )
     
-
-(defn mip-editor [mip]
+(defn- mip-editor [mip]
   (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame "MIDI Input" ""
                                                     [:progress-bar :status])
         jb-parent (.widget cframe :jb-parent)
@@ -179,7 +174,8 @@
                      :multi-line? true :editable? false :font font)
         jb-tree (factory/icon-button :tree :info "Update tree info")
         ed (InputPortEditor. cframe mip)]
-    
+    (.size! cframe width height)
+    (.help-topic! cframe :midi-input-port)
     (ss/listen jb-parent :action (fn [& _]
                                    (let [p (.parent mip)
                                          ped (and p (.get-editor p))]
@@ -199,9 +195,6 @@
     (.set-editor! mip ed)
     ed))
 
-
-
-
 (defn midi-input-port
   ([parent device-name]
    (let [parent* (atom parent)
@@ -213,22 +206,14 @@
      (.put-property! port-node :id device-name)
      (.put-property! port-node :midi-device (:device transmitter))
      (ot-midi/midi-handle-events transmitter (.event-dispatcher port-node))
+     (if (config/load-gui)
+       (.set-editor! port-node (mip-editor port-node)))
      port-node))
   ([device-name]
    (midi-input-port nil device-name)))
 
-;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
-;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+;;;;; TEST TEST TEST TEST
 
-(defn rl [](use 'cadejo.midi.input-port :reload))
-
-
-(println (midi-util/list-midi-info))
-(defonce mip (midi-input-port nil "[hw:1,0,0]"))
-(def ed (mip-editor mip))
-
-(def vkb1 (cadejo.ui.vkbd/vkbd mip nil))
-
-(.show! vkb1)
-
-
+(defonce mip (midi-input-port "[hw 0,0,1]"))
+(def ed (.get-editor mip))
+(.show! ed)

@@ -1,5 +1,5 @@
-
 (ns cadejo.ui.vkbd
+  "Provides virtual onscreen keyboard"
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.cadejo-frame :as cframe])
   (:require [cadejo.ui.midi.node-editor])
@@ -48,13 +48,9 @@
 (def ^:private pos-left-white-key [130 110])
 (def ^:private pos-parent-button (point+ pos-left-white-key 475 -90))
 (def ^:private pos-child-button (point+ pos-parent-button 30 0))
-
 (def ^:private pos-help-button (point+ pos-child-button 0 30))
 (def ^:private pos-panic-button (point+ pos-parent-button 0 30))
 (def ^:private pos-panic-label (point+ pos-panic-button 4 32))
-
-
-
 
 (defn- help-action [& _]
   (help/display-topic :virtual-keyboard))
@@ -257,7 +253,7 @@
 
 
 (defn vkbd [parent child]
-  (let [cframe (cframe/cadejo-frame "Cadejo Virtual Keyboard" "" [:progress-bar :pan-north])
+  (let [cframe (cframe/cadejo-frame "Virtual Keyboard" "" [:progress-bar :pan-north])
         properties* (atom {:channel 1,
                            :octave 0,
                            :id :VKBD})
@@ -301,8 +297,6 @@
         b-child (sfactory/mini-chevron-down-button drw pos-child-button
                                                    :child (fn [& _]
                                                             (cadejo.ui.util.child-dialog/child-dialog vnode)))]
-
-        
     ;; Draw keys
     (let [rim-color (ssc/color 0 0 0 0)
           x* (atom (first pos-left-white-key))
@@ -383,5 +377,4 @@
     (sfactory/label drw pos-panic-label "Off" :size 5.0)
     (ss/config! (.widget cframe :pan-center) :center (.canvas drw))
     (.render drw)
-    ;(.show! cframe)
     vnode))

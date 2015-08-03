@@ -1,7 +1,5 @@
 (println "--> cadejo.ui.cadejo-frame")
-
 (ns cadejo.ui.cadejo-frame
-
   "cadejo-frame defines an extension to javax.JFrame with common layout
   and toolbars. The frame is divided into three vertical sections.
   From top to bottom these are a toolbar, central client area and
