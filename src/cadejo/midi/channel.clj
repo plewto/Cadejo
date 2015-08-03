@@ -139,15 +139,8 @@
   (get-editor [this]
     @editor*)
 
-  ;; (rep-tree [this depth]
-  ;;   (let [pad (cadejo.util.string/tab depth)
-  ;;         sb (StringBuilder.)
-  ;;         cindex (.channel-number this)]
-  ;;     ;(.append sb (format "%sChannel %s\n" pad (.get-property this :id)))
-  ;;     (.append sb (format "%sChannel +%s\n" pad (inc cindex)))
-  ;;     (doseq [p (.children this)]
-  ;;       (.append sb (.rep-tree p (inc depth))))
-  ;;     (.toString sb)))
+  (set-editor! [this ed]
+    (reset! editor* ed))
 
   ChannelProtocol
 

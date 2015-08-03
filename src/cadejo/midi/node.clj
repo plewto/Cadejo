@@ -102,7 +102,10 @@
     [this]
     "Returns gut editor, if any, for this node.
      Returns nil if no editor is present")
- 
+
+  (set-editor!
+    [this ed])
+  
   )
 
 

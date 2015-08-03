@@ -1,6 +1,7 @@
 (ns cadejo.midi.input-port
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.cadejo-frame])
+  (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.util.col :as ucol])
   (:require [cadejo.util.midi :as midi-util])
@@ -9,12 +10,14 @@
   (:require [overtone.midi :as ot-midi])
   (:require [seesaw.core :as ss])
   (:require [seesaw.font :as ssf])
+
+  (:require [cadejo.ui.vkbd]) ;; issue for test only
   )
 
 
 (def ^:private font (ssf/font :name :monospaced :style :bold :size 16))
 
-(deftype MidiInputPort [parent* children* properties*]
+(deftype MidiInputPort [parent* children* properties* editor*]
   cadejo.midi.node/Node
 
   (node-type [this] :midi-input-port)
@@ -95,23 +98,66 @@
       (doseq [c (.children this)]
         ((.event-dispatcher c) event))))
   
-  (get-editor [this] nil)
+  (get-editor [this] @editor*)
 
-  ;; (rep-tree [this depth]
-  ;;   (let [pad (cadejo.util.string/tab depth)
-  ;;         sb (StringBuilder.)]
-  ;;     (.append sb (format "%sMidiInputPort +%s\n" pad (.get-property this :id)))
-  ;;     (doseq [p (.children this)]
-  ;;       (.append sb (.rep-tree p (inc depth))))
-  ;;     (.toString sb)))
+  (set-editor! [this ed]
+    (reset! editor* ed))
 )
 
 
-(defn mip-editor [node]
+
+
+(deftype InputPortEditor [cframe mip]
+  cadejo.ui.midi.node-editor/NodeEditor
+
+  (cframe! [this cframe embed] nil) ;; not implemented
+
+  (cframe [this] cframe)
+
+  (jframe [this] (.jframe cframe))
+
+  (set-icon! [this ico] (.set-icon! cframe ico))
+
+  (show! [this] (.show! cframe))
+
+  (hide! [this] (.hide cframe))
+
+  (widgets [this] {})
+
+  (widget [this key]
+    (let [rs (get (.widgets this) key)]
+      (if (not rs)
+        (umsg/warning (format "MIDI input does not have %s widget" key)))
+      rs))
+
+  (add-widget! [this key obj] nil) ;; not implemented
+
+  (node [this] mip)
+
+  (set-node! [this ignore] nil) ;; not implemented
+
+  (working [this flag] nil) ;; not implemented
+
+  (status! [this msg]
+    (.set-path-text! cframe msg))
+
+  (warning! [this msg]
+    (.set-path-text! cframe (format "WARNING: %s" msg)))
+
+  (update-path-text [this]
+    (let [pt (cadejo.midi.node/rep-path mip)]
+      (.set-path-text! cframe pt)
+      (doseq [c (.children mip)]
+        (let [ced (.get-editor c)]
+          (if ced (.update-path-text ced))))))
+  )
+    
+
+(defn mip-editor [mip]
   (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame "MIDI Input" ""
-                                                    [:progress-bar :status
-                                                     ])
-        device (.get-property node :midi-device)
+                                                    [:progress-bar :status])
+        jb-parent (.widget cframe :jb-parent)
+        device (.get-property mip :midi-device)
         device-info (fn []
                       (let [info (.getDeviceInfo device)
                             dname (.getName info)
@@ -126,35 +172,43 @@
                              (format "Vendor      : %s\n" vendor)
                              (format "Version     : %s\n" version))))
         tree-info (fn []
-                    (cadejo.midi.node/rep-tree node 0))
+                    (cadejo.midi.node/rep-tree mip 0))
         txt (ss/text :text (device-info)
                      :multi-line? true :editable? false :font font)
         jb-tree (factory/icon-button :tree :info "Update tree info")
-        ]
+        ed (InputPortEditor. cframe mip)]
+    
+    ;; (ss/listen jb-parent :action (fn [_]
+    ;;                                (let [pn (.parent mip)
+    ;;                                      ped (and pn (.get-editor pn))]
+    ;;                                  (and ped (.show! ped)))))
+                                     
     (ss/listen jb-tree :action (fn [& _]
                                  (let [s (str (device-info)
                                               "\n\nCadejo Process Tree:\n"
-                                              (tree-info))
-                                       p (cadejo.midi.node/rep-path node)]
+                                              (tree-info))]
                                    (ss/config! txt :text s)
-                                   (.set-path-text! cframe p))))
+                                   (.update-path-text ed))))
+    
     (ss/config! (.widget cframe :toolbar) :items [jb-tree])
     (ss/config! (.widget cframe :pan-center) :center txt)
-    (.show! cframe)
-  ))
+    (.set-editor! mip ed)
+    ed))
+
+
+
 
 (defn midi-input-port
   ([parent device-name]
    (let [parent* (atom parent)
          children* (atom [])
          properties* (atom {})
+         editor* (atom nil)
          transmitter (ot-midi/midi-in device-name)
-         port-node (MidiInputPort. parent* children* properties*)]
+         port-node (MidiInputPort. parent* children* properties* editor*)]
      (.put-property! port-node :id device-name)
-                                        ;(.put-property! port-node :midi-device (.getMidiDevice transmitter))
      (.put-property! port-node :midi-device (:device transmitter))
      (ot-midi/midi-handle-events transmitter (.event-dispatcher port-node))
-     (println (format "DEBUG %s" (type transmitter)))
      port-node))
   ([device-name]
    (midi-input-port nil device-name)))
@@ -164,7 +218,12 @@
 
 (defn rl [](use 'cadejo.midi.input-port :reload))
 
+
 (println (midi-util/list-midi-info))
 (defonce mip (midi-input-port nil "[hw:1,0,0]"))
-
 (def ed (mip-editor mip))
+
+(def vkb (cadejo.ui.vkbd/vkbd mip nil))
+
+(.show! ed)
+(.show! vkb)

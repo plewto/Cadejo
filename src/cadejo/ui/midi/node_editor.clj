@@ -3,6 +3,7 @@
 (ns cadejo.ui.midi.node-editor
   "Defines interface for all 'editor' components"
   (:require [cadejo.config :as config])
+  (:require [cadejo.midi.node])
   (:require [cadejo.util.user-message :as umsg])
   (:require [cadejo.ui.cadejo-frame :as cframe])
   (:require [cadejo.ui.util.factory :as factory])
@@ -71,6 +72,9 @@
   (warning! 
     [this msg]
     "Display warning message")
+
+  (update-path-text [this]
+    "Update the node path label") 
   ) 
 
 (def id-font-size 24)
@@ -82,7 +86,12 @@
    (let [node* (atom client-node)
          cframe* (atom (if create-frame
                          (let [cf (cframe/cadejo-frame (format "Cadejo %s" type-id)
-                                                       (.get-property client-node :id))]
+                                                       (.get-property client-node :id))
+                               jb-parent (.widget cf :jb-parent)]
+                           (ss/listen jb-parent :action (fn [_]
+                                                          (let [pnode (.parent @node*)
+                                                                ped (and pnode (.get-editor pnode))]
+                                                            (and ped (.show! ped)))))
                            cf)
                          nil))
          widgets* (atom {})
@@ -141,17 +150,21 @@
               (set-path-text! [this msg]
                 (and @cframe* (.set-path-text! @cframe* msg)))
               
-              ;; (info-text! [this msg]
-              ;;   (umsg/warning "NodeEditor.info-text! depreciated use set-path-text!")
-              ;;   (.set-path-text! this msg))
-              
               (status! [this msg]
                 (and @cframe* (.status! @cframe* msg))
                 msg)
               
               (warning! [this msg]
                 (and @cframe* (.warning! @cframe* msg))
-                msg) )]
+                msg)
+
+              (update-path-text [this]
+                (let [pt (cadejo.midi.node/rep-path client-node)
+                      cf (.cframe this)]
+                  (if cf (.set-path-text! pt))
+                  (doseq [c (.children client-node)]
+                    (let [ced (.get-editor c)]
+                      (if ced (update-path-text ced)))))) )]
      ed))
   ([type-id client-node]
    (basic-node-editor type-id client-node true)))

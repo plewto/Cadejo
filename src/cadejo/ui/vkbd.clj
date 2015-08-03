@@ -2,6 +2,7 @@
 (ns cadejo.ui.vkbd
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.cadejo-frame :as cframe])
+  (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.util.help :as help])
   (:require [cadejo.ui.util.lnf :as lnf])
   (:require [cadejo.ui.util.sgwr-factory :as sfactory :reload true])
@@ -11,8 +12,7 @@
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.multistate-button :as msb])
   (:require [seesaw.core :as ss])
-  (:require [seesaw.color :as ssc])
- )
+  (:require [seesaw.color :as ssc]))
 
 (def ^:private width 640)
 (def ^:private height 120)
@@ -65,10 +65,6 @@
     "Sets MIDI transmit channel (1..16) 
     Returns channel number")
 
-  (status!
-    [this msg]
-    "Set status line text")
-
   (panic
     [this]
     "Send all notes off on current channel
@@ -89,6 +85,52 @@
 
 (deftype VKbd [parent* children* properties* cframe]
 
+  cadejo.ui.midi.node-editor/NodeEditor
+
+  (cframe! [this cframe embed] nil) ;; Not implemented
+
+  (cframe [this] cframe)
+
+  (jframe [this] (.jframe cframe))
+
+  (set-icon! [this ico]
+    (.set-icon! cframe ico))
+
+  (show! [this]
+    (.show! cframe))
+
+  (hide! [this]
+    (.hide! cframe))
+
+  (widgets [this] {})
+
+  (widget [this key]
+    (let [rs (get (.widgets this) key)]
+      (if (not rs)
+        (umsg/warning (format "VKbd does not have %s widget" key)))
+      rs))
+
+  (add-widget! [this key obj] nil) ;; not implemented
+
+  (node [this] this)
+
+  (set-node! [this ignore] nil) ;; not implemented
+
+  (working [this flag] nil) ;; not implemented
+
+  (status! [this msg]
+    (.status! cframe msg))
+
+  (warning! [this msg]
+    (.warning! cframe msg))
+
+  (update-path-text [this]
+    (let [pt (cadejo.midi.node/rep-path this)]
+      (.set-path-text! cframe pt) 
+      (doseq [c (.children this)]
+        (let [ced (.get-editor c)]
+          (if ced (.update-path-text ced))))))
+  
   VKbdProtocol
   
   (channel [this]
@@ -98,9 +140,6 @@
     (let [c0 (rem (math/abs (dec c1)) 15)]
       (swap! properties* (fn [q](assoc q :channel (inc c0))))
       (inc c0)))
-
-  (status! [this msg]
-    (.status! cframe msg))
 
   (panic [this]
     (dotimes [kn 127]
@@ -206,7 +245,9 @@
   
   (get-editor [this]
     this)
- 
+
+  (set-editor! [this _] nil) ;; not implemented
+  
   )
 
 
@@ -215,8 +256,8 @@
         properties* (atom {:channel 1,
                            :octave 0,
                            :id :VKBD})
-        parent* (atom parent)
-        children* (atom (if child [child] []))
+        parent* (atom nil)
+        children* (atom [])
         vnode (VKbd. parent* children* properties* cframe)
         drw (sfactory/sgwr-drawing width height)
 
@@ -249,10 +290,9 @@
                                           :help help-action)
         b-parent (sfactory/mini-chevron-up-button drw pos-parent-button
                                                   :parent (fn [& _]
-                                                            (let [p (.parent vnode)]
-                                                              (if p (.show! (.get-editor p))))))
-        
-        ]
+                                                            (let [p (.parent vnode)
+                                                                  ped (and p (.get-editor p))]
+                                                              (and ped (.show! ped))))) ]
     ;; Draw keys
     (let [rim-color (ssc/color 0 0 0 0)
           x* (atom (first pos-left-white-key))
@@ -323,6 +363,8 @@
           (sgwr.components.image/read-image (.root drw)
                                             (point+ p0 0 (- black-key-height))
                                             "resources/keys/up_black.png"))) )
+    (if parent (.add-child! parent vnode))
+    (if child (.add-child! vnode child))
     (.put-property! b-help :rim-radius 0)
     (.put-property! b-parent :rim-radius 0)
     (.size! cframe (+ width 10)(+ height 70))
@@ -332,16 +374,4 @@
     (ss/config! (.widget cframe :pan-center) :center (.canvas drw))
     (.render drw)
     (.show! cframe)
-    vnode
-    ))
-
-
-
-;;;; TEST DEBUG TEST DEBUG TEST DEBUG TEST DEBUG TEST DEBUG TEST DEBUG
-
-(def foo (vkbd nil nil))
-      
-
-  
-
-    
+    vnode))

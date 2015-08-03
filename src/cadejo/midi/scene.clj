@@ -123,6 +123,9 @@
     (get-editor [this]
       @editor*)
 
+    (set-editor! [this ed]
+      (reset! editor* ed))
+    
     (event-dispatcher [this]
       (fn [event]
         (let [ci (:channel event)]

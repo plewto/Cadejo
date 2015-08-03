@@ -8,8 +8,8 @@
   status bar. 
 
   The toolbar optionally contains the following buttons:
-  jb-parent - Open frame for parent node. Note the parent button does
-              not have a pre-defined action.
+  jb-parent - Open frame for parent node. 
+              Parent button does not have pre-defined action
   jb-skin   - Open a skin dialog.
   jb-help   - Open context help
   jb-about  - Display about dialog
@@ -188,9 +188,6 @@
                               (ss/grid-panel 
                                :rows 1
                                :items (filter (fn [q] q)
-                                              ;; [(and lab-status (ss/vertical-panel :items [lab-status] :border (factory/bevel 2)))
-                                              ;;  (and progbar (ss/vertical-panel :items [progbar] :border (factory/bevel 2)))
-                                              ;;  (and lab-path (ss/vertical-panel :items [lab-path] :border (factory/bevel 2)))])
                                               [pan-status pan-progbar pan-path])
                                :border (factory/bevel 4)))
           pan-main (let [pn (ss/border-panel :center pan-center)]
@@ -249,7 +246,7 @@
                    (set-path-text! [this msg]
                      (and
                       lab-path
-                      (ss/config! lab-path :text (format "path %s " msg))))
+                      (ss/config! lab-path :text (format "%s " msg))))
                    
                    (working [this flag]
                      (and progbar
