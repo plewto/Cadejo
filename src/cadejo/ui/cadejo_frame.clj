@@ -164,10 +164,10 @@
           jb-skin (exclude? :skin (let [jb (factory/button "Skin" :general :skin "Open skin selector")]
                                     (ss/listen jb :action lnf/skin-dialog)
                                     jb))
-          lab-status (exclude? :status (ss/label :text "<status>"))
+          lab-status (exclude? :status (ss/label :text " "))
           pan-status (and lab-status (ss/vertical-panel :items [lab-status] :border (factory/bevel 2)))
                                         
-          lab-path (exclude? :path (ss/label :text "<path>"))
+          lab-path (exclude? :path (ss/label :text " "))
           pan-path (and lab-path (ss/vertical-panel :items [lab-path] :border (factory/bevel 2)))
           progbar (exclude? :progress-bar (ss/progress-bar :indeterminate? false))
           pan-progbar (and progbar (ss/vertical-panel :items [progbar] :border (factory/bevel 2)))
@@ -249,7 +249,7 @@
                    (set-path-text! [this msg]
                      (and
                       lab-path
-                      (ss/config! lab-path :text (format " %s " msg))))
+                      (ss/config! lab-path :text (format "path %s " msg))))
                    
                    (working [this flag]
                      (and progbar

@@ -49,6 +49,7 @@
     @acc*))
 
 
+
 ;; Returns list of all MIDI receivers known to the JVM
 ;; The format is a list of tuples [[f obj][f obj] .... ]
 ;; Where f is a flag indicating if the device is available and obj
@@ -68,6 +69,20 @@
               (swap! acc* (fn [n](conj n [false mdev]))))))))
     @acc*))    
 
+;; ;; Return MIDI receiver with given name
+;; ;; name MUST match exactly.
+;; (defn midi-in [device-name]
+;;   (let [rlst (receivers)
+;;         rs* (atom nil)]
+;;     (doseq [r rlst]
+;;       (let [mdi (.getDeviceInfo (second r))
+;;             name (.getName mdi)]
+;;         (if (= name device-name)
+;;           (reset! rs* (second r)))))
+;;     @rs*))
+
+;; Informational only
+;; Prints list of MIDI devices to terminal
 (defn list-midi-info []
   (let [sb (StringBuilder.)]
     (.append sb "MIDI Transmitters:\n")
