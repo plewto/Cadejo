@@ -147,7 +147,10 @@
       (.set-path-text! cframe pt)
       (doseq [c (.children mip)]
         (let [ced (.get-editor c)]
-          (if ced (.update-path-text ced)))))) )
+          (if ced (.update-path-text ced))))))
+
+  (sync-ui! [this]
+    (.update-path-text this)) )
     
 (defn- mip-editor [mip]
   (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame "MIDI Input" ""
@@ -211,9 +214,3 @@
      port-node))
   ([device-name]
    (midi-input-port nil device-name)))
-
-;;;;; TEST TEST TEST TEST
-
-(defonce mip (midi-input-port "[hw 0,0,1]"))
-(def ed (.get-editor mip))
-(.show! ed)

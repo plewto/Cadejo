@@ -90,11 +90,12 @@
                                     nil)
                               (.working cframe false)
                               (.hide! cframe)
+                              (cadejo.midi.scene/create-scene)
                               (.dispose (.jframe cframe))))))))
     pan-main))
 
 (defn- splash-screen []
-  (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame (config/cadejo-version) "" [:parent])
+  (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame (config/cadejo-version) "" [:parent :child])
         bgroup (ss/button-group)
         pan-server (create-server-panel cframe)]
     (ss/config! (.widget cframe :jframe) :on-close :nothing)

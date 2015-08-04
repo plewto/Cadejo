@@ -25,7 +25,6 @@
 
   (jframe
     [this])
-    
   
   (set-icon! 
     [this ico])
@@ -59,10 +58,6 @@
   (set-path-text!
     [this msg])
 
-  ;; (info-text!
-  ;;   [this msg]
-  ;;   "DEPRECIATED Set text of info label")
-
   (working
     [this flag])
 
@@ -74,8 +69,12 @@
     [this msg]
     "Display warning message")
 
-  (update-path-text [this]
-    "Update the node path label") 
+  (update-path-text [this]  
+    "Update the node path label")
+
+  (sync-ui!
+    [this])
+  
   ) 
 
 (def id-font-size 24)
@@ -122,6 +121,14 @@
               
               (set-icon! [this ico]
                 (and @cframe* (.set-icon! @cframe* ico)))
+
+              (show! [this]
+                (let [jf (.jframe this)]
+                  (and jf (ss/show! jf))))
+
+              (hide! [this]
+                (let [jf (.jframe this)]
+                  (and jf (ss/hide! jf))))
               
               (widgets [this]
                 (if @cframe*

@@ -17,7 +17,7 @@
   (:require [overtone.midi :as midi]))
 
 
-(def channel-count 1) ; (cadejo.config/channel-count))  ;; ISSUE revert to confing value after testing
+(def channel-count (cadejo.config/channel-count))
 
 (defprotocol SceneProtocol 
   
@@ -180,14 +180,16 @@
     ;;       (if (filter chanobj)
     ;;         (.dump chanobj verbose depth2)))))
 
-    (dump [this filter verbose]
-      (.dump this filter verbose 0))
+    ;; (dump [this filter verbose]
+    ;;   (.dump this filter verbose 0))
 
-    (dump [this filter]
-      (.dump this filter true))
+    ;; (dump [this filter]
+    ;;   (.dump this filter true))
 
-    (dump [this]
-      (.dump this nil true)))
+    ;; (dump [this]
+    ;;   (.dump this nil true))
+
+    )
 
 
 (defn- load-editor [scene]
@@ -195,46 +197,17 @@
     (cadejo.ui.midi.scene-editor/scene-editor scene)
     nil))
 
-;; (defn scene [parent]
-;;   (println (format "Creating scene %s" parent))
-;;   (let [in-port (cond (string? parent)
-;;                       (mip/midi-input-port parent)
-;;
-;;                       (= nil parent)
-;;                       nil
-;;
-;;                       :default
-;;                       parent)
-;;         channels* (atom [])
-;;         properties* (atom {:id :new-scene
-;;                            :velocity-map :linear
-;;                            :scale-id :eq-12
-;;                            :dbscale 0
-;;                            :transpose 0
-;;                            :key-range [0 127]
-;;                            :bend-curve :linear
-;;                            :bend-range 200 ; cents
-;;                            :pressure-curve :linear
-;;                            :pressure-scale 1.0
-;;                            :pressure-bias 0})
-;;         sregistry (cadejo.scale.registry/scale-registry)
-;;         vkbd (vkbd/vkbd nil nil)
-;;         parent* (atom vkbd)
-;;         editor* (atom nil)
-;;         sobj (Scene. parent* channels* properties* sregistry editor*)]
-;;     (reset! editor* (load-editor sobj))
-;;     (dotimes [ci channel-count]
-;;       (let [cobj (cadejo.midi.channel/channel sobj ci)]
-;;         (.add-child! sobj cobj)))
-;;     (.add-child! in-port vkbd)
-;;     (.add-child! vkbd sobj)
-;;     (.put-property! sobj :vkbd vkbd)
-;;     sobj))
+(def ^:private id-counter* (atom 1))
+
+(defn- inc-id-counter []
+  (swap! id-counter* inc))
+
+(def global-scenes* (atom []))
 
 (defn scene []
   (println ";; Creating Scene Object")
   (let [channels* (atom [])
-        properties* (atom {:id :new-scene
+        properties* (atom {:id (keyword (format "scene-%d" @id-counter*))
                            :velocity-map :linear
                            :scale-id :eq-12
                            :dbscale 0
@@ -250,23 +223,27 @@
         parent* (atom nil)
         editor* (atom nil)
         sobj (Scene. parent* channels* properties* sregistry editor*)]
-    (reset! editor* (load-editor sobj))
     (dotimes [ci channel-count]
       (let [cobj (cadejo.midi.channel/channel sobj ci)]
         (.add-child! sobj cobj)))
-    ;(.add-child! in-port vkbd)
+    (reset! editor* (load-editor sobj))
     (.add-child! vkbd sobj)
-    (.put-property! sobj :vkbd vkbd)
+    (.put-property! sobj :virtual-keyboard vkbd)
+    (inc-id-counter)
     sobj))
 
 
-;;;; START DEBUG
-(if (not (ot/server-connected?))
-  (do 
-    (ot/boot-server)
-    (Thread/sleep 4000)))
-(def s (scene))
-(def sed (.get-editor s))
-(def cframe (.cframe sed))
-(.show! cframe)
+(defn create-scene []
+  (if (not (ot/server-connected?))
+    (ot/boot-server))
+  (let [s (scene)
+        sed (.get-editor s)]
+    (swap! global-scenes* (fn [q](conj q s)))
+    (and sed (.show! sed))
+    s))
+        
 
+
+;;;;; DEBUG
+
+(create-scene)

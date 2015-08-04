@@ -131,6 +131,9 @@
       (doseq [c (.children this)]
         (let [ced (.get-editor c)]
           (if ced (.update-path-text ced))))))
+
+  (sync-ui! [this]
+    (.update-path-text this))
   
   VKbdProtocol
   
