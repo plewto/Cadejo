@@ -3,6 +3,7 @@
   (:require [cadejo.util.string])
   (:require [cadejo.scale.table :as table])
   (:require [cadejo.scale.eqtemp :as eqtemp])
+  ;(:require [cadejo.util.trace :as trace])
   (:import java.io.FileNotFoundException
   ))
 
@@ -47,6 +48,7 @@
 )
 
 (defn- create-scale-registry [tables*]
+  ;(trace/trace-enter "create-scale-registry")
   (let [reg (reify ScaleRegistry
               
               (registered-tables [this]
@@ -130,6 +132,7 @@
 
               (dump [this]
                 (.dump this true 0)))]
+    ;(trace/trace-exit)
     reg))
 
 (defn scale-registry []

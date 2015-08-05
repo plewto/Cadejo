@@ -210,6 +210,7 @@
                           :progress-bar progbar
                           :pan-north pan-north
                           :pan-south pan-south
+                          :pan-main pan-main
                           :pan-center pan-center
                           :toolbar tbar-client
                           :toolbar-east tbar-east
@@ -221,7 +222,7 @@
                    (widget [this key]
                      (or (get (.widgets this) key)
                          (umsg/warning (format "CadejoFrame does not have %s widget" key))))
-
+                   
                    (help-topic! [this topic]
                      (and jb-help (.putClientProperty jb-help :topic topic)))
                    

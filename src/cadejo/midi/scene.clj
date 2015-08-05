@@ -13,7 +13,7 @@
   (:require [cadejo.scale.registry])
   (:require [cadejo.ui.midi.scene-editor :reload true])  ;; ISSUE Reload for test only
   (:require [cadejo.ui.vkbd :as vkbd])
-  (:require [overtone.core :as ot]) ;; ISSUE For test only
+  (:require [overtone.core :as ot]) 
   (:require [overtone.midi :as midi]))
 
 
@@ -205,7 +205,7 @@
 (def global-scenes* (atom []))
 
 (defn scene []
-  (println ";; Creating Scene Object")
+  ;;(println (format ";; Creating scene-%d" @id-counter*))
   (let [channels* (atom [])
         properties* (atom {:id (keyword (format "scene-%d" @id-counter*))
                            :velocity-map :linear
@@ -241,9 +241,3 @@
     (swap! global-scenes* (fn [q](conj q s)))
     (and sed (.show! sed))
     s))
-        
-
-
-;;;;; DEBUG
-
-(create-scene)

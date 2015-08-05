@@ -202,34 +202,34 @@
     pan-main))
 
 
-(defprotocol ChannelEditor
-
-  (widgets 
-    [this])
-
-  (widget
-    [this key])
-  
-  (node 
-    [this])
-  
-  (working
-    [this flag])
-
-  (status!
-    [this msg])
-
-  (warning!
-    [this msg])
-
-  ;; (frame 
-  ;;   [this])
-
-  (show-scene
-   [this])
- 
-  (sync-ui!
-    [this]))
+;; (defprotocol ChannelEditor
+;;
+;;   (widgets 
+;;     [this])
+;;
+;;   (widget
+;;     [this key])
+;;  
+;;   (node 
+;;     [this])
+;;  
+;;   (working
+;;     [this flag])
+;;
+;;   (status!
+;;     [this msg])
+;;
+;;   (warning!
+;;     [this msg])
+;;
+;;   ;; (frame 
+;;   ;;   [this])
+;;
+;;   (show-scene
+;;    [this])
+;; 
+;;   (sync-ui!
+;;     [this]))
 
 (defn channel-editor [chanobj]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
@@ -249,81 +249,147 @@
         jb-midi (let [b (factory/toggle "MIDI" :midi :plug "Set channel MIDI properties" bgroup)]
                   (ss/listen b :action (fn [_](ss/show-card! pan-cards "MIDI")))
                   b)
-        toolbar (.widget basic-ed :toolbar)
-        ]
+        toolbar (.widget basic-ed :toolbar) ]
     (.add toolbar jb-add)
     (.add toolbar jb-midi)
     (ss/config! (.widget basic-ed :jframe) :on-close :hide)
     (ss/config! (.widget basic-ed :jframe) :title (format "Cadejo Channel %d" (inc (.channel-number chanobj))))
-    (let [ced (reify ChannelEditor
-                
+    ;;(let [ced (reify cadejo.ui.midi.node-editor/NodeEditor
+                ;;
+                ;; (widgets [this] (.widgets basic-ed))
+                ;;
+                ;; (widget [this key]
+                ;;   (or (.widget basic-ed key)
+                ;;       (umsg/warning (format "ChannelEditor does not have %s widget" key))))
+                ;;
+                ;; (node [this] (.node basic-ed))
+                ;;
+                ;; (working [this flag]
+                ;;   (.working basic-ed flag))
+                ;;
+                ;; (status! [this msg]
+                ;;   (.status! basic-ed msg))
+                ;;
+                ;; (warning! [this msg]
+                ;;   (.warning! basic-ed msg))
+                ;;
+                ;; (show-scene [this]
+                ;;   (let [scene (.parent chanobj)
+                ;;         sed (.get-editor scene)
+                ;;         sframe (.frame sed)]
+                ;;     (ss/show! sframe)
+                ;;     (.toFront sframe)))
+                ;;
+                ;; (sync-ui! [this]
+                ;;   (.removeAll tbar-performance)
+                ;;   ;(.add tbar-performance (ss/label :text "Shift/Click to remove "))  ;; BUGGY
+                ;;   (doseq [p (.children chanobj)]
+                ;;     (let [itype (.get-property p :instrument-type)
+                ;;           id (.get-property p :id)
+                ;;           logo (.logo p :small)
+                ;;           jb (ss/button :icon logo)]
+                ;;       (ss/listen jb :action (fn [ev]
+                ;;                               (let [src (.getSource ev)
+                ;;                                     mods (.getModifiers ev)
+                ;;                                     performance (.getClientProperty jb :performance)
+                ;;                                     ped (.get-editor performance)
+                ;;                                     pframe (.widget ped :jframe)
+                ;;                                     chaned (.get-editor chanobj)
+                ;;                                     sed (.get-editor (.get-scene performance))
+                ;;                                     id (.getClientProperty src :id)]
+                ;;                                 (cond (= mods 17) ; shift+click remove performance
+                ;;                                       (let [ped (.get-editor performance)
+                ;;                                             dim (.getSize (.frame sed))]
+                ;;                                         (.remove-performance! chanobj id)
+                ;;                                         (.setVisible pframe false)
+                ;;                                         (.dispose pframe)
+                ;;                                         (.sync-ui! sed)
+                ;;                                         (.setSize (.frame sed)(int (.getWidth dim))(int (.getHeight dim))) 
+                ;;                                         (.validate (.frame sed))
+                ;;                                         (.status! chaned (format "Performance %s removed" id)))
+                ;;
+                ;;                                       :default ; hide/show performance editor
+                ;;                                       (if (.isVisible pframe)
+                ;;                                         (.setVisible pframe false)
+                ;;                                         (do 
+                ;;                                           (.setVisible pframe true)
+                ;;                                           (.toFront pframe)))))))
+                ;;       (.putClientProperty jb :instrument-type itype)
+                ;;       (.putClientProperty jb :id id)
+                ;;       (.putClientProperty jb :performance p)
+                ;;       (.setToolTipText jb (format "%s id = %s" (name itype)(name id)))
+                ;;       (.add tbar-performance jb)
+                ;;       (.sync-ui! (.get-editor p))))
+                ;;
+                ;;   (.sync-ui! midi-properties-panel)
+                ;;   (.revalidate (.widget basic-ed :jframe))) 
+    ;;)]
+    (let [ced (reify cadejo.ui.midi.node-editor/NodeEditor
+                (cframe! [this cf embed] (.cframe! basic-ed cf embed))
+
+                (cframe! [this cf] (.cframe! basic-ed cf))
+
+                (cframe [this] (.cframe basic-ed))
+
+                (jframe [this] (.jframe basic-ed))
+
+                (set-icon! [this ico] (.set-icon! basic-ed ico))
+
+                (show! [this] (.show! basic-ed))
+
+                (hide! [this] (.hide! basic-ed))
+
                 (widgets [this] (.widgets basic-ed))
 
                 (widget [this key]
-                  (or (.widget basic-ed key)
-                      (umsg/warning (format "ChannelEditor does not have %s widget" key))))
+                  (let [rs (.widget basic-ed key)]
+                    (if (not rs)
+                      (umsg/warning (format "ChannelEditor does not have %s widget" key))
+                      rs)))
 
-                (node [this] (.node basic-ed))
+                (add-widget! [this key obj] (.add-widget! basic-ed key obj))
 
-                (working [this flag]
-                  (.working basic-ed flag))
+                (node [this] chanobj)
 
-                (status! [this msg]
-                  (.status! basic-ed msg))
+                (set-node! [this _] nil) ;; not implemented
 
-                (warning! [this msg]
-                  (.warning! basic-ed msg))
+                (set-path-text! [this msg] (.set-path-text! basic-ed msg))
 
-                (show-scene [this]
-                  (let [scene (.parent chanobj)
-                        sed (.get-editor scene)
-                        sframe (.frame sed)]
-                    (ss/show! sframe)
-                    (.toFront sframe)))
+                (working [this flag] (.working basic-ed flag))
+
+                (status! [this msg] (.status! basic-ed msg))
+
+                (warning! [this msg] (.warning! basic-ed msg))
+
+                (update-path-text [this] (.update-path-text basic-ed))
 
                 (sync-ui! [this]
                   (.removeAll tbar-performance)
-                  ;(.add tbar-performance (ss/label :text "Shift/Click to remove "))  ;; BUGGY
                   (doseq [p (.children chanobj)]
-                    (let [itype (.get-property p :instrument-type)
+                    (let [itype (.get-property p :instrument-type p)
                           id (.get-property p :id)
                           logo (.logo p :small)
                           jb (ss/button :icon logo)]
-                      (ss/listen jb :action (fn [ev]
-                                              (let [src (.getSource ev)
-                                                    mods (.getModifiers ev)
-                                                    performance (.getClientProperty jb :performance)
-                                                    ped (.get-editor performance)
-                                                    pframe (.widget ped :jframe)
-                                                    chaned (.get-editor chanobj)
-                                                    sed (.get-editor (.get-scene performance))
-                                                    id (.getClientProperty src :id)]
-                                                (cond (= mods 17) ; shift+click remove performance
-                                                      (let [ped (.get-editor performance)
-                                                            dim (.getSize (.frame sed))]
-                                                        (.remove-performance! chanobj id)
-                                                        (.setVisible pframe false)
-                                                        (.dispose pframe)
-                                                        (.sync-ui! sed)
-                                                        (.setSize (.frame sed)(int (.getWidth dim))(int (.getHeight dim))) 
-                                                        (.validate (.frame sed))
-                                                        (.status! chaned (format "Performance %s removed" id)))
+                      (ss/listen jb :action
+                                 (fn [ev]
+                                   (let [mods (.getModifiers ev)
+                                         ced (.get-editor chanobj)
+                                         ped (.get-editor p)
+                                         pframe (.widget ped :jframe)]
+                                     (cond (= mods 17) ; shift+click -> remove performance
+                                           nil         ; not implemented
 
-                                                      :default ; hide/show performance editor
-                                                      (if (.isVisible pframe)
-                                                        (.setVisible pframe false)
-                                                        (do 
-                                                          (.setVisible pframe true)
-                                                          (.toFront pframe)))))))
-                      (.putClientProperty jb :instrument-type itype)
-                      (.putClientProperty jb :id id)
-                      (.putClientProperty jb :performance p)
-                      (.setToolTipText jb (format "%s id = %s" (name itype)(name id)))
-                      (.add tbar-performance jb)
-                      (.sync-ui! (.get-editor p))))
+                                           :default    ; hide/show performance
+                                           (if (.isVisible pframe)
+                                             (ss/hide! pframe)
+                                             (do
+                                               (ss/show! pframe)
+                                               (.toFront pframe))))))))))
+                                               
+                )]
+                  
 
-                  (.sync-ui! midi-properties-panel)
-                  (.revalidate (.widget basic-ed :jframe))) )]
+                
       (ss/config! lab-id 
                   :text (format "Channel %s " (inc (.channel-number chanobj)))
                   :font id-font)

@@ -1,7 +1,7 @@
 (println "--> cadejo.ui.midi.scene-editor")
 
 (ns cadejo.ui.midi.scene-editor
-  (:require [cadejo.config])
+  (:require [cadejo.config :as config])
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.cadejo-frame])
   (:require [cadejo.ui.midi.node-editor])
@@ -16,7 +16,7 @@
 
 (def width 840)
 (def height 660)
-(def channel-count (cadejo.config/channel-count))
+(def channel-count (config/channel-count))
 
 (defprotocol SceneEditorProtocol
 
@@ -163,6 +163,12 @@
                       (dotimes [i channel-count]
                         (let [jb (ss/button :text (format "%02d" (inc i)))]
                           (.putClientProperty jb :channel i)
+                          (if (config/enable-tooltips)
+                            (.setToolTipText jb (format "Editor Channel %s" (inc i))))
+                          (ss/listen jb :action (fn [_]
+                                                  (let [chanobj (.channel scene i)
+                                                        ced (.get-editor chanobj)]
+                                                    (.show! ced))))
                           (swap! acc* (fn [q](conj q jb)))))
                       @acc*)
         pan-channels (ss/toolbar :orientation :horizontal
@@ -190,7 +196,6 @@
     (ss/config! toolbar :items [jb-midi jb-scale-registry])
     (ss/config! pan-center :center pan-cards)
     (ss/config! pan-center :south pan-channels)
-
     (ss/listen jb-vkbd :action (fn [_]
                                  (let [vkb (.get-property scene :virtual-keyboard)]
                                    (and vkb (.show! vkb)))))

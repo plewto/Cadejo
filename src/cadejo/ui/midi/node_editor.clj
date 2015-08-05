@@ -174,10 +174,13 @@
               (update-path-text [this]
                 (let [pt (cadejo.midi.node/rep-path client-node)
                       cf (.cframe this)]
-                  (if cf (.set-path-text! pt))
+                  (if cf (.set-path-text! this pt))
                   (doseq [c (.children client-node)]
                     (let [ced (.get-editor c)]
-                      (if ced (update-path-text ced)))))) )]
+                      (if ced (update-path-text ced))))))
+              
+              (sync-ui! [this] nil)
+              )]
      ed))
   ([type-id client-node]
    (basic-node-editor type-id client-node true)))
