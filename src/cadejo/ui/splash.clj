@@ -88,10 +88,10 @@
                                     (ot/boot-external-server)
                                     :default ;; should never see this
                                     nil)
-                              (.working cframe false)
-                              (.hide! cframe)
-                              (cadejo.midi.scene/create-scene)
-                              (.dispose (.jframe cframe))))))))
+                              ;; (.working cframe false)
+                              ;; (.hide! cframe)
+                              (cadejo.midi.scene/create-scene cframe)
+                              ))))))
     pan-main))
 
 (defn- splash-screen []

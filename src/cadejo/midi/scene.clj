@@ -233,11 +233,19 @@
     sobj))
 
 
-(defn create-scene []
-  (if (not (ot/server-connected?))
-    (ot/boot-server))
-  (let [s (scene)
-        sed (.get-editor s)]
-    (swap! global-scenes* (fn [q](conj q s)))
-    (and sed (.show! sed))
-    s))
+(defn create-scene
+  ([]
+   (if (not (ot/server-connected?))
+     (ot/boot-server))
+   (let [s (scene)
+         sed (.get-editor s)]
+     (swap! global-scenes* (fn [q](conj q s)))
+     (and sed (.show! sed))
+     s))
+  ([splash-frame]
+   (create-scene)
+   (.working splash-frame false)
+   (.hide! splash-frame)
+   (.dispose (.jframe splash-frame))))
+
+
