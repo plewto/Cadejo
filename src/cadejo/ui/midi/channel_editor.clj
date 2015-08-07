@@ -201,36 +201,6 @@
         pan-main (ss/grid-panel :rows 2 :items [tbar1 tbar2])]
     pan-main))
 
-
-;; (defprotocol ChannelEditor
-;;
-;;   (widgets 
-;;     [this])
-;;
-;;   (widget
-;;     [this key])
-;;  
-;;   (node 
-;;     [this])
-;;  
-;;   (working
-;;     [this flag])
-;;
-;;   (status!
-;;     [this msg])
-;;
-;;   (warning!
-;;     [this msg])
-;;
-;;   ;; (frame 
-;;   ;;   [this])
-;;
-;;   (show-scene
-;;    [this])
-;; 
-;;   (sync-ui!
-;;     [this]))
-
 (defn channel-editor [chanobj]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :channel chanobj)
         lab-id (.widget basic-ed :lab-id)
@@ -254,76 +224,6 @@
     (.add toolbar jb-midi)
     (ss/config! (.widget basic-ed :jframe) :on-close :hide)
     (ss/config! (.widget basic-ed :jframe) :title (format "Cadejo Channel %d" (inc (.channel-number chanobj))))
-    ;;(let [ced (reify cadejo.ui.midi.node-editor/NodeEditor
-                ;;
-                ;; (widgets [this] (.widgets basic-ed))
-                ;;
-                ;; (widget [this key]
-                ;;   (or (.widget basic-ed key)
-                ;;       (umsg/warning (format "ChannelEditor does not have %s widget" key))))
-                ;;
-                ;; (node [this] (.node basic-ed))
-                ;;
-                ;; (working [this flag]
-                ;;   (.working basic-ed flag))
-                ;;
-                ;; (status! [this msg]
-                ;;   (.status! basic-ed msg))
-                ;;
-                ;; (warning! [this msg]
-                ;;   (.warning! basic-ed msg))
-                ;;
-                ;; (show-scene [this]
-                ;;   (let [scene (.parent chanobj)
-                ;;         sed (.get-editor scene)
-                ;;         sframe (.frame sed)]
-                ;;     (ss/show! sframe)
-                ;;     (.toFront sframe)))
-                ;;
-                ;; (sync-ui! [this]
-                ;;   (.removeAll tbar-performance)
-                ;;   ;(.add tbar-performance (ss/label :text "Shift/Click to remove "))  ;; BUGGY
-                ;;   (doseq [p (.children chanobj)]
-                ;;     (let [itype (.get-property p :instrument-type)
-                ;;           id (.get-property p :id)
-                ;;           logo (.logo p :small)
-                ;;           jb (ss/button :icon logo)]
-                ;;       (ss/listen jb :action (fn [ev]
-                ;;                               (let [src (.getSource ev)
-                ;;                                     mods (.getModifiers ev)
-                ;;                                     performance (.getClientProperty jb :performance)
-                ;;                                     ped (.get-editor performance)
-                ;;                                     pframe (.widget ped :jframe)
-                ;;                                     chaned (.get-editor chanobj)
-                ;;                                     sed (.get-editor (.get-scene performance))
-                ;;                                     id (.getClientProperty src :id)]
-                ;;                                 (cond (= mods 17) ; shift+click remove performance
-                ;;                                       (let [ped (.get-editor performance)
-                ;;                                             dim (.getSize (.frame sed))]
-                ;;                                         (.remove-performance! chanobj id)
-                ;;                                         (.setVisible pframe false)
-                ;;                                         (.dispose pframe)
-                ;;                                         (.sync-ui! sed)
-                ;;                                         (.setSize (.frame sed)(int (.getWidth dim))(int (.getHeight dim))) 
-                ;;                                         (.validate (.frame sed))
-                ;;                                         (.status! chaned (format "Performance %s removed" id)))
-                ;;
-                ;;                                       :default ; hide/show performance editor
-                ;;                                       (if (.isVisible pframe)
-                ;;                                         (.setVisible pframe false)
-                ;;                                         (do 
-                ;;                                           (.setVisible pframe true)
-                ;;                                           (.toFront pframe)))))))
-                ;;       (.putClientProperty jb :instrument-type itype)
-                ;;       (.putClientProperty jb :id id)
-                ;;       (.putClientProperty jb :performance p)
-                ;;       (.setToolTipText jb (format "%s id = %s" (name itype)(name id)))
-                ;;       (.add tbar-performance jb)
-                ;;       (.sync-ui! (.get-editor p))))
-                ;;
-                ;;   (.sync-ui! midi-properties-panel)
-                ;;   (.revalidate (.widget basic-ed :jframe))) 
-    ;;)]
     (let [ced (reify cadejo.ui.midi.node-editor/NodeEditor
                 (cframe! [this cf embed] (.cframe! basic-ed cf embed))
 
@@ -384,11 +284,10 @@
                                              (ss/hide! pframe)
                                              (do
                                                (ss/show! pframe)
-                                               (.toFront pframe))))))))))
-                                               
-                )]
-                  
-
+                                               (.toFront pframe)))))))
+                      (.add tbar-performance jb)
+                      (.revalidate (.jframe this))
+                      (.sync-ui! (.get-editor p))))) )]
                 
       (ss/config! lab-id 
                   :text (format "Channel %s " (inc (.channel-number chanobj)))

@@ -87,16 +87,28 @@
   ;;   (.update-path-text this)
   ;;   (.sync-ui! sregistry-editor))
 
+  ;; (sync-ui! [this]
+  ;;   (.update-path-text this)
+  ;;   (dotimes [ci channel-count]
+  ;;     (let [chan (inc ci)
+  ;;           jb (nth chan-buttons ci)
+  ;;           cobj (.channel this ci)
+  ;;           child-count (count (.children cobj))]
+  ;;       (if (pos? child-count)
+  ;;         (ss/config! jb :text (format "%02d*" chan))
+  ;;         (ss/config! jb :text (format "%02d" chan)))
+  ;;       (.sync-ui! sregistry-editor))))
+
+
   (sync-ui! [this]
     (.update-path-text this)
-    (dotimes [ci channel-count]
-      (let [chan (inc ci)
-            jb (nth chan-buttons ci)
-            cobj (.channel this)
-            child-count (count (.children cobj))]
-        (if (pos? child-count)
-          (ss/config! jb :text (format "%02d*" chan))
-          (ss/config! jb :text (format "%02d" chan)))
+    (doseq [chanobj (.children (.node this))]
+      (let [id (.get-property chanobj :id)
+            jb (nth chan-buttons id)
+            pcount (count(.children chanobj))]
+        (if (pos? pcount)
+          (ss/config! jb :text (format "%02d*" (inc id)))
+          (ss/config! jb :text (format "%02d" (inc id))))
         (.sync-ui! sregistry-editor))))
   
   SceneEditorProtocol
@@ -119,16 +131,6 @@
             (ss/show! jframe)
             (.toFront jframe))))))
 
-  ;; (sync-ui! [this]
-  ;;   (dotimes [ci channel-count]
-  ;;     (let [chan (inc ci)
-  ;;           jb (nth chan-buttons ci)
-  ;;           cobj (.channel this)
-  ;;           child-count (count (.children cobj))]
-  ;;       (if (pos? child-count)
-  ;;         (ss/config! jb :text (format "%02d*" chan))
-  ;;         (ss/config! jb :text (format "%02d" chan)))
-  ;;       (.sync-ui! sregistry-editor))))
   )
 
 

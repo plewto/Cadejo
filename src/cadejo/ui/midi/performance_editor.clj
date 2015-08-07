@@ -17,34 +17,34 @@
 
 (def frame-size [1280 :by 587])
 
-(defprotocol PerformanceEditor
-
-   (widgets 
-    [this])
-
-  (widget
-    [this key])
-  
-  (node 
-    [this])
-
-  (working
-    [this flag])
-
-  (status!
-    [this msg])
-
-  (warning!
-    [this msg])
-
-  (jframe 
-    [this])
-
-  (show-channel
-   [this])
-
-  (sync-ui!
-    [this]))
+;; (defprotocol PerformanceEditor
+;;
+;;    (widgets 
+;;     [this])
+;;
+;;   (widget
+;;     [this key])
+;;  
+;;   (node 
+;;     [this])
+;;
+;;   (working
+;;     [this flag])
+;;
+;;   (status!
+;;     [this msg])
+;;
+;;   (warning!
+;;     [this msg])
+;;
+;;   (jframe 
+;;     [this])
+;;
+;;   (show-channel
+;;    [this])
+;;
+;;   (sync-ui!
+;;     [this]))
 
 (defn performance-editor [performance]
   (let [descriptor (.get-property performance :descriptor)
@@ -130,34 +130,49 @@
                                    (.warning! basic-ed "Editor not defined"))))))
       (.add toolbar b))
     (ss/config! (.widget basic-ed :jframe) :on-close :hide)
-    (let [ped (reify PerformanceEditor
-                 (widgets [this] (.widgets basic-ed))
+    (let [ped (reify cadejo.ui.midi.node-editor/NodeEditor
 
-                 (widget [this key]
-                   (or (.widget basic-ed key)
+                (cframe! [this  cf embed] (.cframe! basic-ed cf embed))
+
+                (cframe! [this cf] (.cframe! basic-ed cf))
+
+                (cframe [this] (.cframe basic-ed))
+
+                (jframe [this] (.jframe basic-ed))
+
+                (set-icon! [this ico] (.set-icon! basic-ed ico))
+
+                (show! [this] (.show! basic-ed))
+
+                (hide! [this] (.hide! basic-ed))
+                
+                (widgets [this] (.widgets basic-ed))
+
+                (widget [this key]
+                  (or (.widget basic-ed key)
                       (umsg/warning (format "PerformanceEditor does not have %s widget" key))))
 
-                 (node [this] (.node basic-ed))
+                (add-widget! [this key obj] (.add-widget! basic-ed key obj))
                 
-                 (working [this flag]
-                   (.working basic-ed flag))
+                (node [this] (.node basic-ed))
+                
+                (working [this flag] (.working basic-ed flag))
 
-                 (status! [this msg]
-                   (.status! basic-ed msg))
+                (status! [this msg] (.status! basic-ed msg))
                  
-                 (warning! [this msg]
-                   (.warning! basic-ed msg))
-                 
-                 (jframe [this]
-                   (.widget this :jframe))
+                 (warning! [this msg] (.warning! basic-ed msg))
 
-                 (show-channel [this]
-                   (let [chanobj (.parent performance)
-                         ced (.get-editor chanobj)
-                                        ;cframe (.frame ced)]
-                         jframe (.widget ced :jframe)]
-                     (ss/show! jframe)
-                     (.toFront jframe)))
+                 ;; (show-channel [this]
+                 ;;   (let [chanobj (.parent performance)
+                 ;;         ced (.get-editor chanobj)
+                 ;;                        ;cframe (.frame ced)]
+                 ;;         jframe (.widget ced :jframe)]
+                 ;;     (ss/show! jframe)
+                 ;;     (.toFront jframe)))
+
+                 (set-path-text! [this msg] (.set-path-text! basic-ed msg))
+
+                 (update-path-text [this] (.update-path-text basic-ed))
                  
                  (sync-ui! [this]
                    (.sync-ui! bank-ed)
