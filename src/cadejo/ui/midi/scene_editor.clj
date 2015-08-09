@@ -2,6 +2,7 @@
 
 (ns cadejo.ui.midi.scene-editor
   (:require [cadejo.config :as config])
+  (:require [cadejo.midi.input-port])
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.cadejo-frame])
   (:require [cadejo.ui.midi.node-editor])
@@ -9,8 +10,10 @@
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.icon :as icon])
   (:require [cadejo.ui.util.lnf :as lnf])
+  (:require [cadejo.util.midi :as midi])
   (:require [cadejo.util.user-message :as umsg])
   (:require [seesaw.core :as ss])
+  (:require [seesaw.font :as ssf])
   (:import java.awt.BorderLayout
            java.awt.event.ActionListener))
 
@@ -28,13 +31,9 @@
     [this])
   
   (show-hide-channel 
-    [this id])
-    
-  ;; (sync-ui!
-  ;;   [this])
-  )
+    [this id]) )
 
-(deftype SceneEditor [scene chan-buttons basic-ed sregistry-editor   ]
+(deftype SceneEditor [scene chan-buttons basic-ed sregistry-editor]
   
   cadejo.ui.midi.node-editor/NodeEditor
 
@@ -82,24 +81,7 @@
 
   (update-path-text [this]
     (.update-path-text basic-ed))
-
-  ;; (sync-ui! [this]
-  ;;   (.update-path-text this)
-  ;;   (.sync-ui! sregistry-editor))
-
-  ;; (sync-ui! [this]
-  ;;   (.update-path-text this)
-  ;;   (dotimes [ci channel-count]
-  ;;     (let [chan (inc ci)
-  ;;           jb (nth chan-buttons ci)
-  ;;           cobj (.channel this ci)
-  ;;           child-count (count (.children cobj))]
-  ;;       (if (pos? child-count)
-  ;;         (ss/config! jb :text (format "%02d*" chan))
-  ;;         (ss/config! jb :text (format "%02d" chan)))
-  ;;       (.sync-ui! sregistry-editor))))
-
-
+ 
   (sync-ui! [this]
     (.update-path-text this)
     (doseq [chanobj (.children (.node this))]
@@ -113,7 +95,7 @@
   
   SceneEditorProtocol
 
-  (registered-tables [this]             ; ISSUE NOT IMPLEMENTEDD
+  (registered-tables [this]             ; ISSUE NOT IMPLEMENTED
     )
 
   (show-vkbd [this]
@@ -129,16 +111,59 @@
           (ss/hide! jframe)
           (do
             (ss/show! jframe)
-            (.toFront jframe))))))
-
-  )
+            (.toFront jframe)))))) )
 
 
 
 (defn- create-midi-panel [scene]
-  (let [lab-temp (ss/label :text "FPO MIDI Panel")
-        pan-main (ss/border-panel :center lab-temp)
-        ]
+  (let [lab-help (ss/text :text "Select MIDI input device and click 'Connect'"
+                          :font (ssf/font :size 16 :style :bold)
+                          :multi-line? true
+                          :editable? false
+                          :visible? true
+                          :border (factory/padding 32))
+        
+        device-buttons* (atom [])
+        selected-device* (atom nil)
+        grp (ss/button-group)
+        pan-device (ss/grid-panel :border (factory/padding 16))
+        pan-main (ss/border-panel :center lab-help
+                                  :west pan-device)
+        jb-connect (ss/button :text "Connect"
+                              :enabled? false)]
+    (doseq [t (midi/transmitters)]
+      (let [[flag device] t
+            info (.getDeviceInfo device)
+            [hw-name sys-device](midi/parse-device-name (.getName info))
+            tb (ss/radio :text (format "%s %s " hw-name sys-device)
+                         :group grp
+                         :enabled? flag)]
+        (.putClientProperty tb :name hw-name)
+        (.putClientProperty tb :device sys-device)
+        (if hw-name
+          (do
+            (swap! device-buttons* (fn [n](conj n tb)))
+            (ss/listen tb :action
+                       (fn [_]
+                         (ss/config! jb-connect :enabled? true)
+                         (reset! selected-device* hw-name)
+                         (.status! (.get-editor scene) (format "%s input selected" sys-device))))))))
+    (swap! device-buttons* (fn [q](conj q jb-connect)))
+    (while (< (count @device-buttons*) 8)
+      (swap! device-buttons* (fn [q](conj q (ss/vertical-panel)))))
+    (ss/config! pan-device
+                :items @device-buttons*
+                :rows (inc (count @device-buttons*))
+                :columns 1)
+    (ss/listen jb-connect :action (fn [_]
+                                    (doseq [obj @device-buttons*]
+                                      (ss/config! obj :enabled? false))
+                                    (let [dev @selected-device*
+                                          ip (cadejo.midi.input-port/midi-input-port dev)
+                                          vkb (.get-property scene :virtual-keyboard)]
+                                      (.status! (.get-editor scene)(format "Connecting to %s" dev))
+                                      (.add-child! ip vkb)
+                                      (ss/config! lab-help :text "Select channel button to add instruments..."))))
     pan-main))
 
 (def ^:private local-help-text
@@ -152,7 +177,6 @@
                      :editable? false)
         pan-main (ss/border-panel :center txt-area)]
     pan-main))
-
 
 (defn scene-editor [scene]
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :scene scene true)
@@ -185,8 +209,7 @@
                                          [pan-midi :midi]
                                          [(.widget sregistry-editor :pan-main) :scale-registry]])
         pan-center (.widget basic-ed :pan-center)
-        sed (SceneEditor. scene jb-channels basic-ed sregistry-editor)
-        ]
+        sed (SceneEditor. scene jb-channels basic-ed sregistry-editor)]
     (.set-icon! basic-ed (lnf/read-icon :general :scene))
     (.help-topic! (.cframe basic-ed) :scene)
     (ss/listen jb-midi :action (fn [_]
@@ -201,9 +224,8 @@
     (ss/listen jb-vkbd :action (fn [_]
                                  (let [vkb (.get-property scene :virtual-keyboard)]
                                    (and vkb (.show! vkb)))))
+    (ss/config! (.jframe sed) :on-close :nothing)
+    (ss/show-card! pan-cards :midi)
     (.size! (.cframe basic-ed) width height)
+    (.show-vkbd sed)
     sed))
-    
-
-                              
-  
