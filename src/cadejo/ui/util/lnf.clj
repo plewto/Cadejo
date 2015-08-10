@@ -4,14 +4,9 @@
   (:require [cadejo.util.path :as path])
   (:require [cadejo.util.user-message :as umsg])
   (:require [sgwr.util.color :as uc])
-  ;; (:require [seesaw.core :as ss])
-  ;; (:require [seesaw.color :as ssc])
-  ;; (:require [seesaw.icon])
-  ;; (:require [seesaw.swingx :as swingx])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel
            org.pushingpixels.substance.api.UiThreadingViolationException
-           java.io.File)
-  )
+           java.io.File))
 
 (println "-->    seesaw.core ...")
 (require '[seesaw.core :as ss])
@@ -95,7 +90,8 @@
      icn))
   ([group subgroup]
    (read-disabled-icon "black" "general" "blank")))
-     
+
+
 ;; Return skin-selection panel
 ;;
 (defn- lnf-selector-panel []
@@ -116,8 +112,22 @@
                                      (config/current-skin! (.getDisplayName skin))
                                      (ss/invoke-later
                                       (SubstanceLookAndFeel/setSkin (.getClassName skin))))))))
-                  @acc*)]
-    (ss/grid-panel :rows 6 :columns 5 :items buttons)))
+                  @acc*)
+        sampler-icon (ss/label :icon (seesaw.icon/icon (File. "resources/skin_sampler.png")))
+        pan-sampler (ss/vertical-panel :items [(ss/scrollable sampler-icon)])
+        pan-selection (ss/grid-panel :rows 6 :columns 5 :items buttons)
+        jb-sampler (ss/button :text "Samples")
+        jb-selection (ss/button :text "Select Skin")
+        pan-north (ss/horizontal-panel :items [jb-selection jb-sampler])
+        pan-cards (ss/card-panel :items [[pan-selection :selection][pan-sampler :sampler]])
+        pan-main (ss/border-panel :north pan-north
+                                  :center pan-cards)]
+    (ss/listen jb-sampler :action (fn [& _]
+                                    (ss/show-card! pan-cards :sampler)))
+    (ss/listen jb-selection :action (fn [& _]
+                                      (ss/show-card! pan-cards :selection)))
+    pan-main))
+    
                                         
 ;; Pop up skin selection dialog.
 ;;                  
@@ -398,9 +408,11 @@
                                            :ultra-light    (uc/color :white)
                                            :background     (uc/color [255 227 197])
                                            :text           :extra-dark
+                                           :checkbox       :ultra-dark
                                            :title          :ultra-dark
                                            :active-track   :ultra-dark
-                                           :minor-tick     :ultra-dark
+                                           :minor-tick     :dark
+                                           :major-tick     :extra-dark
                                            :dbar-style     :matrix
                                            :dbar-active    :ultra-dark))
 
@@ -408,15 +420,16 @@
                                              default-skin-map
                                              :ultra-dark     (uc/color :black)
                                              :extra-dark     (uc/color [ 69  74  78])
-                                             :dark           (uc/color [165 167 169])
-                                             :medium         (uc/color [255 255 211])
-                                             :light          (uc/color [237 240 244])
+                                             :dark           (uc/color [ 00 130 191])
+                                             :medium         (uc/color [176 180 184])
+                                             :light          (uc/color [255 255 255])
                                              :extra-light    nil
                                              :ultra-light    (uc/color :white)
                                              :background     (uc/color [204 208 211])
                                              :text           :extra-dark
+                                             :checkbox       :extra-dark
                                              :selected-text  :medium
-                                             :active-track   :medium
+                                             :active-track   :extra-dark
                                              :minor-tick     :text
                                              :env-border     :extra-dark
                                              :dbar-active    :ultra-dark
@@ -425,22 +438,28 @@
 
 (def ^:private business-black (create-sparse-skin-map "Business Black Steel"
                                                       business-map
-                                                      :medium     (uc/color [162 191 211])
+                                                      :medium     (uc/color [ 44  65  81])
+                                                      :background (uc/color [241 246 250])
                                                       :dbar-style :matrix
-                                                      :dbar-inactive (uc/color [195 217 234])
-                                                      :dbar-active (uc/color :black)))
+                                                      :dbar-inactive :background
+                                                      :dbar-active (uc/color :black)
+                                                      :active-track :medium
+                                                      :checkbox :medium
+                                                      ))
 
 (def ^:private business-blue (create-sparse-skin-map "Business Blue Steel"
                                                      business-map
+                                                     :dark      (uc/color  [ 44  65  81])
+                                                     :medium    (uc/color  [149 180 200])
                                                      :background (uc/color [232 237 241])
-                                                     :medium    (uc/color [149 180 200])
                                                      :passive-track :medium
                                                      :active-track :text
                                                      :handle :text
                                                      :env-handle :text
                                                      :dbar-style :sixteen
                                                      :dbar-inactive :background
-                                                     :dbar-active (uc/color :black)))
+                                                     :dbar-active (uc/color :black)
+                                                     :checkbox :dark))
 
 (def ^:private cerulean-map (create-skin-map "Cerulean"
                                              default-skin-map
@@ -448,8 +467,8 @@
                                              :dark          (uc/color [42 46 54])
                                              :medium        (uc/color [194 219 225])
                                              :light         (uc/color [240 240 240])
-                                             :extra-light   (uc/color [250 250 250])
-                                             :background    :light
+                                             :extra-light   (uc/color [251 252 252])
+                                             :background    :extra-light
                                              :text          :dark
                                              :selected-text (uc/color [ 68 151 221])
                                              :passive-track (uc/color [179 218 218])
@@ -472,27 +491,31 @@
                                                     :minor-border   (uc/color [ 84  82 111])
                                                     :button-border  :medium
                                                     :passive-track  :medium
-                                                    :active-track   :text
-                                                    :handle         :ultra-light
+                                                    :active-track   :dbar-active
+                                                    :handle         (uc/color [250 232 75])
+                                                    :handle-style   [:dot]
                                                     :env-segment    :medium
                                                     :dbar-inactive  (uc/color [  0  0 174])
                                                     :dbar-active    (uc/color [218 75 249])
                                                     :dbar-style     :sixteen
+                                                    :checkbox       (uc/color [234 231 242])
                                                     :occluder       (uc/color [64 32 128 128])))
 
 (def ^:private creme-map (create-skin-map "Creme"
                                           default-skin-map
                                           :icon-selected-prefix  "white"
                                           :ultra-dark    (uc/color :black)
+                                          :extra-dark    (uc/color [ 55  99 181])
                                           :medium        (uc/color [179 182 176])
-                                          :light         (uc/color [241 236 224])
+                                          :light         (uc/color [238 243 230])
                                           :background    :light
                                           :text          :ultra-dark
                                           :selected-text (uc/color [180 140 0])
-                                          :passive-track (uc/color [215 172 151])
-                                          :active-track  :ultra-dark
+                                          :passive-track :ultra-dark
+                                          :active-track  :extra-dark
                                           :minor-tick    (uc/color [112  37  0])
                                           :major-border  :minor-tick
+                                          :checkbox :extra-dark
                                           :dbar-style :basic
                                           :dbar-active :ultra-dark))
 
@@ -501,17 +524,64 @@
                                                         :dbar-style :matrix
                                                         :dbar-inactive :background
                                                         :dbar-active :ultra-dark
+                                                        :active-track (uc/color [150 106  62])
                                                         :handle-style [:triangle]
+                                                        :handle :ultra-dark
                                                         :handle-size 5
-                                                        :checkbox :ultra-dark
-                                                        :checkbox-style [:dot]
+                                                        :checkbox :active-track
+                                                        :checkbox-style [:dot :fill]
                                                         :checkbix-size 2))
 
 (def ^:private dust-map (create-sparse-skin-map "Dust"
-                                            default-skin-map))
+                                                default-skin-map
+                                                :icon-prefix "black"
+                                                :icon-selected-prefix :black
+                                                :ultra-dark (uc/color [ 18  18  18])
+                                                :extra-dark (uc/color [ 45  45  45])
+                                                :dark   (uc/color  [209 203 203])
+                                                :medium (uc/color  [234 231 226])
+                                                :light  (uc/color  [250 247 255])
+                                                :extra-light (uc/color [247 247 240])
+                                                :ultra-light :extra-light
+                                                :background :medium
+                                                :text :extra-dark
+                                                :selected-text :dark
+                                                :label :text
+                                                :title :text
+                                                :minor-border :text
+                                                :major-border nil
+                                                :handle :active-track
+                                                :handle-style [:dot :fill]
+                                                :handle-size nil
+                                                :passive-track :dark
+                                                :active-track :extra-dark
+                                                :minor-tick :extra-dark
+                                                :major-tick :extra-dark
+                                                :button-border nil
+                                                :button-selected-border nil
+                                                :checkbox :extra-dark
+                                                :checkbox-rim :extra-dark
+                                                :checkbox-style nil
+                                                :checkbox-size 2
+                                                :checkbox-rim-radius nil
+                                                :env-background :background
+                                                :env-border :dark
+                                                :env-segment :extra-dark
+                                                :env-selected (uc/color :yellow)
+                                                :env-handle ::env-segment
+                                                :dbar-inactive :background
+                                                :dbar-active :extra-dark
+                                                :dbar-style :basic
+                                                ))
+
 
 (def ^:private dust-coffee-map (create-sparse-skin-map "Dust Coffee"
-                                                   dust-map))
+                                                       dust-map
+                                                       :background (uc/color [232 217 185])
+                                                       :passive-track (uc/color [207 193 165])
+                                                       :dbar-inactive :background
+                                                       
+                                                       ))
                                                        
 
 
@@ -523,21 +593,22 @@
                                                  :ultra-dark     (uc/color [  4  10   8])
                                                  :extra-dark     (uc/color [ 20  38  31])
                                                  :dark           (uc/color [ 47  90  74])
-                                                 :medium         (uc/color [ 92 113 104])
+                                        ;:medium         (uc/color [ 92 113 104])
+                                                 :medium         (uc/color [ 18  82  41])
                                                  :light          (uc/color [156 164 143])
-                                                 :extra-light    (uc/color :white)
+                                                 :extra-light    (uc/color [255 255 200])
                                                  :selected-text  (uc/color [155 147 167])
                                                  :passive-track  :dark
-                                                 :handle         (uc/color [155 147 167])
-                                                 :handle-style   [:triangle]
-                                                 :handle-size    5
+                                                 :active-track   (uc/color [ 25 150  57])
+                                                 :handle         :extra-light ; (uc/color [155 147 167])
+                                                 :handle-style   [:dot]
+                                                 :handle-size    3
                                                  :minor-border   :light
                                                  :major-border   :light
-                                                 :checkbox       (uc/color [155 147 167])
                                                  :dbar-style     :sixteen
                                                  :dbar-inactive  :ultra-dark
-                                                 :dbar-active    (uc/color [206 199 215])
-                                                 :checkbox       (uc/color [155 147 167])
+                                                 :dbar-active    :extra-light
+                                                 :checkbox       :extra-light
                                                  :checkbox-size  2
                                                  :env-background :ultra-dark
                                                  :env-segment    :light
@@ -556,14 +627,14 @@
                                            :ultra-light       (uc/color [255 231 101])
                                            :minor-border      :medium
                                            :major-border      :ultra-dark
-                                           :passive-track     :extra-light
-                                           :active-track      :ultra-light
+                                           :passive-track     :ultra-dark ; :extra-light
+                                           :active-track      (uc/color [ 68 113 120]) ;:ultra-light
                                            :handle            :active-track
-                                           :handle-style      [:chevron-n :edge-s]
+                                           :handle-style      [:triangle]
                                            :button-border     :light
                                            :checkbox          :ultra-light
                                            :dbar-inactive     :ultra-dark
-                                           :dbar-active       :ultra-light
+                                           :dbar-active       (uc/color [ 83 136 145]) ;:active-track ;:ultra-light
                                            :dbar-style        :matrix
                                            :env-background    :ultra-dark
                                            :env-border        :medium
@@ -587,23 +658,41 @@
 
 (def ^:private graphite-aqua-map (create-sparse-skin-map "Graphite Aqua"
                                                          graphite-map
+                                                         :background   (uc/color [ 77  77  77])
                                                          :ultra-light  (uc/color [ 80 114 237])
-                                                         :background   (uc/color [ 87  87  87])
+                                                         :passive-track :light
                                                          :active-track :ultra-dark
+                                                         :handle :active-track
                                                          :handle-style  [:dot :fill]
-                                                         :dbar-style   :sixteen))
+                                                         :dbar-style   :sixteen
+                                                         :dbar-inactive :extra-dark
+                                                         :dbar-active :extra-light
+                                                         :checkbox :extra-light
+                                                         :checkbox-size 2))
+
+(def ^:private graphite-glass-map (create-sparse-skin-map "Graphite Glass"
+                                                          graphite-map
+                                                          :background (uc/color [ 25  25  25])
+                                                          :active-track (uc/color :blue)
+                                                          :dbar-style :matrix
+                                                          :dbar-inactive (uc/color :black)
+                                                          :dbar-active (uc/color :blue)
+                                                          :checkbox (uc/color [100 250 255])
+                                                          :checkbox-size 2
+                                                          ))
 
 (def ^:private nebula-map (create-skin-map "Nebula"
                                            default-skin-map
                                            :dark    (uc/color [ 42  46  54])
                                            :medium  (uc/color [230 232 237])
                                            :light   (uc/color [244 244 252])
-                                           :background   :medium
+                                           :background   :light
                                            :text         :dark
                                            :selected-text (uc/color [196 0 250])
-                                           :passive-track :light
-                                           :active-track :dark
+                                           :passive-track :medium
+                                           :active-track :ultra-dark
                                            :minor-tick   :dark
+                                           :checkbox :dark
                                            :dbar-style   :basic
                                            :dbar-active  :ultra-dark))
 
@@ -634,7 +723,7 @@
                                                 :light         (uc/color [190 216 252])
                                                 :extra-light   (uc/color [200 219 238])
                                                 :ultra-light   (uc/color [255 255 169])
-                                                :background    :medium
+                                                :background    (uc/color [200 219 238])
                                                 :text          :extra-dark
                                                 :passive-track :dark
                                                 :active-track  :extra-dark
@@ -649,7 +738,7 @@
                                                   :light         (uc/color [243 245 245])
                                                   :extra-light   (uc/color [200 219 238])
                                                   :ultra-light   (uc/color [186 140  74])
-                                                  :background    :medium
+                                                  :background    :light
                                                   :text          :extra-dark
                                                   :passive-track :dark
                                                   :active-track  :extra-dark
@@ -670,6 +759,7 @@
                                           :background    :extra-dark
                                           :text          :ultra-light
                                           :selected-text :extra-light
+                                          :passive-track :medium
                                           :active-track  :extra-light
                                           :minor-tick    (uc/color [193 204 214])
                                           :handle        :ultra-light
@@ -717,7 +807,7 @@
    "Gemini" gemini-map
    "Graphite" graphite-map
    "Graphite Aqua" graphite-aqua-map
-   "Graphite Glass" (create-sparse-skin-map "Graphite Glass" graphite-map)
+   "Graphite Glass" (create-sparse-skin-map "Graphite Glass" graphite-glass-map)
    "Magellan"       (create-sparse-skin-map  "Magellan" challenger-deep-map)
    "Mariner" (create-sparse-skin-map "Mariner" creme-coffee-map 
                                      :background (uc/color [217 218 217])
@@ -727,7 +817,10 @@
    "Mist Silver" (create-sparse-skin-map "Mist Silver" business-black)
    "Moderate" (create-sparse-skin-map "Moderate" business-blue)
    "Nebula" nebula-map
-   "Nebula Brick Wall" (create-sparse-skin-map "Nebula Brick Wall" nebula-map)
+   "Nebula Brick Wall" (create-sparse-skin-map "Nebula Brick Wall"
+                                               nebula-map
+                                               :dbar-style :matrix
+                                               :checkbox-size 2)
    "Office Black 2007" office-black-map
    "Office Blue 2007" office-blue-map
    "Office Silver 2007" office-silver-map
@@ -812,10 +905,6 @@
 (def dbar-active (lnf-color             :dbar-active))
 (def occluder (lnf-color                :occluder))
            
-;; (defn selected-button-border []
-;;   (umsg/warning "lnf/selected-button-border is DEPRECIATED, use button-selected-border")
-;;   (button-selected-border))
-
 (defn- lnf-value [key]
   (fn [](skin-value key)))
 
