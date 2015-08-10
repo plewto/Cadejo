@@ -258,7 +258,7 @@
 (defn vkbd [parent child]
   (let [cframe (cframe/cadejo-frame "Virtual Keyboard" "" [:progress-bar :pan-north])
         properties* (atom {:channel 1,
-                           :octave 0,
+                           :octave 3,
                            :id :VKBD})
         parent* (atom nil)
         children* (atom [])
@@ -276,12 +276,12 @@
                                                :click-action octave-action
                                                :w 30 :h 30 :gap 10
                                                :rim-radius 0)
-
         channel-action (fn [b _]
                          (let [cbs (msb/current-multistate-button-state b)
                                chan0 (first cbs)]
                            (swap! properties* (fn [q](assoc q :channel (inc chan0))))
-                           (.status! vnode (format "Transmit Channel -> %s" (get @properties* :channel)))))
+                           (.status! vnode (format "Transmit Channel -> %s" 
+                                                   (get @properties* :channel)))))
         msb-channel (msb/text-multistate-button (.tool-root drw)
                                                 pos-channel-button
                                                 channel-button-states
@@ -319,7 +319,6 @@
                         130 146 178 194 210
                         242 258 290 306 322
                         354 370 402 418 434]
-          
           down-action (fn [b ev]
                         (let [id (.get-property b :id)
                               octave (get @properties* :octave)
@@ -331,14 +330,12 @@
                               c1 (get @properties* :channel)]
                           (.note-on vnode keynum vel)
                           (.status! vnode (format "Chan %2d  Key %3d  Vel %3d" c1 keynum v127))))
-          
           up-action (fn [b _]
                       (let [id (.get-property b :id)
                             octave (get @properties* :octave)
                             keynum (+ (* 12 octave) id)
                             c1 (get @properties* :channel)]
                         (.note-off vnode keynum)))]
-      
       (dotimes [i white-key-count]
         (let [p0 [@x* y0]
               p1 [(+ @x* white-key-width) y1]
@@ -370,6 +367,7 @@
           (sgwr.components.image/read-image (.root drw)
                                             (point+ p0 0 (- black-key-height))
                                             "resources/keys/up_black.png"))) )
+    (msb/set-multistate-button-state! msb-octave 3 false)
     (if parent (.add-child! parent vnode))
     (if child (.add-child! vnode child))
     (.put-property! b-help :rim-radius 0)

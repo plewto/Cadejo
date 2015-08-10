@@ -243,9 +243,13 @@
      (and sed (.show! sed))
      s))
   ([splash-frame]
-   (create-scene)
-   (.working splash-frame false)
-   (.hide! splash-frame)
-   (.dispose (.jframe splash-frame))))
+   (let [s (create-scene)]
+     (.working splash-frame false)
+     (.hide! splash-frame)
+     (.dispose (.jframe splash-frame))
+     (let [vkb (.get-property s :virtual-keyboard)]
+       (if vkb (.show! vkb)))
+     s)))
+     
 
 
