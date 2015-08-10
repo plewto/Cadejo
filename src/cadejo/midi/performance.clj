@@ -457,14 +457,18 @@
       (.put-property! this :transpose n))
 
     (transpose [this]
-      (.get-property this :transpose 0))
+      (let [x1 (.get-property (.parent this) :transpose 0)
+            x2 (or (.local-property this :transpose) 0)]
+        (+ x1 x2)))
 
     (set-db-scale! [this db]
       (.put-property! this :db-scale db)
       (ot/ctl (concat (.synths this)(.voices this)) :dbscale db))
 
     (db-scale [this]
-      (.get-property this :dbscale))
+      (let [db1 (.get-property (.parent this) :dbscale 0)
+            db2 (or (.local-property this :dbscale) 0)]
+        (+ db1 db2)))
 
     (reset [this]
       (.reset keymode)
