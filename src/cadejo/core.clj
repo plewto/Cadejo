@@ -34,3 +34,9 @@
 (cadejo.config/add-instrument! algo-descriptor)
 
 (require 'cadejo.ui.splash)
+
+(defn -main [& args]
+  (cadejo.ui.splash/show-splash))
+
+
+(-main)

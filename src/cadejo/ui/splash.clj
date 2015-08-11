@@ -94,7 +94,7 @@
                               ))))))
     pan-main))
 
-(defn- splash-screen []
+(defn show-splash []
   (let [cframe (cadejo.ui.cadejo-frame/cadejo-frame (config/cadejo-version) "" [:parent :child])
         bgroup (ss/button-group)
         pan-server (create-server-panel cframe)]
@@ -102,9 +102,8 @@
     (ss/config! (.widget cframe :jframe) :icon (cadejo.ui.util.icon/logo "cadejo" :tiny))
     (ss/config! (.widget cframe :jframe) :size splash-frame-size)
     (.add (.widget cframe :pan-center) pan-server BorderLayout/CENTER)
+    (lnf/set-initial-skin)
+    (.show! cframe)
     cframe))
 
-(def global-splash-frame (splash-screen))
-(lnf/set-initial-skin)
-(.show! global-splash-frame)
 
