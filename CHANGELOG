@@ -1,0 +1,5 @@
+	Version 0.4.0-SNAPSHOT
+
+	Removed sgwr library to seperate project
+	Created main function to display intial splash screen
+	
