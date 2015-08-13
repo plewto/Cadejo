@@ -1,4 +1,4 @@
-(println "-->    alaias program")
+(println "-->    alias program")
 
 (ns cadejo.instruments.alias.program
   (:require [cadejo.midi.pbank])
