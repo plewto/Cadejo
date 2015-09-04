@@ -1,0 +1,400 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>ALGO</title></head><body style="color: rgb(255, 255, 247); background-color: black;" alink="#f2f2c7" link="#f2f2c7" vlink="#f2f2c7">
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 25%;">
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top; width: 10%;"><br>
+            </td>
+            <td style="vertical-align: top;"><a href="index.html">Cadejo
+Manual</a><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">FM Synthesis Tutorials<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;"><span style="text-decoration: underline;"></span><a href="http://www.soundonsound.com/sos/apr00/articles/synthsecrets.htm">SOS Synth Secrets</a><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;"><a href="http://www.sfu.ca/%7Etruax/fmtut.html">SFU</a><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      </td>
+      <td style="vertical-align: top; width: 50%; text-align: center;"><img style="width: 128px; height: 170px;" alt="ALGO logo" src="images/algo_logo.png"><br>
+      </td>
+      <td style="vertical-align: top;">
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;"><a href="#algorithm">Algorithm</a><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><a href="#feedback">Feedback</a><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><a href="#envelopes">Envelopes</a><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><a href="#LFO">LFO</a><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><a href="#pitch">Pitch</a><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><a href="#effects">Effects</a><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+
+<br>
+
+ALGO is an 8-operator FM synthesizer. Two of the operators provide FM
+feedback. Additional components include 3 LFOs, a pitch envelope, a
+dual delay line and reverb. <br>
+
+<br>
+
+<br>
+
+<table style="text-align: left; width: 75%;" border="1" cellpadding="2" cellspacing="2">
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 75%;"><a name="algorithm"></a><br>
+The FM 'Algorithm' may be divided into three sections corresponding to
+the three carrier operators&nbsp; 1, 4 and 7. <br>
+      <br>
+Operators 1, 2 and 3 form a serial stack, <br>
+      <br>
+Operators 4, 5 and 6 form a single carrier with dual modulators. This
+stack provides feedback between operators 4 and 6. The nature of this
+feedback is complex and often hard to predict. <br>
+      <br>
+Operators 7 and 8 form a simple carrier/modulator pair with more
+traditional feedback for operator 8.<br>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: middle; text-align: center;"><img style="width: 222px; height: 177px;" alt="ALGO algorithm" src="images/algo_algorithm.png.png"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+
+<br>
+
+With minor variations, mostly due to feedback, the parameters for each
+operator are identical. <br>
+
+<br>
+
+<div style="text-align: center;"><img style="width: 785px; height: 690px;" alt="Algo Editor" src="images/algo_editor_02.png"><br>
+</div>
+
+<br>
+
+<span style="font-weight: bold;">OP Freq</span> - Sets frequency of
+operator relative to played pitch. If the note is A440 and freq is 2.0
+the operator will produce a tone at 880 Hz.<br>
+
+<br style="font-weight: bold;">
+
+<span style="font-weight: bold;">OP Bias</span> - Adds a fixed value to
+the operator frequency. There are a couple of applications for the bias
+value. <br>
+
+First if the operator frequency is set to 0 the bias value is&nbsp;
+used to set a fixed frequency. Using a fixed frequency operator can
+produce sounds <br>
+
+reminiscent of ring modulation.&nbsp; <br>
+
+<br>
+
+Small bias values may be used to introduce chorusing. This is often
+more desirable then detuning the frequency <br>
+
+parameter because the chorus beat frequency is static with a bias
+value. With a detuned frequency the beat rate increases with higher
+notes. <br>
+
+<br>
+
+<span style="font-weight: bold;">OP Amplitude</span> - For the carrier
+operators 1, 4, and 7, the amplitude parameter sets the relative
+(linear) mix of the operator.&nbsp; For modulators<br>
+
+the amplitude sets the modulation index. The sliders immediately below
+the amplitude display provide amplitude modulation from various
+sources. <br>
+
+<br>
+
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 2%;"><br>
+      </td>
+      <td style="vertical-align: top;">Vel - Velocity<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Prss - Pressure or Channel After
+Touch<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">LFO1 -<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">LFO2 -<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">CCA - MIDI controller A<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">CCB - MIDI controller B<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+
+<span style="font-weight: bold;">OP Keyscale</span> - Sets the amount
+of amplitude scaling relative to a key breakpoint. It is not obvious on
+the drawing above but the keyscale slider <br>
+
+has two heads, one each for left and right breakpoints. The scale
+values are in db/octave. For example if the right breakpoint is at key
+72 and the <br>
+
+right scale value is at -9, then the operator amplitude will be down -9
+db by key 84 and -18 db at key 96.&nbsp; A little negative key scaling
+on modulators<br>
+
+may be used to roll back harmonics, which often become harsh,&nbsp; on
+upper keys, The same technique may be used to tame OP 6 feedback on
+higher <br>
+
+notes.&nbsp; Conversely modulator keyscale boosting is often useful on
+the bass end to produce richer bass timbres. <br>
+
+<br>
+
+<span style="font-weight: bold;">OP Overview and Mute</span> - The
+boxes at the bottom of the editor provide a quick overview of the
+frequency and amplitude of all operators&nbsp; without<br>
+
+switching editor pages. These boxes are also used to mute operators.
+The operator mute states are saved as part of the program data.<br>
+
+<a name="feedback"></a><br>
+
+<span style="font-weight: bold;"><br>
+<br>
+OP Feedback</span> - As noted above
+there are two feedback paths on operators 6 and 8. The operator 6 path
+is more complex and becomes chaotic <br>
+faster then operator 8. The controls for OP6 and OP8 feedback are
+nearly identical. The only difference is that OP6 may be modulated by
+LFO1 <br>
+while OP8 may be modulated by LFO2. The feedback parameter are as follows:<br>
+<br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 2%;"><br>
+      </td>
+      <td style="vertical-align: top;">FB - Fixed feedback depth<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Env - Amount of op envelope applied to feedback depth<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">LFO1/LFO2 - Amount of LFO applied to feedback depth<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Prss - Amount of MIDI pressure applied to feedback depth<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">CCA - Amount of MIDI controller A applied to feedback depth<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">CCB - Amount of MIDI controller B applied to feedback depth<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">HP - Fixed high pass filter cutoff, for value below approx 10 Hz a blip component may be produced.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<a name="envelopes"></a><br>
+
+<big style="font-weight: bold;"><br>
+<br>
+Envelopes</big><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      <br>
+      <br>
+Each Operator has a dedicated ADDSR envelope. The pitch envelope has the same overall format.<br>
+      <br>
+The zoom buttons zoom in to and out of the origin and may be set to any
+level magnification.&nbsp; The y-axis at the origin will drift a bit
+with increasing zoom levels but the editor status line always displays
+the location of the mouse is it moves over the envelope graph. You may
+also zoom out to any level&nbsp; which means there is no practical upper
+bounds to envelope segment times. At around 130 seconds the horizontal
+guide lines come to an end but the graph may be zoomed out beyond this
+point.&nbsp; <br>
+      </td>
+      <td style="vertical-align: top; width: 70%;"><img style="width: 617px; height: 620px;" alt="ALGO Envelope" src="images/algo_env.png"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<a name="LFO"></a><br>
+<span style="font-weight: bold;"><br>
+<br>
+LFOs</span><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><br>
+ALGO has three LFOs:&nbsp; LFO1, LFO2 and Vibrato.<br>
+      <br>
+LFO 1 and 2 are nearly identical with the only difference being the
+modulation sources available. The vibrato LFO is found on the Pitch
+page and is simpler then LFO 1 and 2.<br>
+      <br>
+The frequency, amplitude and wave of LFOs 1 and 2 may be modulated by
+various source.&nbsp; CCA and CCB are MIDI controllers, Prss is MIDI
+channel pressure.&nbsp; ENV1 is in reference to the pitch envelope and
+not the envelope for OP1.&nbsp; Basically the difference between LFO1
+and LFO2 is that LFO1 may be modulated by ENV1 while LFO2 may be
+modulated by LFO1. <br>
+      </td>
+      <td style="vertical-align: top; width: 70%;"><img style="width: 407px; height: 456px;" alt="Algo LFO editor" src="images/algo_lfo.png"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<a name="pitch"></a><br>
+<span style="font-weight: bold;"><br>
+<br>
+Pitch </span><br>
+The controls on the editor pitch page are fairly simple. You may set the vibrato frequency, sensitivity, depth and delay.<br>
+In the pitch panel are controls for portamento time and pitch modulation depth from the pitch envelope ,LFO1 and LFO2.<br>
+<br>
+<a name="effects"></a><br>
+<span style="font-weight: bold;"><br>
+<br>
+Effects</span><br>
+ALGO uses a dual delay line and reverb for effects. The delay time may be set independently up to 1 second for the two delays. <br>
+The delays share feedback, HF damp, and mix level parameters.<br>
+<br>
+Reverb room size and mix are adjustable.<br>
+<br>
+The "Out" panel controllers overall amplitude. The LP slider is
+controls the cutoff frequency of&nbsp; a fixed low pass filter at
+ALGO's <br>
+output, The CC&amp; slider controls how much effect MIDI controller 7 (Volume) has on overall amplitude. <br>
+<br><br>
+<br>
+
+
+
+</body></html>
