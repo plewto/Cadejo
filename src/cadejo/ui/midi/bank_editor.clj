@@ -15,8 +15,6 @@
 
 (def ^:private program-count 128) 
 
-
-
 (defprotocol BankEditor
 
   (widgets 
@@ -76,9 +74,7 @@
   
   (copy [this])
 
-  (paste [this])
-
-)
+  (paste [this]))
 
 (defn- format-program-cell [pnum programs]
   (let [prog (get programs pnum)
@@ -104,15 +100,15 @@
                                :border (factory/bevel))
         pan-info (ss/grid-panel :rows 1
                                 :items [lab-filename])
-        ;; pan-south (ss/grid-panel :columns 1 
-        ;;                          :items [pan-info])
         pan-south (ss/border-panel)
         lst-programs (ss/listbox :model (create-program-list bnk))
         pan-center (ss/horizontal-panel :items [(ss/scrollable lst-programs)]
                                         :border (factory/padding))
-        pan-main (ss/border-panel ;:north tbar1
-                                  :center pan-center
-                                  :south pan-south)
+        pan-main (let [pm (ss/border-panel ;:north tbar1
+                           :center pan-center
+                           :south pan-south)]
+                   (ss/config! pm :size [180 :by 300])
+                   pm)
         file-extension (.toLowerCase (name (.data-format bnk)))
 
         file-filter (seesaw.chooser/file-filter
@@ -277,7 +273,6 @@
                                               (.warning! bank-ed "Instrument Editor not defined")))
                                           (.working bank-ed false))))))]
     (reset! program-bar* (progbar/program-bar bank-ed))
-    ;(ss/config! pan-south :center (:pan-main @program-bar*))
     (ss/config! pan-south :south pan-info)
     (.addListSelectionListener 
      lst-programs
@@ -290,8 +285,7 @@
           @enable-list-selection-listener* ;; program-change
           (let [slot (.getSelectedIndex lst-programs)]
             (.recall bnk slot)
-            ((:syncfn @program-bar*))
-            )
+            ((:syncfn @program-bar*)))
          
           :default                      ; do nothing
           nil)))) 

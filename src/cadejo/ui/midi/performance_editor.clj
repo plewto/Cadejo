@@ -16,8 +16,6 @@
 
 (def frame-size [1280 :by 587])
 
-
-
 (defn performance-editor [performance]
   (let [descriptor (.get-property performance :descriptor)
         basic-ed (let [bed (cadejo.ui.midi.node-editor/basic-node-editor :performance performance)
@@ -38,10 +36,12 @@
         properties-panel (cadejo.ui.midi.properties-panel/midi-properties-panel)
         card-buttons* (atom [])
         card-group (ss/button-group)
-        pan-cards (ss/card-panel :items [[(.widget bank-ed :pan-main) "BANK"]
-                                         [(.widget properties-panel :pan-main) "MIDI"]])
+        pan-cards (ss/card-panel :items [(.widget properties-panel :pan-main) "MIDI"]])
+        pan-split (ss/left-right-split
+                   (.widget bank-ed :pan-main)
+                   pan-cards)
         pan-center (let [panc (.widget basic-ed :pan-center)]
-                     (.add panc pan-cards)
+                     (.add panc pan-split)
                      panc)
         
         available-controllers (.controllers descriptor)
@@ -55,11 +55,6 @@
                                  (do
                                    (.program-change bank {:data1 slot})
                                    ))))))
-    (let [b (factory/toggle "Bank" :general :bank "Display program bank" card-group)]
-      (.putClientProperty b :card "BANK")
-      (ss/config! b :selected? true)
-      (swap! card-buttons* (fn [n](conj n b)))
-      (.add toolbar b))
     (let [b (factory/toggle "MIDI" :midi :plug "Display MIDI properties" card-group)]
       (.putClientProperty b :card "MIDI")
       (swap! card-buttons* (fn [n](conj n b)))
