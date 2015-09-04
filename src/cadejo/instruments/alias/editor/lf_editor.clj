@@ -209,8 +209,8 @@
         [x-wave2 y-wave2](lfo-pos n :wave2 p0)
         x-edit (+ x-freq1 180)
         x-source (+ x-freq1 235)
-        dbar1 (sfactory/displaybar drw [x-freq1 y-freq1] 7)
-        dbar2 (sfactory/displaybar drw [x-freq2 y-freq2] 7)
+        dbar1 (sfactory/displaybar drw [x-freq1 y-freq1] 6)
+        dbar2 (sfactory/displaybar drw [x-freq2 y-freq2] 6)
         edit-action (fn [b _]
                       (let [id (.get-property b :id)
                             dbar (if (= id :f1) dbar1 dbar2)
