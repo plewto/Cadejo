@@ -6,7 +6,6 @@
   (:require [cadejo.ui.midi.bank-editor])
   (:require [cadejo.ui.midi.cc-properties-panel])
   (:require [cadejo.ui.midi.node-editor])
-  ;(:require [cadejo.ui.midi.program-bar])
   (:require [cadejo.ui.midi.properties-panel])
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.lnf :as lnf])
@@ -17,34 +16,7 @@
 
 (def frame-size [1280 :by 587])
 
-;; (defprotocol PerformanceEditor
-;;
-;;    (widgets 
-;;     [this])
-;;
-;;   (widget
-;;     [this key])
-;;  
-;;   (node 
-;;     [this])
-;;
-;;   (working
-;;     [this flag])
-;;
-;;   (status!
-;;     [this msg])
-;;
-;;   (warning!
-;;     [this msg])
-;;
-;;   (jframe 
-;;     [this])
-;;
-;;   (show-channel
-;;    [this])
-;;
-;;   (sync-ui!
-;;     [this]))
+
 
 (defn performance-editor [performance]
   (let [descriptor (.get-property performance :descriptor)
@@ -59,11 +31,6 @@
         instrument-editor* (atom nil) ;; editor created only if needed
         toolbar (.widget basic-ed :toolbar)
         bank (.bank performance)
-
-        ;; bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank program-bar)]
-        ;;           (.editor! bank bed)
-        ;;           bed)
-        ;; program-bar (cadejo.ui.midi.program-bar/program-bar performance)
         bank-ed (let [bed (cadejo.ui.midi.bank-editor/bank-editor bank)]
                   (.editor! bank bed)
                   bed)
@@ -78,8 +45,7 @@
                      panc)
         
         available-controllers (.controllers descriptor)
-        cced* (atom nil)
-        ]
+        cced* (atom nil)]
     
     (let [b (factory/button "Transmit" :midi :transmit "Transmit current program")]
       (.add toolbar b)
@@ -162,14 +128,6 @@
                  
                  (warning! [this msg] (.warning! basic-ed msg))
 
-                 ;; (show-channel [this]
-                 ;;   (let [chanobj (.parent performance)
-                 ;;         ced (.get-editor chanobj)
-                 ;;                        ;cframe (.frame ced)]
-                 ;;         jframe (.widget ced :jframe)]
-                 ;;     (ss/show! jframe)
-                 ;;     (.toFront jframe)))
-
                  (set-path-text! [this msg] (.set-path-text! basic-ed msg))
 
                  (update-path-text [this] (.update-path-text basic-ed))
@@ -177,7 +135,6 @@
                  (sync-ui! [this]
                    (.sync-ui! bank-ed)
                    (.sync-ui! properties-panel)
-                   ;(.sync-ui! program-bar)
                    ((:syncfn program-bar))
                    (.sync-ui! @cced*)) )]
       (.set-parent-editor! properties-panel ped)
@@ -189,7 +146,6 @@
                  :action (fn [_]
                            (let [chanobj (.parent performance)
                                  ced (.get-editor chanobj)
-                                        ;cframe (.frame ced)]
                                  jframe (.widget ced :jframe)]
                              (ss/show! jframe)
                              (.toFront jframe))))
@@ -206,7 +162,6 @@
       (.set-path-text! basic-ed (let [scene (.get-scene performance)
                                   chanobj (.parent performance)
                                   sid (.get-property scene :id)
-                                  ;cid (.get-property chanobj :id)
                                   chan (inc (.channel-number chanobj))
                                   pid (.get-property performance :id)]
                               (format "Root / %s / chan %s / %s"
