@@ -13,6 +13,7 @@
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.mono-exclusive])
   (:require [cadejo.midi.poly-mode])
+  (:require [cadejo.midi.poly-rotate-mode])
   (:require [cadejo.midi.performance]))
 
 (def clipboard* (atom nil))
@@ -184,32 +185,42 @@
        (Thread/sleep 100)
        performance)))
 
-(defn combo-poly
-  ([scene chan id & {:keys [cc1 voice-count main-out]
-                     :or {cc1 1
-                          voice-count 8
-                          main-out 0}}]
-     (let [chanobj (.channel scene chan)
-           keymode (cadejo.midi.poly-mode/poly-keymode :Combo voice-count)
-           performance (create-performance chanobj id keymode cc1)
-           vibrato-bus (.control-bus performance :vibrato)
-           vibrato-depth-bus (.control-bus performance cc1)
-           bend-bus (.control-bus performance :bend)
-           tone-bus (.audio-bus performance :tone)
-           lfo (LFO :vibrato-bus vibrato-bus
-                    :vibrato-depth-bus vibrato-depth-bus)]
-       (dotimes [i voice-count]
-         (let [v (ToneBlock :bend-bus bend-bus
-                            :vibrato-bus vibrato-bus
-                            :out-bus tone-bus)]
-           (.add-voice! performance v)
-           (Thread/sleep 10)))
-       (let [efx (EfxBlock :in-bus tone-bus
-                           :out-bus main-out)]
-         (.add-synth! performance :lfo lfo)
-         (.add-synth! performance :efx efx)
-         (.reset chanobj)
-         performance))))
+(defn- --combo-poly [scene chan id keymode cc1 voice-count main-out]
+   (let [chanobj (.channel scene chan)
+         performance (create-performance chanobj id keymode cc1)
+         vibrato-bus (.control-bus performance :vibrato)
+         vibrato-depth-bus (.control-bus performance cc1)
+         bend-bus (.control-bus performance :bend)
+         tone-bus (.audio-bus performance :tone)
+         lfo (LFO :vibrato-bus vibrato-bus
+                  :vibrato-depth-bus vibrato-depth-bus)]
+     (dotimes [i voice-count]
+       (let [v (ToneBlock :bend-bus bend-bus
+                          :vibrato-bus vibrato-bus
+                          :out-bus tone-bus)]
+         (.add-voice! performance v)
+         (Thread/sleep 10)))
+     (let [efx (EfxBlock :in-bus tone-bus
+                         :out-bus main-out)]
+       (.add-synth! performance :lfo lfo)
+       (.add-synth! performance :efx efx)
+       (.reset chanobj)
+       performance)))
+
+(defn combo-poly [scene chan id & {:keys [cc1 voice-count main-out]
+                                   :or {cc1 1
+                                        voice-count 8
+                                        main-out 0}}]
+  (let [km (cadejo.midi.poly-mode/poly-keymode :Combo voice-count)]
+    (--combo-poly scene chan id km cc1 voice-count main-out)))
+
+(defn combo-poly-rotate [scene chan id & {:keys [cc1 voice-count main-out]
+                                          :or {cc1 1
+                                               voice-count 8
+                                               main-out 0}}]
+  (let [km (cadejo.midi.poly-rotate-mode/poly-rotate-mode :Combo voice-count)]
+    (--combo-poly scene chan id km cc1 voice-count main-out)))
+
 
 (defn combo-mono-exclusive
   ([scene chan id & {:keys [cc1 main-out]
@@ -239,4 +250,5 @@
 
 (.add-constructor! combo-descriptor :exclusive combo-mono-exclusive)
 (.add-constructor! combo-descriptor :mono combo-mono)
+(.add-constructor! combo-descriptor :rotate combo-poly-rotate)
 (.add-constructor! combo-descriptor :poly combo-poly)

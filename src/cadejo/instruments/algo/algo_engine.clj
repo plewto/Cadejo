@@ -17,6 +17,7 @@
   (:require [cadejo.instruments.algo.editor.algo-editor :as algoed])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
+  (:require [cadejo.midi.poly-rotate-mode])
   (:require [cadejo.midi.mono-exclusive])
   (:require [cadejo.midi.performance])
   (:require [cadejo.modules.env :as cenv])
@@ -688,46 +689,61 @@
        (Thread/sleep 100)
        performance)))
  
-(defn algo-poly
-  ([scene chan id 
-    & {:keys [cc1 cc7 cca ccb ccc ccd voice-count main-out] 
-       :or {cc1 1
-            cca 16
-            ccb 17
-            cc7 7
-            ccc 91
-            ccd 92
-            voice-count 8
-            main-out 0}}]
-     (let [chanobj (.channel scene chan)
-           keymode (cadejo.midi.poly-mode/poly-keymode :ALGO voice-count)
-           performance (create-performance chanobj id keymode main-out
-                                           cc1 cca ccb 
-                                           cc7 ccc ccd)
-           voices (let [acc* (atom [])] 
-                    (dotimes [i voice-count]
-                      (let  [v (AlgoVoice
-                                :bend-bus (.control-bus performance :bend)
-                                :pressure-bus (.control-bus performance :pressure)
-                                :vibrato-depth-bus (.control-bus performance :vibrato-depth)
-                                :cca-bus (.control-bus performance :cca)
-                                :ccb-bus (.control-bus performance :ccb)
-                                :out-bus (.audio-bus performance :tone))]
-                        (swap! acc* (fn [n](conj n v)))
-                        (Thread/sleep 100)))
-                    @acc*)
-           efx (cadejo.instruments.algo.efx/EfxBlock
-                :cc-volume-bus (.control-bus performance :cc-volume)
-                :echo-mix-bus (.control-bus performance :cc-echo-mix)
-                :reverb-mix-bus (.control-bus performance :cc-reverb-mix)
-                :in-bus (.audio-bus performance :tone)
-                :out-bus main-out)]
-       (.add-synth! performance :efx efx)
-       (doseq [v voices]
-         (.add-voice! performance v))
-       (.reset chanobj)
-       performance)))
-    
+(defn- --algo-poly [scene chan keymode id cc1 cc7 cca ccb ccc ccd voice-count main-out]
+  (let [chanobj (.channel scene chan)
+        performance (create-performance chanobj id keymode main-out
+                                        cc1 cca ccb 
+                                        cc7 ccc ccd)
+        voices (let [acc* (atom [])] 
+                 (dotimes [i voice-count]
+                   (let  [v (AlgoVoice
+                             :bend-bus (.control-bus performance :bend)
+                             :pressure-bus (.control-bus performance :pressure)
+                             :vibrato-depth-bus (.control-bus performance :vibrato-depth)
+                             :cca-bus (.control-bus performance :cca)
+                             :ccb-bus (.control-bus performance :ccb)
+                             :out-bus (.audio-bus performance :tone))]
+                     (swap! acc* (fn [n](conj n v)))
+                     (Thread/sleep 100)))
+                 @acc*)
+        efx (cadejo.instruments.algo.efx/EfxBlock
+             :cc-volume-bus (.control-bus performance :cc-volume)
+             :echo-mix-bus (.control-bus performance :cc-echo-mix)
+             :reverb-mix-bus (.control-bus performance :cc-reverb-mix)
+             :in-bus (.audio-bus performance :tone)
+             :out-bus main-out)]
+    (.add-synth! performance :efx efx)
+    (doseq [v voices]
+      (.add-voice! performance v))
+    (.reset chanobj)
+    performance))
+
+(defn algo-poly [scene chan id & {:keys [cc1 cc7 cca ccb ccc ccd voice-count main-out]
+                                  :or {cc1 1
+                                       cc7 7
+                                       cca 16
+                                       ccb 17
+                                       ccc 91
+                                       ccd 92
+                                       voice-count 8
+                                       main-out 0}}]
+  (let [km (cadejo.midi.poly-mode/poly-keymode :ALGO voice-count)]
+    (--algo-poly scene chan km id cc1 cc7 cca ccb ccc ccd voice-count main-out)))
+
+(defn algo-poly-rotate  [scene chan id & {:keys [cc1 cc7 cca ccb ccc ccd voice-count main-out]
+                                          :or {cc1 1
+                                               cc7 7
+                                               cca 16
+                                               ccb 17
+                                               ccc 91
+                                               ccd 92
+                                               voice-count 8
+                                               main-out 0}}]
+  (let [km (cadejo.midi.poly-rotate-mode/poly-rotate-mode :ALGO voice-count)]
+    (--algo-poly scene chan km id cc1 cc7 cca ccb ccc ccd voice-count main-out)))
+
+
 (.add-constructor! algo-descriptor :exclusive algo-exclusive)
 (.add-constructor! algo-descriptor :mono algo-mono)
+(.add-constructor! algo-descriptor :rotate algo-poly-rotate)
 (.add-constructor! algo-descriptor :poly algo-poly)

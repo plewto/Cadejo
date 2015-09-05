@@ -5,6 +5,7 @@
   (:require [cadejo.modules.qugen :as qu])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
+  (:require [cadejo.midi.poly-rotate-mode])
   (:require [cadejo.midi.mono-exclusive])
   (:require [cadejo.midi.performance])
   (:require [cadejo.instruments.descriptor])
@@ -289,17 +290,8 @@
        (.reset chanobj)
        performance)))
 
-(defn masa-poly 
-  ([scene chan id & {:keys [cc1 cc4 cc7 cca ccb voice-count main-out]
-                     :or {cc1 1
-                          cc4 16
-                          cc7 7
-                          cca 92
-                          ccb 93
-                          voice-count 8
-                          main-out 0}}]
+(defn- --masa-poly [scene chan id  keymode cc1 cc4 cc7 cca ccb voice-count main-out]
      (let [chanobj (.channel scene chan)
-           keymode (cadejo.midi.poly-mode/poly-keymode :MASA voice-count)
            performance (create-performance chanobj id keymode main-out
                                            cc1 cc4 cc7
                                            cca ccb)
@@ -326,8 +318,23 @@
        (.add-synth! performance :efx efx-block)
        (doseq [v voices](.add-voice! performance v))
        (.reset chanobj)
-       performance)))
+       performance))
+
+(defn masa-poly [scene chan id & {:keys [cc1 cc4 cc7 cca ccb voice-count main-out]
+                                  :or {cc1 1, cc4 16, cc7 7, cca 92, ccb 93,
+                                       voice-count 8, main-out 0}}]
+  (let [km (cadejo.midi.poly-mode/poly-keymode :MASA voice-count)]
+    (--masa-poly scene chan id km cc1 cc4 cc7 cca ccb voice-count main-out)))
+
+
+(defn masa-poly-rotate [scene chan id & {:keys [cc1 cc4 cc7 cca ccb voice-count main-out]
+                                         :or {cc1 1, cc4 16, cc7 7, cca 92, ccb 93,
+                                              voice-count 8, main-out 0}}]
+  (let [km (cadejo.midi.poly-rotate-mode/poly-rotate-mode :MASA voice-count)]
+    (--masa-poly scene chan id km cc1 cc4 cc7 cca ccb voice-count main-out)))
+
 
 (.add-constructor! masa-descriptor :exclusive masa-exclusive)
 (.add-constructor! masa-descriptor :mono masa-mono)
+(.add-constructor! masa-descriptor :rotate masa-poly-rotate)
 (.add-constructor! masa-descriptor :poly masa-poly)

@@ -7,6 +7,7 @@
   (:require [cadejo.instruments.descriptor])
   (:require [cadejo.midi.mono-mode])
   (:require [cadejo.midi.poly-mode])
+  (:require [cadejo.midi.poly-rotate-mode])
   (:require [cadejo.midi.performance])
   (:require [cadejo.instruments.cobalt.constants :as con])
   (:require [cadejo.instruments.cobalt.vibrato])
@@ -15,8 +16,7 @@
   (:require [cadejo.instruments.cobalt.data])
   (:require [cadejo.instruments.cobalt.pp :as pp])
   (:require [cadejo.instruments.cobalt.randprog.random-program :as randprog])
-  (:require [cadejo.instruments.cobalt.editor.cobalt-editor :as cobalt-ed])
-)
+  (:require [cadejo.instruments.cobalt.editor.cobalt-editor :as cobalt-ed]))
 
 (def ^:private clipboard* (atom nil))
 
@@ -335,19 +335,10 @@
               bend vibrato)
         penv (* (pitch-env:kr pe-t1 pe-t2 pe-t3 pe-a0 pe-a1 pe-a2 pe-a3 gate)
                 (qu/amp-modulator-depth cc9 pe<-cc9))
-        ;; lfo1-amp (+ (* cca lfo1<-cca)
-        ;;             (* pressure lfo1<-pressure)
-        ;;             (qu/amp-modulator-depth (lag2:kr gate (* 4 lfo1-delay))(- 1 lfo1-bleed)))
-        ;; lfo1-amp (lag2:kr (+ (* (qu/amp-modulator-depth cca lfo1<-cca)
-        ;;                         (qu/amp-modulator-depth pressure lfo1<-pressure))
-        ;;                      lfo1-bleed)
-        ;;                   (* lfo1-delay 4))
         lfo1-amp (+ (* pressure lfo1<-pressure)
                     (* cca lfo1<-cca)
                     (* lfo1-bleed
                        (cenv/delay-env lfo1-delay (* 1/2 lfo1-delay) gate)))
-
-
         lfo1 (* lfo1-amp
                 (sin-osc:kr lfo1-freq))
         op1 (let [ac (* (op-amp-modulators op1-amp lfo1 op1-amp<-lfo1)
@@ -598,17 +589,8 @@
     performance))
 
 
-(defn cobalt-poly [scene chan id & {:keys [cc1 cc5 cc7 cc9 cca ccb voice-count main-out]
-                                  :or {cc1 1
-                                       cc5 5 
-                                       cc7 7
-                                       cc9 9
-                                       cca 16
-                                       ccb 17
-                                       voice-count 8
-                                       main-out 0}}]
+(defn- --cobalt-poly [scene chan keymode id cc1 cc5 cc7 cc9 cca ccb voice-count main-out]
   (let [chanobj (.channel scene chan)
-        keymode (cadejo.midi.poly-mode/poly-keymode :cobalt voice-count)
         performance (create-performance chanobj id keymode cc1 cc5 cc7 cc9 cca ccb)
         bend-bus (.control-bus performance :bend)
         pressure-bus (.control-bus performance :pressure)
@@ -650,8 +632,35 @@
     (.reset chanobj)
     performance))
 
+
+(defn cobalt-poly [scene chan id & {:keys [cc1 cc5 cc7 cc9 cca ccb voice-count main-out]
+                                  :or {cc1 1
+                                       cc5 5 
+                                       cc7 7
+                                       cc9 9
+                                       cca 16
+                                       ccb 17
+                                       voice-count 8
+                                       main-out 0}}]
+  (let [km (cadejo.midi.poly-mode/poly-keymode :Cobalt voice-count)]
+    (--cobalt-poly scene chan km id cc1 cc5 cc7 cc9 cca ccb voice-count main-out)))
+
+(defn cobalt-poly-rotate [scene chan id & {:keys [cc1 cc5 cc7 cc9 cca ccb voice-count main-out]
+                                           :or {cc1 1
+                                                cc5 5 
+                                                cc7 7
+                                                cc9 9
+                                                cca 16
+                                                ccb 17
+                                                voice-count 8
+                                                main-out 0}}]
+  (let [km (cadejo.midi.poly-rotate-mode/poly-rotate-mode :Cobalt voice-count)]
+    (--cobalt-poly scene chan km id cc1 cc5 cc7 cc9 cca ccb voice-count main-out)))
+
 (.add-constructor! cobalt-descriptor :mono cobalt-mono)
+(.add-constructor! cobalt-descriptor :rotate cobalt-poly-rotate)
 (.add-constructor! cobalt-descriptor :poly cobalt-poly)
+
 
 
 
