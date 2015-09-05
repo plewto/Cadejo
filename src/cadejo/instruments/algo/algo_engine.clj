@@ -623,72 +623,53 @@
 ;; ccc - echo mix
 ;; ccd - reverb mix
 
-(defn algo-mono 
-  ([scene chan id & {:keys [cc1 cc7 cca ccb ccc ccd main-out]
-                     :or {cc1 1
-                          cc7 7
-                          cca 16
-                          ccb 17
-                          ccc 91
-                          ccd 92
-                          main-out 0}}]
-     (let [chanobj (.channel scene chan) 
-           keymode (cadejo.midi.mono-mode/mono-keymode :ALGO)
-           performance (create-performance chanobj id keymode main-out
-                                           cc1 cca ccb 
-                                           cc7 ccc ccd)
-           voice (AlgoVoice
-                  :bend-bus (.control-bus performance :bend)
-                  :pressure-bus (.control-bus performance :pressure)
-                  :vibrato-depth-bus (.control-bus performance :vibrato-depth)
-                  :cca-bus (.control-bus performance :cca)
-                  :ccb-bus (.control-bus performance :ccb)
-                  :out-bus (.audio-bus performance :tone))
-           efx (cadejo.instruments.algo.efx/EfxBlock
-                :cc-volume-bus (.control-bus performance :cc-volume)
-                :echo-mix-bus (.control-bus performance :cc-echo-mix)
-                :reverb-mix-bus (.control-bus performance :cc-reverb-mix)
-                :in-bus (.audio-bus performance :tone)
-                :out-bus main-out)]
-       (.add-synth! performance :efx efx)
-       (.add-voice! performance voice)
-       (.reset chanobj)
-       (Thread/sleep 100)
-       performance)))
+(defn- --algo-mono [scene chan keymode id cc1 cc7 cca ccb ccc ccd main-out]
+  (let [chanobj (.channel scene chan) 
+        performance (create-performance chanobj id keymode main-out
+                                        cc1 cca ccb 
+                                        cc7 ccc ccd)
+        voice (AlgoVoice
+               :bend-bus (.control-bus performance :bend)
+               :pressure-bus (.control-bus performance :pressure)
+               :vibrato-depth-bus (.control-bus performance :vibrato-depth)
+               :cca-bus (.control-bus performance :cca)
+               :ccb-bus (.control-bus performance :ccb)
+               :out-bus (.audio-bus performance :tone))
+        efx (cadejo.instruments.algo.efx/EfxBlock
+             :cc-volume-bus (.control-bus performance :cc-volume)
+             :echo-mix-bus (.control-bus performance :cc-echo-mix)
+             :reverb-mix-bus (.control-bus performance :cc-reverb-mix)
+             :in-bus (.audio-bus performance :tone)
+             :out-bus main-out)]
+    (.add-synth! performance :efx efx)
+    (.add-voice! performance voice)
+    (.reset chanobj)
+    (Thread/sleep 100)
+    performance))
 
-(defn algo-exclusive
-  ([scene chan id & {:keys [cc1 cc7 cca ccb ccc ccd main-out]
-                     :or {cc1 1
-                          cc7 7
-                          cca 16
-                          ccb 17
-                          ccc 91
-                          ccd 92
-                          main-out 0}}]
-     (let [chanobj (.channel scene chan) 
-           keymode (cadejo.midi.mono-exclusive/mono-exclusive-keymode :ALGO)
-           performance (create-performance chanobj id keymode main-out
-                                           cc1 cca ccb 
-                                           cc7 ccc ccd)
-           voice (AlgoVoice
-                  :bend-bus (.control-bus performance :bend)
-                  :pressure-bus (.control-bus performance :pressure)
-                  :vibrato-depth-bus (.control-bus performance :vibrato-depth)
-                  :cca-bus (.control-bus performance :cca)
-                  :ccb-bus (.control-bus performance :ccb)
-                  :out-bus (.audio-bus performance :tone))
-           efx (cadejo.instruments.algo.efx/EfxBlock
-                :cc-volume-bus (.control-bus performance :cc-volume)
-                :echo-mix-bus (.control-bus performance :cc-echo-mix)
-                :reverb-mix-bus (.control-bus performance :cc-reverb-mix)
-                :in-bus (.audio-bus performance :tone)
-                :out-bus main-out)]
-       (.add-synth! performance :efx efx)
-       (.add-voice! performance voice)
-       (.reset chanobj)
-       (Thread/sleep 100)
-       performance)))
- 
+
+(defn algo-mono [scene chan id & {:keys [cc1 cc7 cca ccb ccc ccd main-out]
+                                  :or {cc1 1
+                                       cc7 7
+                                       cca 16
+                                       ccb 17
+                                       ccc 91
+                                       ccd 92
+                                       main-out 0}}]
+   (let [km (cadejo.midi.mono-mode/mono-keymode :ALGO)]
+     (--algo-mono scene chan km id cc1 cc7 cca ccb ccc ccd main-out)))
+
+(defn algo-exclusive [scene chan id & {:keys [cc1 cc7 cca ccb ccc ccd main-out]
+                                       :or {cc1 1
+                                            cc7 7
+                                            cca 16
+                                            ccb 17
+                                            ccc 91
+                                            ccd 92
+                                            main-out 0}}]
+  (let [km (cadejo.midi.mono-exclusive/mono-exclusive-keymode :ALGO)]
+    (--algo-mono scene chan km id cc1 cc7 cca ccb ccc ccd main-out)))
+
 (defn- --algo-poly [scene chan keymode id cc1 cc7 cca ccb ccc ccd voice-count main-out]
   (let [chanobj (.channel scene chan)
         performance (create-performance chanobj id keymode main-out

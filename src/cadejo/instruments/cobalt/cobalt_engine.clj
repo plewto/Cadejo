@@ -660,10 +660,3 @@
 (.add-constructor! cobalt-descriptor :mono cobalt-mono)
 (.add-constructor! cobalt-descriptor :rotate cobalt-poly-rotate)
 (.add-constructor! cobalt-descriptor :poly cobalt-poly)
-
-
-
-
-
-
-

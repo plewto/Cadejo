@@ -225,16 +225,8 @@
 ;; cca - scanner mix
 ;; ccb - reverb mix
 
-(defn masa-mono 
-  ([scene chan id & {:keys [cc1 cc4 cc7 cca ccb main-out]
-                     :or {cc1 1
-                          cc4 4
-                          cc7 7
-                          cca 92
-                          ccb 93
-                          main-out 0}}]
+(defn- --masa-mono [scene chan keymode id cc1 cc4 cc7 cca ccb main-out]
      (let [chanobj (.channel scene chan)
-           keymode (cadejo.midi.mono-mode/mono-keymode :MASA)
            performance (create-performance chanobj id keymode main-out
                                            cc1 cc4 cc7
                                            cca ccb)
@@ -255,40 +247,27 @@
        (.add-voice! performance voice)
        (Thread/sleep 100) 
        (.reset chanobj)
-       performance)))
+       performance))
 
+(defn masa-mono [scene chan id & {:keys [cc1 cc4 cc7 cca ccb main-out]
+                                  :or {cc1 1
+                                       cc4 4
+                                       cc7 7
+                                       cca 92
+                                       ccb 93
+                                       main-out 0}}]
+  (let [km (cadejo.midi.mono-mode/mono-keymode :MASA)]
+    (--masa-mono scene chan km id cc1 cc4 cc7 cc1 ccb main-out)))
 
-(defn masa-exclusive
-  ([scene chan id & {:keys [cc1 cc4 cc7 cca ccb main-out]
-                     :or {cc1 1
-                          cc4 4
-                          cc7 7
-                          cca 92
-                          ccb 93
-                          main-out 0}}]
-     (let [chanobj (.channel scene chan)
-           keymode (cadejo.midi.mono-exclusive/mono-exclusive-keymode :MASA)
-           performance (create-performance chanobj id keymode main-out
-                                           cc1 cc4 cc7
-                                           cca ccb)
-           vibrato-block (VibratoBlock
-                          :vibrato-depth-bus (.control-bus performance :vibrato-depth)
-                          :vibrato-bus (.control-bus performance :vibrato))
-           voice (ToneBlock :out-bus (.audio-bus performance :tone)
-                            :bend-bus (.control-bus performance :bend)
-                            :vibrato-bus (.control-bus performance :vibrato)
-                            :pedal-bus (.control-bus performance :pedal))
-           efx-block (efx/EfxBlock :in-bus (.audio-bus performance :tone)
-                                   :out-bus main-out
-                                   :volume-bus (.control-bus performance :volume)
-                                   :scanner-mix-bus (.control-bus performance :scanner-mix)
-                                   :reverb-mix-bus (.control-bus performance :reverb-mix))]
-       (.add-synth! performance :vibrato vibrato-block)
-       (.add-synth! performance :efx efx-block)
-       (.add-voice! performance voice)
-       (Thread/sleep 100) 
-       (.reset chanobj)
-       performance)))
+(defn masa-exclusive [scene chan id & {:keys [cc1 cc4 cc7 cca ccb main-out]
+                                       :or {cc1 1
+                                            cc4 4
+                                            cc7 7
+                                            cca 92
+                                            ccb 93
+                                            main-out 0}}]
+  (let [km (cadejo.midi.mono-exclusive/mono-exclusive-keymode :MASA)]
+    (--masa-mono scene chan km id cc1 cc4 cc7 cc1 ccb main-out)))
 
 (defn- --masa-poly [scene chan id  keymode cc1 cc4 cc7 cca ccb voice-count main-out]
      (let [chanobj (.channel scene chan)

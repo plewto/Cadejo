@@ -160,12 +160,8 @@
 
 ;; cc1 - vibrato
 ;;
-(defn combo-mono 
-  ([scene chan id & {:keys [cc1 main-out]
-                     :or {cc1 1
-                          main-out 0}}]
+(defn- --combo-mono [scene chan keymode id cc1 main-out]
      (let [chanobj (.channel scene chan)
-           keymode (cadejo.midi.mono-mode/mono-keymode :Combo)
            performance (create-performance chanobj id keymode cc1)
            vibrato-bus (.control-bus performance :vibrato)
            vibrato-depth-bus (.control-bus performance cc1)
@@ -183,7 +179,19 @@
        (.add-voice! performance voice)
        (.reset chanobj)
        (Thread/sleep 100)
-       performance)))
+       performance))
+
+(defn combo-mono [scene chan id & {:keys [cc1 main-out]
+                                   :or {cc1 1
+                                        main-out 0}}]
+  (let [km (cadejo.midi.mono-mode/mono-keymode :Combo)]
+    (--combo-mono scene chan km id cc1 main-out)))
+
+(defn combo-mono-exclusive [scene chan id & {:keys [cc1 main-out]
+                                             :or {cc1 1
+                                                  main-out 0}}]
+  (let [km (cadejo.midi.mono-exclusive/mono-exclusive-keymode :Combo)]
+    (--combo-mono scene chan km id cc1 main-out)))
 
 (defn- --combo-poly [scene chan id keymode cc1 voice-count main-out]
    (let [chanobj (.channel scene chan)
@@ -220,33 +228,6 @@
                                                main-out 0}}]
   (let [km (cadejo.midi.poly-rotate-mode/poly-rotate-mode :Combo voice-count)]
     (--combo-poly scene chan id km cc1 voice-count main-out)))
-
-
-(defn combo-mono-exclusive
-  ([scene chan id & {:keys [cc1 main-out]
-                     :or {cc1 1
-                          main-out 0}}]
-     (let [chanobj (.channel scene chan)
-           keymode (cadejo.midi.mono-exclusive/mono-exclusive-keymode :Combo)
-           performance (create-performance chanobj id keymode cc1)
-           vibrato-bus (.control-bus performance :vibrato)
-           vibrato-depth-bus (.control-bus performance cc1)
-           bend-bus (.control-bus performance :bend)
-           tone-bus (.audio-bus performance :tone)
-           lfo (LFO :vibrato-bus vibrato-bus
-                    :vibrato-depth-bus vibrato-depth-bus)
-           voice (ToneBlock :bend-bus bend-bus
-                            :vibrato-bus vibrato-bus
-                            :out-bus tone-bus)
-           efx (EfxBlock :in-bus tone-bus
-                         :out-bus main-out)]
-       (.add-synth! performance :lfo lfo)
-       (.add-synth! performance :efx efx)
-       (.add-voice! performance voice)
-       (.reset chanobj)
-       (Thread/sleep 100)
-       performance)))
-
 
 (.add-constructor! combo-descriptor :exclusive combo-mono-exclusive)
 (.add-constructor! combo-descriptor :mono combo-mono)
