@@ -27,7 +27,6 @@
 (def ^:private x-redo (+ x-undo 50))
 (def ^:private x-progressive (+ x-redo 80))
 (def ^:private x-progressive-edit (+ x-progressive 30))
-
 (def ^:private y-dbar 50)
 (def ^:private y-inc (- y-dbar 15))
 (def ^:private y-dec (+ y-dbar 15))
@@ -39,9 +38,7 @@
 (def ^:private y-undo y-init)
 (def ^:private y-redo y-init)
 (def ^:private y-progressive y-dbar)
-
-(def ^:private update-period 4000)
-
+(def ^:private update-period 1000)
 
 
 (defn program-bar [bank-editor]
@@ -139,6 +136,7 @@
                                    (.progressive-count! bank pc)
                                    (.display! dbar-progressive (format "%d" pc)
                                               false)
+                                   (.sync-ui! (.get-parent-editor bank-editor))
                                    (if pc
                                      (warning "Progressive Program Mode Active")
                                      (status "Progressive Program Mode disabled"))
@@ -155,6 +153,7 @@
                                      (.display! dbar-progressive
                                                 (if pc (format "%d" pc) "-")
                                                 true)
+                                     (.sync-ui! (.get-parent-editor bank-editor))
                                      (if pc
                                        (warning "Progressive Program Mode Active")
                                        (status "Progressive Program Mode disabled"))

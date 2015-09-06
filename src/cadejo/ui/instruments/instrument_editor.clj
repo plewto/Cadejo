@@ -68,6 +68,9 @@
   (add-sub-editor!
     [this text icon-main icon-sub tooltip subed])
 
+  (enable!
+    [this flag])
+  
   (show-card-number!
     [this n])
 
@@ -194,6 +197,16 @@
                                  (reset! current-card* ed)
                                  (.sync-ui! ed))))))
 
+              (enable! [this flag]
+                (if flag
+                  (doseq [b @card-buttons*]
+                    (.setVisible b true))
+                  (do 
+                    (doseq [b @card-buttons*]
+                      (.setVisible b false))
+                    (.show-card-number! this 0)))
+                (.revalidate jframe))
+              
               (show-card-number! [this n]
                 (let [tb (nth @card-buttons* n)
                       id (.getClientProperty tb :id)]
@@ -263,9 +276,15 @@
 
               (sync-ui! [this]
                 (let [prog (.current-program bank)
-                      data (and prog (.data prog))]
-                  (if data
-                    (.sync-ui! @current-card*))))
+                      data (and prog (.data prog))
+                      bnk (.bank performance)
+                      progressive (.progressive-count bnk)]
+                  (if progressive
+                    (.enable! this false)
+                    (do
+                      (.enable! this true)
+                      (if data
+                        (.sync-ui! @current-card*))))))
                 
               ) ;; end ied
 
