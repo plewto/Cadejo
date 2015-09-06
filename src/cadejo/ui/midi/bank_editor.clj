@@ -44,6 +44,9 @@
   (set-parent-editor! 
     [this parent])
 
+  (get-parent-editor
+    [this])
+  
   (set-program-bar! [this pbar])
 
   (working
@@ -131,6 +134,9 @@
 
                   (set-parent-editor! [this ed]
                     (reset! parent* ed))
+
+                  (get-parent-editor [this]
+                    @parent*)
                   
                   (set-program-bar! [this pbar]
                     (reset! program-bar* pbar))
@@ -219,7 +225,7 @@
                                      (if (cadejo.ui.util.overwrite-warning/overwrite-warning pan-main "Bank" abs)
                                        (if (.write-bank bnk abs)
                                          (do 
-                                           (ss/config! lab-filename :text (format "Bank File : '%s'" abs))
+                                           (ss/config! lab-filename :text (format "Bank File : '%s's" abs))
                                            (.status! this (format "Bank Saved to '%s'" abs)))
                                          (.warning! this (format "Can not save bank to '%s'" abs)))
                                        (cancel))))
@@ -283,8 +289,11 @@
           nil
 
           @enable-list-selection-listener* ;; program-change
-          (let [slot (.getSelectedIndex lst-programs)]
-            (.recall bnk slot)
+          (let [slot (.getSelectedIndex lst-programs)
+                prg (.progressive-count bnk)]
+            (if (and prg (pos? prg))
+              (.recall-progressive bnk slot)
+              (.recall bnk slot))
             ((:syncfn @program-bar*)))
          
           :default                      ; do nothing

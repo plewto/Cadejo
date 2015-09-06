@@ -14,8 +14,6 @@
 
 (defn- assert-midi-program-number [pnum]
   (or (and (integer? pnum)(>= pnum 0)(< pnum program-count) pnum)))
-;      (umsg/warning (format "%s is not a valid MIDI program number" pnum))))
-
 
 (defprotocol PBank
 
@@ -108,6 +106,16 @@
     [this]
     "Return data modification flag")
 
+  (progressive-count!
+    [this n]
+    "Sets progressive-prorgam count
+     If n nil turn progressive-programs off")
+
+  (progressive-count
+    [this]
+    "Returns progressive-program count
+     Returns nil of progressive-programsn turned off")
+
   (programs
     [this]
     "Returns a sorted map of all programs. The map keys are integer MIDI
@@ -123,7 +131,15 @@
      The current program is marked as 'saved'
      The editor is -NOT- updated.
      Return current-data or nil")
-
+  
+  (recall-progressive
+    [this slot]
+    "Mark indicated slot as 'current'. 
+     All active voices are updated 
+     The current program is marked as 'saved'
+     The editor is -NOT- updated
+     Rreturn list of program data")
+  
   (program-change                       ; synths updated, editor updated
     [this ev]
     "Process MIDI program change event.
@@ -181,6 +197,7 @@
            remarks* (atom (str bnk-remarks))
            current-slot* (atom nil)
            current-program* (atom nil)
+           progressive* (atom nil)
            modified* (atom false)
            synths (fn []
                     (if @parent*
@@ -261,6 +278,14 @@
                   (reset! modified* flag))
 
                 (modified? [this] @modified*)
+
+                (progressive-count! [this n]
+                  (if n
+                    (reset! progressive* (max (min n 10) 0))
+                    (reset! progressive* nil)))
+
+                (progressive-count [this]
+                  @progressive*)
                 
                 (programs [this] @programs*)
 
@@ -288,14 +313,42 @@
                     (if s 
                       (.recall this s)
                       nil)))
+
+                (recall-progressive [this slot]
+                  (let [slot (or slot 0)
+                        acc* (atom [])]
+                    (dotimes [n (or (.progressive-count this) 1)]
+                      (let [p (get @programs* (+ slot n))]
+                        (if p
+                          (swap! acc* (fn [q](conj q (ucol/map->alist (.data p))))))))
+                    (if (and @parent* (pos? (count @acc*)))
+                      (let [vcc (.voices @parent*)
+                            syn (.synths @parent*)
+                            mod (count @acc*)
+                            counter* (atom 0)]
+                        (apply ot/ctl syn (first @acc*))
+                        (doseq [v vcc]
+                          (let [i (rem @counter* mod)]
+                            (apply ot/ctl v (nth @acc* i))
+                            (swap! counter* inc)))))
+                    acc*))
+                        
+
+
                 
                 (program-change [this event]
                   (let [slot (:data1 event)
-                        rcflag (.recall this slot)
-                        ed @editor*]
-                    (.modified! this false)
-                    (if ed (.sync-ui! ed))
-                    @current-program*))
+                        pc (.progressive-count this)]
+                    (if (and pc (pos? pc))
+                      (do
+                        (.modified! this false)
+                        (.recall-progressive this slot)
+                        @current-program*)
+                      (let [rcflag (.recall this slot)
+                            ed @editor*]
+                        (.modified! this false)
+                        (if ed (.sync-ui! ed))
+                        @current-program*))))
                 
                 (store! [this slot program]
                   (if (assert-midi-program-number slot)

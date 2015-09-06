@@ -25,6 +25,9 @@
 (def ^:private x-save (+ x-open 50))
 (def ^:private x-undo (+ x-save 50))
 (def ^:private x-redo (+ x-undo 50))
+(def ^:private x-progressive (+ x-redo 80))
+(def ^:private x-progressive-edit (+ x-progressive 30))
+
 (def ^:private y-dbar 50)
 (def ^:private y-inc (- y-dbar 15))
 (def ^:private y-dec (+ y-dbar 15))
@@ -35,11 +38,17 @@
 (def ^:private y-save y-init)
 (def ^:private y-undo y-init)
 (def ^:private y-redo y-init)
+(def ^:private y-progressive y-dbar)
+
 (def ^:private update-period 4000)
+
+
 
 (defn program-bar [bank-editor]
   (let [drw (sf/sgwr-drawing width height)
         bank (.bank bank-editor)
+        status (fn [msg](.status! (.get-parent-editor bank-editor) msg))
+        warning (fn [msg](.warning! (.get-parent-editor bank-editor) msg))
         file-extension (.toLowerCase (name (.data-format bank)))
         current-slot* (atom 0)
         increment-slot (fn [x]
@@ -68,16 +77,18 @@
                     (.display! db "CADEJO" false)
                     db)
 
+        dbar-progressive (let [db (sf/displaybar drw [x-progressive y-progressive] 1)]
+                           (.display! db "X" false)
+                           db)
+        
         init-action (fn [& _]
                       (.init-bank! bank-editor))
-
         
         open-action (fn [& _]
                       (.open-bank-dialog! bank-editor))
         
         save-action (fn [& _]
                       (.save-bank-dialog bank-editor))
-
 
         undo-action (fn [& _](.undo! bank-editor))
         
@@ -88,10 +99,14 @@
                        prog (.current-program bank)
                        pname (clojure.string/upper-case (or (and prog (.program-name prog)) "---"))
                        name-limit (min program-name-count (count pname))
-                       prognum (or (.current-slot bank) 0)]
+                       prognum (or (.current-slot bank) 0)
+                       progrsv (.progressive-count bank)]
                    (reset! current-slot* prognum)
                    (.display! dbar-slot (format "%3d" prognum) false)
                    (.display! dbar-name (subs pname 0 name-limit) false)
+                   (.display! dbar-progressive
+                              (if progrsv (format "%d" progrsv) "-")
+                                false)
                    (.render drw)))
 
         update-thread (proxy [Thread][]
@@ -111,12 +126,39 @@
          (sf/mini-chevron-up2-button drw [x-inc8 y-inc] :up8 slot-action)
          (sf/mini-chevron-down-button drw [x-inc1 y-dec] :down1 slot-action)
          (sf/mini-chevron-down2-button drw [x-inc8 y-dec] :down8 slot-action))
-    (sf/program-store-button drw [x-store y-store] :progam-store program-store-action)
+    (sf/program-store-button drw [x-store y-store] :program-store program-store-action)
     (sf/init-button drw [x-init y-init] :bank-init init-action)
     (sf/open-button drw [x-open y-open] :bank-open open-action)
     (sf/save-button drw [x-save y-save] :bank-save save-action)
     (sf/undo-button drw [x-undo y-undo] :bank-undo undo-action)
     (sf/redo-button drw [x-redo y-redo] :bank-redo redo-action)
+    (sf/mini-chevron-up-button drw [x-progressive-edit y-inc] :up
+                               (fn [& _]
+                                 (let [cc (.progressive-count bank)
+                                       pc (if cc (min (inc cc) 9) 0)]
+                                   (.progressive-count! bank pc)
+                                   (.display! dbar-progressive (format "%d" pc)
+                                              false)
+                                   (if pc
+                                     (warning "Progressive Program Mode Active")
+                                     (status "Progressive Program Mode disabled"))
+                                   
+                                   (.render drw) )))
+
+    (sf/mini-chevron-down-button drw [x-progressive-edit y-dec] :down
+                                 (fn [& _]
+                                   (let [cc (.progressive-count bank)
+                                         pc (cond (or (= cc 1)(= cc 0)) nil
+                                                  cc (max (dec cc) 0)
+                                                  :default nil)]
+                                     (.progressive-count! bank pc)
+                                     (.display! dbar-progressive
+                                                (if pc (format "%d" pc) "-")
+                                                true)
+                                     (if pc
+                                       (warning "Progressive Program Mode Active")
+                                       (status "Progressive Program Mode disabled"))
+                                     (.render drw) )))
     (sf/label drw [x-slot y-dbar] "Program Slot" :size 5.0 :offset [0 50])
     (sf/label drw [x-store y-store] "Store" :size 5.0 :offset [0 50])
     (sf/label drw [x-init y-init] "Init" :size 5.0 :offset [12 55])
@@ -125,6 +167,7 @@
     (sf/label drw [x-undo y-undo] "Undo" :size 5.0 :offset [12 55])
     (sf/label drw [x-redo y-redo] "Redo" :size 5.0 :offset [12 55])
     (sf/label drw [x-init y-init] "Bank" :size 7.0 :offset [105 80])
+    (sf/label drw [x-progressive y-dbar] "Progressive" :size 5.0 :offset [0 55])
     (let [x1 x-init
           x2 (- x-save 10)
           x3 (+ x-save 50)
@@ -142,4 +185,4 @@
                 :drawing drw
                 :syncfn syncfn}]
       (.set-program-bar! bank-editor pbar)
-      pbar))) 
+      pbar)))

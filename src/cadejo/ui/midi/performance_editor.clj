@@ -36,7 +36,7 @@
         properties-panel (cadejo.ui.midi.properties-panel/midi-properties-panel)
         card-buttons* (atom [])
         card-group (ss/button-group)
-        pan-cards (ss/card-panel :items [(.widget properties-panel :pan-main) "MIDI"]])
+        pan-cards (ss/card-panel :items [[(.widget properties-panel :pan-main) "MIDI"]])
         pan-split (ss/left-right-split
                    (.widget bank-ed :pan-main)
                    pan-cards)

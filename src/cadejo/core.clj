@@ -1,5 +1,5 @@
 (println "--> Loading Cadejo")
- (ns cadejo.core
+(ns cadejo.core
    (:require [sgwr.util.color])
    (:require [sgwr.components.component])
    (:require [cadejo.config :as config])  
@@ -10,6 +10,7 @@
    (:require [cadejo.midi.pbank])
    (:require [cadejo.midi.mono-mode])
    (:require [cadejo.midi.poly-mode])
+   (:require [cadejo.midi.poly_rotate_mode])
    (:require [cadejo.instruments.descriptor])
    (:require [cadejo.ui.instruments.instrument-editor]))
 
