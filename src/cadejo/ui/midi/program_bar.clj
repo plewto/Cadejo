@@ -138,8 +138,8 @@
                                               false)
                                    (.sync-ui! (.get-parent-editor bank-editor))
                                    (if pc
-                                     (warning "Progressive Program Mode Active")
-                                     (status "Progressive Program Mode disabled"))
+                                     (warning "Editor disabled while progressive program mode active")
+                                     (status "Progressive program mode disabled"))
                                    
                                    (.render drw) )))
 
@@ -155,8 +155,8 @@
                                                 true)
                                      (.sync-ui! (.get-parent-editor bank-editor))
                                      (if pc
-                                       (warning "Progressive Program Mode Active")
-                                       (status "Progressive Program Mode disabled"))
+                                       (warning "Editor disabled while progressive program mode active")
+                                       (status "Progressive program mode disabled"))
                                      (.render drw) )))
     (sf/label drw [x-slot y-dbar] "Program Slot" :size 5.0 :offset [0 50])
     (sf/label drw [x-store y-store] "Store" :size 5.0 :offset [0 50])
