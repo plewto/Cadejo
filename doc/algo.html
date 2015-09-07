@@ -1,6 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>ALGO</title></head><body style="color: rgb(255, 255, 247); background-color: black;" alink="#f2f2c7" link="#f2f2c7" vlink="#f2f2c7">
+
+
+
+
+
+
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>ALGO</title></head><body style="color: rgb(255, 255, 204); background-color: black;" alink="#c7f2dc" link="#c7f2dc" vlink="#c7f2dc">
 <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
 
   <tbody>
@@ -9,7 +16,7 @@
       <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
         <tbody>
           <tr>
-            <td style="vertical-align: top; width: 10%;"><br>
+            <td style="vertical-align: top; width: 10%;"><a name="Top"></a><br>
             </td>
             <td style="vertical-align: top;"><a href="index.html">Cadejo
 Manual</a><br>
@@ -30,19 +37,19 @@ Manual</a><br>
           <tr>
             <td style="vertical-align: top;"><br>
             </td>
-            <td style="vertical-align: top;">FM Synthesis Tutorials<br>
+            <td style="vertical-align: top;"><br>
+</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;"><span style="text-decoration: underline;"></span><a href="http://www.soundonsound.com/sos/apr00/articles/synthsecrets.htm">SOS</a>&nbsp;&nbsp; <a href="http://www.sfu.ca/%7Etruax/fmtut.html">SFU</a>
             </td>
           </tr>
           <tr>
             <td style="vertical-align: top;"><br>
             </td>
-            <td style="vertical-align: top;"><span style="text-decoration: underline;"></span><a href="http://www.soundonsound.com/sos/apr00/articles/synthsecrets.htm">SOS Synth Secrets</a><br>
-            </td>
-          </tr>
-          <tr>
             <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><a href="http://www.sfu.ca/%7Etruax/fmtut.html">SFU</a><br>
             </td>
           </tr>
         </tbody>
@@ -61,35 +68,40 @@ Manual</a><br>
             </td>
           </tr>
           <tr>
-            <td style="vertical-align: top;"><a href="#feedback">Feedback</a><br>
+            <td style="vertical-align: top;"><a href="#op">Operators</a><br>
             </td>
             <td style="vertical-align: top;"><br>
             </td>
           </tr>
           <tr>
-            <td style="vertical-align: top;"><a href="#envelopes">Envelopes</a><br>
+            <td style="vertical-align: top;"><a href="algo.html#feedback">Feedback</a>
             </td>
             <td style="vertical-align: top;"><br>
             </td>
           </tr>
           <tr>
-            <td style="vertical-align: top;"><a href="#LFO">LFO</a><br>
+            <td style="vertical-align: top;"><a href="algo.html#envelopes">Envelopes</a>
             </td>
             <td style="vertical-align: top;"><br>
             </td>
           </tr>
           <tr>
-            <td style="vertical-align: top;"><a href="#pitch">Pitch</a><br>
+            <td style="vertical-align: top;"><a href="algo.html#LFO">LFO</a>
             </td>
             <td style="vertical-align: top;"><br>
             </td>
           </tr>
           <tr>
-            <td style="vertical-align: top;"><a href="#effects">Effects</a><br>
+            <td style="vertical-align: top;"><a href="algo.html#pitch">Pitch</a>
             </td>
             <td style="vertical-align: top;"><br>
             </td>
+          </tr><tr>
+            <td style="vertical-align: top;"><a href="algo.html#effects">Effects</a></td>
+            <td style="vertical-align: top;"><br>
+            </td>
           </tr>
+
         </tbody>
       </table>
 <br>
@@ -103,22 +115,36 @@ Manual</a><br>
 <br>
 
 ALGO is an 8-operator FM synthesizer. Two of the operators provide FM
-feedback. Additional components include 3 LFOs, a pitch envelope, a
-dual delay line and reverb. <br>
+feedback. Additional components include 3 LFOs, pitch envelope, dual delay line and reverb. <br>
 
 <br>
 
+<hr style="width: 100%; height: 2px;" color="#484a54"><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 25%;"><a name="algorithm"></a></td>
+      <td style="vertical-align: top; text-align: center;"><font size="+2">Algorithm</font><br>
+      </td>
+      <td style="vertical-align: top; width: 25%;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
 <br>
 
-<table style="text-align: left; width: 75%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 75%;" border="0" cellpadding="2" cellspacing="2">
 
   <tbody>
     <tr>
-      <td style="vertical-align: top; width: 75%;"><a name="algorithm"></a><br>
-The FM 'Algorithm' may be divided into three sections corresponding to
+      <td style="vertical-align: top; width: 75%;"><br>
+
+The FM&nbsp; 'Algorithm'&nbsp; may be divided into three sections corresponding to
 the three carrier operators&nbsp; 1, 4 and 7. <br>
       <br>
-Operators 1, 2 and 3 form a serial stack, <br>
+Operators 1, 2 and 3 form a serial stack. <br>
       <br>
 Operators 4, 5 and 6 form a single carrier with dual modulators. This
 stack provides feedback between operators 4 and 6. The nature of this
@@ -127,7 +153,10 @@ feedback is complex and often hard to predict. <br>
 Operators 7 and 8 form a simple carrier/modulator pair with more
 traditional feedback for operator 8.<br>
       <br>
-      <br>
+      
+
+With minor variations, due to feedback, the parameters for each
+operator are identical. <br>
       </td>
       <td style="vertical-align: middle; text-align: center;"><img style="width: 222px; height: 177px;" alt="ALGO algorithm" src="images/algo_algorithm.png.png"><br>
       </td>
@@ -138,9 +167,20 @@ traditional feedback for operator 8.<br>
 <br>
 
 <br>
+<hr style="width: 100%; height: 2px;" color="#484a54"><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 25%;"><a name="op"></a><br>
+      </td>
+      <td style="vertical-align: top; text-align: center;"><font size="+2">Operators</font><br>
+      </td>
+      <td style="vertical-align: top; width: 25%;"><a href="#top">Top</a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-With minor variations, mostly due to feedback, the parameters for each
-operator are identical. <br>
 
 <br>
 
@@ -155,32 +195,16 @@ the operator will produce a tone at 880 Hz.<br>
 
 <br style="font-weight: bold;">
 
-<span style="font-weight: bold;">OP Bias</span> - Adds a fixed value to
-the operator frequency. There are a couple of applications for the bias
-value. <br>
-
-First if the operator frequency is set to 0 the bias value is&nbsp;
-used to set a fixed frequency. Using a fixed frequency operator can
-produce sounds <br>
-
-reminiscent of ring modulation.&nbsp; <br>
-
-<br>
-
-Small bias values may be used to introduce chorusing. This is often
-more desirable then detuning the frequency <br>
-
-parameter because the chorus beat frequency is static with a bias
+<span style="font-weight: bold;">OP Bias</span> - Adds a fixed value to operator frequency.&nbsp; Small bias values may be used to introduce chorusing. This is often
+more desirable then detuning the frequency parameter because the chorus beat frequency is static with a bias
 value. With a detuned frequency the beat rate increases with higher
-notes. <br>
+notes. If the operator frequency is zero, bias sets a fixed operator frequency for sounds reminiscent of ring modulation.<br>
 
 <br>
 
-<span style="font-weight: bold;">OP Amplitude</span> - For the carrier
+<span style="font-weight: bold;">OP Amplitude</span> - For carrier
 operators 1, 4, and 7, the amplitude parameter sets the relative
-(linear) mix of the operator.&nbsp; For modulators<br>
-
-the amplitude sets the modulation index. The sliders immediately below
+(linear) operator mix.&nbsp; For modulators the amplitude sets the modulation index. The sliders immediately below
 the amplitude display provide amplitude modulation from various
 sources. <br>
 
@@ -231,114 +255,157 @@ Touch<br>
 
 <br>
 
-<span style="font-weight: bold;">OP Keyscale</span> - Sets the amount
+<span style="font-weight: bold;">OP Keyscale</span> - Sets amount
 of amplitude scaling relative to a key breakpoint. It is not obvious on
-the drawing above but the keyscale slider <br>
-
-has two heads, one each for left and right breakpoints. The scale
+the above drawing but the keyscale slider has two heads, one each for
+left and right breakpoints. The scale
 values are in db/octave. For example if the right breakpoint is at key
-72 and the <br>
-
-right scale value is at -9, then the operator amplitude will be down -9
-db by key 84 and -18 db at key 96.&nbsp; A little negative key scaling
-on modulators<br>
-
-may be used to roll back harmonics, which often become harsh,&nbsp; on
+72 and the right scale value is -9, the operator amplitude will be down
+-9db at key 84 and -18db by key 96.&nbsp; Negative modulaotr key
+scaling on the right may be used to roll back harse harmonics on
 upper keys, The same technique may be used to tame OP 6 feedback on
-higher <br>
-
-notes.&nbsp; Conversely modulator keyscale boosting is often useful on
-the bass end to produce richer bass timbres. <br>
+higher notes.&nbsp; Conversely modulator boosting is often useful on
+the left to produce richer bass timbres. <br>
 
 <br>
 
 <span style="font-weight: bold;">OP Overview and Mute</span> - The
-boxes at the bottom of the editor provide a quick overview of the
-frequency and amplitude of all operators&nbsp; without<br>
-
-switching editor pages. These boxes are also used to mute operators.
+boxes at the bottom provide a quick overview of the
+frequency and amplitude for all operators. These boxes are also used to mute selected operators.
 The operator mute states are saved as part of the program data.<br>
 
-<a name="feedback"></a><br>
+<br>
 
-<span style="font-weight: bold;"><br>
-<br>
-OP Feedback</span> - As noted above
-there are two feedback paths on operators 6 and 8. The operator 6 path
-is more complex and becomes chaotic <br>
-faster then operator 8. The controls for OP6 and OP8 feedback are
-nearly identical. The only difference is that OP6 may be modulated by
-LFO1 <br>
-while OP8 may be modulated by LFO2. The feedback parameter are as follows:<br>
-<br>
+<span style="font-weight: bold;"></span>
+<hr style="width: 100%; height: 2px;" color="#484a54"><span style="font-weight: bold;"><br>
+</span>
 <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top; width: 2%;"><br>
+      <td style="vertical-align: top; width: 20%;"><a name="feedback"></a></td>
+      <td style="vertical-align: top; width: 60%; text-align: center;"><font size="+2">Feedback</font><br>
       </td>
-      <td style="vertical-align: top;">FB - Fixed feedback depth<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Env - Amount of op envelope applied to feedback depth<br>
+      <td style="vertical-align: top; width: 20%;"><a href="#Top">Top</a><br>
       </td>
     </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;">
+</span><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
     <tr>
+      <td style="vertical-align: top; width: 30%;">
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">FB<br>
+            </td>
+            <td style="vertical-align: top;">Feedback amount <br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">Env<br>
+            </td>
+            <td style="vertical-align: top;">OP Envelope feedback depth<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">LFO1 <br>
+            </td>
+            <td style="vertical-align: top;">LFO feedback depth&nbsp; (LFO1 used for OP6, LFO2 for OP8)<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">Prss<br>
+            </td>
+            <td style="vertical-align: top;">MIDI Pressure feedback depth<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top; width: 3%;"><br>
+            </td>
+            <td style="vertical-align: top; width: 10%;">CCA<br>
+            </td>
+            <td style="vertical-align: top;">MIDI Controller A feedback depth<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">CCB<br>
+            </td>
+            <td style="vertical-align: top;">MIDI Controller B feedback depth<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">HP<br>
+            </td>
+            <td style="vertical-align: top;">Highpass filter cutoff in Hz.<br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+OP6 feedback is more complex then OP8 feedback.<br>
+<br>A highpass filter is used to block the DC component present in the
+feedback signal. The exact value is not crucial but generally should
+be below the lowest expected frequency. For highpass values below about
+10 HZ there is a discernible blip while the filter stabilizes.<br>
+      </td>
+      <td style="vertical-align: top; text-align: center; width: 30%;"><img style="width: 437px; height: 260px;" alt="Algo feedback Panel" src="images/algo_feedback.png"></td>
       <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">LFO1/LFO2 - Amount of LFO applied to feedback depth<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Prss - Amount of MIDI pressure applied to feedback depth<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">CCA - Amount of MIDI controller A applied to feedback depth<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">CCB - Amount of MIDI controller B applied to feedback depth<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">HP - Fixed high pass filter cutoff, for value below approx 10 Hz a blip component may be produced.<br>
       </td>
     </tr>
   </tbody>
 </table>
 <br>
-<a name="envelopes"></a><br>
 
-<big style="font-weight: bold;"><br>
+<hr style="width: 100%; height: 2px;" color="#484a54"><span style="font-weight: bold;"><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 20%;"><a name="envelopes"></a></td>
+      <td style="vertical-align: top; text-align: center;"><font size="+2">Envelopes</font><br>
+      </td>
+      <td style="vertical-align: top; width: 20%;"><a href="#Top">Top</a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
 <br>
-Envelopes</big><br>
 <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top;"><br>
       <br>
       <br>
-Each Operator has a dedicated ADDSR envelope. The pitch envelope has the same overall format.<br>
+Each Operator has a dedicated ADDSR envelope.&nbsp; There is also an extra "pitch" envelope with the same format.<br>
+      <br>The
+zoom buttons zoom in to and out of the origin and may be set to any
+level of magnification.&nbsp; As the mouse moves over the envelope
+graph the status line is updated to show it's position.&nbsp; The small
+"View" value just below the graph indicates the level of magnification
+.&nbsp; The vertical line indicates the origin at time 0.0<br>
       <br>
-The zoom buttons zoom in to and out of the origin and may be set to any
-level magnification.&nbsp; The y-axis at the origin will drift a bit
-with increasing zoom levels but the editor status line always displays
-the location of the mouse is it moves over the envelope graph. You may
-also zoom out to any level&nbsp; which means there is no practical upper
-bounds to envelope segment times. At around 130 seconds the horizontal
-guide lines come to an end but the graph may be zoomed out beyond this
-point.&nbsp; <br>
+There are no limits, in either direction, for the zoom level. This
+means there are no upper bounds to envelope lengths.&nbsp;&nbsp; The
+horizontal guide lines stop at around 130 seconds but the envelope may
+extend past this point. <br>
+      <br>
+      <font size="-1"><span style="color: rgb(150, 150, 150);">I have settled on a standardized envelope for all Cadejo instruments. ALGO</span><br style="color: rgb(150, 150, 150);">
+      <span style="color: rgb(150, 150, 150);">was implemented prior to this adoption.&nbsp; The standard envelope is slightly</span><br style="color: rgb(150, 150, 150);">
+      <span style="color: rgb(150, 150, 150);">more versatile then the one used in ALGO.</span></font><br>
       </td>
       <td style="vertical-align: top; width: 70%;"><img style="width: 617px; height: 620px;" alt="ALGO Envelope" src="images/algo_env.png"><br>
       </td>
@@ -346,55 +413,309 @@ point.&nbsp; <br>
   </tbody>
 </table>
 <br>
-<a name="LFO"></a><br>
-<span style="font-weight: bold;"><br>
-<br>
-LFOs</span><br>
+<hr style="width: 100%; height: 2px;" color="#484a54"><span style="font-weight: bold;"><br>
 <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top;"><br>
-ALGO has three LFOs:&nbsp; LFO1, LFO2 and Vibrato.<br>
-      <br>
-LFO 1 and 2 are nearly identical with the only difference being the
-modulation sources available. The vibrato LFO is found on the Pitch
-page and is simpler then LFO 1 and 2.<br>
-      <br>
-The frequency, amplitude and wave of LFOs 1 and 2 may be modulated by
-various source.&nbsp; CCA and CCB are MIDI controllers, Prss is MIDI
-channel pressure.&nbsp; ENV1 is in reference to the pitch envelope and
-not the envelope for OP1.&nbsp; Basically the difference between LFO1
-and LFO2 is that LFO1 may be modulated by ENV1 while LFO2 may be
-modulated by LFO1. <br>
+      <td style="vertical-align: top; width: 20%;"><a name="LFO"></a></td>
+      <td style="vertical-align: top; text-align: center;"><font size="+2">LFO</font><br>
       </td>
-      <td style="vertical-align: top; width: 70%;"><img style="width: 407px; height: 456px;" alt="Algo LFO editor" src="images/algo_lfo.png"><br>
+      <td style="vertical-align: top; width: 20%;"><a href="#Top">Top</a><br>
       </td>
     </tr>
   </tbody>
 </table>
-<a name="pitch"></a><br>
+<span style="font-weight: bold;"></span><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 30%;"><br>
+ALGO has three LFOs:&nbsp; LFO1, LFO2 and Vibrato.<br>
+      <br>
+LFO 1 and 2 are nearly identical, the only difference being the
+modulation sources available. The vibrato LFO is located on the <a href="#pitch">Pitch</a>
+page.<br>
+      <br>
+The frequency, amplitude and wave of LFOs 1 and 2 may be modulated by
+various sources. <br>
+      <br>
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+<td>Frequency<br>
+</td><td style="vertical-align: top;">CCA<br>
+            </td>
+            <td style="vertical-align: top;">MIDI Controller A freq mod depth<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top; width: 20%;"><br>
+            </td>
+            <td style="vertical-align: top; width: 20%;">CCB<br>
+            </td>
+            <td style="vertical-align: top;">MIDI Controller B freq mod depth<br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+<br>
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;">Amplitude<br>
+            </td>
+            <td style="vertical-align: top;">ENV1 <span style="color: rgb(255, 255, 204);">*</span><br>
+            </td>
+            <td style="vertical-align: top;">Global envelope LFO amplitude mod<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">Press<br>
+            </td>
+            <td style="vertical-align: top;">MIDI Pressure LFO amplitude mod<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">CCA<br>
+            </td>
+            <td style="vertical-align: top;">MIDI Controller A LFO amplitude mod<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top; width: 20%;"><br>
+            </td>
+            <td style="vertical-align: top; width: 20%;"><br>
+            </td>
+            <td style="vertical-align: top;">MIDI Controller B LFO amplitude mod<br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;">Wave<br>
+            </td>
+            <td style="vertical-align: top;">Skew<br>
+            </td>
+            <td style="vertical-align: top;">Wave shape<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top; width: 20%;"><br>
+            </td>
+            <td style="vertical-align: top; width: 20%;">ENV1 <span style="color: rgb(255, 255, 204);">*</span><br>
+            </td>
+            <td style="vertical-align: top;">Global envelope waveshape mod<br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <font style="color: rgb(255, 255, 204);" size="-1">* For LFO2 Amplitude and wave modulation is from LFO1 instead of ENV1</font><br>
+      <br>
+
+      </td>
+      <td style="vertical-align: top; width: 40%; text-align: center;"><img style="width: 407px; height: 456px;" alt="Algo LFO editor" src="images/algo_lfo.png"><br>
+      </td><td style="vertical-align: top; width: 30%;"><br>
+      </td>
+
+    </tr>
+  </tbody>
+</table>
+<br>
+<span style="font-weight: bold;"></span>
+<hr style="width: 100%; height: 2px;" color="#484a54"><span style="font-weight: bold;"><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 20%;"><a name="pitch"></a></td>
+      <td style="vertical-align: top; text-align: center;"><font size="+2">Pitch</font><br>
+      </td>
+      <td style="vertical-align: top; width: 20%;"><a href="#Top">Top</a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-weight: bold;">
+</span><br><br>
+<br>
+<div style="text-align: center;"><img style="width: 1267px; height: 529px;" alt="Algo Pitch Editor" src="images/algo_pitch.png"><br>
+</div>
+<br>
+<table style="text-align: left; width: 60%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+<td>Vibrato<br>
+</td><td style="vertical-align: top; width: 10%;">Sens<br>
+      </td>
+      <td style="vertical-align: top; width: 33%;">Sensitivity<br>
+      </td>
+      <td style="vertical-align: top; width: 7%;">Pitch<br>
+      </td>
+      <td style="vertical-align: top; width: 10%;">Port<br>
+      </td>
+      <td style="vertical-align: top; width: 33%;">Portamento<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Depth<br>
+      </td>
+      <td style="vertical-align: top;">Minimum vibrato depth<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Env<br>
+      </td>
+      <td style="vertical-align: top;">Pitch envelope depth<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Delay<br>
+      </td>
+      <td style="vertical-align: top;">Vibrato onset delay<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">LFO1<br>
+      </td>
+      <td style="vertical-align: top;">LFO1 pitch modulation depth<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">LFO2<br>
+      </td>
+      <td style="vertical-align: top;">LF02&nbsp; pitch modulation depth<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<hr style="width: 100%; height: 2px;" color="#484a54"><span style="font-weight: bold;"><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 20%;"><a name="effects"></a></td>
+      <td style="vertical-align: top; text-align: center;"><font size="+2">Effects</font><br>
+      </td>
+      <td style="vertical-align: top; width: 20%;"><a href="#Top">Top</a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
 <span style="font-weight: bold;"><br>
-<br>
-Pitch </span><br>
-The controls on the editor pitch page are fairly simple. You may set the vibrato frequency, sensitivity, depth and delay.<br>
-In the pitch panel are controls for portamento time and pitch modulation depth from the pitch envelope ,LFO1 and LFO2.<br>
-<br>
-<a name="effects"></a><br>
-<span style="font-weight: bold;"><br>
-<br>
-Effects</span><br>
-ALGO uses a dual delay line and reverb for effects. The delay time may be set independently up to 1 second for the two delays. <br>
-The delays share feedback, HF damp, and mix level parameters.<br>
-<br>
-Reverb room size and mix are adjustable.<br>
-<br>
-The "Out" panel controllers overall amplitude. The LP slider is
-controls the cutoff frequency of&nbsp; a fixed low pass filter at
-ALGO's <br>
-output, The CC&amp; slider controls how much effect MIDI controller 7 (Volume) has on overall amplitude. <br>
+</span><br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; width: 33%;">
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top; width: 15%;">Delay<br>
+            </td>
+            <td style="vertical-align: top; width: 15%;">Feedback<br>
+            </td>
+            <td style="vertical-align: top;">Common delay feedback<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">Damp<br>
+            </td>
+            <td style="vertical-align: top;">Common feedback high frequency damping<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">Mix<br>
+            </td>
+            <td style="vertical-align: top;">Common delay wet signal mix<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">Reverb<br>
+            </td>
+            <td style="vertical-align: top;">Size<br>
+            </td>
+            <td style="vertical-align: top;">Room size<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">Mix<br>
+            </td>
+            <td style="vertical-align: top;">Reverb wet signal mix<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">Out<br>
+            </td>
+            <td style="vertical-align: top;">LP<br>
+            </td>
+            <td style="vertical-align: top;">Global lowpass filter cutoff<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">CC7<br>
+            </td>
+            <td style="vertical-align: top;">MIDI controller 7 (volume) sensitivity<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top; width: 12%;"><br>
+            </td>
+            <td style="vertical-align: top; width: 20px;">Amp<br>
+            </td>
+            <td style="vertical-align: top;">Main output amplitude in db<br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+The ALGO effects block includes 2 delay lines with individual delay
+times up to 1.0 second each,&nbsp; The delay feedback, damping and mix
+parameters apply to both delay lines. <br>
+      </td>
+      <td style="vertical-align: top; width: 33%;"><img style="width: 688px; height: 531px;" alt="algo effects editor page" src="images/algo_effects.png"><br>
+      </td>
+      <td style="vertical-align: top; width: 34%;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
 <br><br>
 <br>
 
+
+
+
+
+
+
+</span></span></span></span>
 
 
 </body></html>
