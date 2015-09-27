@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>Cadejo Skins</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <h1 class="banner_text">Skins</h1>
+    <p class="banner_blurb"><a href="http://photography.nationalgeographic.com/photography/photos/patterns-animals/#/zebra-stripes_9331_600x450.jpg">...</a></p>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="frame.html">Previous</a>
+      <a class="navigation" href="scene.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>
+  </p>
+  <!-- END NAVIGATION -->
+<p>Cadejo may be customized by selecting one of several <a href="http://insubstantial.github.io/insubstantial/substance/docs/skins/overview.html">substance</a> skins. 
+There are two ways to do this. <br>The easiest way is to click the "skin"
+button at the top of most Cadejo frames. The advantage of this method is <br> 
+that it gives you instant feedback. The disadvantage is that the changes are not permanent. A further disadvantage 
+<br>is that not all graphical elements will be updated. Cadejo uses two graphic libraries: swing and sgwr. Swing elements <br>
+will be updated to match the new skin but any existing sgwr drawings will not be updated.  Any future sgwr drawings <br>
+will match the new look. </p><p>A more permanent method is to set the skin in a configuration file. </p><p class="footnote">Currently configuration is hard-coded in "cadejo/config.clj". The ability to <br>
+load configuration files at run time is planned for the future.</p><p>There are two configuration values related to the look of cadejo; "initial-skin" and "displaybar-style"<br> 
+The value for initial-skin must be a String and must <em>exactly</em> match one of the available skins. config.clj <br>
+contains a list of possible skin names.</p><p>displaybar-style may have one of the fowling values (nil :basic :sixteen :matrix :twilight)<br>
+A displaybar is a graphic element defined by the sgwr library used to display alpha-numeric values and there are<br>
+four possible styles.</p>    <div class="section_image1">
+      <img class="image1" src="images/displaybar_samples.png" alt="Display bar styles"/>
+    </div><br>
+<p>Basic style uses a native sans-serif font and is both flexible and efficient.</p>
+<p>Matrix is a 5x7 dot-matrix display. It is flexible in the number of possible characters it may display <br>
+but due to the several hundred graphic elements a typical display uses takes a long time to create and update.</p>
+<p>Sixteen style emulates a 16-segment display</p>
+<p>Twilight uses a set of icons to simulate a matrix display using the twilight color scheme. It is quicker<br>
+then the matrix style but has fixed colors which may or may not work with non twilight skins.</p><p>If the config displaybar-style is set to nil, the skin will supply a default style. Any other value <br>
+explicitly overrides these defaults.<p></p>  <!-- START FOOTER -->
+  <footer>
+  <div class="footer">
+    <a href="#top">Top</a>
+      <a class="navigation" href="frame.html">Previous</a>
+      <a class="navigation" href="scene.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>  </div>
+  </footer>
+  <!-- END FOOTER -->
+</div> <!-- END page wrapper -->
+</body>
+</html>

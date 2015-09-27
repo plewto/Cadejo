@@ -1,381 +1,223 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Cobalt</title></head><body style="color: rgb(255, 255, 204); background-color: black;" alink="#c7f2dc" link="#c7f2dc" vlink="#c7f2dc">
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>Cobalt</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <img class="banner_image" src="images/cobalt_logo.png" alt="Cobalt"/>
+    <h1 class="banner_text">Cobalt</h1>
+    <p class="banner_blurb"><a href="https://www.youtube.com/watch?v=uuGaqLT-gO4">...</a></p>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="masa.html">Previous</a>
+      <a class="navigation" href="instruments.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>
+  </p>
+<p> 
+<a href="#fm"> FM Operators</a><br>
+<a href="#envelopes"> Envelopes</a><br>
+<a href="#noise"> Noise</a><br>
+<a href="#buzz"> Buzz</a><br>
+<a href="#filter"> Filters</a><br>
+<a href="#pitch"> Pitch</a><br>
+<a href="#effects"> Effects</a>
+</p>  <!-- END NAVIGATION -->
+<p>Cobalt is a hybrid instrument using additive and subtractive techniques. The signal begins with 6 simple 
+<br>FM carrier/modulator pairs, two tunable noise sources and a 'buzz' generator. These signals are mixed 
+<br>and sent through a dual low and band pass filter. The signal is next passed through a clipping block before 
+<br>proceeding to the effects and final output stage.
+</p>  <!-- START SECTION FM Operators -->
+  <a id="fm"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">FM Operators</h2>
+    </div>
+<p>The first 6 "operators" are simple FM carrier/modulator pairs. Output amplitude may be modulated 
+<br>by LFO1, Velocity, Pressure, or MIDI controllers CCA and CCB. Both carrier and modulator share the same 
+<br>envelope but a lag time may be applied to the modulator envelope. If the modulator Env slider is set to 0, 
+<br>it has a fixed amplitude. As the Env slider increases the envelope has increasing effect over the modulator 
+<br>amplitude.</p>
 
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;">
-      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-        <tbody>
-          <tr>
-            <td style="vertical-align: top; width: 10%;"><a name="top"></a><br>
-            </td>
-            <td style="vertical-align: top;"><a href="index.html">Cadejo
-Manual</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><span style="text-decoration: underline;"></span><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><span style="text-decoration: underline;"><a href="https://www.youtube.com/watch?v=_5F3biWHj6M">Precipitation</a></span><br>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><img style="width: 128px; height: 170px;" alt="Logo" src="images/cobalt_logo.png"><br>
-      </td>
-      <td style="vertical-align: top;">
-      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-        <tbody>
-          <tr>
-            <td style="vertical-align: top; width: 50%;"><a href="#overview">Overview</a><br>
-            </td>
-            <td style="vertical-align: top;"><a href="#vibrato">Pitch &amp; Vibrato</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#fmop">FM Operators</a><br>
-            </td>
-            <td style="vertical-align: top;"><a href="#efx">Effects and Main Out</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#noise">Noise</a><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#buzz">Buzz</a><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#env">Envelopes</a><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#filter">Filters</a><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <br>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<p>Both carrier and modulator share the same keyscale breakpoint but may be scaled by different amounts. 
+<br>Keyscale values are in db/octave.
+</p>    <div class="section_image1">
+      <img class="image1" src="images/cobalt_op.png" alt="Cobalt FM Operators"/>
+    </div><br>
+<p>The operator overview boxes allow quick preview of the states of the 8 operators. Parameters 
+<br>include Carrier frequency as "Freq", Modulator frequency and Bias as "FM" and "Bias". Amplitude is 
+<br>indicated by sliding marks on the vertical scales. The Mute buttons are used to mute corresponding 
+<br>operators.</p>  </div>
+  </section>
+  <!-- END SECTION FM Operators -->
+  <!-- START SECTION Envelopes -->
+  <a id="envelopes"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Envelopes</h2>
+    </div>
+<p>Each operator has it's own 5-stage envelope which may be configured either as an 
+<br>AADSR (two attack stages) or ADDSR (two decay stages).<br></p>
 
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="overview"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Overview</font><br>
-      </td>
-      <td style="vertical-align: top; width: 25%;"><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-Cobalt is a hybrid instrument using both additive and subtractive
-techniques.&nbsp; The signal begins with 6 simple FM
-carrier/modulator pairs, two tunable noise sources and a 'buzz' generator. These signals are
-mixed and sent through a dual low and band pass filter.&nbsp; The
-signal is next passed through a clipping block before proceeding to the effects and final output stage. <br>
-<br>
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="fmop"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">FM Operators</font><br>
-      </td>
-      <td style="vertical-align: top;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>The first 6 "operators" are simple FM carrier/modulator pairs.
-Output
-amplitude may be modulated by LFO1, Velocity, Pressure, or MIDI
-controllers CCA and CCB.&nbsp; Both carrier and modulator share the
-same envelope but a lag time may be applied to the&nbsp; modulator
-envelope.&nbsp; If the modulator Env slider is set to 0, it has a fixed
-amplitude.
-As the Env slider increases the envelope has increasing effect over
-the modulator amplitude. <br>
-<br>
-Both carrier&nbsp; and modulator share the same keyscale
-breakpoint&nbsp; but&nbsp; may be scaled by different
-amounts.&nbsp;&nbsp; The keyscale is in db/octave.<br>
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54">
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="env"></a></td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Envelopes</font><br>
-      </td>
-      <td style="vertical-align: top;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br><font size="+2"></font>Each operator has it's own 5-stage envelope
-which may be configured either as an AADSR (two attack stages) or ADDSR
-(two decay stages) .<br>
-<br>
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 2%;"><br>
-      </td>
-      <td style="vertical-align: top; width: 5%;">Att<br>
-      </td>
-      <td style="vertical-align: top;">Attack time<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Dcy1<br>
-      </td>
-      <td style="vertical-align: top;">Initial decay time or 2nd attack time<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Dcy2 <br>
-      </td>
-      <td style="vertical-align: top;">2nd decay time <br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Rel<br>
-      </td>
-      <td style="vertical-align: top;">Release time<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Peak<br>
-      </td>
-      <td style="vertical-align: top;">Amplitude peak after Att stage. Set peak to less then 1 for dual attack mode.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">BP <br>
-      </td>
-      <td style="vertical-align: top;">Break Point, amplitude after Dcy1 stage<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Sus<br>
-      </td>
-      <td style="vertical-align: top;">Sustain level<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<br>
+<ul>      
+   <li>Att&nbsp;&nbsp;- Attack time</li>
+   <li>Dcy1&nbsp;- Initial decay or 2nd attack time</li>
+   <li>Dcy2&nbsp;- 2nd decay time</li>
+   <li>Rel&nbsp;&nbsp;- Release time</li>
+   <li>Peak&nbsp;- Amplitude after Att stage</li>
+   <li>BP&nbsp;&nbsp;&nbsp;- 'Break Point', amplitude after Dcy1 stage.</li>
+   <li>Sus&nbsp;&nbsp;- Sustain level</li>
+</ul>  </div>
+  </section>
+  <!-- END SECTION Envelopes -->
+  <!-- START SECTION Noise -->
+  <a id="noise"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Noise</h2>
+    </div>
+<p><br>Cobalt has two noise sources which may function as semi-tonal elements. The noise signals are formed 
+<br>by ring-modulating a sine wave with band-pass filtered white-noise. The result is a cluster of partials 
+<br>around the sine wave frequency. Deviation from the center pitch is controlled by the filter band-width. 
+<br>For narrow band-widths (~10) the resulting sound has a definite pitch with an airy quality. As the 
+<br>band-width increases the sound becomes increasingly noisy.</p>
 
-<div style="text-align: center;"><img style="width: 1416px; height: 706px;" alt="FM OP" src="images/cobalt_op.png"><br>
-</div>
+<p>The two noise sources share a common envelope, key scaling and amplitude modulation. The noise 2 
+<br>envelope may have a lag time applied.
 
+</p>    <div class="section_image1">
+      <img class="image1" src="images/cobalt_noise.png" alt="Cobalt Noise Operator"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION Noise -->
+  <!-- START SECTION Buzz -->
+  <a id="buzz"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Buzz</h2>
+    </div>
+<p>The Buzz* Operator produces n harmonics with equal amplitude. Using the envelope to change harmonic count 
+<br>produces interesting results.<p>
+<p class="footnote">* About the name: Many synthesis languages have a "buzz" generator, Suppercollider uses the name 'blip' for the same functionality.
+</p>    <div class="section_image1">
+      <img class="image1" src="images/cobalt_buzz.png" alt="Cobalt Buzz Operator"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION Buzz -->
+  <!-- START SECTION Filter -->
+  <a id="filter"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Filter</h2>
+    </div>
+<p>The filter section consist of a low-pass and band-pass filter in parallel. These filters track the same values 
+<br>except the bandpass frequency may be offset from the low-pass cutoff. Both filters share a dedicated ADSR 
+<br>envelope. The band-pass lag slider smooths out the envelope as it is applied to the band pass filter.</p>
 
-<br>The operator overview boxes allow quick preview of the states
-of&nbsp;
-the 8 operators. Parameters include Carrier frequency as "Freq",
-Modulator frequency and Bias as "FM" and "Bias".&nbsp;&nbsp; Amplitude
-is indicated by sliding marks on vertical scales. The Mute buttons is
-used to mute the corresponding operator. <br>
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="noise"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Noise</font><br>
-      </td>
-      <td style="vertical-align: top;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>Cobalt has two noise sources which may function as semi-tonal
-elements.
-The noise signals are formed by ring-modulating a sine wave with
-band-pass filtered white-noise.&nbsp; The result is a cluster of
-partials around the sine wave frequency.&nbsp; Deviation from the
-center pitch is controlled by the filter
-band-width. For narrow band-widths (~10) the resulting sound has a
-definite pitch with an airy quality.&nbsp; As
-the band-width increases the sound becomes increasingly noisy.<br>
-<br>
-The two noise sources share a common envelope, key scaling and
-amplitude modulation. The noise 2 envelope may have a lag
-time applied. <br>
-<br>
-<img style="width: 1048px; height: 552px;" alt="Cobalt Noise Editor" src="images/cobalt_noise.png"><br>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="buzz"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Buzz</font><br>
-      </td>
-      <td style="vertical-align: top;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-The Buzz* Operator produces the n harmonics with equal
-amplitude.&nbsp; Using the envelope to change harmonic count
-produces interesting results.<br>
-<img style="width: 1154px; height: 576px;" alt="Cobalt Buzz Editor" src="images/cobalt_buzz.png"><br>
-<font style="color: rgb(150, 150, 150);" size="-1">* About the name: Many synthesis languages have a
-"buzz" generator, Suppercollider uses the name 'blip' for the same
-functionality. </font><br>
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="filter"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Filters</font><br>
-      </td>
-      <td style="vertical-align: top;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-The filter section consist of a low-pass and band-pass filter in
-parallel.&nbsp; These two filters track the same values but the
-bandpass center frequency may be offset from the low-pass cutoff. Both filters share a dedicated ADSR envelope. The band-pass <br>
-lag slider smooths out the envelope as it is applied to the band pass filter.&nbsp; <br>
-<br>Filter output is routed through a clipping block prior to entering
-the effects section. The clipper is such that its output never exceeds
-unity. Increased clipping effect is achieved by boosting the clipper's
-input gain.&nbsp; The clipper gain may be modulated by either MIDI
-controller CCA or CCB.<br>
-<br>
-<div style="text-align: center;"><img style="width: 1332px; height: 334px;" alt="Cobalt Filter Editor" src="images/cobalt_filter.png"><br>
-<br>
-</div>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="vibrato"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Pitch &amp; Vibrato</font><br>
-      </td>
-      <td style="vertical-align: top;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-The Vibrato page contains miscellaneous controls mostly related to pitch and vibrato. <br>
-<br>
-<span style="font-weight: bold;">Portamento</span><span style="font-style: italic;"> </span>sets portamento time which may also be modified by MIDI controller CC5<br>
-<br>
-<span style="font-weight: bold;">Vibrato</span> uses a dedicated LFO.
-The bleed control sets the minimum vibrato signal I.E. The amount of
-vibrato when the modwheel is at 0. Vibrato depth may be modified by
-MIDI pressure or controller CCA.<br>
-<br>
-<span style="font-weight: bold;">LFO 1</span> may be selectively applied
-to operator amplitude. The amplitude of LFO 1 may be modified by either
-MIDI pressure or controller CCA.<br>
-<br>
-The <span style="font-weight: bold;">Pitch Envelope</span> has
-four stages with levels set by L0, L1, L2 and L3. The time intervals
-between each stage are set by T1, T2 and T3.&nbsp; Level values have a
-range of +/- 1.0 which may be scaled by the scale factor&nbsp; or by
-MIDI controller CC9<br>
-<br>
-<div style="text-align: center;"><img style="width: 1207px; height: 343px;" alt="Cobalt Vibrato Editor" src="images/cobalt_lfo.png"><br>
-<br>
-</div>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="efx"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Effects and Main Out</font><br>
-      </td>
-      <td style="vertical-align: top;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>The effects stage consist of two delay lines, each with a maximum
-delay of 2 seconds, dedicated envelope and two dedicated LFOs. The
-delay time, amplitude and pan position of both delay lines may be
-freely modified by the envelope generator or the LFOs. Each delay line
-has FB and XFB sliders. The FB slider is used for feedback of a delay
-to it's self. The XFB slider sets the amount of feedback from the other
-delay. <br>
-<br>
-<br>
-In the Main Out section the overall amplitude in db and the dry signal
-mix may be set. The velocity slider sets velocity sensitivity for the
-overall amplitude, CC7 sets how much effect MIDI volume (7) has on the
-output volume. If the CC7 is slider is at 0 MIDI volume is ignored. If
-the slider is at 1 the volume will change from full off to full on over
-the range of controller 7.<br>
-<br>
-<br>
-<img style="width: 1628px; height: 790px;" alt="Cobalt Effects Editor" src="images/cobalt_efx.png"><br>
+<p>Filter output is routed through a clipping block prior to entering the effects section. The clipper is such that its 
+<br>output never exceeds unity. Increased clipping effect is achieved by boosting the clipper's input gain. The clipper
+<br>gain may be modulated by either MIDI controller CCA or CCB.
 
-<br>
+</p>    <div class="section_image1">
+      <img class="image1" src="images/cobalt_filter.png" alt="Cobalt Filter"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION Filter -->
+  <!-- START SECTION Vibrato and Pitch -->
+  <a id="pitch"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Vibrato and Pitch</h2>
+    </div>
+<p>The Vibrato page contains miscellaneous controls mostly related to pitch and vibrato.</p>
 
+<p>Portamento sets portamento time which may also be modified by MIDI controller CC5</p>
 
-</body></html>
+<p>Vibrato uses a dedicated LFO. The bleed control sets the minimum vibrato signal, I.E. 
+<br>The amount of vibrato when the modwheel is at 0. Vibrato depth may be modified 
+<br>by MIDI pressure or controller CCA.</p>
+
+<p>LFO1 may be selectively applied to any operator's amplitude. The amplitude of LFO1 
+<br>may be modified by either MIDI pressure or controller CCA.</p>
+
+<p>The Pitch Envelope has four stages with levels set by L0, L1, L2 and L3. The time intervals 
+<br>between each stage are set by T1, T2 and T3. Level values have a range of +/- 1.0 which may 
+<br>be scaled by the scale factor or by MIDI controller CC9.</p>    <div class="section_image1">
+      <img class="image1" src="images/cobalt_pitch.png" alt="Cobalt Editor Pitch tab"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION Vibrato and Pitch -->
+  <!-- START SECTION Effects -->
+  <a id="effects"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Effects</h2>
+    </div>
+<p>The effects stage consist of two delay lines, each with a maximum delay of 2 seconds, a dedicated envelope 
+<br>generator and two dedicated LFOs. The delay time, amplitude and pan position of both delay lines may be freely 
+<br>modified by the envelope generator or the LFOs. Each delay line has FB and XFB sliders. The FB slider is used for 
+<br>feedback of a delay to it's self. The XFB slider sets the amount of feedback from the other delay.</p>
+
+<p>In the Main Out section the overall amplitude in db and the dry signal mix may be set. The velocity slider sets 
+<br>velocity sensitivity for the overall amplitude, CC7 sets how much effect MIDI volume (7) has on the output volume. 
+<br>If the CC7 is slider is at 0 MIDI volume is ignored. If the slider is at 1 the volume will change from full off to full on 
+<br>over the range of controller 7.</p>    <div class="section_image1">
+      <img class="image1" src="images/cobalt_efx.png" alt="Cobalt Effects"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION Effects -->
+<p><br></p>  <!-- START FOOTER -->
+  <footer>
+  <div class="footer">
+    <a href="#top">Top</a>
+      <a class="navigation" href="masa.html">Previous</a>
+      <a class="navigation" href="instruments.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>  </div>
+  </footer>
+  <!-- END FOOTER -->
+</div> <!-- END page wrapper -->
+</body>
+</html>

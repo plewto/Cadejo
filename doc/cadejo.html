@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>Cadejo</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <img class="banner_image" src="images/banner02.png" alt=""/>
+    <p class="banner_blurb">
+A MIDI mapping tool and suit of instruments for Overtone
+</p>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="#.html">Previous</a>
+      <a class="navigation" href="quickstart.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>
+  </p>
+
+<ul>
+<li class="null"><a href="#overview">Overview</a></li>
+<li class="null"><a href="quickstart.html">Quick Start Guide</a></li>
+<li class="null"><a href="frame.html">GUI Frame basics</a></li>
+<li class="null"><a href="skin.html">Skins</a></li>
+
+<li class="null"><a href="scene.html">Scenes</a>
+    <ul>
+       <li class="null"><a href="scene.html#midi">MIDI</a></li>
+       <li class="null"><a href="scene.html#virtual_keyboard">Virtual Keyboard</a></li>
+       <li class="null"><a href="scene.html#tuning_tables">Tuning Tables</a></li>
+    </ul>
+</li>
+
+<li class="null"><a href="channel.html">Channels</a>
+    <ul>
+       <li class="null"><a href="channel.html#add_instrument">Add Instrument</a></li>
+       <li class="null"><a href="channel.html#keymodes">Key Modes</a></li>
+     </ul>
+</li>
+
+<li class="null"><a href="properties.html">Properties</a>
+    <ul>
+     <li class="null"><a href="properties.html#curves"> Mapping Functions</a></li>
+     <li class="null"><a href="properties.html#bend"> Pitch Bend</a></li>
+     <li class="null"><a href="properties.html#pressure"> Pressure</a></li>
+     <li class="null"><a href="properties.html#velocity"> Velocity</a></li>
+     <li class="null"><a href="properties.html#transpose"> Transpose</a></li>
+     <li class="null"><a href="properties.html#dbscale"> DB Scale</a></li>
+     <li class="null"><a href="properties.html#tuningtable"> Tuning Table</a></li>
+     <li class="null"><a href="properties.html#keyrange"> Key Range</a></li>
+   </ul>
+</li>
+
+<li class="null"><a href="performance.html">Performances</a>
+   <ul>
+    <li class="null"><a href="performance.html#progbank"> Program Banks</a></li>
+    <li class="null"><a href="performance.html#progressive_mode"> Progressive Program Change Mode</a></li>
+    <li class="null"><a href="performance.html#ctrl"> MIDI Continous Controllers</a></li>
+    <li class="null"><a href="performance.html#editor"> Instrument Editor</a></li>
+  </ul>
+
+<li class="null"><a href="instruments.html">Instruments</a>
+    <ul>
+      <li class="null"><a href="algo.html"> Algo FM Synthesizer</a></li>
+      <li class="null"><a href="alias.html"> Alias Mono Synthesizer</a></li>
+      <li class="null"><a href="cobalt.html"> Cobalt</a></li>
+      <li class="null"><a href="combo.html"> Combo Organ</a></li>
+      <li class="null"><a href="masa.html"> MASA Organ</a></li>
+    </ul>
+</li>
+</ul>  <!-- END NAVIGATION -->
+  <!-- START SECTION Overview -->
+  <a id="overview"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Overview</h2>
+    </div>
+
+Cadejo is a MIDI processor and suite of instruments for <a href="http://overtone.github.io/">Overtone</a>
+available at <a href="https://github.com/plewto/Cadejo">Github</a>
+    <!-- START LIST -->
+    <br><h4 class="list_title">Features</h4>
+    <ul>
+      <li>Multiple Keymodes</li>
+      <li>Alternate Tunings</li>
+      <li>Layers and Key-splits</li>
+      <li>Maping functions for MIDI velocity, controllers, channel pressure and pitch bend</li>
+      <li>Program banks</li>
+      <li>Random patch generation</li>
+    </ul>
+    <!-- END LIST -->
+Cadejo uses a hierarchal tree structure where MIDI messages are passed from parent to child nodes. 
+At the highest level is an object called a <em>Scene</em>.<br>
+Each scene has 16 child nodes corresponding to the 16 MIDI <em>Channels</em> and each channel has zero or more 
+child nodes called <em>Performances</em>.<br>
+A performance may be viewed as a container holding an instrument.  <img src="./images/cadejo_tree_structure.png" alt=""/>
+<p>Each node on a Cadejo tree has a set of properties and a node automatically inherits the properties 
+of it's parent. <br>The standard properties are:</p>
+    <!-- START LIST -->
+    <ul>
+      <li>:bend           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- keyword, pitch bend mapping function</li>
+      <li>:bend-range     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- float, pitch bend range in cents</li>
+      <li>:dbscale        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- float, amplitude scale in db</li>
+      <li>:key-range      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- tuple [low, high], limits active key range</li>
+      <li>:pressure-bias  &nbsp;&nbsp;- float, value added to channel pressure events</li>
+      <li>:pressure-curve &nbsp;- keyword, channel pressure mapping function</li>
+      <li>:pressure-scale &nbsp;- float, channel pressure scal factor</li>
+      <li>:scale-id       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- keyword, tuning table selection</li>
+      <li>:transpose      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- int, transposition in half-steps</li>
+      <li>:velocity-map   &nbsp;&nbsp;&nbsp;- keyword, velocity mapping function</li>
+    </ul>
+    <!-- END LIST -->
+  <p class="footnote">Properties related to MIDI controller events are defined at the performance level.</p><p>Generally if both a parent and child node define the same property, then the value given in the 
+child node will be used.</p>
+
+<p>As a concrete example consider the illustration below. At the Scene level :bend-range is set to 200 (whole tone).<br>
+At Channel 1 :bend-range is set to 700 (a 5th) and at Performance B :bend-range is set to 1200 (an octave),<br> 
+no other node sets a value for :bend-range</p>  <img src="./images/cadejo_properties_1.png" alt="Node property inheritance"/>
+<p>Pitch bend events on Channel 1 are sent to both Performance 'A' and 'B'. Performance 'A' has a range of 700 inherited from Channel 1<br> 
+while Performance 'B' defines it's own value and has a range of 1200. Pitch bend events on all other channels will use the range of 200 established by the scene object.</p>
+
+<p>The :dbscale and :transpose properties behave differently. Instead of a child completely blocking these values from it's parent, they are added together. 
+If Channel 1 sets transpose to 12 then all key events are shifted up an octave when presented to Performances 'A' and "B'. If 'B' then sets transpose 
+to -5 it's effective transposition is 12-5=7.</p>  </div>
+  </section>
+  <!-- END SECTION Overview -->
+<p></p>  <!-- START FOOTER -->
+  <footer>
+  <div class="footer">
+    <a href="#top">Top</a>
+      <a class="navigation" href="#.html">Previous</a>
+      <a class="navigation" href="quickstart.html">Next</a>
+      <a class="navigation" href="#top">Home</a>  </div>
+  </footer>
+  <!-- END FOOTER -->
+</div> <!-- END page wrapper -->
+</body>
+</html>

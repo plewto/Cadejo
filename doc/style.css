@@ -1,0 +1,170 @@
+body {
+  background-color: #000;
+  color: #FFFFCC;
+  width: 1500px;
+}
+
+strong {
+  color: #FFEEDD;
+}
+
+#page_wrapper {
+  border: 1px solid #000;
+  background-color: #000;
+  color: #FFFFCC;
+  font-family: "PT Serif", "serif";
+  font-size: 1.1em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+header {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+img.banner_image {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h1.banner_text {
+  margin-left: auto;
+  margin-right: auto;
+  font-family: "Open Sans", "sans-serif";
+  font-size: 2.0em;
+}
+
+p.banner_blurb {
+  font-family: "Open Sans", "sans_serif";
+  font-size: 0.75em;
+  color: #645B73;
+}
+
+a.navigation {
+  color: #FFCCCC;
+  font-family: "Open Sans", "sans-serif";
+  font-size: 1.0em;
+}
+
+a.ghost {
+  color: #2D2933;
+  font-family: "Open Sans", "sans-serif";
+  font-size: 1.0em;
+}
+
+p.static_navigation {
+  margin-left: 8px;
+}
+
+a {
+  font-family: "Open Sans", "sans-serif";
+  font-size: 1.0em;
+  color: #FFCCCC;
+}
+
+hr.section {
+  background-color: #6A735B;
+  color: #6A735B;
+  height: 1px;
+  border: none;
+  position: relative;
+  top: 32px;
+}
+
+p.section {
+  margin-left: 8px;
+  font-family: PT Serif;
+  font-size: 1.1em;
+  color: #FFFFCC;
+}
+
+div.section {
+  clear: left;
+}
+
+h2.section_head {
+  font-family: "Open Sans", "sans-serif";
+  font-size: 1.1em;
+  position: relative;
+  text-align: center;
+}
+
+div.section_head {
+  position: relative;
+  top: 0px;
+  left: 16px;
+}
+
+a.top {
+  color: #FFCCCC;
+  font-family: "Open Sans", "sans-serif";
+  font-size: 1.0em;
+  position: relative;
+  top: -24px;
+  left: 16px;
+}
+
+div.section_image1 {
+  margin: auto;
+  clear: left;
+}
+
+img.image1 {
+  margin: 0px auto;
+  display: block;
+}
+
+div.section_image2 {
+  clear: left;
+}
+
+div.section_image2_left {
+  float: left;
+  display: inline;
+  width: 500px;
+}
+
+div.section_image2_right {
+  float: left;
+  display: inline;
+}
+
+h4.list_title {
+  font-family: "Open Sans", "sans-serif";
+  font-size: 1.0em;
+  left: 0px;
+}
+
+p.footnote {
+  font-family: "Ubuntu Mono", "mono";
+  font-size: 0.75em;
+  color: #645B73;
+}
+
+a.footnote {
+  font-family: "Ubuntu Mono", "mono";
+  font-size: 0.75em;
+  color: #645B73;
+}
+
+li.footnote {
+  font-family: "Ubuntu Mono", "mono";
+  font-size: 0.75em;
+  color: #645B73;
+}
+
+li.null {
+  list-style-type: none;
+}
+
+li {
+  font-family: "Ubuntu Mono", "mono";
+  font-size: 1.0em;
+}
+
+div.footer {
+  clear: left;
+}
+

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>Cadejo Scenes</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <h1 class="banner_text">Scenes</h1>
+    <p class="banner_blurb"><a href="http://barcinski-jeanjean.com/old.html">...</a></p>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="skin.html">Previous</a>
+      <a class="navigation" href="channel.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>
+  </p>
+<a href="#MIDI">MIDI</a><br>
+<a href="#virtual_keyboard">Virtual Keyboard</a><br>
+<a href="#tuning_tables">Tuning Tables</a><br>
+<a href="#channels">Channel Buttons</a><br>  <!-- END NAVIGATION -->
+<p>A scene is an object near the top of the Cadejo tree whose primary duty is to distribute <br>
+incoming MIDI events to appropriate channels. Secondary duties are related to default <br> 
+property values and maintenance of alternate tuning tables.</p>    <div class="section_image1">
+      <img class="image1" src="images/scene_01.png" alt="Scene Frame"/>
+    </div><br>
+  <!-- START SECTION MIDI -->
+  <a id="MIDI"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">MIDI</h2>
+    </div>
+<p>To use MIDI select an available MIDI device from those listed on the left<br>
+and click 'Connect'. Once a MIDI input device has been established it is not possible to change it.<p><p class="footnote">Currently Overtone uses the Java JVM for MIDI access. Unfortunalty out of the box Java does not play well within <br> 
+a typical Linux MIDI environment. Specifically if ALSA has a MIDI device open it is not  available to Java. <br>
+Conversely if Java has a device open it is unavailable to ALSA. There are no simple solutions other then to not uses <br>
+the two simultaneously. One future possibility is to create new Cadejo node types which would bridge
+between <a class="footnote" href="http://opensoundcontrol.org/introduction-osc">OSC</a> and MIDI</p>  </div>
+  </section>
+  <!-- END SECTION MIDI -->
+  <!-- START SECTION Virtual Keyboard -->
+  <a id="virtual_keyboard"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Virtual Keyboard</h2>
+    </div>
+    <div class="section_image2">
+      <div class="section_image2_left">
+        <p>A virtual keyboard is provided for quick auditions or for those situations where MIDI may not be a available.</p>
+        <p>Technically the virtual keyboard is a parent node to the scene object and any open MIDI devices is the parent node to the <br>
+        virtual keyboard.</p>
+        
+        <p></p>
+        <pre>[midi] --> [virtual-keyboard] --> [scene]</pre>
+        <p>The virtual keyboard is intended for quick auditions and not as a serious performance tool</p>
+      </div>
+      <div class="section_image2_right">
+        <img src="images/virtual_keyboard.png" alt="Virtual Keyboard" />
+      </div>
+    </div><p></p>
+  </div>
+  </section>
+  <!-- END SECTION Virtual Keyboard -->
+  <!-- START SECTION Tuning Tables -->
+  <a id="tuning_tables"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Tuning Tables</h2>
+    </div>
+    <div class="section_image2">
+      <div class="section_image2_left">
+        
+        <p>A tuning table is a map between MIDI key-number and frequency. This mapping
+        is arbitrary and it is possible to establish keys running backwards or to
+        have several alternate scales in the same table, each occupying a separate
+        range of keys.</p>
+        
+        <p>There are two basic scale types;
+        <a href="http://www.kylegann.com/tuning.html">just</a> and
+        <a href="https://en.wikipedia.org/wiki/Equal_temperament">equal tempered</a>. The standard
+        Western 12 note scale is an equal tempered scale. Each scene object automatically
+        contains a tuning table named ":eq-12" for the standard scale.</p> 
+        
+        <p>Tuning tables may have any name so
+        long as they are unique. The convention for equal tempered scales is :eq-n
+        where n is the number of notes per octave.</p>
+        
+        <p>In order to use alternate tunings select either an available just
+        scale or the number of notes per octave for an equal tempered scale and
+        click the appropriate "add" button. A reasonable default name is
+        automatically suggested but may be changed, if desired, prior to adding the
+        new table.  Once a table has been added to the registry it still must be
+        selected for use. This is done by setting the tuning-table property at either
+        the channel or performacne level. In short adding a table to the registry
+        does not automatically select it for use. What it does do is make the table
+        visible to channel and performance nodes.</p>
+        
+        <p class="footnote">The current scale registry interface is functional but a bit clunky and may
+        be updated in the future.</p>
+      </div>
+      <div class="section_image2_right">
+        <img src="images/scale_registry.png" alt="Scale Registry" />
+      </div>
+    </div><p></p>
+  </div>
+  </section>
+  <!-- END SECTION Tuning Tables -->
+  <!-- START SECTION Channels -->
+  <a id="channels"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Channels</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/scene_channel_buttons.png" alt="Channel Buttons"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION Channels -->
+<p></p>  <!-- START FOOTER -->
+  <footer>
+  <div class="footer">
+    <a href="#top">Top</a>
+      <a class="navigation" href="skin.html">Previous</a>
+      <a class="navigation" href="channel.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>  </div>
+  </footer>
+  <!-- END FOOTER -->
+</div> <!-- END page wrapper -->
+</body>
+</html>

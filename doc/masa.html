@@ -1,277 +1,112 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>MASA Organ</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <img class="banner_image" src="images/masa_logo.png" alt="MASA"/>
+    <h1 class="banner_text">MASA</h1>
+    <p class="banner_blurb"><p class="footnote">MASA is an acronym for 'Multiplexed Acoustical Systems of America', the fictional <br>
+organ manufacture in Philip K Dicks <em>We Can Build You.</em> With their market for organs <br>
+drying up MASA diversified into the manufacture of Abraham Lincoln simulacrum&hellip;</p>
+<a href="http://www.dailymotion.com/video/x2ipc2n">...</a></p>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="combo.html">Previous</a>
+      <a class="navigation" href="cobalt.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>
+  </p>
+   <!-- END NAVIGATION -->
+<p>MASA is an organ loosely based on the 
+<a href="http://electricdruid.net/technical-aspects-of-the-hammond-organ">Hammond B3.</a>
+The tone consist of 9 sine wave partials 
+<br>each with a possible 8 amplitude values. 
+By default MASA uses the same frequency gamut as the B3.</p> 
+<p class="footnote">Actually not quite. The B3 partials were tuned to equal tempered instead 
+of just ratios. The 2nd MASA partial is 
+<br>at 1.5 while with the B3 it is closer to 1.498. 
+For technical reasons there were a few other harmonic deviations in the 
+<br>upper registers.
+</p>    <div class="section_image1">
+      <img class="image1" src="images/masa_editor.png" alt="MASA Editor"/>
+    </div><br>
+  <!-- START SECTION Partials -->
+  <a id="partials"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Partials</h2>
+    </div>
+<p><br>Unlike the fixed frequency gamut of the B3, MASA partials may be tuned to any value. The bottom three rows 
+<br>of editor buttons are used to set partial frequencies. The 9 "F Edit" buttons allow the frequency of each partial 
+<br>to be set individually. The row of 4 buttons below this set various preset gamuts. Buttons on the final row 
+<br>randomize the frequencies in various ways.</p>
 
-
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>MASA Organ</title></head><body style="color: rgb(255, 255, 204); background-color: black;" alink="#c7f2dc" link="#c7f2dc" vlink="#c7f2dc">
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;">
-      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-        <tbody>
-          <tr>
-            <td style="vertical-align: top; width: 10%;"><br>
-            </td>
-            <td style="vertical-align: top;"><a href="index.html">Cadejo Manual</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><a href="http://www.electricdruid.net/?page=info.hammond">B3 Technical Information</a>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><a href="http://www.philipkdickfans.com/resources/miscellaneous/pkdicktionary/#a">PKD</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><img style="width: 128px; height: 170px;" alt="MASA Logo" src="images/masa_logo.png"><br>
-      </td>
-      <td style="vertical-align: top;">
-      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-        <tbody>
-          <tr>
-            <td style="vertical-align: top;"><a href="#overview">Overview</a><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#gamut">Partial Frequencies</a><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#efx">Effects</a><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<div style="text-align: center;">&nbsp;Multiplexed Acoustical Systems of America was an organ manufacture in Philip K Dicks <span style="font-style: italic;">We Can Build You</span>.&nbsp; <br>
-With the market for organs drying up MASA switched to the
-manufacture of Abraham Lincoln simulacra....&nbsp; <br>
-</div>
-
-<a name="overview"></a><br><br>
-MASA is an organ loosely based on the Hammond B3. The tone consist of 9
-sine wave partials each with a possible 8 amplitude values. By default
-MASA uses the same frequency gamut as the B3 (Actually not quite. The
-B3 partials were tuned to equal tempered instead of just ratios. The
-2nd MASA partial is at 1.5 while the B3 was closer to 1.498. For
-technical reasons there were a few other harmonic deviations in the
-upper registers.)&nbsp; <br>
-<br>
-<div style="text-align: center;"><img style="width: 1081px; height: 580px;" alt="MASA Editor" src="images/masa_editor_01.png"><br>
-</div>
-<br>
-<a name="gamut"></a><br>
-Unlike the fixed frequency gamut of the B3, MASA partials may be tuned
-to any value. The final three rows of buttons are used to set partial
-frequencies. The 9 "F Edit" buttons allow the frequency of each partial
-to be set individually. The <br>
-row of 4 buttons below this set various preset gamuts. Buttons on the final row randomize the frequencies in various ways.<br>
-<br>
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 1%;"><br>
-      </td>
-      <td style="vertical-align: top; width: 5%;">B3<br>
-      </td>
-      <td style="vertical-align: top;">Use B3 gamut&nbsp; 0.5&nbsp; 1.5&nbsp; 1.0&nbsp; 2.0&nbsp; 3.0&nbsp; 4.0&nbsp; 5.0&nbsp; 6.0&nbsp; 8.0<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Harm<br>
-      </td>
-      <td style="vertical-align: top;">Harmonic spectrum 1.0&nbsp; 20&nbsp; 3.0&nbsp; 4.0&nbsp; 5.0&nbsp; 6.0&nbsp; 7.0&nbsp; 8.0&nbsp; 9.0<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Odd <br>
-      </td>
-      <td style="vertical-align: top;">Odd harmonics only 0.5&nbsp; 1.5&nbsp; 2.5&nbsp; 3.5&nbsp; 4.5&nbsp; 6.5&nbsp; 7.5&nbsp; 8.5&nbsp; 9.5<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Prime<br>
-      </td>
-      <td style="vertical-align: top;">Mostly prime&nbsp; 0.5&nbsp; 1.0&nbsp; 1.5&nbsp; 2.5&nbsp; 3.5&nbsp; 5.5&nbsp; 6.5&nbsp; 8.5&nbsp; 9.5<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Rnd 1<br>
-      </td>
-      <td style="vertical-align: top;">Generate harmonic&nbsp; gamut with a few non-harmonic&nbsp; tones. <br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Rnd 2<br>
-      </td>
-      <td style="vertical-align: top;">Generate random frequencies<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Klstr<br>
-      </td>
-      <td style="vertical-align: top;">Generate clusters of partials - good for chorusing<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Detune <br>
-      </td>
-      <td style="vertical-align: top;">Randomly detune 1 or 2 partials.<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<font size="-1"><span style="color: red;">NOTE: There is an editor bug which does not update the displayed partial frequencies after one of these&nbsp; </span><span style="color: red;">8 buttons is clicked.</span></font><br>
-<br>
-<font size="+2"><a name="efx"></a><br style="font-weight: bold;">
-</font>
-<div style="text-align: center;"><font size="+2"><span style="font-weight: bold;">Effects</span></font><br>
-</div>
-<br>
-<br>
-<div style="text-align: center;"><img style="width: 930px; height: 522px;" alt="MASA Effects" src="images/masa_effects.png"><br>
-</div>
-<br><br>
-The scanner is an attempt to emulate the unique "post vibrato" scanner
-device of the Hammond.&nbsp; It consist of 8 delays in series which are
-selected or "scanned" in a cyclical manner. To even out the abrupt jump
-at the end of a scanning cycle opposing delay outputs are cross-wired. <br>
-<br>
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 1%;"><br>
-      </td>
-      <td style="vertical-align: top; width: 7%;">Scan Rate<br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Mod Rate<br>
-      </td>
-      <td style="vertical-align: top;">Delay time for series delays.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Mod Spread<br>
-      </td>
-      <td style="vertical-align: top;">Variation in series delay times.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Delay<br>
-      </td>
-      <td style="vertical-align: top;">Global series delay times<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Delay Mod<br>
-      </td>
-      <td style="vertical-align: top;">Modulation of global delay time<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Cross Mix<br>
-      </td>
-      <td style="vertical-align: top;">Cross-mix amount for opposing delays<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><br>
-      </td>
-      <td style="vertical-align: top;">Efx Mix<br>
-      </td>
-      <td style="vertical-align: top;"><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<br>
-<br>
-<br>
-
-
-
-
-</body></html>
+<ul>
+   <li>B3    - Use B3 gamut [0.5, 1.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0]</li>
+   <li>Harm  - Harmonics    [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]</li>
+   <li>Odd   - Odd harmonics [0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5]</li> 
+   <li>Prime  - Mostly primes [0.5, 1.0, 1.5, 2.5, 3.5, 4.5, 6.5, 8.5, 9.5]</li>
+   <li>Rnd 1  - Generate mostly harmonic gamut with a few non-harmonic tones</li>
+   <li>Rnd 2  - Generate random gamut</li>
+   <li>Klst   - Generate random clusters of harmonics (good for chorusing)</li>
+   <li>Detune - Randomly detune 1 or 2 partials</li>
+</ul>  </div>
+  </section>
+  <!-- END SECTION Partials -->
+  <!-- START SECTION Effects -->
+  <a id="effects"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Effects</h2>
+    </div>
+    <div class="section_image2">
+      <div class="section_image2_left">
+        <p>The scanner is an attempt to emulate the unique "post vibrato" scanner device of the Hammond. It consist of 8 delays in series which are selected or "scanned" in a cyclical manner. To even out the abrupt jump at the end of a scanning cycle opposing delay outputs are cross-wired.</p>
+        <ul>
+           <li>Scan Rate - </li>
+           <li>Mod Rate  - Delay time for series delays</li>
+           <li>Mod Spread - Variation in series delay time</li>
+           <li>Delay  - Common delay time</li>
+           <li>Delay Mod  - Modulation of common delay time</li>
+           <li>Crossmix  - Cross mix of opposing delay taps</li>
+           <li>Efx Mix  - Wet signal level</li>
+        </ul>
+      </div>
+      <div class="section_image2_right">
+        <img src="images/masa_effects.png" alt="MASA Effects" />
+      </div>
+    </div><p></p>
+  </div>
+  </section>
+  <!-- END SECTION Effects -->
+<p><br></p>  <!-- START FOOTER -->
+  <footer>
+  <div class="footer">
+    <a href="#top">Top</a>
+      <a class="navigation" href="combo.html">Previous</a>
+      <a class="navigation" href="cobalt.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>  </div>
+  </footer>
+  <!-- END FOOTER -->
+</div> <!-- END page wrapper -->
+</body>
+</html>

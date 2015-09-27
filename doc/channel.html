@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>Cadejo Channels</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <h1 class="banner_text">Channels</h1>
+    <p class="banner_blurb"><a  href="http://hint.fm/wind/">...</a></p>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="scene.html">Previous</a>
+      <a class="navigation" href="properties.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>
+  </p>
+   <!-- END NAVIGATION -->
+<p>Channel nodes are an intermediate stage between incoming MIDI messages and
+final instruments (performances).<br> Their primary duty is to aggregate one or
+more instruments in a layer.<p>    <div class="section_image1">
+      <img class="image1" src="images/channel_01.png" alt="Channel Editor"/>
+    </div><br>
+  <!-- START SECTION Adding Instruments -->
+  <a id="add_instrument"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Adding Instruments</h2>
+    </div>
+    <div class="section_image2">
+      <div class="section_image2_left">
+        <p>To add an instrument click one of the large available instrument buttons 
+        and an 'add instrument' dialog will appear.</p>
+        
+        <p><strong>Key modes</strong> are described <a href="#keymodes">here</a>.</p>
+        
+        <p><strong>Output bus</strong>, Sets the SuperCollider audio bus used as the main output for this instrument.
+        Defaults to 0, the first sound card.</p>
+        
+        <p><strong>Voice Count</strong>, Sets the number of voices for polyphonic keymodes. Default 8.</p>
+        
+        <p><strong>Controllers</strong>, Sets MIDI controller numbers. Each instrument type will have it's own
+        set of controllers. Controllers common to most instruments are cc1 for mod wheel and cc7
+        for volume. All controllers have reasonable defaults but may be freely reassigned.</p>
+        
+        <p><strong>Instrument ID</strong>, On any given channel each instrument must have an unique id.
+        A valid id is automatically generated but may be changed if desired.</p>
+      </div>
+      <div class="section_image2_right">
+        <img src="images/channel_02_instrument_dialog.png" alt="Add instrument dialog" />
+      </div>
+    </div><p></p>
+<p style="clear: left"><br>Once an instrument has been added a new button appears in the 'active instrument' <br>
+area. Clicking these buttons pops up a frame for the instrument's performance node. </p>
+<p class="footnote">You can try to shift-click on an instrument to remove it, but this feature is buggy</p>  </div>
+  </section>
+  <!-- END SECTION Adding Instruments -->
+  <!-- START SECTION Key Modes -->
+  <a id="keymodes"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Key Modes</h2>
+    </div>
+<p>There are four possible keymodes:<br>
+<ul>
+  <li>Exclusive</li>
+  <li>Mono</li>
+  <li>Poly</li>
+  <li>Rotate</li>
+</ul>
+
+<p>Not all keymodes are available for all instruments.</p>
+<p><strong>Exclusive</strong> is a monophonic mode where only the first keydown is articulated. As long as each<br>
+note is played <a href="https://en.wikipedia.org/wiki/Staccato">staccato</a> the note will sound. For 
+<a href="https://en.wikipedia.org/wiki/Legato">legato</a> passages however only the first note played will sound.<br>
+An instrument in exclusive mode is intended for use in a layer with some other instrument to provide an <br>
+alternative sound for the first note of a legato passage. A typical example would be an organ key click.</p>
+
+<p><strong>Mono</strong> is a generalized monophonic mode. If two or more keys are pressed only the last key down<br>
+produces a note. Previous keys are not forgotten however making it possible to play monophonic trills. <br>
+Mono mode is not the same as a single-voice polyphonic mode.</p>
+
+<p><strong>Poly</strong> is a polyphonic mode which attempts to use voices in order. On the first key down voice 1 is <br>
+is used. If the first key is released and pressed a 2nd time, voice 1 will again be used. If the first key is held <br>
+while a 2nd key is pressed, voice 2 is used for the 2nd key, and so on. If the number of keys down exceeds the voice <br>
+count then the most stale (IE the voice which has been holding the longest) is reallocated for the new note.</p>
+
+<p><strong>Rotate</strong> is another polyphonic mode only this time voices are allocated in rotation. If the same key <br>
+is repeatedly pressed and released a new voice is used for each key press.  Rotate mode uses a similar 
+<br> "voice stealing" scheme as ploy mode if the voice count is exceeded.</p>
+
+<p>The difference between Poly and Rotate modes can be subtle. Where the difference becomes apparent is when the <br>
+program-bank is in <a href="performance.html#progressive_mode">progressive mode</a>.
+Normally when an instrument receives a MIDI program change all voices are <br>
+
+
+updated to the same "patch" and thus produce the same sound. In progressive mode each voice may have a completely <br>
+different patch. Each new key press may produce a different sound. The Rotate keymode was specifically developed for <br>
+this purpose.  More details on progressive program changes may found in the program bank documentation.</p>  </div>
+  </section>
+  <!-- END SECTION Key Modes -->
+<p></p>  <!-- START FOOTER -->
+  <footer>
+  <div class="footer">
+    <a href="#top">Top</a>
+      <a class="navigation" href="scene.html">Previous</a>
+      <a class="navigation" href="properties.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>  </div>
+  </footer>
+  <!-- END FOOTER -->
+</div> <!-- END page wrapper -->
+</body>
+</html>

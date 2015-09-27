@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>Performance Frame</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <h1 class="banner_text">Performance Frame</h1>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="properties.html">Previous</a>
+      <a class="navigation" href="instruments.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>
+  </p>
+   <!-- END NAVIGATION -->
+
+<p>At the top left-hand side of Performance frames are three buttons for accessing various<br>
+sub panels. These buttons are <em>MIDI</em>, <em>CTRL</em>, and <em>Edit</em>.</p>
+
+<p>The MIDI tab is selected in the image below and is identical to the 
+<a href="properties.html">Channel MIDI tab.</a><br>
+
+The only difference is that now the properties shown are at the Performance level.</p>
+
+<p>The <a href="#ctrl">CTRL</a> tab is for editing MIDI continuous controller properties. The content of this tab is<br>
+similar to the MIDI tab. For each controller the instrument responds to there are corresponding <br>
+curve, scale, bias and inherit widgets.</p>
+
+<p>The <a href="#editor">Edit</a> tab is for editing instrument programs or "patches". The exact content of this tab is <br>
+determined by the specific instrument.
+</p>    <div class="section_image1">
+      <img class="image1" src="images/performance_01.png" alt="Performance Frame"/>
+    </div><br>
+  <!-- START SECTION Program Banks -->
+  <a id="progbank"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Program Banks</h2>
+    </div>
+<p><br></p>
+<p>Program banks hold 128 programs numbered between 0 and 127 and are always visible on the left side
+of performance frames.</p>
+
+<p>At the bottom of Performance frames are where bank related controls are found. The numeric display, <br>
+cluster of arrow buttons, and "store" button are for saving the current patch into the bank. <br>
+The number displays the bank slot where the program is to be saved. This value is automatically changed <br>
+whenever a new program is selected (either manually or by MIDI program change). The four arrow buttons are <br>
+for selecting the store location. The single arrows increment or decrement the slot number by 1. The double <br>
+arrows change the slot number by 8. Click the "store" button to save the current program into the selected slot.</p>
+
+<p>Immediately to the right of the "store" button is a large area to display current program name.<br>
+The name is truncated if it is too large and is always converted to upper case. Program names are mixed<br>
+case so this display may not exactly match the actual program name.</p>
+
+<p>Whenever the current program data has been altered, the word '<strong>modified</strong>' appears above the program name.<br>
+Once the program has been saved the word modified disappears. The code responsible for displaying modified runs on a <br>
+low-priority thread and it may not appear/disappear immediately</p>
+
+<p>The buttons to the right of the program name are for bank initialization, Open and Save bank data, and undo/redo of <br>
+bank changes. The undo/redo feature is for changes to the bank only and not for individual program changes.</p>
+
+<p>Program banks are saved as text files (Clojure code) and have filenames:&nbsp;&nbsp;<em>name.xxx_bank</em> 
+&nbsp;&nbsp; where 'xxx' is the Cadejo <br>
+instrument's name.</p>   </div>
+  </section>
+  <!-- END SECTION Program Banks -->
+  <!-- START SECTION Progressive Program Mode -->
+  <a id="progressive_mode"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Progressive Program Mode</h2>
+    </div>
+<p>Progressive Program Mode allows multiple programs to be used simultaneously.<br>
+Progressive mode is active whenever the progressive mode display shows a number greater then 1.<br>
+Use the up and down arrow buttons to change the progressive mode count.</p>
+
+<p>When a program change is received and the progressive mode count is greater then 1, each voice<br>
+receives a different program from the program bank. This is easier to describe by example.</p>
+
+<p>Assume the progressive value is 2 and there are 8 polyphonic voices (the default). <br>
+In this situation whenever a MIDI program change occurs for program n, the first voice <br>
+receives program n, the second voice receives program n+1, the third voice receives program n <br>
+the fourth voice program n+1. This alternation between program n and n+1 continues for all 8 voices. <br>
+If the progressive count is 3 the voices revives programs n, n+1 and n+2 in a cycle etcetera.</p>
+
+<p><strong>Progressive Mode Caveats:</strong></p>
+<ul>
+<li>Progressive mode works best with rotate keymode, and not at all with mono keymodes. See <a href="channel.html#keymodes"> keymodes</a></li>
+<li>Program editing is disabled when progressive mode is active. Which program would we be editing?</li>
+<li>Currently (24-Sep-15) progressive mode is only activated by external MIDI program change. <br>
+    Clicking an entry in the program bank list does not work with progressive mode. Hopefully this will be fixed soon.</li>
+</ul><p class="footnote">Historical Perspective:</p>
+<p class="footnote">Oberheim released the "Synthesizer Expander Module" or SEM in 1974. The SEM was a small self-contained monophonic synthesizer<br>
+packaged as a module and without keyboard. By 1975 they started strapping 2, 4 or 8 SEM modules together in a single package <br>
+together with an added keyboard to produce some of the first polyphonic synthesizers.  Each voice was an analog instrument with <br>
+it's own set of panel controls. With some work these separate components could be adjusted to sound nearly identical but <br>
+never <em>exactly</em> identical. Each key-press had a subtly different sound. Of course the instrument could also be patched to have<br>
+drastically different sounds on each key-press as well.</p>
+<a class="footnote" href="http://www.vintagesynth.com/oberheim/sem.php">Oberheim SEM</a><br>
+<a class="footnote" href="https://en.wikipedia.org/wiki/Oberheim_polyphonic#TVS-1">Oberheim Polyphonic Instruments</a>
+
+  </div>
+  </section>
+  <!-- END SECTION Progressive Program Mode -->
+  <!-- START SECTION CTRL tab -->
+  <a id="ctrl"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">CTRL tab</h2>
+    </div>
+<p>The CTRL tab is for setting MIDI continuous controller properties. It is similar in<br>
+layout to the MIDI tab with an edit area for each controller. Each instrument defines <br>
+exactly which controllers are available.</p>
+
+<p>Controller values are normalized to a range between 0.0 and +1.0. The final value is <br>
+given by: <br>
+
+</p>
+<pre> cc value -->[norm]-->[mapping curve]-->[* scale]-->[+ bias]--> </pre>
+
+    <div class="section_image1">
+      <img class="image1" src="images/performance_02.png" alt="Performance CTRL tab"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION CTRL tab -->
+  <!-- START SECTION Instrument Editor -->
+  <a id="editor"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Instrument Editor</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/performance_03.png" alt="Instrument Editor Tab"/>
+    </div><br>
+<p>The performance Edit tab displays the instrument editor. The editor is not created until <br>
+the Edit tab is clicked. The first time the edit tab is clicked it may take several seconds<br>
+to appear while it is being created. Subsequent clicks on the edit tab will be more <br> 
+responsive. </p>
+
+<p>The buttons to the left are common to all editors:</p>
+<ul>
+<li>Init - Initialize program</li>
+<li>Random - Create random program</li>
+<li>Open - Open single program file. Single program filenames have the form 'xxx.iii' where iii is the instrument name.</li>
+<li>Save - Write single program file</li>
+<li>Copy - Copy current program to clipboard</li>
+<li>Paste - Paste clipboard to current program</li>
+<li>Help - Instrument specific help</li>
+</ul>
+
+
+<p>The buttons to the right are instrument specific. Each instrument will define it's own set of <br>
+editor tabs. <em>All</em> instruments have the 'common' tab, which is where the program name is set. <br>
+The image above shows the editor for the Combo organ which only has two tabs; "Common" and "Edit", <br>
+with the Common tab selected.</p>
+
+<p class="footnote">The area immediately below the program name field shows the Clojure code which defines the <br>
+current program. In future releases this area may be used for some other purpose.</p>  </div>
+  </section>
+  <!-- END SECTION Instrument Editor -->
+<p><br></p>  <!-- START FOOTER -->
+  <footer>
+  <div class="footer">
+    <a href="#top">Top</a>
+      <a class="navigation" href="properties.html">Previous</a>
+      <a class="navigation" href="instruments.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>  </div>
+  </footer>
+  <!-- END FOOTER -->
+</div> <!-- END page wrapper -->
+</body>
+</html>

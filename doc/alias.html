@@ -1,425 +1,295 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>Alias</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <img class="banner_image" src="images/alias_logo.png" alt="Alias"/>
+    <h1 class="banner_text">Alias</h1>
+    <p class="banner_blurb"><a style="footnote" href="http://murderpedia.org/">...</a></p>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="algo.html">Previous</a>
+      <a class="navigation" href="combo.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>
+  </p>
+<p>
+<a href="#osc">Oscillators</a><br>
+<a href="#noise">Noise and Ring Modulator</a><br>
+<a href="#filters">Filters</a><br>
+<a href="#effects"> Effects</a><br>
+<a href="#mixer"> Mixer</a><br>
+<a href="#matrix"> Matrix</a><br>
+<a href="#lfo"> LFOs</a><br>
+<a href="#counters"> Counters</a><br>
+<a href="#envelopes"> Envelopes</a>
+</p>  <!-- END NAVIGATION -->
+    <div class="section_image2">
+      <div class="section_image2_left">
+        <p>Alias is a mono "matrix" synth with extensive modulation 
+        possibilities. Audio block components include three oscillators, a noise 
+        source, ring-modulator, two filters with wave shapers, pitch-shifter, 
+        flanger and two delay lines.</p>
+        
+        <p>Virtually every major parameter may be modulated by one of 8 modulation buses. 
+        The modulation sources include three LFOs, two step-counters, two 
+        frequency-dividers, low-frequency noise source, sample-and-hold, and several
+        MIDI signals.</p>
+      </div>
+      <div class="section_image2_right">
+        <img src="images/alias_block_diagram.png" alt="Alias Block Diagram" />
+      </div>
+    </div><p></p>
+  <!-- START SECTION Oscillators -->
+  <a id="osc"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Oscillators</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/alias_osc.png" alt="Alias Oscillators"/>
+    </div><br>
+<p>Each of the three oscillators produce a different set of waveforms. 
+in all other respects they are identical.</p>
+<ul>
+  <li>OSC1 - Sawtooth with sync</li>
+  <li>OSC2 - Variable width pulse</li>
+  <li>OSC3 - FM Feedback</li>
+</ul>  </div>
+  </section>
+  <!-- END SECTION Oscillators -->
+  <!-- START SECTION Noise and Ring Modulator -->
+  <a id="noise"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Noise and Ring Modulator</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/alias_noise.png" alt="Alias Noise and Ring Modulator"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION Noise and Ring Modulator -->
+  <!-- START SECTION Filters -->
+  <a id="filters"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Filters</h2>
+    </div>
+    <div class="section_image2">
+      <div class="section_image2_left">
+        <p>The oscillators, noise and ring-modulator may be selectively 
+        routed to one of two filters.</p>
+        
+        <p><strong>Filter 1</strong> is continuously variable between low, low*high, 
+        high and band pass modes. The low*high is produced by ring-modulating 
+        the low and high pass signals.</p>
+        
+        <p><strong>Filter 2</strong> is a simulated Moog lowpass filter.
+        The editor controls for both filters are identical with exception
+        of the filter 1 mode slider.</p>
+        
+        <p>Both filters has a dedicated distortion device at their inputs. 
+        The distortion algorithm is different for each filter but in both
+        cases the clipped signal never exceeds unity.</p>
+      </div>
+      <div class="section_image2_right">
+        <img src="images/alias_filter.png" alt="Alias Filter" />
+      </div>
+    </div><p></p>
+  </div>
+  </section>
+  <!-- END SECTION Filters -->
+  <!-- START SECTION Effects -->
+  <a id="effects"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Effects</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/alias_effects.png" alt="Alias Effects"/>
+    </div><br>
+<p>The effects section provides parallel pitch-shifter, flanger,
+and two delay lines.</p>  </div>
+  </section>
+  <!-- END SECTION Effects -->
+  <!-- START SECTION Mixer -->
+  <a id="mixer"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Mixer</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/alias_mixer.png" alt="Alias Mixer"/>
+    </div><br>
+<p>The Mixer page combines all amplitude and pan controls in one 
+location. Other then the Main out controls all other controls are duplicated 
+on the relevant editor page.</p>  </div>
+  </section>
+  <!-- END SECTION Mixer -->
+  <!-- START SECTION Matrix -->
+  <a id="matrix"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Matrix</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/alias_matrix.png" alt="Alias Matrix"/>
+    </div><br>
+<p>The matrix provides signal routing between several control 
+sources and the audio block components. The 8 output buses, labeled 'A' 
+through 'H', are each assigned two source signals. The two signals on an 
+output bus are multiplied.</p>
 
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Alias</title></head><body style="color: rgb(255, 255, 204); background-color: black;" alink="#c7f2dc" link="#c7f2dc" vlink="#c7f2dc">
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+<p>As a practical illustration consider mod wheel control of vibrato. 
+Alias does not automatically provided for this common situation but it is 
+easy to establish using the matrix. In the illustration bellow the two 
+assignments for bus A are LFO1 and CCA. Looking at the legend CCA defaults 
+to MIDI controller 1 - the mod wheel. As the mod wheel moves the CCA value 
+changes between 0.0 and 1.0. This value is multiplied by the current value 
+of LFO1 and then placed on bus A where it may be used for vibrato.</p>
 
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;">
-      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-        <tbody>
-          <tr>
-            <td style="vertical-align: top; width: 10%;"><a name="top"></a><br>
-            </td>
-            <td style="vertical-align: top;"><a href="index.html">Cadejo
-Manual</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><br>
-            </td>
-            <td style="vertical-align: top;"><a href="http://murderpedia.org/">Murderpedia</a><br>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><img style="width: 128px; height: 170px;" alt="Alias Logo" src="images/alias_logo.png"><br>
-      </td>
-      <td style="vertical-align: top;">
-      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-        <tbody>
-          <tr>
-            <td style="vertical-align: top; width: 50%;"><a href="#block">Block Diagram</a><br>
-            </td>
-            <td style="vertical-align: top;"><a href="#matrix">Matrix</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#OSC">Oscillators</a><br>
-            </td>
-            <td style="vertical-align: top;"><a href="#lfo">LFOs</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><span style="text-decoration: underline;"><a href="#noise">Noise and Ring Modulator</a></span><br>
-            </td>
-            <td style="vertical-align: top;"><a href="#counters">Counters and Dividers</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="alias.html#filters">Filters</a>
-            </td>
-            <td style="vertical-align: top;"><a href="#env">Envelops</a><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#efx">Effects</a><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-          <tr>
-            <td style="vertical-align: top;"><a href="#mixer">Mixer</a><br>
-            </td>
-            <td style="vertical-align: top;"><br>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <br>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<p>Two of the control sources are constant; 'con' and 'off'. The value of 
+con is 1.0 while the value of off is 0. Assigning any 
+output bus to off is equivalent to multiplication by 0 effectively turning 
+the bus off.<p>
 
-<br>
+<p>Audio rate components (osc1, osc2, osc3, noise, ringmod, filter1, filter2, 
+pitch-shifter, flanger, delay1 and delay2) may connect to any of the 8 output 
+buses 'A' through 'H'.</p>
 
-&nbsp;<br>
+<p>Most control components (LFO1, LFO2, LFO3, LF-Noise, Sample-and-Hold, 
+Counter1, Counter2, Divider1 and Divider2) connect to other control 
+components directly without using buses A through H.</p>  </div>
+  </section>
+  <!-- END SECTION Matrix -->
+  <!-- START SECTION Low Frequency Control Signals -->
+  <a id="lfo"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Low Frequency Control Signals</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/alias_lfo.png" alt="Alias Low Frequency Control Sources"/>
+    </div><br>
+<p>Alias provides 3 identical LFO's, a Low Frequency Noise source 
+and Sample-and-Hold.</p>
 
-Alias is a mono "matrix" synth with extensive modulation
-possibilities.&nbsp; Audio blocks include three oscillators, noise source,
-ring-modulator, and two filters with integrated waveshapers. Effects include
-pitch-shifter, flanger and two delay lines. <br>
+<p>To set fixed LFO parameters assign one of the buses to "ONE", then use 
+either the numeric frequency display or wave slider to set the desired value. 
+If a non-constant signal is selected the given parameter is modulated with the 
+depth determined by the display/slider value.</p>
 
-<br>
+<p>The LF-Noise source provides a low frequency random value. The single 
+parameter sets the approximate rate of change.</p>
 
-Virtually every control parameter may be modulated by
-one of 8 modulation buses. The modulation sources include three envelopes, three LFOs, two step-counters, two frequency divider
-lines,&nbsp; low-frequency noise source, sample-and-hold, keyboard, <br>
+<p>The Sample-and-Hold samples an input source at a constant rate and holds 
+the sampled value until the next sample period. Any one of the control 
+sources may serve as input. A common use is to sample a noise signal to 
+provide random values. Sampling a periodic signal, such as one of the LFOs 
+will produce a sequence of repeating values. The exact nature of this 
+sequence depends on the relative frequency between the LFO the sample rate 
+and the LFO waveform.</p>  </div>
+  </section>
+  <!-- END SECTION Low Frequency Control Signals -->
+  <!-- START SECTION Counters and Dividers -->
+  <a id="counters"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Counters and Dividers</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/alias_step_counter.png" alt="Alias Counters and Dividers"/>
+    </div><br>
+<p>The control block includes two step-counters and two frequency 
+divider cascades. The step counters produce stair-step waveforms. Each counter 
+samples an input source and increments on positive zero crossing of the source. 
+Once the counter reaches the maximum it starts over at the minimum value. A 
+second input may be used to reset the counter on positive zero crossing of some 
+other source. On reset the counter jumps to the reset value and continues 
+counting from there. The bias value adds a fixed offset to the counter output 
+which is then multiplied by the scale factor.</p>
 
-velocity, pressure, and 4 MIDI controllers. <br>
-
-<hr style="width: 100%; height: 2px;" color="#484a54"><br>
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="block"><br>
-      </a></td>
-      <td style="vertical-align: top; text-align: center;"><font size="+2">Block Diagram</font><br>
-      </td>
-      <td style="vertical-align: top; width: 25%;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-&nbsp; <br>
-<div style="text-align: center;"><img style="width: 915px; height: 689px;" alt="Block Diagram" src="images/alias_block_diagram.png"><br>
-
-
-</div>
-
-
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54">
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="osc"></a></td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Oscillators</font></td>
-      <td style="vertical-align: top; width: 25%;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-Each of the three oscillators produce different waveforms. In all other aspects the oscillators are identical.<br>
-<br>
-
-<table style="text-align: left; width: 30%;" border="0" cellpadding="2" cellspacing="2">
-
-  <tbody>
-    <tr>
-      <td>OSC1<br>
-      </td>
-      <td style="vertical-align: top;">Sawtooth with sync.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">OSC2<br>
-      </td>
-      <td style="vertical-align: top;">Pulse<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">OSC3<br>
-      </td>
-      <td style="vertical-align: top;">FM Feedback<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<br>
-
-<div style="text-align: center;"><img style="width: 1315px; height: 537px;" alt="Alias osc editor" src="images/alias_osc.png"><br>
-
-
-</div>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 1628px; height: 42px;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="noise"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Noise &amp; Ring Modulator</font><br>
-      </td>
-      <td style="vertical-align: top; width: 25%;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<div style="text-align: center;"><img style="width: 1295px; height: 440px;" alt="Alias noise editor" src="images/alias_noise.png"><br>
-
-</div>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="filters"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Filters<br>
-      </font></td>
-      <td style="vertical-align: top; width: 25%;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<br>
-The oscillators, noise source and ring-modulator may be
-selectively routed to one of two filter paths. <br>
-
-<br>
-
-Filter 1 is multi-modal and continuously variable between low,
-low*high, high and bandpass modes.&nbsp; The low*high mode is produced by ring-modulating the low and high pass signals. <br>
-<br>
-Filter 2 is a low-pass only. The editor controls for the two filters are identical with exception of the filter 1 mode slider.<br>
-<br>
-Each filter
-has a dedicated distortion device on it's input. The distortion
-algorithm is different for the two filters but in both cases the
-clipped signal never exceeds unity. <br>
-<br>
-
-<div style="text-align: center;"><img style="width: 982px; height: 558px;" alt="Alias Filters" src="images/alias_filter.png"><br>
-</div>
-
-
-<br>
-<hr style="width: 100%; height: 2px;" color="#484154">
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="efx"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Effects<br>
-</font>
-      </td>
-      <td style="vertical-align: top; width: 25%;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<br>
-For effects Alias provides pitch-shifter, flanger and two delay
-lines. All effects are connected in parallel with the delay lines
-providing stereo outs. Several effect parameters are controlled by the matrix buses. <br>
-<div style="text-align: center;"><img style="width: 1646px; height: 502px;" alt="Alias Effects" src="images/alias_efx.png"><br>
-</div>
-
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="mixer"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Mixer</font><br>
-      </td>
-      <td style="vertical-align: top; width: 25px;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br><br>
-The Mixer page combines all amplitude and pan controls in one location.
-Other then the Main out controls all other controls are duplicated on
-the relevant editor page. <br>
-<br>
-<div style="text-align: center;"><img style="width: 1172px; height: 580px;" alt="Alias Mixer" src="images/alias_mixer.png"><br>
-</div>
-
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="matrix"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Control Matrix</font><br>
-      </td>
-      <td style="vertical-align: top; width: 25%;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<br>
-
-The matrix provides signal routing between several control sources and
-the audio block components. The 8 output buses, labeled 'A' through
-'H',&nbsp; are each assigned two source signals.&nbsp; The combined signals on an output bus are multiplied. <br>
-<br>As a practical illustration consider mod wheel control of vibrato.
-Alias
-does not automatically provided for this common situation but it is
-easy to establish using the matrix. In the illustration bellow the two
-assignments for bus A are LFO1 and CCA.&nbsp; Looking at the
-legend CCA defaults to MIDI controller 1 - the mod wheel. As the mod
-wheel moves
-the CCA value changes between 0.0 and 1.0.&nbsp; This value is
-multiplied by the current value of LFO1 and then placed on bus A where
-it may be used for vibrato.&nbsp;&nbsp; <br>
-<br>
-Two of the control sources are constant; 'con' and 'off'.&nbsp;&nbsp;
-The value of&nbsp; con is 1 while the value of&nbsp; off is 0. &nbsp;
-Assigning any
-output bus to off' is equivalent to multiplication by 0, effectively
-turning the bus off.&nbsp; <br>
-<br>
-Audio rate components (osc1, osc2, osc3, noise, ringmod, filter1,
-filter2, pitch-shifter, flanger, delay1 and delay2) may connect to any of the 8 output buses A through H.<br>
-<br>
-The following control rate components LFO1, LFO2, LFO3, LF-Noise,
-Sample-and-Hold, Counter1, Counter2, Divider1 and Divider2&nbsp;
-connect&nbsp; to other control components directly without using buses A through H. <br>
-<br>
-It is possible to establish feedback paths within the control block
-(say LFO1 controls frequency of LFO2 which controls frequency of LFO1)
-. Such feedback paths are not really supported; they will produce
-results just not what you might expect. <br>
-<br>
-<br>
-<div style="text-align: center;"><img style="width: 1109px; height: 462px;" alt="Matrix" src="images/alias_matrix.png"><br>
-
-</div>
-<br>
-<hr style="width: 100%; height: 2px;" color="484a54">
-<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="lfo"></a></td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">LFOs, LF-Noise, Sample-and-Hold</font></td>
-      <td style="vertical-align: top; width: 25%;"><a href="alias.html#top">Top</a></td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<br>
-Alias provides 3 identical LFO's,&nbsp; a Low Frequency Noise source and Sample-and-Hold. <br>
-<br>To set fixed LFO parameters assign one of the buses to "ONE", then
-use
-either the numeric frequency display or wave slider to set the desired
-value. If a non-constant signal is selected the given parameter is
-modulated with the modulation depth determined by the display/slider
-value. <br>
-<br>
-The LF-Noise source provides a low frequency random value. The single parameter sets the approximate rate of change. <br>
-<br>
-The Sample-and-Hold samples an input source at a constant rate and
-holds the sampled value until the next sample period. Any one of the
-control sources may serve as input. A common use is to sample a noise signal to
-provide random values. Sampling a periodic signal, such as one of the
-LFOs will produce a sequence of repeating values. The exact nature of this
-sequence depends on the relative frequency between the LFO and the sample rate as well as the LFO waveform. <br>
-<br>
-<div style="text-align: center;"><img style="width: 1234px; height: 490px;" alt="LFO editor" src="images/alias_lfo.png"><br>
-</div>
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="counters"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Counters and Dividers</font><br>
-      </td>
-      <td style="vertical-align: top; width: 25%;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<br>The two step counters are used for complex stair-step waveforms.
-Each counter samples an input source and increments on positive zero
-crossing of the source. Once the counter reaches the maximum it's it
-starts over at the
-minimum value.&nbsp; A second input may be used to reset the counter on
-positive zero crossing of some other source.&nbsp; On reset the counter
-jumps to the reset value and
-continues counting from there. The bias value adds a fixed offset to
-the counter output which is then multiplied by the scale factor. <br>
-<br>
-The two frequency dividers are permanently connected to LFO3. Divider1
-provides odd divisions (1,3,5 and 7)&nbsp; while divider2 has even
-divisions (2,4,6 and 8).&nbsp; Within a divider the 4 signals are mixed to provide a wide array of
-complex period signals. The PW slider sets the relative pulse width of
-the individual signals before they are summed. The bias and scale parameters have the
-same usage as with the step counters. Divider3 is a sum of the
-Divider1 and Divider2 outputs. <br>
-<br>
-<div style="text-align: center;"><img style="width: 1360px; height: 472px;" alt="Alias Counter and Divider" src="images/alias_step_counter.png"><br>
-</div>
-
-<br>
-<hr style="width: 100%; height: 2px;" color="#484a54"><table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top; width: 25%;"><a name="env"></a><br>
-      </td>
-      <td style="vertical-align: top; width: 50%; text-align: center;"><font size="+2">Envelops</font><br>
-      </td>
-      <td style="vertical-align: top; width: 25%;"><a href="#top">Top</a><br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>The Alias control block contains three identical 5-stage envelopes.
-Env3 is permanently connected as the main output envelope. Envelopes 1
-and 2 have no fixed usage. Using the zoom buttons the envelope curves
-may be magnified to any level. There is no upper limit to envelope
-duration.<br>
-<br>
-<div style="text-align: center;"><img style="width: 1530px; height: 471px;" alt="Alias envelopes" src="images/alias_env.png"><br>
-</div>
-
-<br>
-
-
-
-</body></html>
+<p>The two frequency dividers are permanently connected to LFO3. Divider1 
+provides odd divisions (1,3,5 and 7) while divider2 has even divisions 
+(2,4,6 and 8). Within a divider the 4 signals are mixed to provide a wide 
+array of complex periodic signals. The PW slider sets the relative pulse 
+width of the individual signals before they are summed. The bias and scale 
+parameters have the same usage as with the step counters. Divider3 is a sum 
+of the Divider1 and Divider2 outputs.</p>  </div>
+  </section>
+  <!-- END SECTION Counters and Dividers -->
+  <!-- START SECTION Envelopes -->
+  <a id="envelopes"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Envelopes</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/alias_envelopes.png" alt="Alias Envelopes"/>
+    </div><br>
+<p>The Alias control block contains three identical 5-stage envelopes. 
+Env3 is permanently connected as the main output envelope. Envelopes 1 and 2 have 
+no fixed usage. Using the zoom buttons the envelope curves may be magnified to 
+any level. There is no upper limit to envelope duration.</p>  </div>
+  </section>
+  <!-- END SECTION Envelopes -->
+<p><br></p>  <!-- START FOOTER -->
+  <footer>
+  <div class="footer">
+    <a href="#top">Top</a>
+      <a class="navigation" href="algo.html">Previous</a>
+      <a class="navigation" href="combo.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>  </div>
+  </footer>
+  <!-- END FOOTER -->
+</div> <!-- END page wrapper -->
+</body>
+</html>

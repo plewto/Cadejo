@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>Cadejo Properties</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <h1 class="banner_text">Properties</h1>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="channel.html">Previous</a>
+      <a class="navigation" href="performance.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>
+  </p>
+  <p>
+    <a href="#curves">Mapping Functions</a><br>
+    <a href="#bend">Pitch Bend</a><br>
+    <a href="#velocity">Velocity</a><br>
+    <a href="#transpose">Transpose</a><br>
+    <a href="#dbscale">DB Scale</a><br>
+    <a href="#tuningtable">Tuning Tables</a><br>
+    <a href="#keyrange">Key Range</a>
+  </p>  <!-- END NAVIGATION -->
+<p>The MIDI tab is used to set channel and Performance properties.</p>    <div class="section_image1">
+      <img class="image1" src="images/properties.png" alt="Channel Properties"/>
+    </div><br>
+  <!-- START SECTION Mapping Curves -->
+  <a id="curves"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Mapping Curves</h2>
+    </div>
+    <div class="section_image2">
+      <div class="section_image2_left">
+        
+        <p>There are 20 mapping functions divided into three groups; constants, normal and inverted.
+        Left clicks on a curve button advances to the next curve, right clicks move backwards.</p>
+        
+        <p>Velocity, pressure and controller events are <em>normalized</em> to a float range 
+        between 0.0 and +1.0. Bend events are normalized to &PlusMinus; 1.0.</p>
+        
+        <p>The composed mapping function becomes:</p>
+        <pre>    value = s * curve(norm(event)) + b</pre>
+        Where event is the MIDI data, s is the scale or range factor, and b is the bias.
+        Not all properties have scale and bias values. For these cases s=1 and b=0.
+        
+      </div>
+      <div class="section_image2_right">
+        <img src="images/curves.png" alt="Mapping Curves" />
+      </div>
+    </div><p></p>
+  </div>
+  </section>
+  <!-- END SECTION Mapping Curves -->
+  <!-- START SECTION Pitch Bend -->
+  <a id="bend"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Pitch Bend</h2>
+    </div>
+<p>MIDI pitch bend is normalized to a range of &PlusMinus; 1.0
+with the range parameter in <a href="https://en.wikipedia.org/wiki/Cent_(music)">cents</a>.</p>
+<p>The default range is 200 cents (whole tone).</p>  </div>
+  </section>
+  <!-- END SECTION Pitch Bend -->
+  <!-- START SECTION Channel Pressure -->
+  <a id="pressure"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Channel Pressure</h2>
+    </div>
+<p>MIDI channel pressure is normalized to a range between 0.0 amd +1.0.<br> 
+Both bias and scale parameters are supported. <br>
+Polyphonic or 'key' pressure is not implemented.</p>  </div>
+  </section>
+  <!-- END SECTION Channel Pressure -->
+  <!-- START SECTION Velocity -->
+  <a id="velocity"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Velocity</h2>
+    </div>
+<p>Key velocity is normalized to a range between 0.0 and 1.0
+</p>  </div>
+  </section>
+  <!-- END SECTION Velocity -->
+  <!-- START SECTION Transpose -->
+  <a id="transpose"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Transpose</h2>
+    </div>
+<p>Unlike most other node properties, transpose is additive to the parent value. The effective <br>
+transposition is the accumulative sum from all ancestor nodes. The transposition is applied <em>after</em> <br>
+the key range filter and before the tuning table map.</p>
+
+<pre>  note -->[key range filter]--->[ + transpose]--->[tuning table]---> note frequency</pre>
+  </div>
+  </section>
+  <!-- END SECTION Transpose -->
+  <!-- START SECTION DB Scale -->
+  <a id="dbscale"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">DB Scale</h2>
+    </div>
+<p>dbscale is also additive to the parent value. The effective amplitude scaling <br>
+factor is the accumulative sum from all ancestor nodes.  This allows<br>
+the mix of all instruments on any given channel to be scaled as a group. <br>
+The relative mix between instruments is set at the performance level.</p>  </div>
+  </section>
+  <!-- END SECTION DB Scale -->
+  <!-- START SECTION Tuning Table -->
+  <a id="tuningtable"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Tuning Table</h2>
+    </div>
+<p>The Tuning Table property indicates which table to uses from those in the 
+scene <a href="scene.html#tuning_tables">Tuning Table Registry</a><br>
+The table names must match exactly. If the selected table does not exists in the registry <br>
+the default 12 note scale is used and a warning message is printed to the terminal on every <br>
+keypress.</p>
+<p class="footnote">As with the scale registry the implementation for selecting a tuning table is functional
+yet clunky. <br>It should be updated at the same time the scale registry interface is.</p>
+  </div>
+  </section>
+  <!-- END SECTION Tuning Table -->
+  <!-- START SECTION Key Range -->
+  <a id="keyrange"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Key Range</h2>
+    </div>
+<p>The Key Range property sets the range of keys to which a node responds. The only difference <br>
+between layering two or more instruments and a split keyboard is the key range.  The key range may be set <br>
+at either the channel or performance level.</p>  </div>
+  </section>
+  <!-- END SECTION Key Range -->
+<p><br></p>  <!-- START FOOTER -->
+  <footer>
+  <div class="footer">
+    <a href="#top">Top</a>
+      <a class="navigation" href="channel.html">Previous</a>
+      <a class="navigation" href="performance.html">Next</a>
+      <a class="navigation" href="cadejo.html">Home</a>  </div>
+  </footer>
+  <!-- END FOOTER -->
+</div> <!-- END page wrapper -->
+</body>
+</html>
