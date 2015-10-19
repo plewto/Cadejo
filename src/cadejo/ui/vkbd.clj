@@ -223,8 +223,7 @@
                          (.get-property (.parent this) key default))
                     default)]
       (if (= value :fail)
-        (umsg/warning (format "Channel %s does not have property %s"
-                              (.channel-number this) key))
+        (umsg/warning (format "vkbd does not have property %s" key))
         value)))
   
   (get-property [this key]
