@@ -114,6 +114,8 @@
 
 (defprotocol Transmitter
 
+  (enable! [this flag])
+  
   (kill-all-notes [this]
     "(.kill-all-notes Transmitter)
      Transmit note-off messages 0 through 127 on the current channel")
@@ -162,7 +164,8 @@
    ARGS:
      node - Cadejo Node to receive MIDI events.
    RETURNS: Transmitter"
-  (let [channel* (atom 0)
+  (let [enable* (atom true)
+        channel* (atom 0)
         strum* (atom 0)
         strum-mode* (atom :forward)  ;; use get-strum-mode function to access
         get-strum-mode (fn []
@@ -173,6 +176,9 @@
                                  :else
                                  sm)))]
     (reify Transmitter
+
+      (enable! [this flag]
+        (reset! enable* (util/->bool flag)))
       
       (kill-all-notes [this]
         (dotimes [kn 128]
@@ -191,9 +197,11 @@
         (reset! strum-mode* mode))
       
       (generate-key-events [this keylist velocity hold-time]
-        (note-on @channel* keylist velocity @strum* (get-strum-mode) hold-time nodes*))
+        (if @enabled*
+          (note-on @channel* keylist velocity @strum* (get-strum-mode) hold-time nodes*)))
       
       (generate-controller-event [this ctrl val]
-        (controller @channel* ctrl val nodes*)))))
+        (if @enabled*
+          (controller @channel* ctrl val nodes*))))))
 
 
