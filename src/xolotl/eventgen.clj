@@ -164,7 +164,7 @@
    ARGS:
      node - Cadejo Node to receive MIDI events.
    RETURNS: Transmitter"
-  (let [enable* (atom true)
+  (let [enabled* (atom true)
         channel* (atom 0)
         strum* (atom 0)
         strum-mode* (atom :forward)  ;; use get-strum-mode function to access
@@ -178,7 +178,7 @@
     (reify Transmitter
 
       (enable! [this flag]
-        (reset! enable* (util/->bool flag)))
+        (reset! enabled* (util/->bool flag)))
       
       (kill-all-notes [this]
         (dotimes [kn 128]
