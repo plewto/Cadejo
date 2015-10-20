@@ -1,6 +1,9 @@
 (ns xolotl.shift-register
   (:require [xolotl.util]))
 
+
+(def default-length 12)
+
 (def expt xolotl.util/expt)
 
 (defprotocol ShiftRegister
@@ -92,11 +95,11 @@
    
    Creates new shift register.
    ARGS:
-     n    - optional int, register length, default 8.
+     n    - optional int, register length, default 12.
      seed - optional int, initial seed,default 1.
    RETURNS: an instance of ShiftRegister"  
   ([]
-   (shift-register 8 (fn [_]) 1))
+   (shift-register default-length (fn [_]) 1))
   ([n seed]
    (let [mask (- (expt 2 n) 1)
          seed* (atom (bit-and mask seed))
