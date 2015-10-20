@@ -23,20 +23,20 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.68579575"
-     inkscape:cx="1326.037"
-     inkscape:cy="685.2891"
+     inkscape:zoom="1.39"
+     inkscape:cx="350.48457"
+     inkscape:cy="860.04952"
      inkscape:document-units="px"
      inkscape:current-layer="layer6"
      showgrid="false"
      showborder="false"
      showguides="false"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="994"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
-     inkscape:window-maximized="1"
+     inkscape:window-width="1809"
+     inkscape:window-height="937"
+     inkscape:window-x="95"
+     inkscape:window-y="41"
+     inkscape:window-maximized="0"
      gridtolerance="10000"
      guidetolerance="10">
     <inkscape:grid
@@ -1883,7 +1883,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -4374,6 +4374,23 @@
        style="fill:none;fill-rule:evenodd;stroke:#f30000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 1722.0871,711.15272 42.2866,-128.31809"
        id="path36063"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.55925369px;line-height:100%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#c83737;fill-opacity:0.85882353;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="154.20349"
+       y="30.328156"
+       id="text4772"
+       sodipodi:linespacing="100%"
+       transform="scale(0.87942333,1.1371088)"><tspan
+         sodipodi:role="line"
+         id="tspan4774"
+         x="154.20349"
+         y="30.328156">Add enable switch</tspan></text>
+    <path
+       style="fill:#000000;fill-rule:evenodd;stroke:#e98600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:0"
+       d="M 131.23441,46.231735 80.198806,224.12727"
+       id="path4776"
        inkscape:connector-curvature="0" />
   </g>
 </svg>

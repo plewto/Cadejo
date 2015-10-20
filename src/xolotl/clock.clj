@@ -6,6 +6,8 @@
 
 (defprotocol Clock
 
+  (enable! [this flag])
+  
   (clock-select! [this mode])   ;; mode :internal :external
 
   (advance [this])   ;; Used by external timebase to step clock
@@ -49,7 +51,8 @@
 ;; progfn [program-number]
 ;;
 (defn clock [rsfn cfn pfn progfn]
-  (let [clock-mode* (atom :internal)
+  (let [enabled* (atom true)
+        clock-mode* (atom :internal)
         tempo* (atom 60)
         input-channel* (atom 0)
         reset-on-key* (atom false)
@@ -81,7 +84,10 @@
                            (@reset-function*))))))
                                   
         clkobj (reify Clock
-              
+
+                 (enable! [this flag]
+                   (reset! enabled* flag))
+                 
                  (clock-select! [this mode]
                    (reset! clock-mode* mode)
                    (cond (= mode :internal)
@@ -94,7 +100,8 @@
                          (timebase/sync-clock)))
 
                  (advance [this]
-                   (.step rhythm-counter))
+                   (if @enabled* 
+                     (.step rhythm-counter)))
                  
                  (tempo! [this bpm]
                    (reset! tempo* (float bpm)))
@@ -145,6 +152,7 @@
                          pad2 (str pad pad)
                          sb (StringBuilder.)]
                      (.append sb (format "%sClock\n" pad))
+                     (.append sb (format "%senabled         -> %s\n" pad2 @enabled*))
                      (.append sb (format "%sclock-mode      -> %s\n" pad2 @clock-mode*))
                      (.append sb (format "%stempo           -> %s\n" pad2 @tempo*))
                      (.append sb (format "%sinput-channel   -> %s\n" pad2 @input-channel*))

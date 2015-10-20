@@ -191,11 +191,6 @@
                
                (properties [this]
                  (.properties this false))
-               
-               ;; (event-dispatcher [this]
-               ;;   (fn [evn]
-               ;;     (doseq [xs xseqs]
-               ;;       ((.event-dispatcher xs) evn))))
 
                (event-dispatcher [this]
                  (fn [evn]
@@ -208,19 +203,7 @@
                  (reset! editor* ed)) )]
     ;; ISSUE set editor
 
-    ;; set program-change callback first xseq only. 
-    ;; -- do not want to execute it more then one time --
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]
                           (.use-program xobj slot)))
     xobj))
-               
-
-
-
-;;;; TEST TEST TEST TEST TES
-;;;; TEST TEST TEST TEST TEST
-;;;; TEST TEST TEST TEST TEST
-
-(def x (xolotl nil))
-

@@ -151,7 +151,6 @@
           (.append sb (format "%s[velocity-counter]-> %s\n" pad2 (.value velocity-counter)))
           (.append sb (format "%s[pitch-counter   ]-> %s\n" pad2 (.value pitch-counter)))
           (.toString sb)))
-          
       
       (callback [this]
         (fn [gate transpose hold-time]

@@ -14,8 +14,8 @@
                              sr-inject sr-taps sr-seed
                              strum-mode strum-delay]
                       :or {enable true
-                           input-channel 0
-                           output-channel 0
+                           input-channel 0   ;; NOTE To avoid feedback, input and output channels
+                           output-channel 0  ;; should not be the same if key-track is enabled.
                            key-reset false
                            key-track true
                            key-gate false
@@ -388,27 +388,48 @@
                    (.program-name! xp "Major Scale")
                    (.tempo! xp 60)
                    (.clock-source! xp :internal)
+
                    (.enable! xp :a true)
-                   (.enable! xp :b false)
                    (.input-channel! xp :a 1)
-                   (.output-channel! xp :a 1)
+                   (.output-channel! xp :a 2)
                    (.key-reset! xp :a false)
                    (.key-track! xp :a true)
                    (.key-gate! xp :a false)
                    (.transpose! xp :a 0)
                    (.rhythm-pattern! xp :a [24])
-                   (.hold-pattern! xp :a [1.0])
+                   (.hold-pattern! xp :a [0.9])
                    (.controller-1-number! xp :a -1)
                    (.controller-2-number! xp :a -1)
                    (.velocity-mode! xp :a :seq)
                    (.velocity-pattern! xp :a [127])
                    (.pitch-mode! xp :a :seq)
-                   (.pitch-pattern! xp :a [0 2 4 5 7 9 11 12 11 9 7 5 4 2])
+                   (.pitch-pattern! xp :a [0 2 4 5 7 9 11])
                    (.sr-inject! xp :a 0)
                    (.sr-taps! xp :a 2r00010001)
                    (.sr-seed! xp :a 2r00000001)
                    (.strum-mode! xp :a :forward)
                    (.strum-delay! xp :a 0)
+
+                   (.enable! xp :b false)
+                   (.input-channel! xp :b 1)
+                   (.output-channel! xp :b 3)
+                   (.key-reset! xp :b false)
+                   (.key-track! xp :b false)
+                   (.key-gate! xp :b false)
+                   (.transpose! xp :b 0)
+                   (.rhythm-pattern! xp :b [24])
+                   (.hold-pattern! xp :b [1.0])
+                   (.controller-1-number! xp :b -1)
+                   (.controller-2-number! xp :b -1)
+                   (.velocity-mode! xp :b :seq)
+                   (.velocity-pattern! xp :b [127])
+                   (.pitch-mode! xp :b :seq)
+                   (.pitch-pattern! xp :b [-1000])
+                   (.sr-inject! xp :b 0)
+                   (.sr-taps! xp :b 2r00010001)
+                   (.sr-seed! xp :b 2r00000001)
+                   (.strum-mode! xp :b :forward)
+                   (.strum-delay! xp :b 0)
                    xp))
                    
 (def counter-point (let [xp (xolotl-program)]
@@ -417,7 +438,7 @@
                      (.clock-source! xp :internal)
                      (.enable! xp :a true)
                      (.input-channel! xp :a 1)
-                     (.output-channel! xp :a 1)
+                     (.output-channel! xp :a 2)
                      (.key-reset! xp :a false)
                      (.key-track! xp :a true)
                      (.key-gate! xp :a false)
@@ -437,7 +458,7 @@
                      (.strum-delay! xp :a 0)
                      (.enable! xp :b true)
                      (.input-channel! xp :b 1)
-                     (.output-channel! xp :b 1)
+                     (.output-channel! xp :b 3)
                      (.key-reset! xp :b false)
                      (.key-track! xp :b true)
                      (.key-gate! xp :b false)
@@ -465,7 +486,7 @@
                      
                      (.enable! xp :a true)
                      (.input-channel! xp :a 1)
-                     (.output-channel! xp :a 1)
+                     (.output-channel! xp :a 2)
                      (.key-reset! xp :a false)
                      (.key-track! xp :a true)
                      (.key-gate! xp :a false)
@@ -486,7 +507,7 @@
 
                      (.enable! xp :b true)
                      (.input-channel! xp :b 1)
-                     (.output-channel! xp :b 1)
+                     (.output-channel! xp :b 3)
                      (.key-reset! xp :b false)
                      (.key-track! xp :b true)
                      (.key-gate! xp :b false)

@@ -1,15 +1,21 @@
 (println "    --> xolotl.eventgen")
 (ns xolotl.eventgen
   (:require [xolotl.util :as util])
-  (:import java.util.Timer java.util.TimerTask))
+  (:import java.util.Timer
+           java.text.SimpleDateFormat
+           java.util.Date              
+           java.util.TimerTask))
 
-(def trace-all true)
+
+(def date_formater (SimpleDateFormat. "mm:ss"))  
+  
+(def trace-all false)
 (def trace-keys false)
 (def trace-controllers false)
 
 
 (defn- dispatch [event nodes*]
-  (if trace-all (println (format "Xolotl trace event -> %s" event)))
+  (if trace-all (println (format "Xolotl trace event at %s -> %s" (.format date_formater (Date.))  event)))
   (doseq [c @nodes*]
     ((.event-dispatcher c) event)))
 
@@ -114,7 +120,7 @@
 
 (defprotocol Transmitter
 
-  (enable! [this flag])
+  (enable! [this flag])  ;;DEPRECIATE
 
   (dump-state [this])
   
@@ -166,7 +172,7 @@
    ARGS:
      node - Cadejo Node to receive MIDI events.
    RETURNS: Transmitter"
-  (let [enabled* (atom true)
+  (let [enabled* (atom true)  ;; DEPRECIATE
         channel* (atom 0)
         strum* (atom 0)
         strum-mode* (atom :forward)  ;; use get-strum-mode function to access
@@ -184,14 +190,15 @@
               pad "  "
               pad2 (str pad pad)]
           (.append sb (format "%sTransmitter\n" pad))
-          (.append sb (format "%senabled        -> %s\n" pad2 @enabled*))
+          (.append sb (format "%senabled (depreciated)       -> %s\n" pad2 @enabled*))
           (.append sb (format "%soutput-channel -> %s\n" pad2 @channel*))
           (.append sb (format "%sstrum-mode     -> %s\n" pad2 @strum-mode*))
           (.append sb (format "%sstrum-delay    -> %s\n" pad2 @strum*))
           (.toString sb)))
       
       (enable! [this flag]
-        (reset! enabled* (util/->bool flag)))
+        (util/warning "xolotl Transmitter enable flag is depreciated")
+        (reset! enabled* (util/->bool true)))
       
       (kill-all-notes [this]
         (dotimes [kn 128]
