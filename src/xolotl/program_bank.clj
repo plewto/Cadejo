@@ -40,6 +40,9 @@
                    (let [xp (xolotl.program/xolotl-program)]
                      (.program-name! xp "Init Program")
                      (swap! programs* (fn [q](assoc q slot xp)))))
+                 (.store-program! this 1 xolot.program/major-scale)
+                 (.store-program! this 2 xolot.program/counter-point)
+                 (.store-program! this 3 xolot.program/major-chords)
                  (reset! current-slot* 0)
                  (reset! current-program* (get @programs* 0)))
 
@@ -61,7 +64,7 @@
                  @current-slot*)
 
                (store-program! [this slot p]
-                 (if (and (util/int? slot)(>= p 0)(< p bank-length))
+                 (if (and (util/int? slot)(>= slot 0)(< slot bank-length))
                    (do
                      (reset! current-program* p)
                      (reset! current-slot* slot)
@@ -92,4 +95,3 @@
                    (println (format "    %s" p)))) )]
     (.init! bank)
     bank))
-               

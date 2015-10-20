@@ -36,6 +36,8 @@
     "(.midi-reset ControllerBlock)
      Resets controllers to initial state.")
 
+  (dump-state [this])
+  
   (callback [this]
     "(.callback ControllerBlock)
      RETURNS: callback function for use by the Xolotl clock,
@@ -71,6 +73,16 @@
       
       (midi-reset [this]
         (doseq [c cycles](.midi-reset c)))
+
+      (dump-state [this]
+        (let [sb (StringBuilder.)
+              pad "  "
+              pad2 (str pad pad)]
+          (.append sb (format "%sControllerBlock\n" pad))
+          (dotimes [c c-count]
+            (.append sb (format "%sctrl %s    -> %s\n" pad2 c (nth @controller-numbers* c)))
+            (.append sb (format "%spattern %s -> %s\n" pad2 c (nth cycles c))))
+          (.toString sb)))
       
       (callback [this]
         (fn []

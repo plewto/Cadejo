@@ -37,7 +37,9 @@
 
   (hold-pattern! [this pat])
   
-  (event-dispatcher [this]) )
+  (event-dispatcher [this])
+
+  (dump-state [this]))
 
 
 
@@ -137,6 +139,24 @@
                  
                  (hold-pattern! [this pat]
                    (.values! hold-pattern pat))
+
+                 (dump-state [this]
+                   (let [pad "  "
+                         pad2 (str pad pad)
+                         sb (StringBuilder.)]
+                     (.append sb (format "%sClock\n" pad))
+                     (.append sb (format "%sclock-mode      -> %s\n" pad2 @clock-mode*))
+                     (.append sb (format "%stempo           -> %s\n" pad2 @tempo*))
+                     (.append sb (format "%sinput-channel   -> %s\n" pad2 @input-channel*))
+                     (.append sb (format "%sreset-on-key    -> %s\n" pad2 @reset-on-key*))
+                     (.append sb (format "%skey-track-scale -> %s\n" pad2 @key-track-scale*))
+                     (.append sb (format "%skey-gate-mode   -> %s\n" pad2 @key-gate-mode*))
+                     (.append sb (format "%stranspose       -> %s\n" pad2 @transpose*))
+                     (.append sb (format "%srhythm-pattern  -> %s\n" pad2 (.values rhythm-pattern)))
+                     (.append sb (format "%shold-pattern    -> %s\n" pad2 (.values hold-pattern)))
+                     (.append sb (format "%s[key-counter   ]-> %s\n" pad2 @key-counter*))
+                     (.append sb (format "%s[last-keynum   ]-> %s\n" pad2 @last-keynum*))
+                     (.toString sb)))
                  
                  (event-dispatcher [this]
                    (fn [event]

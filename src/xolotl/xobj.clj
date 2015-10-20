@@ -12,13 +12,13 @@
 (defprotocol DummyEditor
   (sync-ui! [this])
   (warning! [this msg])
-  (update-path-text [this msg])
+  (update-path-text [this msg]))
 
 (def dummy-editor
   (reify DummyEditor
     (sync-ui! [this] (println "DUMMY Editor sync-ui! executed"))
     (warning! [this msg](println (format "DUMMY Editor WARNING: %s" msg)))
-    (update-path-text [this _])
+    (update-path-text [this msg])
     ))
   
 
@@ -29,6 +29,8 @@
 
 (defprotocol XolotlObject
 
+  (dump [this])
+  
   (xseq-count [this])
   
   (get-xseq [this n])
@@ -61,6 +63,13 @@
         xobj (reify
                XolotlObject
 
+               (dump [this]
+                 (let [sb (StringBuilder.)]
+                   (.append sb "XolotlObject\n")
+                   (doseq [xs xseqs]
+                     (.append sb (.dump-state xs)))
+                   (println (.toString sb))))
+               
                (xseq-count [this] (count xseqs))
 
                (get-xseq [this n]
@@ -92,35 +101,35 @@
                  (let [xprog (.use-program bank slot)]
                    (if xprog
                      (do 
-                       (xolotl.timebase/set-tempo (.tempo xprog))
+                       (xolotl.timebase/set-tempo (:tempo xprog))
                        (doseq [pair [[(first xseqs)(.seq-params xprog :a)]
                                      [(second xseqs)(.seq-params xprog :b)]]]
                          (let [xs (first pair)
                                pmap (second pair)]
-                           (.clock-select! xs (.clock-source xprog))
-                           (.input-channel! xs (:input-channel pmap))
-                           (.output-channel! xs (:output-channel pmap))
-                           (.enable-reset-on-first-key! xs (:key-reset pmap))
-                           (.enable-key-track! xs (:key-track pmap))
-                           (.enable-key-gate! xs (:key-gate pmap))
-                           (.transpose! xs (:transpose pmap))
-                           (.rhythm-pattern! xs (:rhythm-pattern pmap))
-                           (.hold-pattern! xs (:hold-pattern pmap))
-                           (.controller-number! xs 0 (:controller-1-number pmap))
-                           (.controller-number! xs 1 (:controller-2-number pmap))
-                           (.controller-pattern! xs 0 (:controller-1-pattern pmap))
-                           (.controller-pattern! xs 1 (:controller-2-pattern pmap))
-                           (.velocity-mode! xs (:velocity-mode pmap))
-                           (.velocity-pattern! xs (:velocity-pattern pmap))
-                           (.pitch-mode! xs (:pitch-mode pmap))
-                           (.pitch-pattern! xs (:pitch-pattern pmap))
-                           (.taps! xs (:sr-taps pmap)(if (:sr-inject pmap) 1 0))
-                           (.seed! xs (:sr-seed pmap))
-                           (.strum-mode! xs (:strum-mode pmap))
-                           (.strum! xs (:strum-delay pmap))))
+                           (.clock-select! xs (get xprog :clock-source :internal))
+                           (.input-channel! xs (get pmap :input-channel 0))
+                           (.output-channel! xs (get pmap :output-channel 0))
+                           (.enable-reset-on-first-key! xs (get pmap :key-reset false))
+                           (.enable-key-track! xs (get pmap :key-track true))
+                           (.enable-key-gate! xs (get pmap :key-gate false))
+                           (.transpose! xs (get pmap :transpose 0))
+                           (.rhythm-pattern! xs (get pmap :rhythm-pattern [24]))
+                           (.hold-pattern! xs (get pmap :hold-pattern [1.0]))
+                           (.controller-number! xs 0 (get pmap :controller-1-number -1))
+                           (.controller-number! xs 1 (get pmap :controller-2-number -1))
+                           (.controller-pattern! xs 0 (get pmap :controller-1-pattern [0]))
+                           (.controller-pattern! xs 1 (get pmap :controller-2-pattern [0]))
+                           (.velocity-mode! xs (get pmap :velocity-mode :seq))
+                           (.velocity-pattern! xs (get pmap :velocity-pattern [100]))
+                           (.pitch-mode! xs (get pmap :pitch-mode :seq))
+                           (.pitch-pattern! xs (get pmap :pitch-pattern [0 12]))
+                           (.taps! xs (get pmap :sr-taps 2r10000000)(if (:sr-inject pmap) 1 0))
+                           (.seed! xs (get pmap :sr-seed 2r00000001))
+                           (.strum-mode! xs (get pmap :strum-mode :forward))
+                           (.strum! xs (get pmap :strum-delay 0))))
                        (.sync-ui! @editor*))
                      (.warning! @editor* (format msg01 slot)))))
-
+                   
                cadejo.midi.node/Node
 
                (node-type [this] :xolotl)

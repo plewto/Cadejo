@@ -59,6 +59,8 @@
   (strum-mode! [this mode])
 
   ;; General 
+
+  (dump-state [this])
   
   (load-program [this pmap])
 
@@ -88,6 +90,15 @@
       
         xobj (reify XolotlSeq
 
+               (dump-state [this]
+                 (let [sb (StringBuilder.)]
+                   (.append sb "XolotlSeq\n")
+                   (.append sb (.dump-state clock))
+                   (.append sb (.dump-state ctrl-block))
+                   (.append sb (.dump-state pitch-block))
+                   (.append sb (.dump-state transmitter))
+                   (.toString sb)))
+                   
                (-set-parent-xobj! [this parent]
                  (reset! parent-obj* parent))
 

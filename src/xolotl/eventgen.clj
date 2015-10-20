@@ -3,7 +3,7 @@
   (:require [xolotl.util :as util])
   (:import java.util.Timer java.util.TimerTask))
 
-(def trace-all false)
+(def trace-all true)
 (def trace-keys false)
 (def trace-controllers false)
 
@@ -115,6 +115,8 @@
 (defprotocol Transmitter
 
   (enable! [this flag])
+
+  (dump-state [this])
   
   (kill-all-notes [this]
     "(.kill-all-notes Transmitter)
@@ -177,6 +179,17 @@
                                  sm)))]
     (reify Transmitter
 
+      (dump-state [this]
+        (let [sb (StringBuilder.)
+              pad "  "
+              pad2 (str pad pad)]
+          (.append sb (format "%sTransmitter\n" pad))
+          (.append sb (format "%senabled        -> %s\n" pad2 @enabled*))
+          (.append sb (format "%soutput-channel -> %s\n" pad2 @channel*))
+          (.append sb (format "%sstrum-mode     -> %s\n" pad2 @strum-mode*))
+          (.append sb (format "%sstrum-delay    -> %s\n" pad2 @strum*))
+          (.toString sb)))
+      
       (enable! [this flag]
         (reset! enabled* (util/->bool flag)))
       

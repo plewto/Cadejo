@@ -71,6 +71,8 @@
      ARGS:
        sval - int, the seed value, See xolotl.shift-register
      RETURNS: sval")
+
+  (dump-state [this])
   
   (callback [this]
     "(.callback PitchBlock)
@@ -133,6 +135,24 @@
       (seed! [this s]
         (.seed! sregister s))
 
+      (dump-state [this]
+        (let [sb (StringBuilder.)
+              pad "  "
+              pad2 (str pad pad)]
+          (.append sb (format "%sPitchBlock\n" pad))
+          (.append sb (format "%svelocity-mode     -> %s\n" pad2 @velocity-mode*))
+          (.append sb (format "%svelocity-pattern  -> %s\n" pad2 (.values velocity-cycle)))
+          (.append sb (format "%spitch-mode        -> %s\n" pad2 @pitch-mode*))
+          (.append sb (format "%spitch-pattern     -> %s\n" pad2 (.values pitch-cycle)))
+          (.append sb (format "%ssr-inject         -> %s\n" pad2 @sr-inject*))
+          (.append sb (format "%s[shit-register   ]-> " pad2))
+          (doseq [s (.stages sregister)] (.append sb (format "%s " s)))
+          (.append sb "\n")
+          (.append sb (format "%s[velocity-counter]-> %s\n" pad2 (.value velocity-counter)))
+          (.append sb (format "%s[pitch-counter   ]-> %s\n" pad2 (.value pitch-counter)))
+          (.toString sb)))
+          
+      
       (callback [this]
         (fn [gate transpose hold-time]
           (if gate
