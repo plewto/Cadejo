@@ -11,12 +11,15 @@
 ;;; Start TEST Start TEST Start TEST Start TEST Start TEST
 (defprotocol DummyEditor
   (sync-ui! [this])
-  (warning! [this msg]))
+  (warning! [this msg])
+  (update-path-text [this msg])
 
 (def dummy-editor
   (reify DummyEditor
     (sync-ui! [this] (println "DUMMY Editor sync-ui! executed"))
-    (warning! [this msg](println (format "DUMMY Editor WARNING: %s" msg)))))
+    (warning! [this msg](println (format "DUMMY Editor WARNING: %s" msg)))
+    (update-path-text [this _])
+    ))
   
 
 
@@ -120,7 +123,7 @@
 
                cadejo.midi.node/Node
 
-               (node-type [this] :Xolotl)
+               (node-type [this] :xolotl)
 
                (is-root? [this]
                  (not @parent*))
@@ -179,10 +182,15 @@
                (properties [this]
                  (.properties this false))
                
+               ;; (event-dispatcher [this]
+               ;;   (fn [evn]
+               ;;     (doseq [xs xseqs]
+               ;;       ((.event-dispatcher xs) evn))))
+
                (event-dispatcher [this]
                  (fn [evn]
                    (doseq [xs xseqs]
-                     ((.event-dispatcher xs) evn))))
+                     ((.event-dispatcher (.get-clock xs)) evn))))
                  
                (get-editor [this] @editor*)
 

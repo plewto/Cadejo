@@ -115,8 +115,9 @@
         ntype (.node-type node)
         id (.get-property node :id)]
     (.append sb (format "%s%s %s\n" pad ntype id))
-    (doseq [c (.children node)]
-      (.append sb (rep-tree c (inc depth))))
+    (if (not (= ntype :xolotl))
+      (doseq [c (.children node)]
+        (.append sb (rep-tree c (inc depth)))))
     (.toString sb)))
 
 (defn trace-path

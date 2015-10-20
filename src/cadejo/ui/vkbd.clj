@@ -12,8 +12,12 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.multistate-button :as msb])
+  (:require [xolotl.xobj])
   (:require [seesaw.core :as ss])
   (:require [seesaw.color :as ssc]))
+
+
+(def xolotl* (atom nil)) ;; FOR TESTING ONLY
 
 (def ^:private width 670)
 (def ^:private height 120)
@@ -261,6 +265,7 @@
                            :id :VKBD})
         parent* (atom nil)
         children* (atom [])
+        xolotl (xolotl.xobj/xolotl children*)
         vnode (VKbd. parent* children* properties* cframe)
         drw (sfactory/sgwr-drawing width height)
 
@@ -377,4 +382,6 @@
     (sfactory/label drw pos-panic-label "Off" :size 5.0)
     (ss/config! (.widget cframe :pan-center) :center (.canvas drw))
     (.render drw)
+    (.add-child! vnode xolotl)
+    (reset! xolotl* xolotl) ;; ISSUE for testing only
     vnode))
