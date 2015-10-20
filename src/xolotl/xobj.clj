@@ -1,6 +1,7 @@
 (println "--> xolotl.xobj")
 (ns xolotl.xobj
   (:require [cadejo.midi.node])
+  (:require [xolotl.xeditor :reload true])  ;; REMOVE reload after testing
   (:require [xolotl.program-bank])
   (:require [xolotl.xseq])
   (:require [xolotl.timebase])
@@ -9,17 +10,17 @@
 
 
 ;;; Start TEST Start TEST Start TEST Start TEST Start TEST
-(defprotocol DummyEditor
-  (sync-ui! [this])
-  (warning! [this msg])
-  (update-path-text [this msg]))
+;; (defprotocol DummyEditor
+;;   (sync-ui! [this])
+;;   (warning! [this msg])
+;;   (update-path-text [this msg]))
 
-(def dummy-editor
-  (reify DummyEditor
-    (sync-ui! [this] (println "DUMMY Editor sync-ui! executed"))
-    (warning! [this msg](println (format "DUMMY Editor WARNING: %s" msg)))
-    (update-path-text [this msg])
-    ))
+;; (def dummy-editor
+;;   (reify DummyEditor
+;;     (sync-ui! [this] (println "DUMMY Editor sync-ui! executed"))
+;;     (warning! [this msg](println (format "DUMMY Editor WARNING: %s" msg)))
+;;     (update-path-text [this msg])
+;;     ))
   
 
 
@@ -58,7 +59,7 @@
                (xolotl.xseq/xolotl-seq children*)]
         parent* (atom nil)
         bank (xolotl.program-bank/program-bank)
-        editor* (atom dummy-editor)  ;; ISSUE Remove dummy assignment after testing
+        editor* (atom nil)
         properties* (atom {})
         xobj (reify
                XolotlObject
@@ -201,9 +202,23 @@
 
                (set-editor! [this ed]
                  (reset! editor* ed)) )]
-    ;; ISSUE set editor
-
+    
+    (reset! editor* (xolotl.xeditor/xolotl-editor xobj))
+    ;(.show! @editor*)
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]
                           (.use-program xobj slot)))
     xobj))
+
+
+
+;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+
+(println "****                  ****")
+(println "**** RUNING TEST XOBJ ****")
+(println "****                  ****")
+
+(def x (xolotl nil))
+(.show! (.get-editor x))
