@@ -100,8 +100,8 @@
                (use-program [this slot]
                  (let [xprog (.use-program bank slot)]
                    (if xprog
-                     (do 
-                       (xolotl.timebase/set-tempo (:tempo xprog))
+                     (do
+                       (xolotl.timebase/set-tempo (.tempo xprog))
                        (doseq [pair [[(first xseqs)(.seq-params xprog :a)]
                                      [(second xseqs)(.seq-params xprog :b)]]]
                          (let [xs (first pair)
@@ -126,7 +126,8 @@
                            (.taps! xs (get pmap :sr-taps 2r10000000)(if (:sr-inject pmap) 1 0))
                            (.seed! xs (get pmap :sr-seed 2r00000001))
                            (.strum-mode! xs (get pmap :strum-mode :forward))
-                           (.strum! xs (get pmap :strum-delay 0))))
+                           (.strum! xs (get pmap :strum-delay 0))
+                           ))
                        (.sync-ui! @editor*))
                      (.warning! @editor* (format msg01 slot)))))
                    
@@ -214,4 +215,12 @@
                           (.use-program xobj slot)))
     xobj))
                
+
+
+
+;;;; TEST TEST TEST TEST TES
+;;;; TEST TEST TEST TEST TEST
+;;;; TEST TEST TEST TEST TEST
+
+(def x (xolotl nil))
 

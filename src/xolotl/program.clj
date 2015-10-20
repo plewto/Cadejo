@@ -408,13 +408,13 @@
                    (.sr-taps! xp :a 2r00010001)
                    (.sr-seed! xp :a 2r00000001)
                    (.strum-mode! xp :a :forward)
-                   (.strum-delay! xp :a 0)))
+                   (.strum-delay! xp :a 0)
+                   xp))
                    
 (def counter-point (let [xp (xolotl-program)]
                      (.program-name! xp "Counter Point")
                      (.tempo! xp 60)
                      (.clock-source! xp :internal)
-                     
                      (.enable! xp :a true)
                      (.input-channel! xp :a 1)
                      (.output-channel! xp :a 1)
@@ -435,7 +435,6 @@
                      (.sr-seed! xp :a 2r00000001)
                      (.strum-mode! xp :a :forward)
                      (.strum-delay! xp :a 0)
-
                      (.enable! xp :b true)
                      (.input-channel! xp :b 1)
                      (.output-channel! xp :b 1)
@@ -455,7 +454,8 @@
                      (.sr-taps! xp :b 2r00010001)
                      (.sr-seed! xp :b 2r00000001)
                      (.strum-mode! xp :b :forward)
-                     (.strum-delay! xp :b 0)))
+                     (.strum-delay! xp :b 0)
+                     xp)) 
 
 
 (def major-chords (let [xp (xolotl-program)]
@@ -503,4 +503,5 @@
                      (.sr-taps! xp :b 2r00010001)
                      (.sr-seed! xp :b 2r00000001)
                      (.strum-mode! xp :b :forward)
-                     (.strum-delay! xp :b 0)))
+                     (.strum-delay! xp :b 0)
+                     xp))
