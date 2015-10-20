@@ -1,29 +1,13 @@
 (println "--> xolotl.xobj")
 (ns xolotl.xobj
   (:require [cadejo.midi.node])
-  (:require [xolotl.xeditor :reload true])  ;; REMOVE reload after testing
   (:require [xolotl.program-bank])
   (:require [xolotl.xseq])
   (:require [xolotl.timebase])
   (:require [xolotl.util :as util])
+  (:require [xolotl.ui.xeditor :reload true])  ;; REMOVE reload after testing
+
   )
-
-
-;;; Start TEST Start TEST Start TEST Start TEST Start TEST
-;; (defprotocol DummyEditor
-;;   (sync-ui! [this])
-;;   (warning! [this msg])
-;;   (update-path-text [this msg]))
-
-;; (def dummy-editor
-;;   (reify DummyEditor
-;;     (sync-ui! [this] (println "DUMMY Editor sync-ui! executed"))
-;;     (warning! [this msg](println (format "DUMMY Editor WARNING: %s" msg)))
-;;     (update-path-text [this msg])
-;;     ))
-  
-
-
 
 (def msg00 "Child nodes may not be added or removed from XolotlObject")
 (def msg01 "No such program slot %s")
@@ -50,8 +34,7 @@
 
   (store-program! [this slot data])
 
-  (use-program [this slot])
-  )
+  (use-program [this slot]))
 
 
 (defn xolotl [children*]
@@ -203,8 +186,7 @@
                (set-editor! [this ed]
                  (reset! editor* ed)) )]
     
-    (reset! editor* (xolotl.xeditor/xolotl-editor xobj))
-    ;(.show! @editor*)
+    (reset! editor* (xolotl.ui.xeditor/xolotl-editor xobj))
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]
                           (.use-program xobj slot)))

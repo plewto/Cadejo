@@ -1,5 +1,5 @@
-(println "--> xolotl.xeditor")
-(ns xolotl.xeditor
+(println "--> xolotl.ui.xeditor")
+(ns xolotl.ui.xeditor
   (:require [cadejo.ui.cadejo-frame :as cframe])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.util.icon])
