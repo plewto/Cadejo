@@ -3,21 +3,31 @@
   (:require [cadejo.ui.cadejo-frame :as cframe])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.util.icon])
+  (:require [xolotl.ui.bank-editor])
+  (:require [xolotl.ui.clock-editor])
+  (:require [xolotl.ui.factory :as factory])
+  (:require [seesaw.core :as ss])
   )
 
 
 (def logo (cadejo.ui.util.icon/logo "xolotl" :small))
 
-(println "DEBUG " logo)
-
 (defn xolotl-editor [xobj]
   (let [cf (cframe/cadejo-frame "Xolotl" :xolotl 
                                 [:exit :about :skin :progress-bar :path])
         bed (cadejo.ui.midi.node-editor/basic-node-editor :xolotl xobj false)
+        pan-main (.widget cf :pan-center)
+        bank (.program-bank xobj)
+        bank-editor (xolotl.ui.bank-editor/bank-editor bed bank)
+        clock-editor (xolotl.ui.clock-editor/clock-editor bed)
+        pan-west (factory/border-panel :center (:pan-main bank-editor)
+                                       :north (:pan-main clock-editor)
+                                       )
         ]
 
     (.cframe! bed cf)
     (.set-icon! bed logo)
+    (ss/config! pan-main :west pan-west)
     (reify cadejo.ui.midi.node-editor/NodeEditor
 
       (cframe! [this cframe embed]

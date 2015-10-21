@@ -78,7 +78,7 @@
                  (let [acc* (atom [])]
                    (dotimes [slot bank-length]
                      (let [p (get @programs* slot)]
-                       (swap! acc* (fn [q](conj q (format "%3d %-12s" slot (.program-name p)))))))
+                       (swap! acc* (fn [q](conj q (format "%-12s" (.program-name p)))))))
                    @acc*))
 
                (save-bank [this filename]
