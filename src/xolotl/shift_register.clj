@@ -45,6 +45,19 @@
     "(.seed ShiftRegister)
      RETURNS: int, the seed value.")
 
+  (mask! [this m]
+    "(.mask! ShiftRegister n)
+     Sets output masking value.  The output value of the register is bitwise 
+     and with the mask. One application is to simulate a register which is
+     shorter then the actual length. Note the mask is not applied to feedback.
+     ARGS:
+       n - int, the mask value
+     RETURNS: int n")
+  
+  (mask [this]
+    "(.mask ShiftRegister)
+     RETURNS: int, the output masking value")
+  
   (stage [this n]
     "(.stage ShiftRegister n)
      Retrieves the state of a register stage.
@@ -57,11 +70,12 @@
   (stages [this]
     "(.stages ShiftRegister)
      RETURNS: list, the current state of the register. The result has the 
-              form (s t) where s and t are vectors with lengths equal to 
-              the register's length and contain binary values 0 or 1. 
-              For s a 0 indicates the corresponding stage is clear, a 1
+              form (s t m) where s, t and m are vectors with lengths equal
+              to the register's length and contain binary values 0 or 1. 
+              For s 0 indicates the corresponding stage is clear and 1
               indicates the stage is set. The t vector indicates which 
-              stages have feedback enabled.")
+              stages have feedback enabled. The m vector is for the 
+              output-mask")
 
   (feedback [this inject]
     "(.feedback ShiftRegister inject)
@@ -101,8 +115,9 @@
   ([]
    (shift-register default-length (fn [_]) 1))
   ([n seed]
-   (let [mask (- (expt 2 n) 1)
-         seed* (atom (bit-and mask seed))
+   (let [limit-mask (- (expt 2 n) 1)
+         output-mask* (atom limit-mask)
+         seed* (atom (bit-and limit-mask seed))
          value* (atom @seed*)
          taps* (atom (expt 2 (dec n)))]
 
@@ -110,18 +125,26 @@
        
        (length [this] n)
        
-       (value [this] @value*)
+       (value [this]
+         (bit-and @output-mask* @value*)
        
        (midi-reset [this]
          (reset! value* @seed*))
        
        (taps! [this n]
-         (reset! taps* (bit-and mask n)))
+         (reset! taps* (bit-and limit-mask n)))
        
        (taps [this] @taps*)
        
        (seed! [this n]
-         (reset! seed* (bit-and mask n)))
+         (reset! seed* (bit-and limit-mask n)))
+
+       (seed [this] @seed*)
+       
+       (mask! [this n]
+         (reset! output-mask* (bit-and limit-mask n)))
+
+       (mask [this] @output-mask*)
        
        (stage [this i]
          (let [j (expt 2 i)
@@ -131,14 +154,17 @@
        
        (stages [this]
          (let [s* (atom [])
-               t* (atom [])]
+               t* (atom [])
+               m* (atom [])]
            (dotimes [i n]
              (let [j (expt 2 i)
                    v (if (pos? (bit-and @value* j)) 1 0)
-                   t (if (pos? (bit-and @taps* j)) 1 0)]
+                   t (if (pos? (bit-and @taps* j)) 1 0)
+                   m (if (pos? (bit-and @output-mask* j) 1 0))]
                (swap! s* (fn [q](conj q v)))
+               (swap! m* (fn [q](conj q m)))
                (swap! t* (fn [q](conj q t)))))
-          (list @s* @t*)))
+          (list @s* @t* @m*)))
        
        (feedback [this inject]
          (let [fb* (atom (bit-and inject 0x1))]
@@ -152,21 +178,28 @@
        
        (shift [this inject]
          (let [fb (.feedback this inject)]
-           (swap! value* (fn [q](bit-and mask (+ (* 2 q) fb))))
+           (swap! value* (fn [q](bit-and limit-mask (+ (* 2 q) fb))))
            @value*))
        
        (dump [this]
          (let [state (.stages this)
                a (StringBuilder. "")
-               b (StringBuilder. "")]
+               b (StringBuilder. "")
+               c (StringBuilder. "")
+               cells (first state)
+               taps (second state)
+               mask (nth state 2)]
            (dotimes [i n]
-             (let [s (nth (first state) i)
-                   t (nth (second state) i)]
+             (let [s (nth cells i)
+                   t (nth taps i)
+                   m (nth mask i)]
                (.append a (format "%01d" s))
-               (.append b (format "%01d" t))))
+               (.append b (format "%01d" t))
+               (.append c (format "%01d" m))))
            (println "ShiftRegister")
            (printf "\tStages: %s\n" (.toString a))
            (printf "\tTaps  : %s\n" (.toString b))
+           (printf "\tMask  : %s\n" (.toString c))
            (println (format "\tValue : %d" (.value this))))) ))))
        
     
