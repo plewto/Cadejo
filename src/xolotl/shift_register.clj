@@ -126,7 +126,7 @@
        (length [this] n)
        
        (value [this]
-         (bit-and @output-mask* @value*)
+         (bit-and @output-mask* @value*))
        
        (midi-reset [this]
          (reset! value* @seed*))
@@ -160,7 +160,7 @@
              (let [j (expt 2 i)
                    v (if (pos? (bit-and @value* j)) 1 0)
                    t (if (pos? (bit-and @taps* j)) 1 0)
-                   m (if (pos? (bit-and @output-mask* j) 1 0))]
+                   m (if (pos? (bit-and @output-mask* j)) 1 0)]
                (swap! s* (fn [q](conj q v)))
                (swap! m* (fn [q](conj q m)))
                (swap! t* (fn [q](conj q t)))))
@@ -201,5 +201,7 @@
            (printf "\tTaps  : %s\n" (.toString b))
            (printf "\tMask  : %s\n" (.toString c))
            (println (format "\tValue : %d" (.value this))))) ))))
+
+
        
     
