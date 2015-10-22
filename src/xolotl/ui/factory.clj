@@ -8,6 +8,7 @@
    java.awt.GridLayout
    java.awt.event.ActionListener
    javax.swing.BorderFactory
+   javax.swing.Box
    javax.swing.BoxLayout
    javax.swing.JPanel
    javax.swing.SwingConstants
@@ -29,10 +30,14 @@
 (def normal-font (ssf/font :name :sans-serif :style :plain :size 12))
 (def small-font (ssf/font :name :sans-serif :style :plain :size 10))
 (def pattern-font (ssf/font :name :monospaced :style :bold :size 12))
+(def small-mono (ssf/font :name :monospaced :style :bold :size 9))
+(def bold-mono (ssf/font :name :monospaced :style :bold :size 12))
 
 (def font-map {:small small-font
                :normal normal-font
-               :large large-font})
+               :large large-font
+               :small-mono small-mono
+               :bold-mono bold-mono})
 
 (def size-map {:small [64 :by 20]
                :normal [64 :by 24]
@@ -46,6 +51,25 @@
    (BorderFactory/createEmptyBorder thickness thickness thickness thickness))
   ([]
    (padding 4)))
+
+(defn border [title]
+  (BorderFactory/createTitledBorder (str title))
+  )
+
+
+(defn horizontal-strut
+  ([n]
+   (Box/createHorizontalStrut n))
+  ([]
+   (horizontal-strut 16)))
+
+
+(defn vertical-strut
+  ([n]
+   (Box/createVerticalStrut n))
+  ([]
+   (vertical-strut 16)))
+
 
 (defn horizontal-panel [& items]
   (let [pan (JPanel.)
@@ -70,12 +94,13 @@
     (.setBorder pan (padding))
     pan))
 
-(defn border-panel [& {:keys [north east south west center]
+(defn border-panel [& {:keys [north east south west center border]
                        :or {north nil
                             east nil
                             south nil
                             west nil
-                            center nil}}]
+                            center nil
+                            border nil}}]
   (let [layout (BorderLayout. 8 8)
         pan (JPanel. layout)]
     (if north (.add pan north BorderLayout/NORTH))
@@ -83,6 +108,7 @@
     (if south (.add pan south BorderLayout/SOUTH))
     (if west (.add pan west BorderLayout/WEST))
     (if center (.add pan center BorderLayout/CENTER))
+    (if border (.setBorder pan border))
     pan))
 
 
@@ -102,11 +128,11 @@
      (if listener (.addChangeListener sp listener))
      sp))
 
-(defn spinner-panel [label mn mx step & {:keys [font listener]
+(defn spinner-panel [lab-text mn mx step & {:keys [font listener]
                                          :or {font :normal
                                               listener nil}}]
   (let [sp (spinner mn mx step :listener listener)
-        lab (label label :font font)
+        lab (label lab-text :font font)
         pan (border-panel :center sp :east lab)]
     {:spinner sp
      :label lab
@@ -213,7 +239,7 @@
         jb-paste (button "Paste" :font :small)
         jb-undo (button "Undo" :font :small)
         jb-enter (button "Enter" :font :small)
-        pan-tools (grid-panel 1 5 jb-clear jb-copy jb-paste jb-undo jb-enter)
+        pan-tools (grid-panel 3 2 jb-clear jb-copy jb-paste jb-undo jb-enter)
         pan-south (vertical-panel pan-tools)
         pan-main (border-panel :center sp
                                :north lab
