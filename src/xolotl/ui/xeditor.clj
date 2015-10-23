@@ -11,8 +11,9 @@
   (:require [xolotl.ui.hold-editor])
   (:require [xolotl.ui.pitch-editor])
   (:require [xolotl.ui.rhythm-editor])
-  (:require [xolotl.ui.velocity-editor])
   (:require [xolotl.ui.strum-editor])
+  (:require [xolotl.ui.sr])
+  (:require [xolotl.ui.velocity-editor])
 
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
@@ -34,26 +35,32 @@
         ctrl-2-editor (xolotl.ui.controller-editor/controller-editor parent-editor seq-id 1)
         pitch-editor (xolotl.ui.pitch-editor/pitch-editor parent-editor seq-id)
         velocity-editor (xolotl.ui.velocity-editor/velocity-editor parent-editor seq-id)
+        sr-editor (xolotl.ui.sr/sr-editor parent-editor seq-id)
         pan-west (factory/vertical-panel (:pan-main chan-editor)
                                          (factory/vertical-strut 16)
                                          (:pan-main strum-editor)
                                          )
-        pan-center (factory/grid-panel 2 3
+        pan-center (factory/grid-panel 2 2
                                        (:pan-main rhythm-editor)
                                        (:pan-main hold-editor)
-                                       (:pan-main ctrl-1-editor)
+                                       ;(:pan-main ctrl-1-editor)
                                        (:pan-main pitch-editor)
                                        (:pan-main velocity-editor)
-                                       (:pan-main ctrl-2-editor)
+                                       ;(:pan-main ctrl-2-editor)
                                        )
-        ;; rhythed (xolotl.ui.rhythm-editor/rhythm-editor parent-editor seq-id)
-
-        ;; pan-north (factory/border-panel :north lab-id
-        ;;                                 :center (:pan-main chaned))
-        ;; pan-center (factory/vertical-panel (:pan-main rhythed))
+        pan-east (factory/grid-panel 2 1
+                                     (:pan-main ctrl-1-editor)
+                                     (:pan-main ctrl-2-editor))
+                                     
+        pan-south (factory/horizontal-panel
+                   (factory/horizontal-strut 250) ; 220
+                   (:pan-main sr-editor)
+                   (factory/horizontal-strut 250))
                                            
         pan-main (factory/border-panel :west pan-west
                                        :center pan-center
+                                       :south pan-south
+                                       :east pan-east
                                        )
                                            
         sync-fn (fn []
@@ -94,6 +101,7 @@
         tb-start (:start (:buttons tpan-transport))
         
         ]
+    (ss/config! (.jframe cf) :size [1280 :by 660])
     (.add toolbar jb-init)
     (.add toolbar jb-open)
     (.add toolbar jb-save)

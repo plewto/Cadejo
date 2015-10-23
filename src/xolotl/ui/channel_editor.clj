@@ -13,7 +13,7 @@
 ;;   spinner  - transpose
 
 
-(def msg00 "WARNING: Input and Output channels are the same!")
+(def msg00 "WARNING: Input = Output")
 (def msg01 (let [sb (StringBuilder.)]
              (dotimes [i (count msg00)]
                (.append sb " "))
@@ -21,23 +21,22 @@
 
 (defn channel-editor [parent-editor seq-id]
   (let [spin-input (factory/spinner 1 16 1)
-        pan-input (factory/border-panel :center spin-input :east (factory/label "Input "))
+        pan-input (factory/border-panel :center spin-input :east (factory/label "IN "))
         spin-output (factory/spinner 1 16 1)
-        pan-output (factory/border-panel :center spin-output :east (factory/label "Output"))
+        pan-output (factory/border-panel :center spin-output :east (factory/label "OUT"))
         lab-warning (factory/label  msg00 :font :small-mono)
-        pan-channels (factory/border-panel
-                      :center (factory/horizontal-panel pan-input
-                                                        (factory/horizontal-strut)
-                                                        pan-output)
-                      :south lab-warning
-                      :border (factory/border "MIDI Channels"))
-                      
+
+        pan-channels (factory/vertical-panel
+                      (factory/horizontal-panel pan-input
+                                                (factory/horizontal-strut 8 ))
+                      pan-output
+                      lab-warning)
         cb-reset (factory/checkbox "Key Reset")
         cb-gate (factory/checkbox "Key Gate")
         cb-track (factory/checkbox "Key Track")
         spin-transpose (factory/spinner -96 96 1)
         
-        pan-key-mode (factory/grid-panel 1 3 cb-reset cb-gate cb-track)
+        pan-key-mode (factory/grid-panel 3 1 cb-reset cb-gate cb-track)
 
         pan-transpose (factory/border-panel :center spin-transpose
                                             :east (factory/label "Transpose"))
@@ -79,6 +78,7 @@
         sync-fn (fn []
                   (println "ISSUE: channel-editor.sync-fn NOT implemented"))
         ]
+    (.setBorder pan-channels (factory/border "MIDI Channels"))
     (.addActionListener cb-reset reset-action)
     (.addActionListener cb-gate gate-action)
     (.addActionListener cb-track track-action)

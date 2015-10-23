@@ -30,7 +30,7 @@
 (def normal-font (ssf/font :name :sans-serif :style :plain :size 12))
 (def small-font (ssf/font :name :sans-serif :style :plain :size 10))
 (def pattern-font (ssf/font :name :monospaced :style :bold :size 12))
-(def small-mono (ssf/font :name :monospaced :style :bold :size 9))
+(def small-mono (ssf/font :name :monospaced :style :bold :size 8))   ; 9
 (def bold-mono (ssf/font :name :monospaced :style :bold :size 12))
 
 (def font-map {:small small-font
@@ -39,7 +39,7 @@
                :small-mono small-mono
                :bold-mono bold-mono})
 
-(def size-map {:small [64 :by 20]
+(def size-map {:small [64 :by 18]     ; 64 x 20 
                :normal [64 :by 24]
                :large [64 :by 64]})
 

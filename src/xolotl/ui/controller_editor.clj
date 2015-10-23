@@ -17,10 +17,18 @@
                                  factory/int-clipboard*
                                  parent-editor)
         spin-ctrl (factory/spinner -1 127 1)
-        pan-ctrl (factory/border-panel :center spin-ctrl
-                                       :south (factory/label "CTRL Num"))
+        ;; pan-ctrl (factory/border-panel :center spin-ctrl
+        ;;                                :south (factory/label "CTRL Num"))
+        ;; pan-ctrl (factory/vertical-panel (factory/vertical-strut 130)
+        ;;                                  spin-ctrl
+        ;;                                  (factory/label "CTRL Num"))
+        pan-ctrl (factory/horizontal-panel spin-ctrl
+                                           (factory/label "  CTRL "))
+        
         pan-main (factory/border-panel :center (:pan-main ted)
-                                       :east pan-ctrl)
+                                       :south (factory/vertical-panel pan-ctrl
+                                                                      (factory/vertical-strut)))
+                                       
         sync-fn (fn []
                   (println "controller-editor.sync-fn NOT ijmplemented")
                   )]
