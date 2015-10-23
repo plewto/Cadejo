@@ -55,6 +55,9 @@
                                        :west pan-west
                                        :border (factory/border "Shift Register"))
                                        
+        sync-fn (fn [prog]
+                  (println "sr sync-function not implemented")
+                  )
         
         ]
     (doseq [bar [cb-taps cb-seed cb-mask labs]]
@@ -63,6 +66,7 @@
     
 
     {:pan-main pan-main
+     :sync-fn sync-fn
      }))
         
         

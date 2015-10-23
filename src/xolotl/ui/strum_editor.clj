@@ -18,7 +18,11 @@
         pan-main (factory/border-panel :north pan-delay
                                        :center (:pan-main rpan-mode)
                                        :border (factory/border "Strum"))
+        sync-fn (fn [prog]
+                  (println "strum-editor sync-fn not implemented")
+                  )
         ]
     {:pan-main pan-main
+     :sync-fn sync-fn
      }))
                                   

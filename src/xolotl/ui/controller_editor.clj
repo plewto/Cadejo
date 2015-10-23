@@ -29,7 +29,7 @@
                                        :south (factory/vertical-panel pan-ctrl
                                                                       (factory/vertical-strut)))
                                        
-        sync-fn (fn []
+        sync-fn (fn [prog]
                   (println "controller-editor.sync-fn NOT ijmplemented")
                   )]
     {:pan-main pan-main

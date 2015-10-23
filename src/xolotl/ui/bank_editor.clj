@@ -38,22 +38,17 @@
 ;; RETURNS: map  keys  :pan-main -> JPanel
 ;;                     :sync-fn  -> (fn [])
 ;;
-(defn bank-editor [parent-editor bank]
+(defn bank-editor [parent-editor bank jb-open jb-save jb-init]
   (let [lst-programs (ss/listbox :model (create-program-list bank)
                                  :size [180 :by 320])
         spin-slot (factory/spinner 0 (dec xolotl.program-bank/bank-length) 1)
         jb-store (factory/button "Store" :font :small)
-        ;; jb-open (factory/button "Open")
-        ;; jb-save (factory/button "Save")
-        ;; jb-init (factory/button "Init")
         tf (factory/text-field "Name")
         pan-south (factory/border-panel :center spin-slot
                                         :east jb-store
                                         :south (:pan-main tf))
         pan-center (ss/horizontal-panel :items [(ss/scrollable lst-programs)]
                                         :border (factory/padding))
-        ;pan-south2 (factory/grid-panel 2 2 jb-open jb-save jb-init)
-        ;pan-south (factory/vertical-panel pan-store pan-south2)
         pan-main (factory/border-panel :center pan-center
                                        :south pan-south
                                        )
@@ -61,28 +56,30 @@
                        (actionPerformed [_]
                          (println "ISSUE: bank-editor.store-action NOT implemented")
                          ))
-        ;; open-action (proxy [ActionListener][]
-        ;;               (actionPerformed [_]
-        ;;                 (println "ISSUE: bank-editor.open-action NOT implemented")
-        ;;                 ))
-        ;; save-action (proxy [ActionListener][]
-        ;;               (actionPerformed [_]
-        ;;                 (println "ISSUE: bank-editor.save-action NOT implemented")
-        ;;                 ))
-        ;; init-action (proxy [ActionListener][]
-        ;;               (actionPerformed [_]
-        ;;                 (println "ISSUE: bank-editor.init-action NOT implemented")
-        ;;                 ))
+        open-action (proxy [ActionListener][]
+                      (actionPerformed [_]
+                        (println "ISSUE: bank-editor.open-action NOT implemented")
+                        ))
+        save-action (proxy [ActionListener][]
+                      (actionPerformed [_]
+                        (println "ISSUE: bank-editor.save-action NOT implemented")
+                        ))
+        init-action (proxy [ActionListener][]
+                      (actionPerformed [_]
+                        (println "ISSUE: bank-editor.init-action NOT implemented")
+                        ))
         selection-listener (proxy [ListSelectionListener][]
                              (valueChanged [_]
                                (println "ISSUE: bank-editor.selection-listener NOT implemented")))
         sync-fn (fn []
-                  (println "ISSUE: bank-editor.sync-fn NOT implemented"))
+                  ;; return current-program for down-stream use
+                  (println "ISSUE: bank-editor.sync-fn NOT implemented")
+                  (.current-program bank))
         ]
     (.addActionListener jb-store store-action)
-    ;; (.addActionListener jb-open open-action)
-    ;; (.addActionListener jb-save save-action)
-    ;; (.addActionListener jb-init init-action)
+    (.addActionListener jb-open open-action)
+    (.addActionListener jb-save save-action)
+    (.addActionListener jb-init init-action)
     (.addListSelectionListener lst-programs selection-listener)
     
     {:pan-main pan-main

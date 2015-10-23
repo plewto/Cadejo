@@ -18,7 +18,7 @@
         pan-main (factory/border-panel :center (:pan-main ted)
                                        :east (factory/grid-panel 2 1
                                               (:pan-main rpan-mode)))
-        sync-fn (fn []
+        sync-fn (fn [prog]
                   (println "pitch-editor.sync-fn NOT ijmplemented")
                   )]
     {:pan-main pan-main

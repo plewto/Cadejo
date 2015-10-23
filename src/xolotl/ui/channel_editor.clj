@@ -75,7 +75,7 @@
                              (stateChanged [_]
                                (println "ISSUE: channel-editor.transpose-listener NOT implemented")))
         
-        sync-fn (fn []
+        sync-fn (fn [prog]
                   (println "ISSUE: channel-editor.sync-fn NOT implemented"))
         ]
     (.setBorder pan-channels (factory/border "MIDI Channels"))

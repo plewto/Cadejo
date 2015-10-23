@@ -14,7 +14,7 @@
                                  validator rhythm-action
                                  factory/rhythm-clipboard*
                                  parent-editor)
-        sync-fn (fn []
+        sync-fn (fn [prog]
                   (println "rhythm-editor.sync-fn NOT ijmplemented")
                   )]
     {:pan-main (:pan-main ted)

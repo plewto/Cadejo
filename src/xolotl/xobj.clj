@@ -11,6 +11,7 @@
 
 (def msg00 "Child nodes may not be added or removed from XolotlObject")
 (def msg01 "No such program slot %s")
+(def msg02 "Internal Error xobj.clj invalid key argument to global-param! %s")
 
 (defprotocol XolotlObject
 
@@ -30,6 +31,13 @@
 
   (midi-reset [this])
 
+  ;; possible keys
+  ;;    :name
+  ;;    :tempo
+  ;;    :clock
+  ;;
+  (global-param! [this key val])
+  
   (program-bank [this])
 
   (store-program! [this slot data])
@@ -75,7 +83,30 @@
                (midi-reset [this]
                  (doseq [xs xseqs]
                    (.midi-reset xs)))
-        
+
+               (global-param! [this key val]
+                 (let [cprog (.current-program bank)]
+                   (cond (= key :name)
+                         (.program-name! cprog (str val))
+
+                         (= key :tempo)
+                         (let [fval (float val)]
+                           (.tempo! cprog fval)
+                           (xolotl.timebase/set-tempo fval))
+
+                         (= key :clock)
+                         (let [src (if (= val :external) :external :internal)]
+                           (.clock-source! cprog src)
+                           (doseq [x xseqs]
+                             (.clock-select! x src)))
+
+                         :else
+                         (throw (IllegalArgumentException.
+                                 (format msg02 key))))
+                   (.dump cprog)  ;; DEBUG
+                   ))
+               
+               
                (program-bank [this] bank)
 
                (store-program! [this slot data]
@@ -185,7 +216,6 @@
 
                (set-editor! [this ed]
                  (reset! editor* ed)) )]
-    
     (reset! editor* (xolotl.ui.xeditor/xolotl-editor xobj))
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]

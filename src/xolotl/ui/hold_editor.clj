@@ -14,7 +14,7 @@
                                  validator hold-action
                                  factory/hold-clipboard*
                                  parent-editor)
-        sync-fn (fn []
+        sync-fn (fn [prog]
                   (println "hold-editor.sync-fn NOT ijmplemented")
                   )]
     {:pan-main (:pan-main ted)

@@ -17,16 +17,13 @@
 
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
-           javax.swing.JLabel
-           )
-  )
+           javax.swing.JLabel) )
 
 
 (def logo (cadejo.ui.util.icon/logo "xolotl" :small))
 
 (defn xseq-editor [xobj parent-editor seq-id]
   (let [lab-id (JLabel. (if (= seq-id :A) "Seq A" "Seq B"))
-        
         chan-editor (xolotl.ui.channel-editor/channel-editor parent-editor seq-id)
         strum-editor (xolotl.ui.strum-editor/strum-editor parent-editor seq-id)
         rhythm-editor (xolotl.ui.rhythm-editor/rhythm-editor parent-editor seq-id)
@@ -38,34 +35,37 @@
         sr-editor (xolotl.ui.sr/sr-editor parent-editor seq-id)
         pan-west (factory/vertical-panel (:pan-main chan-editor)
                                          (factory/vertical-strut 16)
-                                         (:pan-main strum-editor)
-                                         )
+                                         (:pan-main strum-editor))
         pan-center (factory/grid-panel 2 2
                                        (:pan-main rhythm-editor)
                                        (:pan-main hold-editor)
-                                       ;(:pan-main ctrl-1-editor)
                                        (:pan-main pitch-editor)
-                                       (:pan-main velocity-editor)
-                                       ;(:pan-main ctrl-2-editor)
-                                       )
+                                       (:pan-main velocity-editor))
         pan-east (factory/grid-panel 2 1
                                      (:pan-main ctrl-1-editor)
                                      (:pan-main ctrl-2-editor))
                                      
         pan-south (factory/horizontal-panel
-                   (factory/horizontal-strut 250) ; 220
+                   (factory/horizontal-strut 250)
                    (:pan-main sr-editor)
                    (factory/horizontal-strut 250))
                                            
         pan-main (factory/border-panel :west pan-west
                                        :center pan-center
                                        :south pan-south
-                                       :east pan-east
-                                       )
+                                       :east pan-east)
                                            
-        sync-fn (fn []
-                  (println (format "ISSUE: xseq-editor.sync-fn NOT implemented"))
-                  )
+        sync-fn (fn [prog]
+                  ((:sync-fn chan-editor) prog)
+                  ((:sync-fn strum-editor) prog)
+                  ((:sync-fn rhythm-editor) prog)
+                  ((:sync-fn hold-editor) prog)
+                  ((:sync-fn ctrl-1-editor) prog)
+                  ((:sync-fn ctrl-2-editor) prog)
+                  ((:sync-fn pitch-editor) prog)
+                  ((:sync-fn velocity-editor) prog)
+                  ((:sync-fn sr-editor) prog))
+
         ]
     {:pan-main pan-main
      :sync-fn sync-fn}))
@@ -77,20 +77,6 @@
   (let [cf (cframe/cadejo-frame "Xolotl" :xolotl 
                                 [:exit :about :skin :progress-bar :path])
         bed (cadejo.ui.midi.node-editor/basic-node-editor :xolotl xobj false)
-        xseq-a-editor (xseq-editor xobj bed :a)
-        xseq-b-editor (xseq-editor xobj bed :b)
-        pan-main (.widget cf :pan-center)
-        bank (.program-bank xobj)
-        clock-editor (xolotl.ui.clock-editor/clock-editor bed)
-        bank-editor (xolotl.ui.bank-editor/bank-editor bed bank)
-        pan-west (factory/border-panel :north (:pan-main clock-editor)
-                                       :center (:pan-main bank-editor)
-                                       :border (factory/padding 16)
-                                       )
-        pan-center (factory/horizontal-panel (:pan-main xseq-a-editor)
-                                              (:pan-main xseq-b-editor))
-        pan-center (ss/card-panel :items [[(:pan-main xseq-a-editor) :A]
-                                          [(:pan-main xseq-b-editor) :B]])
         toolbar (.widget cf :toolbar)
         jb-open (factory/button "Open")
         jb-save (factory/button "Save")
@@ -99,6 +85,21 @@
         tpan-transport (factory/radio '[["Stop" :stop]["Start" :start]] 1 2 :btype :toggle)
         tb-stop (:stop (:buttons tpan-transport))
         tb-start (:start (:buttons tpan-transport))
+        xseq-a-editor (xseq-editor xobj bed :a)
+        xseq-b-editor (xseq-editor xobj bed :b)
+        pan-main (.widget cf :pan-center)
+        bank (.program-bank xobj); jb-open jb-save jb-init)
+        clock-editor (xolotl.ui.clock-editor/clock-editor bed)
+        bank-editor (xolotl.ui.bank-editor/bank-editor bed bank jb-open jb-save jb-init)
+        pan-west (factory/border-panel :north (:pan-main clock-editor)
+                                       :center (:pan-main bank-editor)
+                                       :border (factory/padding 16)
+                                       )
+        pan-center (factory/horizontal-panel (:pan-main xseq-a-editor)
+                                              (:pan-main xseq-b-editor))
+        pan-center (ss/card-panel :items [[(:pan-main xseq-a-editor) :A]
+                                          [(:pan-main xseq-b-editor) :B]])
+      
         
         ]
     (ss/config! (.jframe cf) :size [1280 :by 660])
@@ -131,7 +132,7 @@
     (.set-icon! bed logo)
     (ss/config! pan-main :west pan-west)
     (ss/config! pan-main :center pan-center)
-                
+
     (reify cadejo.ui.midi.node-editor/NodeEditor
 
       (cframe! [this cframe embed]
@@ -181,5 +182,9 @@
         (.update-path-text bed))
 
       (sync-ui! [this]
-        ;; ISSUE Not implemented
-        ))))
+        (let [prog (:sync-fn bank-editor)]
+          ((:sync-fn xseq-a-editor) prog)
+          ((:sync-fn xseq-b-editor) prog)
+          ((:sync-fn clock-editor) prog))))
+
+    )) 
