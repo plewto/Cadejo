@@ -39,7 +39,8 @@
 ;;                     :sync-fn  -> (fn [])
 ;;
 (defn bank-editor [parent-editor bank jb-open jb-save jb-init]
-  (let [lst-programs (ss/listbox :model (create-program-list bank)
+  (let [enable-selection-listener* (atom true)
+        lst-programs (ss/listbox :model (create-program-list bank)
                                  :size [180 :by 320])
         spin-slot (factory/spinner 0 (dec xolotl.program-bank/bank-length) 1)
         jb-store (factory/button "Store" :font :small)
@@ -70,11 +71,17 @@
                         ))
         selection-listener (proxy [ListSelectionListener][]
                              (valueChanged [_]
-                               (println "ISSUE: bank-editor.selection-listener NOT implemented")))
-        sync-fn (fn []
-                  ;; return current-program for down-stream use
-                  (println "ISSUE: bank-editor.sync-fn NOT implemented")
-                  (.current-program bank))
+                               (if @enable-selection-listener*
+                                 (do 
+                                   (println "ISSUE: bank-editor.selection-listener NOT implemented")
+                                   ))))
+        sync-fn (fn [prog] 
+                  (reset! enable-selection-listener* false)
+                  (let [slot (.current-slot bank)]
+                    (.setSelectedIndex lst-programs slot)
+                    (.setValue spin-slot slot)
+                    (.setText (:text-field tf) (.program-name prog))
+                    (reset! enable-selection-listener* true)))
         ]
     (.addActionListener jb-store store-action)
     (.addActionListener jb-open open-action)

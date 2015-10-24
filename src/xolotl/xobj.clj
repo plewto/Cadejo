@@ -220,6 +220,7 @@
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]
                           (.use-program xobj slot)))
+    (.show! @editor*)
     xobj))
 
 
@@ -228,9 +229,9 @@
 ;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
 ;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
 
-(println "****                  ****")
-(println "**** RUNING TEST XOBJ ****")
-(println "****                  ****")
+;; (println "****                  ****")
+;; (println "**** RUNING TEST XOBJ ****")
+;; (println "****                  ****")
 
-(def x (xolotl nil))
-(.show! (.get-editor x))
+;; (def x (xolotl nil))
+;; (.show! (.get-editor x))

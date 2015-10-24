@@ -480,7 +480,7 @@
 
 
 (def major-chords (let [xp (xolotl-program)]
-                     (.program-name! xp "major-chords")
+                     (.program-name! xp "Major Chords")
                      (.tempo! xp 60)
                      (.clock-source! xp :internal)
                      

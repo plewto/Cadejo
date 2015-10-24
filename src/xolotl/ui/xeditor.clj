@@ -182,9 +182,10 @@
         (.update-path-text bed))
 
       (sync-ui! [this]
-        (let [prog (:sync-fn bank-editor)]
-          ((:sync-fn xseq-a-editor) prog)
-          ((:sync-fn xseq-b-editor) prog)
-          ((:sync-fn clock-editor) prog))))
+        (let [prog (.current-program bank)]
+          ((:sync-fn bank-editor) prog)
+           ((:sync-fn xseq-a-editor) prog)
+           ((:sync-fn xseq-b-editor) prog)
+           ((:sync-fn clock-editor) prog))))
 
     )) 

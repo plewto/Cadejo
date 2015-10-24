@@ -18,7 +18,7 @@
                   (let [clk (.clock-source prog)
                         tempo (.tempo prog)]
                     (.setSelected cb-external (= clk :external))
-                    (.setValue (:spinner span-tempo) tempo)))]
+                    (.setValue (:spinner span-tempo) (int tempo))))]
     (.addActionListener cb-external
                         (proxy [ActionListener][]
                           (actionPerformed [_]
