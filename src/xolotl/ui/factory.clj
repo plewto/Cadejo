@@ -271,9 +271,11 @@
                                 (if err
                                   (do
                                     (reset! error* err)
+                                    (.warning! editor err)
                                     (.setBackground ta error-background))
                                   (do
                                     (reset! error* false)
+                                    (.status! editor "")
                                     (.setBackground ta safe-background)))))))
     (.addActionListener jb-clear clear-action)
     (.addActionListener jb-copy copy-action)
