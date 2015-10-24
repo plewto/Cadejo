@@ -15,9 +15,9 @@
                   cb-external
                   (:pan-main span-tempo))
         sync-fn (fn [prog]
-                  (let [clk (.clock-source prog)
+                  (let [;clk (.clock-source prog)
                         tempo (.tempo prog)]
-                    (.setSelected cb-external (= clk :external))
+                    ;(.setSelected cb-external (= clk :external))
                     (.setValue (:spinner span-tempo) (int tempo))))]
     (.addActionListener cb-external
                         (proxy [ActionListener][]

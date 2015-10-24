@@ -76,7 +76,19 @@
                                (println "ISSUE: channel-editor.transpose-listener NOT implemented")))
         
         sync-fn (fn [prog]
-                  (println "ISSUE: channel-editor.sync-fn NOT implemented"))
+                  (let [true? (fn [obj]
+                                (if (or (not obj)(= obj 0)) false true))
+                        ;; in-chan (.input-channel prog seq-id)
+                        ;; out-chan (.output-channel prog seq-id)
+                        trans (.transpose prog seq-id)]
+                    ;; (.setValue spin-input (int in-chan))
+                    ;; (.setValue spin-output (int out-chan))
+                    (.setValue spin-transpose (int trans))
+                    (.setSelected cb-reset (true? (.key-reset prog seq-id)))
+                    (.setSelected cb-track (true? (.key-track prog seq-id)))
+                    (.setSelected cb-gate (true? (.key-gate prog seq-id)))
+                    ;(.setText lab-warning (if (= in-chan out-chan) msg00 msg01))
+                    ))
         ]
     (.setBorder pan-channels (factory/border "MIDI Channels"))
     (.addActionListener cb-reset reset-action)

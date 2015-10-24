@@ -37,6 +37,8 @@
 
   (rhythm-pattern! [this pat])
 
+  (rhythm-pattern [this])
+  
   (hold-pattern! [this pat])
   
   (event-dispatcher [this])
@@ -143,6 +145,9 @@
                  
                  (rhythm-pattern! [this pat]
                    (.values! rhythm-pattern pat))
+
+                 (rhythm-pattern [this]
+                   (.values rhythm-pattern))
                  
                  (hold-pattern! [this pat]
                    (.values! hold-pattern pat))

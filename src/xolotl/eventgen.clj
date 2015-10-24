@@ -173,7 +173,7 @@
      node - Cadejo Node to receive MIDI events.
    RETURNS: Transmitter"
   (let [enabled* (atom true)  ;; DEPRECIATE
-        channel* (atom 0)
+        channel* (atom 1)
         strum* (atom 0)
         strum-mode* (atom :forward)  ;; use get-strum-mode function to access
         get-strum-mode (fn []

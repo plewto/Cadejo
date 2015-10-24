@@ -32,6 +32,8 @@
 
   (rhythm-pattern! [this rpat])
 
+  (rhythm-pattern [this])
+  
   (hold-pattern! [this hpat])
 
   ;; Controller parameters
@@ -126,6 +128,9 @@
                (rhythm-pattern! [this rpat]
                  (.rhythm-pattern! clock rpat))
 
+               (rhythm-pattern [this]
+                 (.rhythm-pattern clock))
+               
                (hold-pattern! [this hpat]
                  (.hold-pattern! clock hpat))
                

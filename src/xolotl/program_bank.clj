@@ -40,9 +40,9 @@
                    (let [xp (xolotl.program/xolotl-program)]
                      (.program-name! xp "Init Program")
                      (swap! programs* (fn [q](assoc q slot xp)))))
-                 (.store-program! this 0 xolotl.program/major-scale)
-                 (.store-program! this 1 xolotl.program/counter-point)
-                 (.store-program! this 2 xolotl.program/major-chords)
+                 (.store-program! this 0 xolotl.program/alpha)
+                 (.store-program! this 1 xolotl.program/beta)
+                 (.store-program! this 2 xolotl.program/gamma)
                  (reset! current-slot* 0)
                  (reset! current-program* (get @programs* 0)))
 

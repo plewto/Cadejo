@@ -121,9 +121,9 @@
                                      [(second xseqs)(.seq-params xprog :b)]]]
                          (let [xs (first pair)
                                pmap (second pair)]
-                           (.clock-select! xs (get xprog :clock-source :internal))
-                           (.input-channel! xs (get pmap :input-channel 0))
-                           (.output-channel! xs (get pmap :output-channel 0))
+                           ;; (.clock-select! xs (get xprog :clock-source :internal))
+                           ;; (.input-channel! xs (get pmap :input-channel 0))
+                           ;; (.output-channel! xs (get pmap :output-channel 0))
                            (.enable-reset-on-first-key! xs (get pmap :key-reset false))
                            (.enable-key-track! xs (get pmap :key-track true))
                            (.enable-key-gate! xs (get pmap :key-gate false))
