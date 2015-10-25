@@ -14,7 +14,6 @@
   (:require [xolotl.ui.strum-editor])
   (:require [xolotl.ui.sr])
   (:require [xolotl.ui.velocity-editor])
-
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
            javax.swing.JLabel) )
@@ -111,7 +110,21 @@
     (.add toolbar tb-stop)
     (.add toolbar tb-start)
     (.add toolbar (factory/horizontal-strut))
-    
+
+    (.addActionListener tb-stop
+                        (proxy [ActionListener][]
+                          (actionPerformed [_]
+                            (.stop xobj))))
+
+    (.addActionListener tb-start
+                        (proxy [ActionListener][]
+                          (actionPerformed [_]
+                            (.start xobj))))
+
+    (.addActionListener jb-reset
+                        (proxy [ActionListener][]
+                          (actionPerformed [_]
+                            (.midi-reset xobj))))
     
     (let [grp (ss/button-group)
           tb-a (ss/toggle :text "Seq A" :group grp)
