@@ -31,6 +31,8 @@
                                        
         sync-fn (fn [prog]
                   (println "controller-editor.sync-fn NOT ijmplemented")
+                  (.setEnabled spin-ctrl false)
+                  (.setEnabled (:text-area ted) false)
                   )]
     {:pan-main pan-main
      :sync-fn sync-fn}))          

@@ -11,7 +11,7 @@
                              controller-2-number controller-2-pattern
                              velocity-mode velocity-pattern
                              pitch-mode pitch-pattern
-                             sr-inject sr-taps sr-seed
+                             sr-inject sr-taps sr-seed sr-mask
                              strum-mode strum-delay]
                       :or {enable true
                            ;; input-channel 0   ;; NOTE To avoid feedback, input and output channels
@@ -31,8 +31,9 @@
                            pitch-mode :seq
                            pitch-pattern [0 2 4 5 7 9 11 [0 4 7 12]]
                            sr-inject 0
-                           sr-taps 2r10001000
-                           sr-seed 2r00000001
+                           sr-taps 2r100000000000
+                           sr-seed 2r000000000001
+                           sr-mask 2r111111111111
                            strum-mode :forward
                            strum-delay 0}}]
   {:enable enable
@@ -55,6 +56,7 @@
    :sr-inject sr-inject
    :sr-taps sr-taps
    :sr-seed sr-seed
+   :sr-mask sr-mask
    :strum-mode strum-mode
    :strum-delay strum-delay})
                           
@@ -158,6 +160,10 @@
 
   (sr-seed! [this seq n])
 
+  (sr-mask [this seq])
+
+  (sr-mask! [this seq n])
+  
   (strum-mode [this seq])
 
   (strum-mode! [this seq mode])
@@ -347,6 +353,13 @@
                   (swap! (get-seq* seq)
                          (fn [q](assoc q :sr-seed (int n)))))
 
+                (sr-mask [this seq]
+                  (:sr-mask @(get-seq* seq)))
+
+                (sr-mask! [this seq n]
+                  (swap! (get-seq* seq)
+                         (fn [q](assoc q :sr-mask (int n)))))
+                
                 (strum-mode [this seq]
                   (:strum-mode @(get-seq* seq)))
 
@@ -402,8 +415,9 @@
              (.pitch-mode! xp :A :seq)
              (.pitch-pattern! xp :A [0 1 2 3 4 5 6 7 8 9 10 11])
              (.sr-inject! xp :A 0)
-             (.sr-taps! xp :A 2r00010001)
+             (.sr-taps! xp :A 2r10000000)
              (.sr-seed! xp :A 2r00000001)
+             (.sr-mask! xp :A 2r11111111)
              (.strum-mode! xp :A :forward)
              (.strum-delay! xp :A 0)
              
@@ -421,8 +435,9 @@
              (.pitch-mode! xp :B :seq)
              (.pitch-pattern! xp :B [-1000])
              (.sr-inject! xp :B 0)
-             (.sr-taps! xp :B 2r00010001)
+             (.sr-taps! xp :B 2r10000000)
              (.sr-seed! xp :B 2r00000001)
+             (.sr-mask! xp :B 2r11111111)
              (.strum-mode! xp :B :reverse)
              (.strum-delay! xp :B 10)
              xp))
@@ -444,8 +459,9 @@
                      (.pitch-mode! xp :A :seq)
                      (.pitch-pattern! xp :A [0 2 4 5 7 9 11])
                      (.sr-inject! xp :A 0)
-                     (.sr-taps! xp :A 2r00010001)
-                     (.sr-seed! xp :A 2r00000001)
+                     (.sr-taps! xp :A 2r11000000)
+                     (.sr-seed! xp :A 2r00000011)
+                     (.sr-mask! xp :A 2r11111111)
                      (.strum-mode! xp :A :alternate)
                      (.strum-delay! xp :A 100)
 
@@ -463,8 +479,9 @@
                      (.pitch-mode! xp :B :seq)
                      (.pitch-pattern! xp :B [12 11 9 7 5 4 2 0 2 3 5 7 8 10])
                      (.sr-inject! xp :B 0)
-                     (.sr-taps! xp :B 2r00010001)
+                     (.sr-taps! xp :B 2r10000000)
                      (.sr-seed! xp :B 2r00000001)
+                     (.sr-mask! xp :B 2r11111111)
                      (.strum-mode! xp :B :random)
                      (.strum-delay! xp :B 200)
                      xp)) 
@@ -479,7 +496,7 @@
                      (.key-track! xp :A true)
                      (.key-gate! xp :A false)
                      (.transpose! xp :A 0)
-                     (.rhythm-pattern! xp :A [:ape 96 48 24 12 6 3])
+                     (.rhythm-pattern! xp :A [96 48 24 12 6 3])  ; ERROR ERROR ERROR
                      (.hold-pattern! xp :A [1.0])
                      (.controller-1-number! xp :A -1)
                      (.controller-2-number! xp :A -1)
@@ -488,8 +505,9 @@
                      (.pitch-mode! xp :A :seq)
                      (.pitch-pattern! xp :A [0 2 4 5 7 9 11 [4 7 12] 11 9 7 5 4 2])
                      (.sr-inject! xp :A 0)
-                     (.sr-taps! xp :A 2r00010001)
-                     (.sr-seed! xp :A 2r00000001)
+                     (.sr-taps! xp :A 2r10100000)
+                     (.sr-seed! xp :A 2r00000111)
+                     (.sr-mask! xp :A 2r10101011)
                      (.strum-mode! xp :A :forward) 
                      (.strum-delay! xp :A 0)
 
@@ -498,7 +516,7 @@
                      (.key-track! xp :B true)
                      (.key-gate! xp :B false)
                      (.transpose! xp :B 0)
-                     (.rhythm-pattern! xp :B [:bat :cat :dog])
+                     (.rhythm-pattern! xp :B [24])
                      (.hold-pattern! xp :B [1.0])
                      (.controller-1-number! xp :B -1)
                      (.controller-2-number! xp :B -1)
@@ -507,8 +525,9 @@
                      (.pitch-mode! xp :B :seq)
                      (.pitch-pattern! xp :B [[-12 -8 -5] -1000 [12 16 19 22 24] -1000])
                      (.sr-inject! xp :B 0)
-                     (.sr-taps! xp :B 2r00010001)
+                     (.sr-taps! xp :B 2r10000000)
                      (.sr-seed! xp :B 2r00000001)
+                     (.sr-mask! xp :B 2r11111111)
                      (.strum-mode! xp :B :forward)
                      (.strum-delay! xp :B 0)
                      xp))

@@ -72,6 +72,8 @@
        sval - int, the seed value, See xolotl.shift-register
      RETURNS: sval")
 
+  (sr-mask! [this mval])
+  
   (dump-state [this])
   
   (callback [this]
@@ -123,8 +125,14 @@
         (.period! pitch-counter (.period pitch-cycle))
         ppat)
 
+      ;; (taps! [this t inject]
+      ;;   (reset! sr-inject* (cond (zero? inject) 0
+      ;;                            inject 1
+      ;;                            :else 0))
+      ;;   (.taps! sregister t))
+
       (taps! [this t inject]
-        (reset! sr-inject* (cond (zero? inject) 0
+        (reset! sr-inject* (cond (= 0 inject) 0
                                  inject 1
                                  :else 0))
         (.taps! sregister t))
@@ -135,6 +143,9 @@
       (seed! [this s]
         (.seed! sregister s))
 
+      (sr-mask! [this mval]
+        (.mask! sregister mval))
+      
       (dump-state [this]
         (let [sb (StringBuilder.)
               pad "  "

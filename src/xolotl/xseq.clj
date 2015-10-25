@@ -56,6 +56,8 @@
 
   (seed! [this sval])
 
+  (sr-mask! [this n])
+  
   (strum! [this delay])
 
   (strum-mode! [this mode])
@@ -158,6 +160,9 @@
                (seed! [this sval]
                  (.seed! pitch-block sval))
 
+               (sr-mask! [this mval]
+                 (.sr-mask! pitch-block mval))
+               
                (strum! [this delay]
                  (.strum! transmitter delay))
 
