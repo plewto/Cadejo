@@ -4,7 +4,7 @@
   (:require [clojure.string :as str])
   (:import java.awt.event.ActionListener))
 
-(def ^:private octaves (range 0 9))
+(def ^:private octaves (range -4 5))
 (def ^:private roots {"C" 0, "D" 2, "E" 4, "F" 5, "G" 7, "A" 9, "B" 11})
 (def ^:private modifiers {"F" -1, "" 0, "S" 1})
 (def ^:private REST-LIMIT 0)            ; Any value less then REST-LIMIT is a rest.
