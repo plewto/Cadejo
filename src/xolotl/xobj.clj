@@ -96,7 +96,7 @@
 
                          (= key :clock)
                          (let [src (if (= val :external) :external :internal)]
-                           (.clock-source! cprog src)
+                           ;(.clock-source! cprog src)
                            (doseq [x xseqs]
                              (.clock-select! x src)))
 
