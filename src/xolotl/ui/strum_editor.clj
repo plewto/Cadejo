@@ -3,13 +3,18 @@
   (:import java.awt.event.ActionListener
            javax.swing.event.ChangeListener))
 
-;; includes
-;;   spinner - delay ms
-;;   radio <-- --> <--> Rnd
+(def ^:private msg00 "Illegal strum mode %s for Xolotl program '%s'")
+
+;; Constructs strum-editor sub-panel
+;; Includes: * delay time spinner
+;;           * strum-mode radio buttons
+;; ARGS:
+;;   parent-editor - an instance of NodeEditor for Xolotl
+;;   seq-id - keyword, either :A or :B
 ;;
-
-(def msg00 "Illegal strum mode %s for Xolotl program '%s'")
-
+;; RETURNS: map with keys :pan-main -> JPanel
+;;                        :sync-fn -> GUI update function
+;;
 (defn strum-editor [parent-editor seq-id]
   (let [xobj (.node parent-editor)
         xseq (.get-xseq xobj (if (= seq-id :A) 0 1))
@@ -25,8 +30,8 @@
                           (.strum-mode! prog seq-id mode)
                           (.strum-mode! xseq mode))))
                           
-        rpan-mode (factory/radio [["--->" :forward]["<---" :reverse]
-                                  ["<-->" :alternate]["RND" :random]]
+        rpan-mode (factory/radio [["-->>" :forward]["<<--" :reverse]
+                                  ["<<-->>" :alternate]["RND" :random]]
                                  2 2 :font :bold-mono
                                  :listener mode-action)
         pan-main (factory/border-panel :north pan-delay
@@ -39,8 +44,7 @@
                     (if b
                       (.setSelected b true)
                       (let [msg (format msg00 mode (.program-name prog))]
-                        (throw (IllegalArgumentException. msg))))))
-        ]
+                        (throw (IllegalArgumentException. msg))))))]
     (.addChangeListener spin-delay (proxy [ChangeListener][]
                                      (stateChanged[evn]
                                        (let [prog (.current-program bank)
@@ -48,6 +52,4 @@
                                          (.strum! xseq dly)
                                          (.strum-delay! prog seq-id dly)))))
     {:pan-main pan-main
-     :sync-fn sync-fn
-     }))
-                                  
+     :sync-fn sync-fn}))

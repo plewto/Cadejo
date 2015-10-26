@@ -181,17 +181,7 @@
   (let [enabled* (atom true)  ;; DEPRECIATE
         channel* (atom 1)
         strum* (atom 0)
-        strum-mode* (atom :forward) 
-        ;; get-strum-mode (fn [klst]
-        ;;                  (let [sm @strum-mode*
-        ;;                        rs (cond (= sm :alternate)
-        ;;                                 (get {false :forward, true :reverse}
-        ;;                                      (swap! strum-counter* not))
-        ;;
-        ;;                                 :else
-        ;;                                 sm)]
-        ;;                    rs))
-        ]
+        strum-mode* (atom :forward)]
     (reify Transmitter
 
       (dump-state [this]
