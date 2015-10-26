@@ -40,6 +40,7 @@
     (.schedule timer task (long (* 1000 hold-time)))
     nil))
 
+(def ^:private strum-counter* (atom false))
 
 (defn- strum-notes [c0 klst velocity strum strum-mode hold-time nodes*]
   "(strum-notes c0 klst velocity strum hold-time nodes*)
@@ -54,10 +55,15 @@
      nodes*     - list of Cadejo nodes
    RETURNS: nil"
   (let [counter* (atom 0)
-        keys (cond (= strum-mode :forward) (reverse klst)
-                   (= strum-mode :reverse) klst
-                   (= strum-mode :random) (shuffle klst)
-                   (= strum-mode :off) '()
+        smode (cond (= strum-mode :alternate)
+                    (get {false :forward, true :reverse}
+                         (swap! strum-counter* not))
+                    :else
+                    strum-mode)
+        keys (cond (= smode :forward) (reverse klst)
+                   (= smode :reverse) klst
+                   (= smode :random) (shuffle klst)
+                   (= smode :off) '()
                    :else (reverse klst))]
     (doseq [kn keys]
       (if (and (>= kn 0)(< kn 128))
@@ -164,7 +170,7 @@
        val  - int, Controller value, 0 <= val < 128.") )
 
 
-(def strum-counter* (atom false))
+
 
 (defn transmitter [nodes*]
   "(transmitter node)
@@ -175,14 +181,17 @@
   (let [enabled* (atom true)  ;; DEPRECIATE
         channel* (atom 1)
         strum* (atom 0)
-        strum-mode* (atom :forward)  ;; use get-strum-mode function to access
-        get-strum-mode (fn []
-                         (let [sm @strum-mode*]
-                           (cond (= sm :alternate)
-                                 (get {false :forward, true :reverse}
-                                      (swap! strum-counter* not))
-                                 :else
-                                 sm)))]
+        strum-mode* (atom :forward) 
+        ;; get-strum-mode (fn [klst]
+        ;;                  (let [sm @strum-mode*
+        ;;                        rs (cond (= sm :alternate)
+        ;;                                 (get {false :forward, true :reverse}
+        ;;                                      (swap! strum-counter* not))
+        ;;
+        ;;                                 :else
+        ;;                                 sm)]
+        ;;                    rs))
+        ]
     (reify Transmitter
 
       (dump-state [this]
@@ -218,7 +227,7 @@
       
       (generate-key-events [this keylist velocity hold-time]
         (if @enabled*
-          (note-on @channel* keylist velocity @strum* (get-strum-mode) hold-time nodes*)))
+          (note-on @channel* keylist velocity @strum* @strum-mode* hold-time nodes*)))
       
       (generate-controller-event [this ctrl val]
         (if @enabled*
