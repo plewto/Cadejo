@@ -3,24 +3,28 @@
   (:import java.awt.event.ActionListener
            javax.swing.event.ChangeListener))
 
-;; includes
-;;   spinner  - input channel   
-;;   label    - warning if input and output channels are the same
-;;   spinner  - output channel
-;;   checkbox - key reset
-;;   checkbox - key gate
-;;   checkbox - key track
-;;   spinner  - transpose
+(def ^:private msg00 "WARNING: Input = Output")
+(def ^:private msg01 (let [sb (StringBuilder.)]
+                       (dotimes [i (count msg00)]
+                         (.append sb " "))
+                       (.toString sb)))
 
-
-(def msg00 "WARNING: Input = Output")
-(def msg01 (let [sb (StringBuilder.)]
-             (dotimes [i (count msg00)]
-               (.append sb " "))
-             (.toString sb)))
-
+;; Construct channel-editor sub-panel
+;; Includes MIDI input and output channel spinners
+;;          key reset, gate and track checkboxes
+;;          transpose spinner
+;; ARGS:
+;;   parent-editor - an instance of NodeEditor for Xolotl
+;;   seq-id - keyword, either :A or :B
+;;
+;; RETURNS: map with keys :pan-main -> JPanel
+;;                        :sync-fn -> GUI update function
+;;
 (defn channel-editor [parent-editor seq-id]
-  (let [spin-input (factory/spinner 1 16 1)
+  (let [xobj (.node parent-editor)
+        xseq (.get-xseq xobj (if (= seq-id :A) 0 1))
+        bank (.program-bank xobj)
+        spin-input (factory/spinner 1 16 1)
         pan-input (factory/border-panel :center spin-input :east (factory/label "IN "))
         spin-output (factory/spinner 1 16 1)
         pan-output (factory/border-panel :center spin-output :east (factory/label "OUT"))
@@ -43,27 +47,21 @@
         pan-main (factory/border-panel :north pan-channels
                                        :center pan-key-mode
                                        :south pan-transpose)
-        
         reset-action (proxy [ActionListener][]
                        (actionPerformed [_]
-                         (println "ISSUE: channel-editor.reset-action NOT implemented")
-                         ))
+                         (.enable-reset-on-first-key! xseq (.isSelected cb-reset))))
         gate-action (proxy [ActionListener][]
                        (actionPerformed [_]
-                         (println "ISSUE: channel-editor.gate-action NOT implemented")
-                         ))
+                         (.enable-key-gate! xseq (.isSelected cb-gate))))
         track-action (proxy [ActionListener][]
                        (actionPerformed [_]
-                         (println "ISSUE: channel-editor.track-action NOT implemented")
-                         ))
+                         (.enable-key-track! xseq (.isSelected cb-track))))
         input-chan-listener (proxy [ChangeListener][]
                               (stateChanged [_]
-                                (println "ISSUE: channel-editor.input-chan-listener NOT implemented")
-                                ))
+                                (.input-channel! xseq (dec (int (.getValue spin-input))))))
         output-chan-listener (proxy [ChangeListener][]
                               (stateChanged [_]
-                                (println "ISSUE: channel-editor.output-chan-listener NOT implemented")
-                                ))
+                                (.output-channel! xseq (dec (int (.getValue spin-output))))))
         warning-listener (proxy [ChangeListener][]
                            (stateChanged [_]
                              (let [a (.getValue spin-output)
@@ -73,23 +71,16 @@
                                  (.setText lab-warning msg01)))))
         transpose-listener (proxy [ChangeListener][]
                              (stateChanged [_]
-                               (println "ISSUE: channel-editor.transpose-listener NOT implemented")))
-        
+                               (println "DEBUG Transpose spinner listener executed")
+                               (.transpose! xseq (int (.getValue spin-transpose)))))
         sync-fn (fn [prog]
                   (let [true? (fn [obj]
                                 (if (or (not obj)(= obj 0)) false true))
-                        ;; in-chan (.input-channel prog seq-id)
-                        ;; out-chan (.output-channel prog seq-id)
                         trans (.transpose prog seq-id)]
-                    ;; (.setValue spin-input (int in-chan))
-                    ;; (.setValue spin-output (int out-chan))
                     (.setValue spin-transpose (int trans))
                     (.setSelected cb-reset (true? (.key-reset prog seq-id)))
                     (.setSelected cb-track (true? (.key-track prog seq-id)))
-                    (.setSelected cb-gate (true? (.key-gate prog seq-id)))
-                    ;(.setText lab-warning (if (= in-chan out-chan) msg00 msg01))
-                    ))
-        ]
+                    (.setSelected cb-gate (true? (.key-gate prog seq-id)))))]
     (.setBorder pan-channels (factory/border "MIDI Channels"))
     (.addActionListener cb-reset reset-action)
     (.addActionListener cb-gate gate-action)
@@ -99,6 +90,4 @@
     (.addChangeListener spin-input warning-listener)
     (.addChangeListener spin-output warning-listener)
     {:pan-main pan-main
-     :sync-fn sync-fn
-     }))
-  
+     :sync-fn sync-fn}))
