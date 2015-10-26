@@ -53,7 +53,15 @@
     (catch IllegalArgumentException ex
       (.getMessage ex))))
 
-
+;; Construct velocity-editor sub-panel
+;; Includes * pattern text field
+;; ARGS:
+;;   parent-editor - an instance of NodeEditor for Xolotl
+;;   seq-id - keyword, either :A or :B
+;;
+;; RETURNS: map with keys :pan-main -> JPanel
+;;                        :sync-fn -> GUI update function
+;;
 (defn velocity-editor [parent-editor seq-id]
   (let [xobj (.node parent-editor)
         xseq (.get-xseq xobj (if (= seq-id :A) 0 1))
