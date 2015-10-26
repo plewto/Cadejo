@@ -71,7 +71,6 @@
                                  (.setText lab-warning msg01)))))
         transpose-listener (proxy [ChangeListener][]
                              (stateChanged [_]
-                               (println "DEBUG Transpose spinner listener executed")
                                (.transpose! xseq (int (.getValue spin-transpose)))))
         sync-fn (fn [prog]
                   (let [true? (fn [obj]
