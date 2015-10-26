@@ -18,10 +18,19 @@
   (:import java.awt.event.ActionListener
            javax.swing.JLabel) )
 
+(def ^:private logo (cadejo.ui.util.icon/logo "xolotl" :small))
 
-(def logo (cadejo.ui.util.icon/logo "xolotl" :small))
 
-(defn xseq-editor [xobj parent-editor seq-id]
+;; Creates editor pannel for xseq
+;; ARGS:
+;;   xobj - instance of XolotlObject
+;;   parent-editor - instance of NodeEditor
+;;   seq-id - keyword, indicates witch xseq of xobj is to be used,
+;;            either :a or :B
+;; RETURNS: map with keys  :pan-main -> JPanel
+;;                         :sync-fn -> GUI update function
+;;
+(defn- xseq-editor [xobj parent-editor seq-id]
   (let [lab-id (JLabel. (if (= seq-id :A) "Seq A" "Seq B"))
         chan-editor (xolotl.ui.channel-editor/channel-editor parent-editor seq-id)
         strum-editor (xolotl.ui.strum-editor/strum-editor parent-editor seq-id)
@@ -43,7 +52,6 @@
         pan-east (factory/grid-panel 2 1
                                      (:pan-main ctrl-1-editor)
                                      (:pan-main ctrl-2-editor))
-                                     
         pan-south (factory/horizontal-panel
                    (factory/horizontal-strut 250)
                    (:pan-main sr-editor)
@@ -53,7 +61,6 @@
                                        :center pan-center
                                        :south pan-south
                                        :east pan-east)
-                                           
         sync-fn (fn [prog]
                   ((:sync-fn chan-editor) prog)
                   ((:sync-fn strum-editor) prog)
@@ -63,13 +70,9 @@
                   ((:sync-fn ctrl-2-editor) prog)
                   ((:sync-fn pitch-editor) prog)
                   ((:sync-fn velocity-editor) prog)
-                  ((:sync-fn sr-editor) prog))
-
-        ]
+                  ((:sync-fn sr-editor) prog))]
     {:pan-main pan-main
      :sync-fn sync-fn}))
-
-
 
 
 (defn xolotl-editor [xobj]
@@ -87,20 +90,16 @@
         xseq-a-editor (xseq-editor xobj bed :A)
         xseq-b-editor (xseq-editor xobj bed :B)
         pan-main (.widget cf :pan-center)
-        bank (.program-bank xobj); jb-open jb-save jb-init)
+        bank (.program-bank xobj)
         clock-editor (xolotl.ui.clock-editor/clock-editor bed)
         bank-editor (xolotl.ui.bank-editor/bank-editor bed bank jb-open jb-save jb-init)
         pan-west (factory/border-panel :north (:pan-main clock-editor)
                                        :center (:pan-main bank-editor)
-                                       :border (factory/padding 16)
-                                       )
+                                       :border (factory/padding 16))
         pan-center (factory/horizontal-panel (:pan-main xseq-a-editor)
                                               (:pan-main xseq-b-editor))
         pan-center (ss/card-panel :items [[(:pan-main xseq-a-editor) :A]
-                                          [(:pan-main xseq-b-editor) :B]])
-      
-        
-        ]
+                                          [(:pan-main xseq-b-editor) :B]]) ]
     (ss/config! (.jframe cf) :size [1280 :by 660])
     (.add toolbar jb-init)
     (.add toolbar jb-open)
@@ -110,22 +109,18 @@
     (.add toolbar tb-stop)
     (.add toolbar tb-start)
     (.add toolbar (factory/horizontal-strut))
-
     (.addActionListener tb-stop
                         (proxy [ActionListener][]
                           (actionPerformed [_]
                             (.stop xobj))))
-
     (.addActionListener tb-start
                         (proxy [ActionListener][]
                           (actionPerformed [_]
                             (.start xobj))))
-
     (.addActionListener jb-reset
                         (proxy [ActionListener][]
                           (actionPerformed [_]
                             (.midi-reset xobj))))
-    
     (let [grp (ss/button-group)
           tb-a (ss/toggle :text "Seq A" :group grp)
           tb-b (ss/toggle :text "Seq B" :group grp)
@@ -139,8 +134,9 @@
       (.add toolbar tb-a)
       (.add toolbar tb-b)
       (.addActionListener tb-a action)
-      (.addActionListener tb-b action))
-    
+      (.addActionListener tb-b action)
+      (.setSelected tb-a true))
+    (.setSelected tb-stop true)
     (.cframe! bed cf)
     (.set-icon! bed logo)
     (ss/config! pan-main :west pan-west)
@@ -199,6 +195,4 @@
           ((:sync-fn bank-editor) prog)
            ((:sync-fn xseq-a-editor) prog)
            ((:sync-fn xseq-b-editor) prog)
-           ((:sync-fn clock-editor) prog))))
-
-    )) 
+           ((:sync-fn clock-editor) prog)))) ))
