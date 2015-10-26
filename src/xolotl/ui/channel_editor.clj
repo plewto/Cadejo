@@ -89,5 +89,6 @@
     (.addChangeListener spin-output output-chan-listener)
     (.addChangeListener spin-input warning-listener)
     (.addChangeListener spin-output warning-listener)
+    (.addChangeListener spin-transpose transpose-listener)
     {:pan-main pan-main
      :sync-fn sync-fn}))
