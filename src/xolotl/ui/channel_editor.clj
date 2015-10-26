@@ -10,9 +10,9 @@
                        (.toString sb)))
 
 ;; Construct channel-editor sub-panel
-;; Includes MIDI input and output channel spinners
-;;          key reset, gate and track checkboxes
-;;          transpose spinner
+;; Includes * MIDI input and output channel spinners
+;;          * key reset, gate and track check-boxes
+;;          * transpose spinner
 ;; ARGS:
 ;;   parent-editor - an instance of NodeEditor for Xolotl
 ;;   seq-id - keyword, either :A or :B

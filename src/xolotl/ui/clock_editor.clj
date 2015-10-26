@@ -3,8 +3,15 @@
   (:import java.awt.event.ActionListener
            javax.swing.event.ChangeListener))
 
-;; checkbox - external
-;; spinner - tempo
+;; Constructs clock-editor sub-panel
+;; Includes * external clock selection checkbox
+;;          * tempo spinner
+;; ARGS:
+;;   parent-editor - an instance of NodeEditor for Xolotl
+;;   seq-id - keyword, either :A or :B
+;;
+;; RETURNS: map with keys :pan-main -> JPanel
+;;                        :sync-fn -> GUI update function
 ;;
 (defn clock-editor [parent-editor]
   (let [node (.node parent-editor)
@@ -15,9 +22,7 @@
                   cb-external
                   (:pan-main span-tempo))
         sync-fn (fn [prog]
-                  (let [;clk (.clock-source prog)
-                        tempo (.tempo prog)]
-                    ;(.setSelected cb-external (= clk :external))
+                  (let [tempo (.tempo prog)]
                     (.setValue (:spinner span-tempo) (int tempo))))]
     (.addActionListener cb-external
                         (proxy [ActionListener][]
