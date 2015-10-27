@@ -193,7 +193,6 @@
                    
                    (sync-ui! [this]
                      (let [prog (.current-program bank)]
-                       (println (format "xeditor.sync-ui  prog = %s" (.current-slot bank)))
                        ((:sync-fn bank-editor) prog)
                        ((:sync-fn xseq-a-editor) prog)
                        ((:sync-fn xseq-b-editor) prog)

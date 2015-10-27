@@ -3,9 +3,11 @@
   (:require [xolotl.ui.factory :as factory])
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
+           java.util.Vector
            javax.swing.event.ListSelectionListener))
+           
 
-
+(def bank-length xolotl.program-bank/bank-length)
 
 ;; Holds Program bank editor in JPanel
 ;; widgets:
@@ -21,13 +23,40 @@
   (let [pname (nth programs slot)]
     (format "[%03d]  %s" slot pname)))
 
-(defn- create-program-list [bank]
-  (let [acc* (atom [])
-        programs (.program-names bank)]
-    (dotimes [slot xolotl.program-bank/bank-length]
-      (swap! acc* (fn [q](conj q (format-program-cell slot programs)))))
-    @acc*))
+;; (defn- create-program-list [bank]
+;;   (let [acc* (atom [])
+;;         programs (.program-names bank)]
+;;     (dotimes [slot xolotl.program-bank/bank-length]
+;;       (swap! acc* (fn [q](conj q (format-program-cell slot programs)))))
+;;     @acc*))
 
+(defn- create-program-list [bank]
+  (let [vcc (Vector. bank-length)]
+    (doseq [pn (.program-names bank)]
+      (.add vcc pn))
+    vcc))
+
+(defn bank-init-warning [parent]
+  (let [selection* (atom false)
+        msg "Initialize Xolotl bank? All unsaved programs will be lost"
+        yes-fn (fn [d] 
+                 (swap! selection* (fn [n] true))
+                 (ss/return-from-dialog d true))
+        no-fn (fn [d] 
+                (swap! selection* (fn [n] false))
+                (ss/return-from-dialog d false))
+        dia (ss/dialog 
+             :content msg
+             :option-type :yes-no
+             :type :warning
+             :default-option :no
+             :modal? true
+             :parent parent
+             :success-fn yes-fn
+             :no-fn no-fn)]
+    (ss/pack! dia)
+    (ss/show! dia)
+    @selection*))
 
 
 ;; Creates bank-editor panel
@@ -66,10 +95,6 @@
                       (actionPerformed [_]
                         (println "ISSUE: bank-editor.save-action NOT implemented")
                         ))
-        init-action (proxy [ActionListener][]
-                      (actionPerformed [_]
-                        (println "ISSUE: bank-editor.init-action NOT implemented")
-                        ))
 
         selection-listener (proxy [ListSelectionListener][]
                              (valueChanged [_]
@@ -91,13 +116,24 @@
                   (reset! enable-selection-listener* false)
                   (let [slot (.current-slot bank)]
                     (.setSelectedIndex lst-programs slot)
-                    (.setValue spin-slot slot)
+                    (.setValue spin-slot (int slot))
                     (.setText (:text-field tf) (.program-name prog))
-                    (reset! enable-selection-listener* true))) ]
+                    (reset! enable-selection-listener* true)))]
+
+    (.addActionListener jb-init (proxy [ActionListener][]
+                                  (actionPerformed [_]
+                                    (if (bank-init-warning @parent-editor*)
+                                      (do
+                                        (.init! bank)
+                                        (.setListData lst-programs (create-program-list bank))
+                                        (.use-program bank 0)
+                                        (.sync-ui! @parent-editor*)
+                                        (.status! @parent-editor* "Xolotl Bank Initilized"))
+                                      (.status! @parent-editor* "Bank initilization canceld")))))
+    
     (.addActionListener jb-store store-action)
     (.addActionListener jb-open open-action)
     (.addActionListener jb-save save-action)
-    (.addActionListener jb-init init-action)
     (.addListSelectionListener lst-programs selection-listener)
     
     {:pan-main pan-main

@@ -39,10 +39,7 @@
                    (let [xp (xolotl.program/xolotl-program)]
                      (.program-name! xp "Init Program")
                      (swap! programs* (fn [q](assoc q slot xp)))))
-                 (.store-program! this 0 xolotl.program/alpha)
-                 (.store-program! this 1 xolotl.program/beta)
-                 (.store-program! this 2 xolotl.program/gamma)
-                 (reset! current-slot* 0)
+                 (reset! current-slot* (int 0))
                  (reset! current-program* (get @programs* 0)))
 
                (use-program [this slot]
@@ -60,7 +57,7 @@
                  @current-program*)
 
                (current-slot [this]
-                 @current-slot*)
+                 (int @current-slot*))
 
                (store-program! [this slot p]
                  (if (and (util/int? slot)(>= slot 0)(< slot bank-length))
@@ -92,5 +89,9 @@
                  (println "Xolotl ProgramBank")
                  (doseq [p (.program-names this)]
                    (println (format "    %s" p)))) )]
+
     (.init! bank)
+    (.store-program! bank 0 xolotl.program/alpha) ; TEST
+    (.store-program! bank 1 xolotl.program/beta)  ; TEST
+    (.store-program! bank 2 xolotl.program/gamma) ; TEST
     bank))
