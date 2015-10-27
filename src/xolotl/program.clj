@@ -5,7 +5,9 @@
 (def enable-program-dump* (atom false))
 (def msg00 "XolotlProgram expected seq selector :A or :B, encountered %s")
 
-(defn seq-program [& {:keys [enable ;input-channel output-channel
+(declare xolotl-program)
+
+(defn seq-program [& {:keys [enable
                              key-reset key-track key-gate transpose
                              rhythm-pattern hold-pattern
                              controller-1-number controller-1-pattern
@@ -15,8 +17,6 @@
                              sr-inject sr-taps sr-seed sr-mask
                              strum-mode strum-delay]
                       :or {enable true
-                           ;; input-channel 0   ;; NOTE To avoid feedback, input and output channels
-                           ;; output-channel 0  ;; should not be the same if key-track is enabled.
                            key-reset false
                            key-track true
                            key-gate false
@@ -38,8 +38,6 @@
                            strum-mode :forward
                            strum-delay 0}}]
   {:enable enable
-;   :input-channel input-channel
-;   :output-channel output-channel
    :key-reset key-reset
    :key-track key-track
    :key-gate key-gate
@@ -72,10 +70,6 @@
 
   (tempo! [this bpm])
 
-  ;; (clock-source [this])
-
-  ;; (clock-source! [this src])
-
   ;; Returns parameter map for single sequence
   ;; seq arg selectes which sequence map is returned
   ;; seq = :a or :B
@@ -84,14 +78,6 @@
   (enabled? [this seq])
 
   (enable! [this seq flag])
-
-  ;; (input-channel [this seq])      ;; NOTE: Internally MIDI channels are
-  ;;                                 ;; zero-indexed [0..15]. Externally
-  ;; (input-channel! [this seq c1])  ;; they are one-indexed [1..16].
-
-  ;; (output-channel [this seq])
-
-  ;; (output-channel! [this seq c1])
 
   (key-reset [this seq])
 
@@ -173,13 +159,115 @@
 
   (strum-delay! [this seq n])
 
-  (dump [this]))
+  (dump [this])
+
+  (to-map [this])
+  )
 
 
+(defn program-to-map [prog]
+  {:data-format :xolotl-program
+   :name (.program-name prog)
+   :tempo (.tempo prog)
+   :A {:enabled (.enabled? prog :A)
+       :key-reset (.key-reset prog :A)
+       :key-track (.key-track prog :A)
+       :key-gate (.key-gate prog :A)
+       :transpose (.transpose prog :A)
+       :rhythm-pattern (.rhythm-pattern prog :A)
+       :hold-pattern (.hold-pattern prog :A)
+       :controller-1-number (.controller-1-number prog :A)
+       :controller-1-pattern (.controller-1-pattern prog :A)
+       :controller-2-number (.controller-2-number prog :A)
+       :controller-2-pattern (.controller-2-pattern prog :A)
+       :velocity-mode (.velocity-mode prog :A)
+       :velocity-pattern (.velocity-pattern prog :A)
+       :pitch-mode (.pitch-mode prog :A)
+       :pitch-pattern (.pitch-pattern prog :A)
+       :sr-inject (.sr-inject prog :A)
+       :sr-taps (.sr-taps prog :A)
+       :sr-seed (.sr-seed prog :A)
+       :sr-mask (.sr-mask prog :A)
+       :strum-mode (.strum-mode prog :A)
+       :strum-delay (.strum-delay prog :A)}
+    :B {:enabled (.enabled? prog :B)
+       :key-reset (.key-reset prog :B)
+       :key-track (.key-track prog :B)
+       :key-gate (.key-gate prog :B)
+       :transpose (.transpose prog :B)
+       :rhythm-pattern (.rhythm-pattern prog :B)
+       :hold-pattern (.hold-pattern prog :B)
+       :controller-1-number (.controller-1-number prog :B)
+       :controller-1-pattern (.controller-1-pattern prog :B)
+       :controller-2-number (.controller-2-number prog :B)
+       :controller-2-pattern (.controller-2-pattern prog :B)
+       :velocity-mode (.velocity-mode prog :B)
+       :velocity-pattern (.velocity-pattern prog :B)
+       :pitch-mode (.pitch-mode prog :B)
+       :pitch-pattern (.pitch-pattern prog :B)
+       :sr-inject (.sr-inject prog :B)
+       :sr-taps (.sr-taps prog :B)
+       :sr-seed (.sr-seed prog :B)
+       :sr-mask (.sr-mask prog :B)
+       :strum-mode (.strum-mode prog :B)
+       :strum-delay (.strum-delay prog :B)}})
+       
+(defn map-to-program
+  ([map]
+   (map-to-program map (xolotl-program)))
+  ([map prog]
+   (let [A (get map :A {})
+         B (get map :B {})]
+     (.program-name! prog (get map :name "Unknown?"))
+     (.tempo! prog (get map :tempo))
+     (.enable! prog :A (:enabled A true))
+     (.key-reset! prog :A (:key-reset A false))
+     (.key-track! prog :A (:key-track A true))
+     (.key-gate! prog :A (:key-gate A false))
+     (.transpose! prog :A (:transpose A 0))
+     (.rhythm-pattern! prog :A (:rhythm-pattern A [24]))
+     (.hold-pattern! prog :A (:hold-pattern A [1.0]))
+     (.controller-1-number! prog :A (:controller-1-number A -1))
+     (.controller-1-pattern! prog :A (:controller-1-pattern A [0]))
+     (.controller-2-number! prog :A (:controller-2-number A -1))
+     (.controller-2-pattern! prog :A (:controller-2-pattern A [0]))
+     (.velocity-mode! prog :A (:velocity-mode A :seq))
+     (.velocity-pattern! prog :A (:velocity-pattern A [96]))
+     (.pitch-mode! prog :A (:pitch-mode A :seq))
+     (.pitch-pattern! prog :A (:pitch-pattern A [-1000]))
+     (.sr-inject! prog :A (:sr-inject A false))
+     (.sr-taps! prog :A (:sr-taps A 2r1000100))
+     (.sr-seed! prog :A (:sr-seed A 1))
+     (.sr-mask! prog :A (:sr-mask A 2r11111111))
+     (.strum-mode! prog :A (:strum-mode A :forward))
+     (.strum-delay! prog :A (:strum-delay A 0))
+     (.enable! prog :B (:enabled B true))
+     (.key-reset! prog :B (:key-reset B false))
+     (.key-track! prog :B (:key-track B true))
+     (.key-gate! prog :B (:key-gate B false))
+     (.transpose! prog :B (:transpose B 0))
+     (.rhythm-pattern! prog :B (:rhythm-pattern B [24]))
+     (.hold-pattern! prog :B (:hold-pattern B [1.0]))
+     (.controller-1-number! prog :B (:controller-1-number B -1))
+     (.controller-1-pattern! prog :B (:controller-1-pattern B [0]))
+     (.controller-2-number! prog :B (:controller-2-number B -1))
+     (.controller-2-pattern! prog :B (:controller-2-pattern B [0]))
+     (.velocity-mode! prog :B (:velocity-mode B :seq))
+     (.velocity-pattern! prog :B (:velocity-pattern B [96]))
+     (.pitch-mode! prog :B (:pitch-mode B :seq))
+     (.pitch-pattern! prog :B (:pitch-pattern B [-1000]))
+     (.sr-inject! prog :B (:sr-inject B false))
+     (.sr-taps! prog :B (:sr-taps B 2r1000100))
+     (.sr-seed! prog :B (:sr-seed B 1))
+     (.sr-mask! prog :B (:sr-mask B 2r11111111))
+     (.strum-mode! prog :B (:strum-mode B :forward))
+     (.strum-delay! prog :B (:strum-delay B 0))
+     prog)))
+
+    
 (defn xolotl-program []
   (let [name* (atom "")
         tempo* (atom 120)
-        ;clock-source* (atom :internal)
         seqa* (atom (seq-program))
         seqb* (atom (seq-program))
         get-seq* (fn [key]
@@ -203,12 +291,6 @@
                 (tempo! [this bpm] 
                   (reset! tempo* (float bpm)))
 
-                ;; (clock-source [this] 
-                ;;   @clock-source*)
-
-                ;; (clock-source! [this src]
-                ;;   (reset! clock-source* src))
-
                 (seq-params [this seq]
                   @(get-seq* seq))
                 
@@ -218,22 +300,6 @@
                 (enable! [this seq flag]
                   (swap! (get-seq* seq) 
                          (fn [q](assoc q :enable (util/->bool flag)))))
-
-                ;; (input-channel [this seq]
-                ;;   (inc (:input-channel @(get-seq* seq))))
-
-                ;; (input-channel! [this seq c1]
-                ;;   (swap! (get-seq* seq)
-                ;;          (fn [q](assoc q :input-channel (dec c1))))
-                ;;   c1)
-
-                ;; (output-channel [this seq]
-                ;;   (inc (:output-channel @(get-seq* seq))))
-
-                ;; (output-channel! [this seq c1]
-                ;;   (swap! (get-seq* seq)
-                ;;          (fn [q](assoc q :output-channel (dec c1))))
-                ;;   c1)
 
                 (key-reset [this seq]
                   (:key-reset @(get-seq* seq)))
@@ -375,6 +441,9 @@
                   (swap! (get-seq* seq)
                          (fn [q](assoc q :strum-delay n))))
 
+                (to-map [this]
+                  (program-to-map this))
+                
                 (dump [this]
                   (if @enable-program-dump*
                     (let [sb (StringBuilder. 400)

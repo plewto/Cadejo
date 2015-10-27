@@ -6,6 +6,7 @@
 (def bank-length 128)
 
 (def msg00 "Invalid Xolotl program bank slot: %s")
+(def msg01 "File '%s' is not a xolotl-bank")
 
 (defprotocol ProgramBank
 
@@ -21,12 +22,11 @@
 
   (program-names [this])
 
-  (save-bank [this filename])
+  (write-bank [this filename])
 
-  (load-bank! [this filename])
+  (read-bank! [this filename])
 
   (dump [this]) )
-
 
 (defn program-bank []
   (let [programs* (atom {})
@@ -77,14 +77,31 @@
                        (swap! acc* (fn [q](conj q (format "%-12s" (.program-name p)))))))
                    @acc*))
 
-               (save-bank [this filename]
-                 (util/warning "Xolotl ProgramBank.save-bank not implemented")
-                 false)
+               (write-bank [this filename]
+                 (let [data (let [acc* (atom {})]
+                              (doseq [[k p] @programs*]
+                                (swap! acc* (fn [q](assoc q k (.to-map p)))))
+                              @acc*)
+                       rec {:file-type :xolotl-bank
+                            :data-format :xolotl
+                            :name ""
+                            :remarks ""
+                            :programs data}]
+                   (spit filename (pr-str rec))
+                   filename))
 
-               (load-bank! [this filename]
-                 (util/warning "Xolotl ProgramBank.load-bank! not implemented")
-                 false)
-
+               (read-bank! [this filename]
+                 (let [rec (read-string (slurp filename))
+                       ftype (:file-type rec)]
+                   (if (not (= ftype :xolotl-bank))
+                     (throw (java.io.IOException. (format msg01 filename))))
+                   (let [data (:programs rec)]
+                     (.init! this)
+                     (doseq [[slot pmap](seq data)]
+                       (let [prog (xolotl.program/map-to-program pmap)]
+                         (.store-program! this slot prog))))
+                   (.use-program this 0)))
+                   
                (dump [this]
                  (println "Xolotl ProgramBank")
                  (doseq [p (.program-names this)]
