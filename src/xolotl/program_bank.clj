@@ -1,8 +1,7 @@
 (println "--> xolotl.program-bank")
 (ns xolotl.program-bank
   (:require [xolotl.program])
-  (:require [xolotl.util :as util])
-  )
+  (:require [xolotl.util :as util]))
 
 (def bank-length 128)
 
@@ -26,8 +25,8 @@
 
   (load-bank! [this filename])
 
-  (dump [this])
-  )
+  (dump [this]) )
+
 
 (defn program-bank []
   (let [programs* (atom {})

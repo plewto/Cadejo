@@ -16,7 +16,7 @@
   (:require [xolotl.ui.velocity-editor])
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
-           javax.swing.JLabel) )
+           javax.swing.JLabel))
 
 (def ^:private logo (cadejo.ui.util.icon/logo "xolotl" :small))
 
@@ -70,7 +70,7 @@
                   ((:sync-fn ctrl-2-editor) prog)
                   ((:sync-fn pitch-editor) prog)
                   ((:sync-fn velocity-editor) prog)
-                  ((:sync-fn sr-editor) prog))]
+                  ((:sync-fn sr-editor) prog)) ]
     {:pan-main pan-main
      :sync-fn sync-fn}))
 
@@ -92,7 +92,7 @@
         pan-main (.widget cf :pan-center)
         bank (.program-bank xobj)
         clock-editor (xolotl.ui.clock-editor/clock-editor bed)
-        bank-editor (xolotl.ui.bank-editor/bank-editor bed bank jb-open jb-save jb-init)
+        bank-editor (xolotl.ui.bank-editor/bank-editor bank jb-open jb-save jb-init)
         pan-west (factory/border-panel :north (:pan-main clock-editor)
                                        :center (:pan-main bank-editor)
                                        :border (factory/padding 16))
@@ -141,58 +141,63 @@
     (.set-icon! bed logo)
     (ss/config! pan-main :west pan-west)
     (ss/config! pan-main :center pan-center)
-
-    (reify cadejo.ui.midi.node-editor/NodeEditor
-
-      (cframe! [this cframe embed]
-        (.cframe! bed this cframe embed))
-
-      (cframe! [this cframe]
-        (.cframe! bed cframe))
-
-      (jframe [this]
-        (.jframe bed))
-
-      (set-icon! [this ico]
-        (.set-icon! bed ico))
-
-      (show! [this]
-        (.show! bed))
-
-      (hide! [this]
-        (.hide! bed))
-
-      (widgets [this]
-        (.widgets bed))
-
-      (widget [this key]
-        (.widget bed key))
-
-      (add-widget! [this key obj]
-        (.add-widget! bed key obj))
-
-      (node [this] xobj)
-
-      (set-node! [this _]) ;; not implemented
-
-      (set-path-text! [this msg]
-        (.set-path-text! bed msg))
-
-      (working [this flag]
-        (.working bed flag))
-
-      (status! [this msg]
-        (.status! bed msg))
-
-      (warning! [this msg]
-        (.warning! bed msg))
-
-      (update-path-text [this]
-        (.update-path-text bed))
-
-      (sync-ui! [this]
-        (let [prog (.current-program bank)]
-          ((:sync-fn bank-editor) prog)
-           ((:sync-fn xseq-a-editor) prog)
-           ((:sync-fn xseq-b-editor) prog)
-           ((:sync-fn clock-editor) prog)))) ))
+    (let [editor (reify
+      
+                   cadejo.ui.midi.node-editor/NodeEditor
+                   
+                   (cframe! [this cframe embed]
+                     (.cframe! bed this cframe embed))
+                   
+                   (cframe! [this cframe]
+                     (.cframe! bed cframe))
+                   
+                   (jframe [this]
+                     (.jframe bed))
+                   
+                   (set-icon! [this ico]
+                     (.set-icon! bed ico))
+                   
+                   (show! [this]
+                     (.show! bed))
+                   
+                   (hide! [this]
+                     (.hide! bed))
+                   
+                   (widgets [this]
+                     (.widgets bed))
+                   
+                   (widget [this key]
+                     (.widget bed key))
+                   
+                   (add-widget! [this key obj]
+                     (.add-widget! bed key obj))
+                   
+                   (node [this] xobj)
+                   
+                   (set-node! [this _]) ;; not implemented
+                   
+                   (set-path-text! [this msg]
+                     (.set-path-text! bed msg))
+                   
+                   (working [this flag]
+                     (.working bed flag))
+                   
+                   (status! [this msg]
+                     (.status! bed msg))
+                   
+                   (warning! [this msg]
+                     (.warning! bed msg))
+                   
+                   (update-path-text [this]
+                     (.update-path-text bed))
+                   
+                   (sync-ui! [this]
+                     (let [prog (.current-program bank)]
+                       (println (format "xeditor.sync-ui  prog = %s" (.current-slot bank)))
+                       ((:sync-fn bank-editor) prog)
+                       ((:sync-fn xseq-a-editor) prog)
+                       ((:sync-fn xseq-b-editor) prog)
+                       ((:sync-fn clock-editor) prog))) )]
+      ((:set-parent-editor bank-editor) editor)
+      editor)))
+     

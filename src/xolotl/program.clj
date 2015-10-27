@@ -2,6 +2,7 @@
 (ns xolotl.program
   (:require [xolotl.util :as util]))
 
+(def enable-program-dump* (atom false))
 (def msg00 "XolotlProgram expected seq selector :A or :B, encountered %s")
 
 (defn seq-program [& {:keys [enable ;input-channel output-channel
@@ -375,21 +376,23 @@
                          (fn [q](assoc q :strum-delay n))))
 
                 (dump [this]
-                  (let [sb (StringBuilder. 400)
-                        pad "    "
-                        pad2 (str pad pad)]
-                    (.append sb "XolotlProgram\n")
-                    (.append sb (format "%sname  -> '%s'\n" pad (.program-name this)))
-                   ; (.append sb (format "%sclock -> %s\n" pad (.clock-source this)))
-                    (.append sb (format "%stempo -> %s\n" pad (.tempo this)))
-                    (doseq [id [:A :B]]
-                      (.append sb (format "%sseq %s\n" pad id))
-                      (let [pmap @(get-seq* id)
-                            keys (sort (map first pmap))]
-                        (doseq [k keys]
-                          (.append sb (format "%s%-21s -> %s\n" pad2 k (get pmap k))))))
-                    (println (.toString sb)))) )]
-    xpobj))
+                  (if @enable-program-dump*
+                    (let [sb (StringBuilder. 400)
+                          pad "    "
+                          pad2 (str pad pad)]
+                      (.append sb "XolotlProgram\n")
+                      (.append sb (format "%sname  -> '%s'\n" pad (.program-name this)))
+                                        ; (.append sb (format "%sclock -> %s\n" pad (.clock-source this)))
+                      (.append sb (format "%stempo -> %s\n" pad (.tempo this)))
+                      (doseq [id [:A :B]]
+                        (.append sb (format "%sseq %s\n" pad id))
+                        (let [pmap @(get-seq* id)
+                              keys (sort (map first pmap))]
+                          (doseq [k keys]
+                            (.append sb (format "%s%-21s -> %s\n" pad2 k (get pmap k))))))
+                      (println (.toString sb)))
+                    )) )]
+    xpobj)) 
  
 
 

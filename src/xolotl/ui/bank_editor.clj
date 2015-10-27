@@ -3,8 +3,8 @@
   (:require [xolotl.ui.factory :as factory])
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
-           javax.swing.event.ListSelectionListener
-           ))
+           javax.swing.event.ListSelectionListener))
+
 
 
 ;; Holds Program bank editor in JPanel
@@ -38,8 +38,9 @@
 ;; RETURNS: map  keys  :pan-main -> JPanel
 ;;                     :sync-fn  -> (fn [])
 ;;
-(defn bank-editor [parent-editor bank jb-open jb-save jb-init]
-  (let [enable-selection-listener* (atom true)
+(defn bank-editor [bank jb-open jb-save jb-init]
+  (let [parent-editor* (atom nil)
+        enable-selection-listener* (atom true)
         lst-programs (ss/listbox :model (create-program-list bank)
                                  :size [180 :by 320])
         spin-slot (factory/spinner 0 (dec xolotl.program-bank/bank-length) 1)
@@ -69,20 +70,30 @@
                       (actionPerformed [_]
                         (println "ISSUE: bank-editor.init-action NOT implemented")
                         ))
+
         selection-listener (proxy [ListSelectionListener][]
                              (valueChanged [_]
-                               (if @enable-selection-listener*
-                                 (do 
-                                   (println "ISSUE: bank-editor.selection-listener NOT implemented")
-                                   ))))
-        sync-fn (fn [prog] 
+                               (cond
+                                 (.getValueIsAdjusting lst-programs) ; do nothing
+                                 nil
+                                 
+                                 @enable-selection-listener*
+                                 (let [slot (.getSelectedIndex lst-programs)]
+                                   (reset! enable-selection-listener* false)
+                                   (.use-program bank slot)
+                                   (if @parent-editor* (.sync-ui! @parent-editor*))
+                                   (reset! enable-selection-listener* true))
+                                 
+                                 :else    ; do nothing
+                                 nil)))
+        
+        sync-fn (fn [prog]
                   (reset! enable-selection-listener* false)
                   (let [slot (.current-slot bank)]
                     (.setSelectedIndex lst-programs slot)
                     (.setValue spin-slot slot)
                     (.setText (:text-field tf) (.program-name prog))
-                    (reset! enable-selection-listener* true)))
-        ]
+                    (reset! enable-selection-listener* true))) ]
     (.addActionListener jb-store store-action)
     (.addActionListener jb-open open-action)
     (.addActionListener jb-save save-action)
@@ -90,4 +101,5 @@
     (.addListSelectionListener lst-programs selection-listener)
     
     {:pan-main pan-main
+     :set-parent-editor (fn [ed](reset! parent-editor* ed))
      :sync-fn sync-fn}))

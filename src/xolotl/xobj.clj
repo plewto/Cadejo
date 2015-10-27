@@ -5,9 +5,7 @@
   (:require [xolotl.xseq])
   (:require [xolotl.timebase])
   (:require [xolotl.util :as util])
-  (:require [xolotl.ui.xeditor :reload true])  ;; REMOVE reload after testing
-
-  )
+  (:require [xolotl.ui.xeditor]))
 
 (def msg00 "Child nodes may not be added or removed from XolotlObject")
 (def msg01 "No such program slot %s")
@@ -96,16 +94,12 @@
 
                          (= key :clock)
                          (let [src (if (= val :external) :external :internal)]
-                           ;(.clock-source! cprog src)
                            (doseq [x xseqs]
                              (.clock-select! x src)))
 
                          :else
                          (throw (IllegalArgumentException.
-                                 (format msg02 key))))
-                   (.dump cprog)  ;; DEBUG
-                   ))
-               
+                                 (format msg02 key)))) ))
                
                (program-bank [this] bank)
 
@@ -121,9 +115,6 @@
                                      [(second xseqs)(.seq-params xprog :b)]]]
                          (let [xs (first pair)
                                pmap (second pair)]
-                           ;; (.clock-select! xs (get xprog :clock-source :internal))
-                           ;; (.input-channel! xs (get pmap :input-channel 0))
-                           ;; (.output-channel! xs (get pmap :output-channel 0))
                            (.enable-reset-on-first-key! xs (get pmap :key-reset false))
                            (.enable-key-track! xs (get pmap :key-track true))
                            (.enable-key-gate! xs (get pmap :key-gate false))
@@ -141,10 +132,9 @@
                            (.taps! xs (get pmap :sr-taps 2r10000000)(if (:sr-inject pmap) 1 0))
                            (.seed! xs (get pmap :sr-seed 2r00000001))
                            (.strum-mode! xs (get pmap :strum-mode :forward))
-                           (.strum! xs (get pmap :strum-delay 0))
-                           ))
+                           (.strum! xs (get pmap :strum-delay 0)) ))
                        (.sync-ui! @editor*))
-                     (.warning! @editor* (format msg01 slot)))))
+                     (.warning! @editor* (format msg01 slot))) ))
                    
                cadejo.midi.node/Node
 
@@ -216,22 +206,10 @@
 
                (set-editor! [this ed]
                  (reset! editor* ed)) )]
+    
     (reset! editor* (xolotl.ui.xeditor/xolotl-editor xobj))
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]
                           (.use-program xobj slot)))
     (.show! @editor*)
     xobj))
-
-
-
-;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
-;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
-;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
-
-;; (println "****                  ****")
-;; (println "**** RUNING TEST XOBJ ****")
-;; (println "****                  ****")
-
-;; (def x (xolotl nil))
-;; (.show! (.get-editor x))
