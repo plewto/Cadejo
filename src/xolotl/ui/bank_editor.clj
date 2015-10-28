@@ -1,13 +1,16 @@
 (ns xolotl.ui.bank-editor
   (:require [xolotl.program-bank])
   (:require [xolotl.ui.factory :as factory])
+  (:require [xolotl.util :as util])
   (:require [seesaw.core :as ss])
+  (:require [seesaw.chooser])
   (:import java.awt.event.ActionListener
            java.util.Vector
            javax.swing.event.ListSelectionListener))
            
 
 (def bank-length xolotl.program-bank/bank-length)
+(def bank-extension xolotl.program-bank/bank-extension)
 
 ;; Holds Program bank editor in JPanel
 ;; widgets:
@@ -58,6 +61,39 @@
     (ss/show! dia)
     @selection*))
 
+;; (defn bank-overwrite-warning [parent filename]
+;;    (let [selection* (atom false)
+;;         msg (format "Replace xolotl bank '%s'" filename)
+;;         yes-fn (fn [d] 
+;;                  (swap! selection* (fn [n] true))
+;;                  (ss/return-from-dialog d true))
+;;         no-fn (fn [d] 
+;;                 (swap! selection* (fn [n] false))
+;;                 (ss/return-from-dialog d false))
+;;         dia (ss/dialog 
+;;              :content msg
+;;              :option-type :yes-no
+;;              :type :warning
+;;              :default-option :no
+;;              :modal? true
+;;              :parent parent
+;;              :success-fn yes-fn
+;;              :no-fn no-fn)]
+;;     (ss/pack! dia)
+;;     (ss/show! dia)
+;;     @selection*))
+
+;; (defn save-dialog [bank parent]
+;;   (let [cancel (fn [& _] (.status! parent "Bank Save Canceld"))
+;;         success (fn [_ f]
+;;                   (let [abs (util/append-extension (.getAbsolutePath f) bank-extension)]
+;;                     (if (bank-overwrite-warning parent abs)
+;;                       (do 
+;;                         (.write-bank bank abs)
+;;                         (.status! parent (format "Xolotl bankd saved to '%s'" abs)))
+;;                       (cancel))))
+;;         dia (
+
 
 ;; Creates bank-editor panel
 ;; args:
@@ -96,21 +132,38 @@
                         (println "ISSUE: bank-editor.save-action NOT implemented")
                         ))
 
+        ;; selection-listener (proxy [ListSelectionListener][]
+        ;;                      (valueChanged [_]
+        ;;                        (cond
+        ;;                          (.getValueIsAdjusting lst-programs) ; do nothing
+        ;;                          nil
+        ;;                         
+        ;;                          @enable-selection-listener*
+        ;;                          (let [slot (.getSelectedIndex lst-programs)]
+        ;;                            (reset! enable-selection-listener* false)
+        ;;                            (.use-program bank slot)
+        ;;                            (if @parent-editor* (.sync-ui! @parent-editor*))
+        ;;                            (reset! enable-selection-listener* true))
+        ;;                         
+        ;;                          :else    ; do nothing
+        ;;                          nil)))
+
         selection-listener (proxy [ListSelectionListener][]
                              (valueChanged [_]
                                (cond
                                  (.getValueIsAdjusting lst-programs) ; do nothing
                                  nil
-                                 
+
                                  @enable-selection-listener*
-                                 (let [slot (.getSelectedIndex lst-programs)]
+                                 (let [slot (.getSelectedIndex lst-programs)
+                                       xobj (.node @parent-editor*)]
                                    (reset! enable-selection-listener* false)
-                                   (.use-program bank slot)
-                                   (if @parent-editor* (.sync-ui! @parent-editor*))
+                                   (.use-program xobj slot)
                                    (reset! enable-selection-listener* true))
-                                 
-                                 :else    ; do nothing
+
+                                 :else  ; do nothing
                                  nil)))
+                                   
         
         sync-fn (fn [prog]
                   (reset! enable-selection-listener* false)
