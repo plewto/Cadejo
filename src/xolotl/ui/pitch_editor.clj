@@ -7,8 +7,8 @@
 (def ^:private octaves (range -4 5))
 (def ^:private roots {"C" 0, "D" 2, "E" 4, "F" 5, "G" 7, "A" 9, "B" 11})
 (def ^:private modifiers {"F" -1, "" 0, "S" 1})
-(def ^:private REST-LIMIT 0)            ; Any value less then REST-LIMIT is a rest.
-(def REST -1000)                        ; The canonical rest value.
+(def ^:private REST-LIMIT -1)            ; Any value less then REST-LIMIT is a rest.
+(def REST -1000)                         ; The canonical rest value.
 
 (def ^:private msg00 "Nested Xolotl chord list")
 (def ^:private msg01 "Invalid pitch token: %s")
@@ -50,7 +50,7 @@
 
 ;; Convert int to pitch token
 ;;
-(defn- int->pitch [n]
+(defn int->pitch [n]
   (if (<= n REST-LIMIT)
     "R"
     (let [token (get reverse-map n)]
@@ -67,7 +67,7 @@
 ;;    and err is an error message.
 ;;    If no error occurred err is an empty-string.
 ;;
-(defn- pitch-list->str
+(defn pitch-list->str
   ([lst](pitch-list->str lst false))
   ([lst in-chord]
    (let [error (StringBuilder.)
