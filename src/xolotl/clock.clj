@@ -43,6 +43,8 @@
   
   (event-dispatcher [this])
 
+  (step [this])
+  
   (dump-state [this]))
 
 
@@ -152,6 +154,15 @@
                  (hold-pattern! [this pat]
                    (.values! hold-pattern pat))
 
+                 (step [this]
+                   (let [p (.next rhythm-pattern)
+                         ht (/ (* 5.0 p (.next hold-pattern))(* 2 @tempo*))
+                         kn (+ @transpose* (* @key-track-scale* @last-keynum*))
+                         gate true]
+                     (.period! rhythm-counter p)
+                     (@controller-function*)
+                     (@pitch-function* gate kn ht)))
+                 
                  (dump-state [this]
                    (let [pad "  "
                          pad2 (str pad pad)

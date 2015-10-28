@@ -11,6 +11,8 @@
 
   (midi-reset [this])
 
+  (fire [this]) ;; execute timer task 
+  
   (stop [this])
 
   (start [this])
@@ -50,6 +52,9 @@
                       (.stop this)
                       (.purge @timer*)
                       (reset! timer* nil))))
+
+                (fire [this]
+                  (@action*))
                 
                 (stop [this]
                   (reset! running* false)
@@ -76,6 +81,9 @@
 
 (defn start []
   (.start global-timebase))
+
+(defn fire []
+  (.fire global-timebase))
 
 (defn set-tempo [bpm]
   (.tempo! global-timebase bpm)

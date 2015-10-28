@@ -3,6 +3,7 @@
   (:require [cadejo.ui.cadejo-frame :as cframe])
   (:require [cadejo.ui.midi.node-editor])
   (:require [cadejo.ui.util.icon])
+  (:require [xolotl.timebase])
   (:require [xolotl.ui.factory :as factory])
   (:require [xolotl.ui.bank-editor])
   (:require [xolotl.ui.channel-editor])
@@ -84,6 +85,7 @@
         jb-save (factory/button "Save")
         jb-init (factory/button "Init")
         jb-reset (factory/button "Reset")
+        jb-step (factory/button "Step")
         tpan-transport (factory/radio '[["Stop" :stop]["Start" :start]] 1 2 :btype :toggle)
         tb-stop (:stop (:buttons tpan-transport))
         tb-start (:start (:buttons tpan-transport))
@@ -106,16 +108,23 @@
     (.add toolbar jb-save)
     (.add toolbar (factory/horizontal-strut))
     (.add toolbar jb-reset)
+    (.add toolbar jb-step)
     (.add toolbar tb-stop)
     (.add toolbar tb-start)
     (.add toolbar (factory/horizontal-strut))
+    (.addActionListener jb-step
+                        (proxy [ActionListener][]
+                          (actionPerformed [_]
+                            (.step xobj))))
     (.addActionListener tb-stop
                         (proxy [ActionListener][]
                           (actionPerformed [_]
+                            (.setEnabled jb-step true)
                             (.stop xobj))))
     (.addActionListener tb-start
                         (proxy [ActionListener][]
                           (actionPerformed [_]
+                            (.setEnabled jb-step false)
                             (.start xobj))))
     (.addActionListener jb-reset
                         (proxy [ActionListener][]

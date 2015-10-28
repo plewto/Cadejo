@@ -14,6 +14,8 @@
   ;; Clock parameters
   ;;
 
+  (step [this])
+  
   (get-clock [this])  ;; return clock module
 
   (clock-select! [this mode])
@@ -104,6 +106,8 @@
                (-set-parent-xobj! [this parent]
                  (reset! parent-obj* parent))
 
+               (step [this] (.step clock))
+               
                (get-clock [this] clock)
                
                (clock-select! [this mode]

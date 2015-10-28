@@ -23,6 +23,8 @@
 
   (tempo! [this bpm])
 
+  (step [this])
+  
   (stop [this])
 
   (start [this])
@@ -72,6 +74,9 @@
                (tempo! [this bpm]
                  (xolotl.timebase/set-tempo bpm))
 
+               (step [this]
+                 (doseq [xs xseqs](.step xs)))
+               
                (stop [this]
                  (xolotl.timebase/stop))
 
