@@ -1,5 +1,6 @@
 (ns xolotl.ui.channel-editor
   (:require [xolotl.ui.factory :as factory])
+  (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener
            javax.swing.event.ChangeListener))
 
@@ -11,6 +12,7 @@
 
 ;; Construct channel-editor sub-panel
 ;; Includes * MIDI input and output channel spinners
+;;          * seq enable checkbox
 ;;          * key reset, gate and track check-boxes
 ;;          * transpose spinner
 ;; ARGS:
@@ -35,12 +37,13 @@
                                                 (factory/horizontal-strut 8 ))
                       pan-output
                       lab-warning)
+        cb-enable (ss/toggle :text "Enable")
         cb-reset (factory/checkbox "Key Reset")
         cb-gate (factory/checkbox "Key Gate")
         cb-track (factory/checkbox "Key Track")
         spin-transpose (factory/spinner -96 96 1)
         
-        pan-key-mode (factory/grid-panel 3 1 cb-reset cb-gate cb-track)
+        pan-key-mode (factory/grid-panel 4 1 cb-enable cb-reset cb-gate cb-track)
 
         pan-transpose (factory/border-panel :center spin-transpose
                                             :east (factory/label "Transpose"))
@@ -50,6 +53,9 @@
         reset-action (proxy [ActionListener][]
                        (actionPerformed [_]
                          (.enable-reset-on-first-key! xseq (.isSelected cb-reset))))
+        enable-action (proxy [ActionListener][]
+                        (actionPerformed [_]
+                          (.enable! xseq (.isSelected cb-enable))))
         gate-action (proxy [ActionListener][]
                        (actionPerformed [_]
                          (.enable-key-gate! xseq (.isSelected cb-gate))))
@@ -77,11 +83,13 @@
                                 (if (or (not obj)(= obj 0)) false true))
                         trans (.transpose prog seq-id)]
                     (.setValue spin-transpose (int trans))
+                    (.setSelected cb-enable (.enabled? prog seq-id))
                     (.setSelected cb-reset (true? (.key-reset prog seq-id)))
                     (.setSelected cb-track (true? (.key-track prog seq-id)))
                     (.setSelected cb-gate (true? (.key-gate prog seq-id)))))]
     (.setBorder pan-channels (factory/border "MIDI Channels"))
     (.addActionListener cb-reset reset-action)
+    (.addActionListener cb-enable enable-action)
     (.addActionListener cb-gate gate-action)
     (.addActionListener cb-track track-action)
     (.addChangeListener spin-input input-chan-listener)
