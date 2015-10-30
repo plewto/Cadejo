@@ -1,0 +1,11 @@
+Xolotl BUGS
+
+# ---------------------------------------------------------- BUG X0001 OPEN
+BUG X0001 2015.10.30 STATUS OPEN
+When an identical note is repeated the duration of all but the first note
+is truncated. These notes are played staccato regardless of the hold value.
+
+Partial fix: Added detection of repeated notes to xolotl.pitch.clj with an
+octave shift whenever the current note is the same as the previous note.
+Notes above key-number are shifted down an octave. Notes below 72 are
+shifted up.  This detection does not work for chords. 

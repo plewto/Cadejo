@@ -102,6 +102,7 @@
    RETURNS: PitchBlock"
   (let [velocity-mode* (atom :seq)
         pitch-mode* (atom :seq)
+        previous-pitch* (atom nil)
         velocity-cycle (xolotl.cycle/cycle [127])
         pitch-cycle (xolotl.cycle/cycle [0 2 4 5 7 9 11])
         sregister (xolotl.shift-register/shift-register 8 1)
@@ -110,10 +111,7 @@
         pitch-counter (xolotl.counter/counter (.period pitch-cycle))
         current-velocity* (atom 0)
         current-keylist* (atom 0)
-        current-sr-value* (atom 0)
-
-
-        ]
+        current-sr-value* (atom 0)]
     (reify PitchBlock
 
       (midi-reset [this]
@@ -136,12 +134,6 @@
         (.values! pitch-cycle ppat)
         (.period! pitch-counter (.period pitch-cycle))
         ppat)
-
-      ;; (taps! [this t inject]
-      ;;   (reset! sr-inject* (cond (zero? inject) 0
-      ;;                            inject 1
-      ;;                            :else 0))
-      ;;   (.taps! sregister t))
 
       (taps! [this t inject]
         (reset! sr-inject* (cond (= 0 inject) 0
@@ -194,7 +186,17 @@
                            (= pmode :sr) sr
                            :else (- pp 1 (.value pitch-counter)))
                   p (.value pitch-cycle pi)
-                  klst (map (fn [q] (+ q transpose))(util/->list p))
+                  klst (let [current-pitch* (atom p)]
+                         ;; Partial fix BUG X0001
+                         ;; Shift by an octave if current-note is same as previous note.
+                         ;; Shift is not applied to chords.
+                         (if (= p @previous-pitch*)
+                           (if (and (number? @previous-pitch*)(>= @previous-pitch* 0))
+                             (swap! current-pitch* (fn [q]
+                                                     (let [shift (if (>= 72) -12 12)]
+                                                       (+ q shift))))))
+                         (reset! previous-pitch* @current-pitch*)
+                         (map (fn [q] (+ q transpose))(util/->list @current-pitch*))) 
                   vmode @velocity-mode*
                   vp (.period velocity-cycle)
                   vi (cond (= vmode :random)(rand-int vp)
