@@ -46,8 +46,8 @@
 
 
 (defn xolotl [children*]
-  (let [xseqs [(xolotl.xseq/xolotl-seq children*)
-               (xolotl.xseq/xolotl-seq children*)]
+  (let [xseqs [(xolotl.xseq/xolotl-seq children* :A)
+               (xolotl.xseq/xolotl-seq children* :B)]
         parent* (atom nil)
         bank (xolotl.program-bank/program-bank)
         editor* (atom nil)
@@ -218,3 +218,9 @@
                           (.use-program xobj slot)))
     (.show! @editor*)
     xobj))
+
+;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 
+;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+
+;(def x (xolotl nil))

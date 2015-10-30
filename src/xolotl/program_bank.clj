@@ -4,6 +4,7 @@
   (:require [xolotl.util :as util]))
 
 (def bank-length 128)
+(def bank-extension "xolotl-bank")
 
 (def msg00 "Invalid Xolotl program bank slot: %s")
 (def msg01 "File '%s' is not a xolotl-bank")

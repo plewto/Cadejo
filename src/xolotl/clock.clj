@@ -44,6 +44,10 @@
   (event-dispatcher [this])
 
   (step [this])
+
+  (current-rhythm-value [this])
+
+  (current-hold-value [this])
   
   (dump-state [this]))
 
@@ -162,6 +166,12 @@
                      (.period! rhythm-counter p)
                      (@controller-function*)
                      (@pitch-function* gate kn ht)))
+
+                 (current-rhythm-value [this]
+                   (.value rhythm-pattern))
+
+                 (current-hold-value [this]
+                   (.value hold-pattern))
                  
                  (dump-state [this]
                    (let [pad "  "

@@ -14,10 +14,10 @@
 
 ;; Reverse map int clock periods to symbolic keywords.
 ;;
-(def ^:private reverse-map (let [acc* (atom {})]
-                             (doseq [p (seq rhythm-map)]
-                               (swap! acc* (fn [q](assoc q (second p)(first p)))))
-                             @acc*))
+(def reverse-map (let [acc* (atom {})]
+                   (doseq [p (seq rhythm-map)]
+                     (swap! acc* (fn [q](assoc q (second p)(first p)))))
+                   @acc*))
 
 (def ^:private msg00 "Rhythm parse error: %s")
 (def ^:private msg01 "Empty rhythm list")

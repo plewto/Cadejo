@@ -10,6 +10,8 @@
     "(.controller-count ControllerBlock)
      RETURNS: int, the number of controller patterns")
 
+  (controller-number [this n])
+  
   (controller-number! [this n ctrl]
     "(.controller-number! ControllerBlock n ctrl)
      Sets MIDI controller number
@@ -37,7 +39,9 @@
      Resets controllers to initial state.")
 
   (dump-state [this])
-  
+
+  (current-value [this n])
+
   (callback [this]
     "(.callback ControllerBlock)
      RETURNS: callback function for use by the Xolotl clock,
@@ -64,6 +68,9 @@
     (reify ControllerBlock
       
       (controller-count [this] c-count)
+
+      (controller-number [this n]
+        (get controller-numbers* n))
       
       (controller-number! [this n ctrl]
         (swap! controller-numbers* (fn [q] (assoc q n ctrl))))
@@ -74,6 +81,9 @@
       (midi-reset [this]
         (doseq [c cycles](.midi-reset c)))
 
+      (current-value [this n]
+        (.value (nth cycles n)))
+      
       (dump-state [this]
         (let [sb (StringBuilder.)
               pad "  "

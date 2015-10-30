@@ -5,7 +5,8 @@
   (:require [xolotl.timebase])
   (:require [xolotl.controllers])
   (:require [xolotl.eventgen])
-  (:require [xolotl.pitch]))
+  (:require [xolotl.pitch])
+  (:require [xolotl.ui.monitor]))
 
 (defprotocol XolotlSeq
 
@@ -15,6 +16,8 @@
   ;;
 
   (step [this])
+
+  (get-monitor [this])
   
   (get-clock [this])  ;; return clock module
 
@@ -75,12 +78,12 @@
 
 (def ^:private instance-counter* (atom 0))
 
-(defn- generate-id []
-  (let [id (keyword (format "XolotlSeq-%d" @instance-counter*))]
-    (swap! instance-counter* inc)
-    id))
+;; (defn- generate-id []
+;;   (let [id (keyword (format "XolotlSeq-%d" @instance-counter*))]
+;;     (swap! instance-counter* inc)
+;;     id))
 
-(defn xolotl-seq [children*]
+(defn xolotl-seq [children* id]
   (let [parent-obj* (atom nil)  ; should be instance of XolotlObject
         transmitter (xolotl.eventgen/transmitter children*)
         ctrl-block (xolotl.controllers/controller-block transmitter)
@@ -91,9 +94,11 @@
         ctrl-function (.callback ctrl-block)
         pitch-function (.callback pitch-block)
         clock (xolotl.clock/clock reset-fn ctrl-function pitch-function (fn [_]))
-      
+        monitor (xolotl.ui.monitor/monitor id clock pitch-block ctrl-block transmitter)
         xobj (reify XolotlSeq
 
+               (get-monitor [this] monitor)
+               
                (dump-state [this]
                  (let [sb (StringBuilder.)]
                    (.append sb "XolotlSeq\n")
@@ -106,7 +111,9 @@
                (-set-parent-xobj! [this parent]
                  (reset! parent-obj* parent))
 
-               (step [this] (.step clock))
+               (step [this]
+                 (.step clock)
+                 ((:fn-sample monitor)))
                
                (get-clock [this] clock)
                
@@ -174,7 +181,8 @@
                  (.strum-mode! transmitter mode))
                
                (midi-reset [this]
-                 (.midi-reset clock))
+                 (.midi-reset clock)
+                 ((:fn-reset monitor)))
                        
                (enable! [this flag]
                  (.enable! clock flag)) )]

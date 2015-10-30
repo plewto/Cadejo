@@ -73,7 +73,13 @@
      RETURNS: sval")
 
   (sr-mask! [this mval])
-  
+
+  (current-velocity-value [this])
+
+  (current-keylist [this])
+
+  (current-shift-register-value [this])
+
   (dump-state [this])
   
   (callback [this]
@@ -101,7 +107,13 @@
         sregister (xolotl.shift-register/shift-register 8 1)
         sr-inject* (atom 0)
         velocity-counter (xolotl.counter/counter (.period velocity-cycle))
-        pitch-counter (xolotl.counter/counter (.period pitch-cycle))]
+        pitch-counter (xolotl.counter/counter (.period pitch-cycle))
+        current-velocity* (atom 0)
+        current-keylist* (atom 0)
+        current-sr-value* (atom 0)
+
+
+        ]
     (reify PitchBlock
 
       (midi-reset [this]
@@ -145,6 +157,15 @@
 
       (sr-mask! [this mval]
         (.mask! sregister mval))
+
+      (current-velocity-value [this]
+        @current-velocity*)
+
+      (current-keylist [this]
+        @current-keylist*)
+
+      (current-shift-register-value [this]
+        @current-sr-value*)
       
       (dump-state [this]
         (let [sb (StringBuilder.)
@@ -180,6 +201,9 @@
                            (= vmode :sr) sr
                            :else (- vp 1 (.value velocity-counter)))
                   vel (.value velocity-cycle vi)]
+              (reset! current-velocity* vel)
+              (reset! current-keylist* klst)
+              (reset! current-sr-value* sr)
               (.generate-key-events evntgen klst vel hold-time)
               (.step velocity-counter)
               (.step pitch-counter)

@@ -38,12 +38,14 @@
                       pan-output
                       lab-warning)
         cb-enable (ss/toggle :text "Enable")
+        cb-monitor (factory/checkbox "MON")
+        pan-enable (factory/border-panel :center cb-enable :east cb-monitor)
         cb-reset (factory/checkbox "Key Reset")
         cb-gate (factory/checkbox "Key Gate")
         cb-track (factory/checkbox "Key Track")
         spin-transpose (factory/spinner -96 96 1)
         
-        pan-key-mode (factory/grid-panel 4 1 cb-enable cb-reset cb-gate cb-track)
+        pan-key-mode (factory/grid-panel 4 1 pan-enable cb-reset cb-gate cb-track)
 
         pan-transpose (factory/border-panel :center spin-transpose
                                             :east (factory/label "Transpose"))
@@ -97,5 +99,10 @@
     (.addChangeListener spin-input warning-listener)
     (.addChangeListener spin-output warning-listener)
     (.addChangeListener spin-transpose transpose-listener)
+    (.addActionListener cb-monitor (proxy [ActionListener][]
+                                     (actionPerformed [_]
+                                       (let [mon (.get-monitor xseq)]
+                                         ((:fn-enable mon)(.isSelected cb-monitor))))))
+
     {:pan-main pan-main
      :sync-fn sync-fn}))

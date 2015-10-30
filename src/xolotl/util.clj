@@ -67,3 +67,22 @@
 (defn warning [& args]
   (doseq [a args]
     (println (format "WARNING: %s" a))))
+
+
+(defn has-extension? [filename ext]
+  "Predicate returns true if filename has extension ext.
+   Do not include period in ext
+
+   (has-extension? foo.bar bar) --> true
+   (has-extension? foo.bar baz) --> false"
+  (.endsWith filename (str "." ext)))
+
+(defn append-extension [filename ext]
+  "Appends extension ext to filename if it does not already 
+   exists.
+ 
+   (append-extension foo.bar bar) --> foo.bar
+   (append-extension foo.bar baz) --> foo.bar.baz"
+  (if (not (has-extension? filename ext))
+    (str filename "." ext)
+    filename))

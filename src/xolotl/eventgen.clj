@@ -128,6 +128,8 @@
 
   (enable! [this flag])  ;;DEPRECIATE
 
+  (current-keylist [this])
+  
   (dump-state [this])
   
   (kill-all-notes [this]
@@ -180,6 +182,7 @@
    RETURNS: Transmitter"
   (let [enabled* (atom true)  ;; DEPRECIATE
         channel* (atom 1)
+        current-keylist* (atom [])
         strum* (atom 0)
         strum-mode* (atom :forward)]
     (reify Transmitter
@@ -198,6 +201,9 @@
       (enable! [this flag]
         (util/warning "xolotl Transmitter enable flag is depreciated")
         (reset! enabled* (util/->bool true)))
+
+      (current-keylist [this]
+        @current-keylist*)
       
       (kill-all-notes [this]
         (dotimes [kn 128]
@@ -217,7 +223,9 @@
       
       (generate-key-events [this keylist velocity hold-time]
         (if @enabled*
-          (note-on @channel* keylist velocity @strum* @strum-mode* hold-time nodes*)))
+          (do
+            (reset! current-keylist* keylist)
+            (note-on @channel* keylist velocity @strum* @strum-mode* hold-time nodes*))))
       
       (generate-controller-event [this ctrl val]
         (if @enabled*
