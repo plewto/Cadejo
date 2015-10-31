@@ -21,6 +21,8 @@
   
   (get-clock [this])  ;; return clock module
 
+  (get-transmitter [this])
+  
   (clock-select! [this mode])
   
   (input-channel! [this c0])
@@ -67,6 +69,8 @@
 
   (strum-mode! [this mode])
 
+  (midi-program-number! [this pnum])
+  
   ;; General 
 
   (dump-state [this])
@@ -88,6 +92,7 @@
         transmitter (xolotl.eventgen/transmitter children*)
         ctrl-block (xolotl.controllers/controller-block transmitter)
         pitch-block (xolotl.pitch/pitch-block transmitter)
+        midi-program-number* (atom -1)
         reset-fn (fn []
                    (.midi-reset ctrl-block)
                    (.midi-reset pitch-block))
@@ -116,6 +121,8 @@
                  ((:fn-sample monitor)))
                
                (get-clock [this] clock)
+
+               (get-transmitter [this] transmitter)
                
                (clock-select! [this mode]
                  (.clock-select! clock mode))
@@ -179,9 +186,13 @@
 
                (strum-mode! [this mode]
                  (.strum-mode! transmitter mode))
+
+               (midi-program-number! [this pnum]
+                 (reset! midi-program-number* pnum))
                
                (midi-reset [this]
                  (.midi-reset clock)
+                 (.generate-program-change transmitter @midi-program-number*)
                  ((:fn-reset monitor)))
                        
                (enable! [this flag]

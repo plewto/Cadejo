@@ -7,7 +7,7 @@
            java.util.TimerTask))
 
 
-(def date_formater (SimpleDateFormat. "mm:ss"))  
+(def date_formatter (SimpleDateFormat. "mm:ss"))  
   
 (def trace-all false)
 (def trace-keys false)
@@ -15,7 +15,7 @@
 
 
 (defn- dispatch [event nodes*]
-  (if trace-all (println (format "Xolotl trace event at %s -> %s" (.format date_formater (Date.))  event)))
+  (if trace-all (println (format "Xolotl trace event at %s -> %s" (.format date_formatter (Date.))  event)))
   (doseq [c @nodes*]
     ((.event-dispatcher c) event)))
 
@@ -123,6 +123,12 @@
     (dispatch event nodes*)
     nil))
 
+(defn- program-change [c0 prognum nodes*]
+  (if (>= prognum 0)
+    (let [event {:command :program-change :channel c0 :data1 prognum}]
+      (dispatch event nodes*)))
+  nil)
+
 
 (defprotocol Transmitter
 
@@ -169,7 +175,10 @@
     "(.generate-controller-event Transmitter ctrl val)
      ARGS:
        ctrl - int, MIDI controller number 0 <= ctrl < 128.
-       val  - int, Controller value, 0 <= val < 128.") )
+       val  - int, Controller value, 0 <= val < 128.")
+
+  (generate-program-change [this prognum])
+  )
 
 
 
@@ -181,6 +190,7 @@
      node - Cadejo Node to receive MIDI events.
    RETURNS: Transmitter"
   (let [enabled* (atom true)  ;; DEPRECIATE
+        previous-program* (atom -1)
         channel* (atom 1)
         current-keylist* (atom [])
         strum* (atom 0)
@@ -226,6 +236,12 @@
           (do
             (reset! current-keylist* keylist)
             (note-on @channel* keylist velocity @strum* @strum-mode* hold-time nodes*))))
+
+      (generate-program-change [this prognum]
+        (if (not (= prognum @previous-program*))
+          (do
+            (program-change @channel* prognum nodes*)
+            (reset! previous-program* prognum))))
       
       (generate-controller-event [this ctrl val]
         (if @enabled*

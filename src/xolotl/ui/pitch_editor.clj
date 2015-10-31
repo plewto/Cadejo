@@ -126,32 +126,35 @@
         acc* (atom [])
         chord* (atom nil)
         in-chord* (atom false)]
-    (doseq [token tokens]
-      (cond (= token "[")               ; enter chord
-            (if @in-chord*
-              (throw (IllegalArgumentException. msg00))
-              (do
-                (reset! chord* [])
-                (reset! in-chord* true)))
-
-            (= token "]")               ; exit chord
-            (if @in-chord*
-              (do
-                (swap! acc* (fn [q](conj q @chord*)))
-                (reset! in-chord* false))
-              (throw (IllegalArgumentException. msg02)))
-
-            :else
-            (let [value (get pitch-map
-                             (keyword token)
-                             (util/str->int token))]
-              (if value
-                (swap! (if @in-chord* chord* acc*)
-                       (fn [q](conj q value)))
-                (throw (IllegalArgumentException. (format msg01 token)))))))
-    (if @in-chord*
-      (throw (IllegalArgumentException. msg03)))
-    @acc*))
+    (if (pos? (count tokens))
+      (do 
+        (doseq [token tokens]
+          (cond (= token "[")               ; enter chord
+                (if @in-chord*
+                  (throw (IllegalArgumentException. msg00))
+                  (do
+                    (reset! chord* [])
+                    (reset! in-chord* true)))
+                
+                (= token "]")               ; exit chord
+                (if @in-chord*
+                  (do
+                    (swap! acc* (fn [q](conj q @chord*)))
+                    (reset! in-chord* false))
+                  (throw (IllegalArgumentException. msg02)))
+                
+                :else
+                (let [value (get pitch-map
+                                 (keyword token)
+                                 (util/str->int token))]
+                  (if value
+                    (swap! (if @in-chord* chord* acc*)
+                           (fn [q](conj q value)))
+                    (throw (IllegalArgumentException. (format msg01 token)))))))
+        (if @in-chord*
+          (throw (IllegalArgumentException. msg03)))
+        @acc*)
+      (throw (IllegalArgumentException. msg04)))))
                   
 ;; Validate text as pitch pattern
 ;; If pattern is correct return false

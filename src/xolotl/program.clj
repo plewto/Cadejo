@@ -2,7 +2,7 @@
 (ns xolotl.program
   (:require [xolotl.util :as util]))
 
-(def enable-program-dump* (atom false))
+(def enable-program-dump* (atom true))
 (def msg00 "XolotlProgram expected seq selector :A or :B, encountered %s")
 
 (declare xolotl-program)
@@ -15,7 +15,7 @@
                              velocity-mode velocity-pattern
                              pitch-mode pitch-pattern
                              sr-inject sr-taps sr-seed sr-mask
-                             strum-mode strum-delay]
+                             strum-mode strum-delay midi-program]
                       :or {enable true
                            key-reset false
                            key-track true
@@ -36,7 +36,8 @@
                            sr-seed 2r000000000001
                            sr-mask 2r111111111111
                            strum-mode :forward
-                           strum-delay 0}}]
+                           strum-delay 0
+                           midi-program -1}}]
   {:enable enable
    :key-reset key-reset
    :key-track key-track
@@ -57,7 +58,8 @@
    :sr-seed sr-seed
    :sr-mask sr-mask
    :strum-mode strum-mode
-   :strum-delay strum-delay})
+   :strum-delay strum-delay
+   :midi-program midi-program})
                           
 
 (defprotocol XolotlProgram
@@ -159,6 +161,10 @@
 
   (strum-delay! [this seq n])
 
+  (midi-program [this seq])
+
+  (midi-program! [this seq pnum])
+  
   (dump [this])
 
   (to-map [this])
@@ -189,8 +195,9 @@
        :sr-seed (.sr-seed prog :A)
        :sr-mask (.sr-mask prog :A)
        :strum-mode (.strum-mode prog :A)
-       :strum-delay (.strum-delay prog :A)}
-    :B {:enabled (.enabled? prog :B)
+       :strum-delay (.strum-delay prog :A)
+       :midi-program (.midi-program prog :A)}
+   :B {:enabled (.enabled? prog :B)
        :key-reset (.key-reset prog :B)
        :key-track (.key-track prog :B)
        :key-gate (.key-gate prog :B)
@@ -210,7 +217,8 @@
        :sr-seed (.sr-seed prog :B)
        :sr-mask (.sr-mask prog :B)
        :strum-mode (.strum-mode prog :B)
-       :strum-delay (.strum-delay prog :B)}})
+       :strum-delay (.strum-delay prog :B)
+       :midi-program (.midi-program prog :B)}})
        
 (defn map-to-program
   ([map]
@@ -241,6 +249,7 @@
      (.sr-mask! prog :A (:sr-mask A 2r11111111))
      (.strum-mode! prog :A (:strum-mode A :forward))
      (.strum-delay! prog :A (:strum-delay A 0))
+     (.midi-program! prog :A (:midi-program A -1))
      (.enable! prog :B (:enabled B true))
      (.key-reset! prog :B (:key-reset B false))
      (.key-track! prog :B (:key-track B true))
@@ -262,6 +271,7 @@
      (.sr-mask! prog :B (:sr-mask B 2r11111111))
      (.strum-mode! prog :B (:strum-mode B :forward))
      (.strum-delay! prog :B (:strum-delay B 0))
+     (.midi-program! prog :B (:midi-program B -1))
      prog)))
 
     
@@ -441,6 +451,13 @@
                   (swap! (get-seq* seq)
                          (fn [q](assoc q :strum-delay n))))
 
+                (midi-program [this seq]
+                  (:midi-program @(get-seq* seq)))
+
+                (midi-program! [this seq n]
+                  (swap! (get-seq* seq)
+                         (fn [q](assoc q :midi-program n))))
+                
                 (to-map [this]
                   (program-to-map this))
                 
@@ -494,6 +511,7 @@
              (.sr-mask! xp :A 2r11111111)
              (.strum-mode! xp :A :forward)
              (.strum-delay! xp :A 0)
+             (.midi-program! xp :A 0)
              
              (.enable! xp :B true)
              (.key-reset! xp :B false)
@@ -516,6 +534,7 @@
              (.sr-mask! xp :B 2r11111111)
              (.strum-mode! xp :B :reverse)
              (.strum-delay! xp :B 10)
+             (.midi-program! xp :B 1)
              xp))
                    
 (def beta (let [xp (xolotl-program)]
@@ -540,6 +559,7 @@
                      (.sr-mask! xp :A 2r11111111)
                      (.strum-mode! xp :A :alternate)
                      (.strum-delay! xp :A 100)
+                     (.midi-program! xp :A 2)
 
                      (.enable! xp :B true)
                      (.key-reset! xp :B false)
@@ -560,6 +580,7 @@
                      (.sr-mask! xp :B 2r11111111)
                      (.strum-mode! xp :B :random)
                      (.strum-delay! xp :B 200)
+                     (.midi-program! xp :B 3)
                      xp)) 
 
 
@@ -586,6 +607,7 @@
                      (.sr-mask! xp :A 2r10101011)
                      (.strum-mode! xp :A :forward) 
                      (.strum-delay! xp :A 0)
+                     (.midi-program! xp :A 4)
 
                      (.enable! xp :B true)
                      (.key-reset! xp :B false)
@@ -606,4 +628,5 @@
                      (.sr-mask! xp :B 2r11111111)
                      (.strum-mode! xp :B :forward)
                      (.strum-delay! xp :B 0)
+                     (.midi-program! xp :B 5)
                      xp))

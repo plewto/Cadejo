@@ -52,15 +52,19 @@
 ;; Throws IllegalArgumentException on parsing error.
 ;;
 (defn- parse-rhythm [text]
-  (let [acc* (atom [])]
-    (doseq [token (util/tokenize text)]
-      (let [kw (keyword token)]
-        (swap! acc*
-               (fn [q](conj q (or (get rhythm-map kw)
-                                  (util/str->int token)
-                                  (throw (IllegalArgumentException.
-                                          (format msg00 token)))))))))
-    @acc*))
+  (let [acc* (atom [])
+        tokens (util/tokenize text)]
+    (if (pos? (count tokens))
+      (do 
+        (doseq [token tokens]
+          (let [kw (keyword token)]
+            (swap! acc*
+                   (fn [q](conj q (or (get rhythm-map kw)
+                                      (util/str->int token)
+                                      (throw (IllegalArgumentException.
+                                              (format msg00 token)))))))))
+        @acc*)
+      (throw (IllegalArgumentException. msg01)))))
 
 ;; Test text for validity as rhythmic pattern
 ;; If text is valid return false.

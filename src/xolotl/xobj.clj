@@ -137,7 +137,9 @@
                            (.taps! xs (get pmap :sr-taps 2r10000000)(if (:sr-inject pmap) 1 0))
                            (.seed! xs (get pmap :sr-seed 2r00000001))
                            (.strum-mode! xs (get pmap :strum-mode :forward))
-                           (.strum! xs (get pmap :strum-delay 0)) ))
+                           (.strum! xs (get pmap :strum-delay 0))
+                           (.midi-program-number! xs (get pmap :midi-program -1)) ))
+                       (.midi-reset this)
                        (.sync-ui! @editor*))
                      (.warning! @editor* (format msg01 slot))) ))
                    

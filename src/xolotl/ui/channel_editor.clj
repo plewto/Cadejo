@@ -15,6 +15,7 @@
 ;;          * seq enable checkbox
 ;;          * key reset, gate and track check-boxes
 ;;          * transpose spinner
+;;          * MIDI program change spinner
 ;; ARGS:
 ;;   parent-editor - an instance of NodeEditor for Xolotl
 ;;   seq-id - keyword, either :A or :B
@@ -25,6 +26,7 @@
 (defn channel-editor [parent-editor seq-id]
   (let [xobj (.node parent-editor)
         xseq (.get-xseq xobj (if (= seq-id :A) 0 1))
+        transmitter (.get-transmitter xseq)
         bank (.program-bank xobj)
         spin-input (factory/spinner 1 16 1)
         pan-input (factory/border-panel :center spin-input :east (factory/label "IN "))
@@ -44,14 +46,18 @@
         cb-gate (factory/checkbox "Key Gate")
         cb-track (factory/checkbox "Key Track")
         spin-transpose (factory/spinner -96 96 1)
-        
+        spin-program (factory/spinner -1 127 1)
         pan-key-mode (factory/grid-panel 4 1 pan-enable cb-reset cb-gate cb-track)
 
         pan-transpose (factory/border-panel :center spin-transpose
-                                            :east (factory/label "Transpose"))
+                                            :south (factory/label "Transpose"))
+        pan-program (factory/border-panel :center spin-program
+                                          :south   (factory/label "Program"))
+                                        ;pan-south (factory/horizontal-panel pan-transpose pan-program)
+        pan-south (factory/grid-panel 1 2 pan-transpose pan-program)
         pan-main (factory/border-panel :north pan-channels
                                        :center pan-key-mode
-                                       :south pan-transpose)
+                                       :south pan-south)
         reset-action (proxy [ActionListener][]
                        (actionPerformed [_]
                          (.enable-reset-on-first-key! xseq (.isSelected cb-reset))))
@@ -80,11 +86,18 @@
         transpose-listener (proxy [ChangeListener][]
                              (stateChanged [_]
                                (.transpose! xseq (int (.getValue spin-transpose)))))
+        midi-program-listener (proxy [ChangeListener][]
+                                (stateChanged [_]
+                                  (let [prognum (.getValue spin-program)]
+                                    (.generate-program-change transmitter prognum)
+                                    (.midi-program-number! xseq (int (.getValue spin-program))))))
         sync-fn (fn [prog]
                   (let [true? (fn [obj]
                                 (if (or (not obj)(= obj 0)) false true))
-                        trans (.transpose prog seq-id)]
+                        trans (.transpose prog seq-id)
+                        midi-prognum (.midi-program prog seq-id)]
                     (.setValue spin-transpose (int trans))
+                    (.setValue spin-program (int midi-prognum))
                     (.setSelected cb-enable (.enabled? prog seq-id))
                     (.setSelected cb-reset (true? (.key-reset prog seq-id)))
                     (.setSelected cb-track (true? (.key-track prog seq-id)))
@@ -99,6 +112,7 @@
     (.addChangeListener spin-input warning-listener)
     (.addChangeListener spin-output warning-listener)
     (.addChangeListener spin-transpose transpose-listener)
+    (.addChangeListener spin-program midi-program-listener)
     (.addActionListener cb-monitor (proxy [ActionListener][]
                                      (actionPerformed [_]
                                        (let [mon (.get-monitor xseq)]

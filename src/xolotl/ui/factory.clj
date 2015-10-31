@@ -274,9 +274,9 @@
                                      (reset! error* err)
                                      (.warning! editor err)
                                      (.setBackground ta error-background))
-                                   (do
+                                   (let [txt (.getText ta)]
                                      (reset! error* false)
-                                     (enter-action (.getText ta))
+                                     (enter-action txt)
                                      (.status! editor "")
                                      (.setBackground ta safe-background)))))))
      {:pan-main pan-main

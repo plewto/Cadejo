@@ -30,13 +30,17 @@
 ;; Throws IllegalArgumentException on error.
 ;;
 (defn- parse-controller [text]
-  (let [acc* (atom [])]
-    (doseq [token (util/tokenize text)]
-      (let [v (util/str->int token)]
-        (if v
-          (swap! acc* (fn [q](conj q v)))
-          (throw (IllegalArgumentException. (format msg00 token))))))
-    @acc*))
+  (let [acc* (atom [])
+        tokens (util/tokenize text)]
+    (if (pos? (count tokens))
+      (do 
+        (doseq [token tokens]
+          (let [v (util/str->int token)]
+            (if v
+              (swap! acc* (fn [q](conj q v)))
+              (throw (IllegalArgumentException. (format msg00 token))))))
+        @acc*)
+      (throw (IllegalArgumentException. msg01)))))
 
 ;; Test for valid controller pattern
 ;; If pattern is valid return false.

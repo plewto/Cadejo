@@ -29,13 +29,17 @@
 ;; Throws IllegalArgumentException on parse error.
 ;;
 (defn- parse-hold-time [text]
-  (let [acc* (atom [])]
-    (doseq [token (util/tokenize text)]
-      (let [h (util/str->float token)]
-        (if h
-          (swap! acc* (fn [q](conj q h)))
-          (throw (IllegalArgumentException. (format msg00 token))))))
-    @acc*))
+  (let [acc* (atom [])
+        tokens (util/tokenize text)]
+    (if (pos? (count tokens))
+      (do 
+        (doseq [token tokens]
+          (let [h (util/str->float token)]
+            (if h
+              (swap! acc* (fn [q](conj q h)))
+              (throw (IllegalArgumentException. (format msg00 token))))))
+        @acc*)
+      (throw (IllegalArgumentException. msg01)))))
 
 ;; Test for valid hold-time definition.
 ;; If text is valid return false.
