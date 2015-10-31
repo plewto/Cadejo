@@ -82,12 +82,11 @@
                                 prog (.current-program bank)]
                             (.velocity-mode! prog seq-id id)
                             (.velocity-mode! xseq id))))
-        rpan-mode (factory/radio '[["SEQ" :seq]["RND" :random]["SR" :sr]] 3 1
+        rpan-mode (factory/radio '[["SEQ" :seq]["RND" :random]["SR" :sr]] 1 3
                                  :listener mode-listener)
         pan-main (factory/border-panel 
                   :center (:pan-main ted)
-                  :east (factory/grid-panel 2 1
-                                            (:pan-main rpan-mode)))
+                  :south (:pan-main rpan-mode))
         sync-fn (fn [prog]
                   (let [pat (.velocity-pattern prog seq-id)
                         rs (velocity-list->str pat)

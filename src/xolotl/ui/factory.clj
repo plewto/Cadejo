@@ -221,74 +221,64 @@
 ;;   editor       - An instance of xolotl editor where this component lives.
 ;;
 ;; RETURNS: map with the following keys
-;;           :pan-main -> JPanel
+;;           :pan-main -> JPanel with BorderLayout
 ;;           :text-area -> JTextArea
 ;;           :scroll-pane -> JScrollPane
 ;;
+
+
 (defn text-editor [lab-text validator enter-action clipboard* editor]
-  (let [undo* (atom "")
-        error* (atom true)
-        lab (label lab-text :font :normal)
-        ta (ss/text :multi-line? true :editable? true
-                    :margin 10 :font pattern-font)
-        safe-background (.getBackground ta)
-                                        ;sp (JScrollPane. ta)
-        sp (ss/scrollable ta)
-        jb-clear (button "Clear" :font :small)
-        jb-copy (button "Copy" :font :small)
-        jb-paste (button "Paste" :font :small)
-        jb-undo (button "Undo" :font :small)
-        jb-enter (button "Enter" :font :small)
-        pan-tools (grid-panel 3 2 jb-clear jb-copy jb-paste jb-undo jb-enter)
-        pan-south (vertical-panel pan-tools)
-        pan-main (border-panel :center sp
-                               :north lab
-                               :south pan-south)
-        clear-action (proxy [ActionListener][]
-                       (actionPerformed [_]
-                         (reset! undo* (.getText ta))
-                         (.setText ta "")
-                         (.status! editor msg00)))
-        copy-action (proxy [ActionListener][]
-                      (actionPerformed [_]
-                        (reset! clipboard* (.getText ta))
-                        (.status! editor msg01)))
-        paste-action (proxy [ActionListener][]
-                       (actionPerformed [_]
-                         (reset! undo* (.getText ta))
-                         (.setText ta @clipboard*)
-                         (.status! editor msg02)))
-        undo-action (proxy [ActionListener][]
-                      (actionPerformed [_]
-                        (let [tx (.getText ta)]
-                          (.setText ta @undo*)
-                          (reset! undo* tx)
-                          (.status! editor msg03))))]
-    (.addCaretListener ta (proxy [CaretListener][]
-                            (caretUpdate [& _]
-                              (let [txt (.getText ta)
-                                    err (validator txt)]
-                                (if err
-                                  (do
-                                    (reset! error* err)
-                                    (.warning! editor err)
-                                    (.setBackground ta error-background))
-                                  (do
-                                    (reset! error* false)
-                                    (.status! editor "")
-                                    (.setBackground ta safe-background)))))))
-    (.addActionListener jb-clear clear-action)
-    (.addActionListener jb-copy copy-action)
-    (.addActionListener jb-paste paste-action)
-    (.addActionListener jb-undo undo-action)
-    (.addActionListener jb-enter
-                        (proxy [ActionListener][]
-                          (actionPerformed [_]
-                            (if @error*
-                              (.warning! editor @error*)
-                              (do
-                                (enter-action (.getText ta))
-                                (.status! editor (format msg04 lab-text)))))))
-    {:pan-main pan-main
-     :text-area ta
-     :scroll-pane sp})) 
+   (let [undo* (atom "")
+         error* (atom true)
+         lab (label lab-text :font :normal)
+         ta (ss/text :multi-line? true :editable? true
+                     :margin 10 :font pattern-font)
+         safe-background (.getBackground ta)
+         sp (ss/scrollable ta)
+         ;jb-enter (button "Enter" :font :small)
+         ;pan-south (border-panel)
+         pan-main (border-panel :center sp
+                                :north lab)
+
+         clear-action (ss/action :handler (fn [_]
+                                            (reset! undo* (.getText ta))
+                                            (.setText ta "")
+                                            (.status! editor msg00))
+                                 :name "Clear"
+                                 :tip "Clear text")
+         copy-action (ss/action :handler (fn [_]
+                                           (reset! clipboard* (.getText ta))
+                                           (.status! editor msg01))
+                                :name "Copy"
+                                :tip "Copy text to clipboard")
+         paste-action (ss/action :handler (fn [_]
+                                            (reset! undo* (.getText ta))
+                                            (.setText ta @clipboard*)
+                                            (.status! editor msg02))
+                                 :name "Paste"
+                                 :tip "Paste text from clipboard")
+         undo-action (ss/action :handler (fn [_]
+                                           (let [tx (.getText ta)]
+                                             (.setText ta @undo*)
+                                             (reset! undo* tx)
+                                             (.status! editor msg03)))
+                                :name "Undo"
+                                :tip "Undo clear/paste actions")]
+     (ss/config! ta :popup (fn [e][clear-action copy-action ]))
+     (.addCaretListener ta (proxy [CaretListener][]
+                             (caretUpdate [& _]
+                               (let [txt (.getText ta)
+                                     err (validator txt)]
+                                 (if err
+                                   (do
+                                     (reset! error* err)
+                                     (.warning! editor err)
+                                     (.setBackground ta error-background))
+                                   (do
+                                     (reset! error* false)
+                                     (enter-action (.getText ta))
+                                     (.status! editor "")
+                                     (.setBackground ta safe-background)))))))
+     {:pan-main pan-main
+      :text-area ta
+      :scroll-pane sp})) 

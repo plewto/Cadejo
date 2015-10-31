@@ -2,12 +2,13 @@
   (:require [xolotl.util :as util])
   (:require [xolotl.ui.factory :as factory])
   (:require [clojure.string :as str])
+  (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener))
 
 (def ^:private octaves (range -4 5))
 (def ^:private roots {"C" 0, "D" 2, "E" 4, "F" 5, "G" 7, "A" 9, "B" 11})
 (def ^:private modifiers {"F" -1, "" 0, "S" 1})
-(def ^:private REST-LIMIT -1)            ; Any value less then REST-LIMIT is a rest.
+(def ^:private REST-LIMIT -1)            ; Any value <= REST-LIMIT is a rest.
 (def REST -1000)                         ; The canonical rest value.
 
 (def ^:private msg00 "Nested Xolotl chord list")
@@ -188,6 +189,7 @@
                                  validator enter-action
                                  factory/pitch-clipboard*
                                  parent-editor)
+        pan-south (:pan-south ted)
         mode-listener (proxy [ActionListener][]
                         (actionPerformed [evn]
                           (let [src (.getSource evn)
@@ -195,11 +197,10 @@
                                 prog (.current-program bank)]
                             (.pitch-mode! prog seq-id id)
                             (.pitch-mode! xseq id))))
-        rpan-mode (factory/radio '[["SEQ" :seq]["RND" :random]["SR" :sr]] 3 1
+        rpan-mode (factory/radio '[["SEQ" :seq]["RND" :random]["SR" :sr]] 1 3
                                  :listener mode-listener)
         pan-main (factory/border-panel :center (:pan-main ted)
-                                       :east (factory/grid-panel 2 1
-                                              (:pan-main rpan-mode)))
+                                       :south (:pan-main rpan-mode))
         sync-fn (fn [prog]
                   (let [pat (.pitch-pattern prog seq-id)
                         rs (pitch-list->str pat)
