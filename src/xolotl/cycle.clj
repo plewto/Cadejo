@@ -21,6 +21,8 @@
     "(values Cycle)
      RETURNS: vector holding cycle elements.")
 
+
+  
   (period [this]
     "(.period Cycle)
      RETURNS: int, number of elements in cycle.")
@@ -37,6 +39,11 @@
            actual index is modulo the cycle period.
            If not n not specified the most previous index is used.
      RETURNS: Object, the selected element.")
+
+  (sum [this]
+    "(sum Cycle)
+     RETURNS: number, the sum of all values.
+         Only valid if all values are numbers.")
   
   (next [this]
     "(.next Cycle)
@@ -77,6 +84,9 @@
               (value [this]
                 (nth @values* @pointer*))
 
+              (sum [this]
+                (reduce + @values*))
+              
               (value [this n]
                 (let [index (util/abs (rem n (.period this)))]
                   (reset! pointer* (rem (inc index)(.period this)))

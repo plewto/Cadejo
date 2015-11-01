@@ -45,14 +45,16 @@
         pan-west (factory/vertical-panel (:pan-main chan-editor)
                                          (factory/vertical-strut 16)
                                          (:pan-main strum-editor))
-        pan-center (factory/grid-panel 2 2
+        pan-center (factory/grid-panel 2 3
                                        (:pan-main rhythm-editor)
                                        (:pan-main hold-editor)
+                                       (:pan-main ctrl-1-editor)
                                        (:pan-main pitch-editor)
-                                       (:pan-main velocity-editor))
-        pan-east (factory/grid-panel 2 1
-                                     (:pan-main ctrl-1-editor)
-                                     (:pan-main ctrl-2-editor))
+                                       (:pan-main velocity-editor)
+                                       (:pan-main ctrl-2-editor))
+        ;; pan-east (factory/grid-panel 2 1
+        ;;                              (:pan-main ctrl-1-editor)
+        ;;                              (:pan-main ctrl-2-editor))
         pan-south (factory/horizontal-panel
                    (factory/horizontal-strut 250)
                    (:pan-main sr-editor)
@@ -61,7 +63,8 @@
         pan-main (factory/border-panel :west pan-west
                                        :center pan-center
                                        :south pan-south
-                                       :east pan-east)
+                                       ;:east pan-east
+                                       )
         sync-fn (fn [prog]
                   ((:sync-fn chan-editor) prog)
                   ((:sync-fn strum-editor) prog)

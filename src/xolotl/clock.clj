@@ -25,6 +25,10 @@
   
   (transpose! [this x])
 
+  (repeat! [this n])
+
+  (jump! [this n])
+  
   (midi-reset [this]) ;; calls reset function
 
   (reset-function! [this rfn])
@@ -58,7 +62,7 @@
 ;; pfn [gate keynumber hold-time]
 ;; progfn [program-number]
 ;;
-(defn clock [rsfn cfn pfn progfn]
+(defn clock [id rsfn cfn pfn progfn]
   (let [enabled* (atom true)
         clock-mode* (atom :internal)
         tempo* (atom 60)
@@ -67,6 +71,9 @@
         key-track-scale* (atom 1)  ;; 0 (disabled) or 1 (enabled)
         key-gate-mode* (atom false)
         transpose* (atom 0)
+        phrase-counter* (atom -1)
+        repeat* (atom -1)
+        jump* (atom -1)
         reset-function* (atom rsfn)
         controller-function* (atom cfn)
         pitch-function* (atom pfn)
@@ -107,9 +114,19 @@
                          :else
                          (timebase/sync-clock)))
 
+                 ;; (advance [this]
+                 ;;   (if @enabled* 
+                 ;;     (.step rhythm-counter)))
+
                  (advance [this]
-                   (if @enabled* 
-                     (.step rhythm-counter)))
+                   (if @enabled*
+                     (do
+                       (.step rhythm-counter)
+                       (if (and (zero? (swap! phrase-counter* dec)) (>=  @jump* 0))
+                         (let [event {:command :program-change
+                                      :channel @input-channel*
+                                      :data @jump*}]
+                           (@program-function* @jump*))))))
                  
                  (tempo! [this bpm]
                    (reset! tempo* (float bpm)))
@@ -129,12 +146,20 @@
                  
                  (transpose! [this x]
                    (reset! transpose* (int x)))
+
+                 (repeat! [this n]
+                   (reset! repeat* (int n))
+                   (reset! phrase-counter* (int n)))
+
+                 (jump! [this n]
+                   (reset! jump* (int n)))
                  
                  (midi-reset [this]
                    (reset! key-counter* 0)
                    (reset! last-keynum* 60)
                    (.midi-reset rhythm-pattern)
                    (.midi-reset hold-pattern)
+                   (reset! phrase-counter* (* @repeat* (.sum rhythm-pattern)))
                    (@reset-function*))
                  
                  (reset-function! [this rfn]
@@ -153,7 +178,8 @@
                    (.values! rhythm-pattern pat))
 
                  (rhythm-pattern [this]
-                   (.values rhythm-pattern))
+                   (.values rhythm-pattern)
+                   (reset! phrase-counter* (* @repeat* (.period rhythm-pattern))))
                  
                  (hold-pattern! [this pat]
                    (.values! hold-pattern pat))
@@ -165,7 +191,21 @@
                          gate true]
                      (.period! rhythm-counter p)
                      (@controller-function*)
-                     (@pitch-function* gate kn ht)))
+                     (@pitch-function* gate kn ht)
+                     (swap! phrase-counter* dec)
+                     (if (zero? @phrase-counter*)
+                       (let [prognum @jump*
+                             event {:command :program-change
+                                    :channel @input-channel*
+                                    :data prognum}]
+                         (if (>= prognum 0)
+                           (do 
+                             (@program-function* prognum)
+                           )
+                           ))))
+                   )
+
+                           
 
                  (current-rhythm-value [this]
                    (.value rhythm-pattern))

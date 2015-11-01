@@ -9,4 +9,7 @@
                  [sgwr "0.2.0"]
                  [com.github.insubstantial/substance "7.1"]
                  [overtone "0.9.1"]]
+  :jvm-opts ^:replace []
   :main cadejo.core)
+  ;:main xolotl.xobj)
+

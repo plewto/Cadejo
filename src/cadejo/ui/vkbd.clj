@@ -267,7 +267,6 @@
                            :id :VKBD})
         parent* (atom nil)
         children* (atom [])
-        dummy-1 (println (format "DEBUG in vkbd constructor children* -> %s" (type children*)))
         xolotl (xolotl.xobj/xolotl children*)
         vnode (VKbd. parent* children* properties* cframe)
         drw (sfactory/sgwr-drawing width height)
@@ -395,20 +394,20 @@
 ;; START TEST CODE START TEST CODE START TEST CODE START TEST CODE
 ;; START TEST CODE START TEST CODE START TEST CODE START TEST CODE
 
-(defn start []
-  (.start @xolotl*))
+;; (defn start []
+;;   (.start @xolotl*))
 
-(defn stop []
-  (.stop @xolotl*))
+;; (defn stop []
+;;   (.stop @xolotl*))
 
-(defn dump []
-  (.dump @xolotl*))
+;; (defn dump []
+;;   (.dump @xolotl*))
 
 
-(require 'xolotl.program)
-(defn test-setup []
-  (let [x @xolotl*]
-    (.tempo! x 60)
-    (.store-program! x 0 xolotl.program/major-scale)
-    (.use-program x 0)
-    x))
+;; (require 'xolotl.program)
+;; (defn test-setup []
+;;   (let [x @xolotl*]
+;;     (.tempo! x 60)
+;;     (.store-program! x 0 xolotl.program/alpha)
+;;     (.use-program x 0)
+;;     x))

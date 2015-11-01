@@ -37,6 +37,10 @@
   
   (transpose! [this x])
 
+  (repeat! [this x])
+
+  (jump! [this x])
+  
   (rhythm-pattern! [this rpat])
 
   (rhythm-pattern [this])
@@ -98,7 +102,7 @@
                    (.midi-reset pitch-block))
         ctrl-function (.callback ctrl-block)
         pitch-function (.callback pitch-block)
-        clock (xolotl.clock/clock reset-fn ctrl-function pitch-function (fn [_]))
+        clock (xolotl.clock/clock id reset-fn ctrl-function pitch-function (fn [_]))
         monitor (xolotl.ui.monitor/monitor id clock pitch-block ctrl-block transmitter)
         xobj (reify XolotlSeq
 
@@ -145,6 +149,12 @@
                (transpose! [this xpose]
                  (.transpose! clock xpose))
 
+               (repeat! [this n]
+                 (.repeat! clock n))
+
+               (jump! [this n]
+                 (.jump! clock n))
+               
                (rhythm-pattern! [this rpat]
                  (.rhythm-pattern! clock rpat))
 

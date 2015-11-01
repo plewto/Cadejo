@@ -1,6 +1,8 @@
 (ns xolotl.ui.rhythm-editor
   (:require [xolotl.util :as util])
-  (:require [xolotl.ui.factory :as factory]))
+  (:require [xolotl.ui.factory :as factory])
+  (:require [seesaw.core :as ss])
+  (:import javax.swing.event.ChangeListener))
 
 
 ;; Maps keywords to clock periods.24 = quarter note
@@ -102,17 +104,43 @@
                                  validator enter-action
                                  factory/rhythm-clipboard*
                                  parent-editor)
+        spin-repeat (factory/spinner 0 128 1)
+        pan-repeat (factory/border-panel :center spin-repeat
+                                         :east (factory/label "Repeat"))
+        spin-jump (factory/spinner -1 127 1)
+        pan-jump (factory/border-panel :center spin-jump
+                                       :east (factory/label "Jump"))
+        pan-south (factory/grid-panel 1 2 pan-repeat pan-jump)
+        pan-main (:pan-main ted)
         sync-fn (fn [prog]
                   (let [rpat (.rhythm-pattern prog seq-id)
                         rs (rhythm-list->str rpat)
                         pat (first rs)
-                        err (second rs)]
+                        err (second rs)
+                        rep (.repeat prog)
+                        jmp (.jump prog)]
+                    (.setValue spin-repeat (int rep))
+                    (.setValue spin-jump (int jmp))
                     (if (zero? (count err))
                       (.setText (:text-area ted)(first rs))
                       (let [msg (format msg00 err)]
                         (.warning! parent-editor msg)
                         (throw (IllegalArgumentException. msg))))))]
-    {:pan-main (:pan-main ted)
+    (if (= seq-id :A) (ss/config! pan-main :south pan-south))
+    (.addChangeListener spin-repeat (proxy [ChangeListener][]
+                                      (stateChanged [_]
+                                        (let [prog (.current-program bank)
+                                              n (int (.getValue spin-repeat))]
+                                          (.repeat! prog n)
+                                          (.repeat! xseq n)))))
+    
+    (.addChangeListener spin-jump (proxy [ChangeListener][]
+                                     (stateChanged [_]
+                                       (let [prog (.current-program bank)
+                                             n (int (.getValue spin-jump))]
+                                         (.jump! prog n)
+                                         (.jump! xseq n)))))
+    {:pan-main pan-main
      :sync-fn sync-fn}))          
         
 

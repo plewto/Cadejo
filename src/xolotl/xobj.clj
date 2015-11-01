@@ -138,11 +138,14 @@
                            (.seed! xs (get pmap :sr-seed 2r00000001))
                            (.strum-mode! xs (get pmap :strum-mode :forward))
                            (.strum! xs (get pmap :strum-delay 0))
+                           (.repeat! xs (get pmap :repeat -1))
+                           (.jump! xs (get pmap :jump -1))
                            (.midi-program-number! xs (get pmap :midi-program -1)) ))
                        (.midi-reset this)
                        (.sync-ui! @editor*))
-                     (.warning! @editor* (format msg01 slot))) ))
-                   
+                     (.warning! @editor* (format msg01 slot))))
+                 )
+                 
                cadejo.midi.node/Node
 
                (node-type [this] :xolotl)
@@ -217,7 +220,8 @@
     (reset! editor* (xolotl.ui.xeditor/xolotl-editor xobj))
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]
-                          (.use-program xobj slot)))
+                          (.use-program xobj slot)
+                          ))
     (.show! @editor*)
     xobj))
 
