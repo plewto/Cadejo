@@ -22,21 +22,17 @@
 ;;    button  - init bank
 ;;    text-field - program name
 
-(defn- format-program-cell [slot programs]
-  (let [pname (nth programs slot)]
-    (format "[%03d]  %s" slot pname)))
 
-;; (defn- create-program-list [bank]
-;;   (let [acc* (atom [])
-;;         programs (.program-names bank)]
-;;     (dotimes [slot xolotl.program-bank/bank-length]
-;;       (swap! acc* (fn [q](conj q (format-program-cell slot programs)))))
-;;     @acc*))
+(defn- format-program-cell [slot pname]
+  (format "[%03d] %s" slot pname))
 
 (defn- create-program-list [bank]
-  (let [vcc (Vector. bank-length)]
-    (doseq [pn (.program-names bank)]
-      (.add vcc pn))
+  (let [vcc (Vector. bank-length)
+        slot* (atom 0)
+        plst (.program-names bank)]
+    (doseq [pn plst]
+      (.add vcc (format-program-cell @slot* pn))
+      (swap! slot* +))
     vcc))
 
 (defn bank-init-warning [parent]
@@ -137,22 +133,6 @@
                         (println "ISSUE: bank-editor.save-action NOT implemented")
                         ))
 
-        ;; selection-listener (proxy [ListSelectionListener][]
-        ;;                      (valueChanged [_]
-        ;;                        (cond
-        ;;                          (.getValueIsAdjusting lst-programs) ; do nothing
-        ;;                          nil
-        ;;                         
-        ;;                          @enable-selection-listener*
-        ;;                          (let [slot (.getSelectedIndex lst-programs)]
-        ;;                            (reset! enable-selection-listener* false)
-        ;;                            (.use-program bank slot)
-        ;;                            (if @parent-editor* (.sync-ui! @parent-editor*))
-        ;;                            (reset! enable-selection-listener* true))
-        ;;                         
-        ;;                          :else    ; do nothing
-        ;;                          nil)))
-
         selection-listener (proxy [ListSelectionListener][]
                              (valueChanged [_]
                                (cond
@@ -168,7 +148,6 @@
 
                                  :else  ; do nothing
                                  nil)))
-                                   
         
         sync-fn (fn [prog]
                   (reset! enable-selection-listener* false)
