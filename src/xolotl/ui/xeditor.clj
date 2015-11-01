@@ -19,7 +19,8 @@
   (:import java.awt.event.ActionListener
            javax.swing.JLabel))
 
-(def ^:private logo (cadejo.ui.util.icon/logo "xolotl" :small))
+(def ^:private small-logo (cadejo.ui.util.icon/logo "xolotl" :small))
+(def ^:private medium-logo (cadejo.ui.util.icon/logo "xolotl" :medium))
 
 
 ;; Creates editor pannel for xseq
@@ -53,9 +54,9 @@
                                        (:pan-main velocity-editor)
                                        (:pan-main ctrl-2-editor))
         pan-south (factory/horizontal-panel
-                   (factory/horizontal-strut 250)
+                   (factory/horizontal-strut 180)
                    (:pan-main sr-editor)
-                   (factory/horizontal-strut 250))
+                   (ss/label :icon medium-logo))
                                            
         pan-main (factory/border-panel :west pan-west
                                        :center pan-center
@@ -100,7 +101,7 @@
                                               (:pan-main xseq-b-editor))
         pan-center (ss/card-panel :items [[(:pan-main xseq-a-editor) :A]
                                           [(:pan-main xseq-b-editor) :B]]) ]
-    (ss/config! (.jframe cf) :size [1280 :by 660])
+    (ss/config! (.jframe cf) :size [1280 :by 700])
     (.add toolbar jb-init)
     (.add toolbar jb-open)
     (.add toolbar jb-save)
@@ -145,7 +146,7 @@
       (.setSelected tb-a true))
     (.setSelected tb-stop true)
     (.cframe! bed cf)
-    (.set-icon! bed logo)
+    (.set-icon! bed small-logo)
     (ss/config! pan-main :west pan-west)
     (ss/config! pan-main :center pan-center)
     (let [editor (reify

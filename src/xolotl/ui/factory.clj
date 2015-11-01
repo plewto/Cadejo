@@ -192,7 +192,7 @@
   ([lab-text]
    (let [lab (label lab-text)
          tf (ss/text :multi-line? false :font pattern-font :margin 5
-                     :size [270 :by 24])
+                     :size [270 :by 32]) ; 24
          pan (border-panel :center tf
                            :east lab)]
      {:pan-main pan

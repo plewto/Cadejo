@@ -222,3 +222,4 @@
                           (.use-program xobj slot)))
     (.show! @editor*)
     xobj))
+
