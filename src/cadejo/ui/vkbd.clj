@@ -12,7 +12,6 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.multistate-button :as msb])
-                                        ;(:require [xolotl.xobj])
   (:require [xolotl.xolotl])
   (:require [seesaw.core :as ss])
   (:require [seesaw.color :as ssc]))
@@ -20,7 +19,6 @@
 
 (def xolotl* (atom nil)) ;; FOR TESTING ONLY
 (def vkbd* (atom nil))   ;; FOR TESTING ONLY
-
 
 (def ^:private width 670)
 (def ^:private height 120)
@@ -89,9 +87,13 @@
     [this keynum]
     "Transmits note-off event on current channel
      Returns map {:channel c0 :data1 keynum :note keynum :data2 127}")
-  )
 
-(deftype VKbd [parent* children* properties* cframe]
+  (show-xolotl! [this]))
+
+
+  
+
+(deftype VKbd [parent* children* properties* cframe xo]
 
   cadejo.ui.midi.node-editor/NodeEditor
 
@@ -171,6 +173,10 @@
       ((.event-dispatcher this) ev)
       ev))
 
+  (show-xolotl! [this]
+    (let [xed (.get-editor xo)]
+      (.show! xed)))
+  
   cadejo.midi.node/Node
 
   (node-type [this] :vkbd)
@@ -268,9 +274,8 @@
                            :id :VKBD})
         parent* (atom nil)
         children* (atom [])
-                                        ;xolotl (xolotl.xobj/xolotl children*)
         xolotl (xolotl.xolotl/create-sequencer children*)
-        vnode (VKbd. parent* children* properties* cframe)
+        vnode (VKbd. parent* children* properties* cframe xolotl)
         drw (sfactory/sgwr-drawing width height)
 
         octave-action (fn [b _]

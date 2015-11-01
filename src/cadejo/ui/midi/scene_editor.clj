@@ -182,6 +182,7 @@
   (let [basic-ed (cadejo.ui.midi.node-editor/basic-node-editor :scene scene true)
         toolbar (.widget basic-ed :toolbar)
         jb-vkbd (factory/icon-button :keyboard :virtual "Show Virtual Keyboard")
+        jb-xolotl (factory/icon-button :xolotl :logo "Show Xolotl Seqeuncer")
         jb-scale-registry (factory/icon-button :general :staff "Show Scale Registry")
         jb-midi (factory/icon-button :midi :plug "Show MIDI configuration")
         jb-help (.widget basic-ed :jb-help)
@@ -200,6 +201,7 @@
         pan-channels (ss/toolbar :orientation :horizontal
                                  :floatable? false
                                  :items [jb-vkbd
+                                         jb-xolotl
                                          (ss/grid-panel :rows 2 :items jb-channels
                                                         :border (factory/title "Channels"))])
         sregistry-editor (cadejo.ui.scale.registry-editor/registry-editor scene)
@@ -224,6 +226,9 @@
     (ss/listen jb-vkbd :action (fn [_]
                                  (let [vkb (.get-property scene :virtual-keyboard)]
                                    (and vkb (.show! vkb)))))
+    (ss/listen jb-xolotl :action (fn [_]
+                                   (let [vkb (.get-property scene :virtual-keyboard)]
+                                     (and vkb (.show-xolotl! vkb)))))
     (ss/config! (.jframe sed) :on-close :nothing)
     (ss/show-card! pan-cards :midi)
     (.size! (.cframe basic-ed) width height)
