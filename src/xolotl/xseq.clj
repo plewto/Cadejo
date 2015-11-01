@@ -80,6 +80,8 @@
   (dump-state [this])
   
   (enable! [this flag])
+
+  (kill-all-notes [this])
   
   (midi-reset [this]))
 
@@ -199,6 +201,9 @@
 
                (midi-program-number! [this pnum]
                  (reset! midi-program-number* pnum))
+
+               (kill-all-notes [this]
+                 (.kill-all-notes transmitter))
                
                (midi-reset [this]
                  (.midi-reset clock)

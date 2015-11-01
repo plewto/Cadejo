@@ -145,7 +145,7 @@
   
   (kill-all-notes [this]
     "(.kill-all-notes Transmitter)
-     Transmit note-off messages 0 through 127 on the current channel")
+     Transmit note-off messages 0 through 127 on all channels")
 
   (strum! [this delay]
     "(.strum! Transmitter delay)
@@ -222,11 +222,12 @@
         @current-keylist*)
       
       (kill-all-notes [this]
-        (dotimes [kn 128]
-          (dispatch {:command :note-off :channel @channel*
-                     :note kn :data1 kn :data2 0}
-                    nodes*)
-          (Thread/sleep 2)))
+        (dotimes [c0 15]
+          (dotimes [kn 128]
+            (dispatch {:command :note-off :channel c0
+                       :note kn :data1 kn :data2 0}
+                      nodes*)
+            (Thread/sleep 1))))
       
       (channel! [this c0]
         (reset! channel* c0))

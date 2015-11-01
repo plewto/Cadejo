@@ -36,4 +36,4 @@
 ;;;; TEST TEST TEST TEST TEST
 ;;;; TEST TEST TEST TEST TEST
 
-(def x (create-sequencer nil))
+;(def x (create-sequencer nil))

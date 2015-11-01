@@ -77,9 +77,10 @@
 
 (defn xolotl-editor [xobj]
   (let [cf (cframe/cadejo-frame "Xolotl" :xolotl 
-                                [:exit :about :skin :progress-bar :path])
+                                [:exit :about :skin :progress-bar :path :parent :child])
         bed (cadejo.ui.midi.node-editor/basic-node-editor :xolotl xobj false)
         toolbar (.widget cf :toolbar)
+        jb-kill (factory/button "Kill")
         jb-open (factory/button "Open")
         jb-save (factory/button "Save")
         jb-init (factory/button "Init")
@@ -106,6 +107,7 @@
     (.add toolbar jb-open)
     (.add toolbar jb-save)
     (.add toolbar (factory/horizontal-strut))
+    (.add toolbar jb-kill)
     (.add toolbar jb-reset)
     (.add toolbar jb-step)
     (.add toolbar tb-stop)
@@ -129,6 +131,10 @@
                         (proxy [ActionListener][]
                           (actionPerformed [_]
                             (.midi-reset xobj))))
+    (.addActionListener jb-kill
+                        (proxy [ActionListener][]
+                          (actionPerformed [_]
+                            (.kill-all-notes xobj))))
     (let [grp (ss/button-group)
           tb-a (ss/toggle :text "Seq A" :group grp)
           tb-b (ss/toggle :text "Seq B" :group grp)
@@ -196,8 +202,7 @@
                    (warning! [this msg]
                      (.warning! bed msg))
                    
-                   (update-path-text [this]
-                     (.update-path-text bed))
+                   (update-path-text [this] nil) ;; not implemented
                    
                    (sync-ui! [this]
                      (let [prog (.current-program bank)]
@@ -206,5 +211,6 @@
                        ((:sync-fn xseq-b-editor) prog)
                        ((:sync-fn clock-editor) prog))) )]
       ((:set-parent-editor bank-editor) editor)
+      (.hide! editor)
       editor)))
      

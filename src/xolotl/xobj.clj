@@ -31,6 +31,8 @@
 
   (midi-reset [this])
 
+  (kill-all-notes [this])
+  
   ;; possible keys
   ;;    :name
   ;;    :tempo
@@ -87,6 +89,10 @@
                  (doseq [xs xseqs]
                    (.midi-reset xs)))
 
+               (kill-all-notes [this]
+                 (doseq [xs xseq]
+                   (.kill-all-notes xs)))
+               
                (global-param! [this key val]
                  (let [cprog (.current-program bank)]
                    (cond (= key :name)
@@ -220,6 +226,6 @@
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]
                           (.use-program xobj slot)))
-    (.show! @editor*)
+    ;(.show! @editor*)
     xobj))
 
