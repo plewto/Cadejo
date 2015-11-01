@@ -1,4 +1,4 @@
-(println "--> xolotl.program-bank")
+(println "    --> xolotl.program-bank")
 (ns xolotl.program-bank
   (:require [xolotl.program])
   (:require [xolotl.util :as util]))

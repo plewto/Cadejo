@@ -1,4 +1,4 @@
-(println "--> xolotl.xseq")
+(println "    --> xolotl.xseq")
 (ns xolotl.xseq
   (:require [xolotl.util :as util])
   (:require [xolotl.clock])

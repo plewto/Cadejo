@@ -1,4 +1,4 @@
-(println "--> xolotl.xobj")
+(println "    --> xolotl.xobj")
 (ns xolotl.xobj
   (:require [cadejo.midi.node])
   (:require [xolotl.program-bank])
@@ -143,8 +143,7 @@
                            (.midi-program-number! xs (get pmap :midi-program -1)) ))
                        (.midi-reset this)
                        (.sync-ui! @editor*))
-                     (.warning! @editor* (format msg01 slot))))
-                 )
+                     (.warning! @editor* (format msg01 slot)))) )
                  
                cadejo.midi.node/Node
 
@@ -220,13 +219,6 @@
     (reset! editor* (xolotl.ui.xeditor/xolotl-editor xobj))
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]
-                          (.use-program xobj slot)
-                          ))
+                          (.use-program xobj slot)))
     (.show! @editor*)
     xobj))
-
-;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 
-;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
-;;;; TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
-
-;; (def x (xolotl nil))

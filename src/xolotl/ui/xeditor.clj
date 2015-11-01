@@ -1,4 +1,4 @@
-(println "--> xolotl.ui.xeditor")
+(println "    --> xolotl.ui.xeditor")
 (ns xolotl.ui.xeditor
   (:require [cadejo.ui.cadejo-frame :as cframe])
   (:require [cadejo.ui.midi.node-editor])
@@ -52,9 +52,6 @@
                                        (:pan-main pitch-editor)
                                        (:pan-main velocity-editor)
                                        (:pan-main ctrl-2-editor))
-        ;; pan-east (factory/grid-panel 2 1
-        ;;                              (:pan-main ctrl-1-editor)
-        ;;                              (:pan-main ctrl-2-editor))
         pan-south (factory/horizontal-panel
                    (factory/horizontal-strut 250)
                    (:pan-main sr-editor)
@@ -62,9 +59,7 @@
                                            
         pan-main (factory/border-panel :west pan-west
                                        :center pan-center
-                                       :south pan-south
-                                       ;:east pan-east
-                                       )
+                                       :south pan-south)
         sync-fn (fn [prog]
                   ((:sync-fn chan-editor) prog)
                   ((:sync-fn strum-editor) prog)

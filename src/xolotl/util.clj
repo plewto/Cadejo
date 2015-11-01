@@ -15,6 +15,7 @@
   ([obj mn mx]
    (and (int? obj)(>= obj mn)(<= obj mx))))
 
+
 ;; Converts argument to canonical boolean
 ;; treats numeric 0 as false
 ;;

@@ -15,7 +15,8 @@
 
 
 (defn- dispatch [event nodes*]
-  (if trace-all (println (format "Xolotl trace event at %s -> %s" (.format date_formatter (Date.))  event)))
+  (if trace-all (println (format "Xolotl trace event at %s -> %s" 
+                                 (.format date_formatter (Date.))  event)))
   (doseq [c @nodes*]
     ((.event-dispatcher c) event)))
 
@@ -96,7 +97,10 @@
      hold-time  - float, note duration in seconds.
      nodes*  - list of Cadejo nodes
    RETURNS: nil"
-  (if trace-keys (println (format "Xolotl trace-keys c0:%s  keylist: %s  velocity: %s  strum: %s  hold %s" c0 (doall keylist) velocity strum hold-time)))
+  (if trace-keys
+    (println 
+     (format "Xolotl trace-keys c0:%s  klst: %s  vel: %s  strum: %s  hold: %s" 
+                     c0 (doall keylist) velocity strum hold-time)))
   (let [klst (util/->list keylist)]
     (if (and (pos? strum)(> (count klst) 1))
       (strum-notes c0 klst velocity strum strum-mode hold-time nodes*)
@@ -119,7 +123,8 @@
    RETURNS: nil"
   (let [event {:command :control-change :channel c0
                :data1 ctrl :data2 val}]
-    (if trace-controllers (println (format "Xolotl trace-controller %s" event)))
+    (if trace-controllers 
+      (println (format "Xolotl trace-controller %s" event)))
     (dispatch event nodes*)
     nil))
 
@@ -202,7 +207,8 @@
               pad "  "
               pad2 (str pad pad)]
           (.append sb (format "%sTransmitter\n" pad))
-          (.append sb (format "%senabled (depreciated)       -> %s\n" pad2 @enabled*))
+          (.append sb
+                   (format "%senabled (depreciated) -> %s\n" pad2 @enabled*))
           (.append sb (format "%soutput-channel -> %s\n" pad2 @channel*))
           (.append sb (format "%sstrum-mode     -> %s\n" pad2 @strum-mode*))
           (.append sb (format "%sstrum-delay    -> %s\n" pad2 @strum*))

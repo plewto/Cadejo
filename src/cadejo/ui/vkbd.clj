@@ -12,7 +12,8 @@
   (:require [cadejo.util.user-message :as umsg])
   (:require [sgwr.tools.field :as field])
   (:require [sgwr.tools.multistate-button :as msb])
-  (:require [xolotl.xobj])
+                                        ;(:require [xolotl.xobj])
+  (:require [xolotl.xolotl])
   (:require [seesaw.core :as ss])
   (:require [seesaw.color :as ssc]))
 
@@ -267,7 +268,8 @@
                            :id :VKBD})
         parent* (atom nil)
         children* (atom [])
-        xolotl (xolotl.xobj/xolotl children*)
+                                        ;xolotl (xolotl.xobj/xolotl children*)
+        xolotl (xolotl.xolotl/create-sequencer children*)
         vnode (VKbd. parent* children* properties* cframe)
         drw (sfactory/sgwr-drawing width height)
 
@@ -388,26 +390,3 @@
     (reset! xolotl* xolotl) ;; ISSUE for testing only
     (reset! vkbd* vnode)    ;; ISSUE for testing only
     vnode))
-
-
-;; START TEST CODE START TEST CODE START TEST CODE START TEST CODE
-;; START TEST CODE START TEST CODE START TEST CODE START TEST CODE
-;; START TEST CODE START TEST CODE START TEST CODE START TEST CODE
-
-;; (defn start []
-;;   (.start @xolotl*))
-
-;; (defn stop []
-;;   (.stop @xolotl*))
-
-;; (defn dump []
-;;   (.dump @xolotl*))
-
-
-;; (require 'xolotl.program)
-;; (defn test-setup []
-;;   (let [x @xolotl*]
-;;     (.tempo! x 60)
-;;     (.store-program! x 0 xolotl.program/alpha)
-;;     (.use-program x 0)
-;;     x))

@@ -1,3 +1,4 @@
+(println "    --> xolotl.ui.pitch-editor")
 (ns xolotl.ui.pitch-editor
   (:require [xolotl.util :as util])
   (:require [xolotl.ui.factory :as factory])

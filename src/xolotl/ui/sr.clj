@@ -1,11 +1,9 @@
+(println "    --> xolotl.ui.sr")
 (ns xolotl.ui.sr
   (:require [xolotl.ui.factory :as factory])
   (:require [xolotl.util :as util])
   (:import java.awt.event.ActionListener
-           javax.swing.JRadioButton
-           )
-  )
-
+           javax.swing.JRadioButton))
 
 (def bits 12)
 
@@ -17,11 +15,9 @@
                         (let [src (.getSource evn)
                               id (.getClientProperty src :id)
                               n (.getClientProperty src :bit)]
-                          (println (format "%5s %s" id n)))))
-        ]
+                          (println (format "%5s %s" id n)))))]
     (dotimes [i bits]
       (let [j (util/expt 2 i)
-            ;cb (factory/checkbox "")
             cb (JRadioButton.)]
         (.putClientProperty cb :bit i)
         (.putClientProperty cb :value j)
@@ -44,8 +40,6 @@
         (swap! acc* (fn [q](+ q @weight*))))
       (swap! weight* (fn [q](* 2 q))))
     @acc*))
-        
-
 
 (defn sr-editor [parent-editor seq-id]
   (let [xobj (.node parent-editor)
@@ -84,15 +78,6 @@
                     (set-bar-value! cb-seed seed)
                     (set-bar-value! cb-mask mask)
                     (.setSelected cb-inject (util/->bool inject))))]
-    
-    ;; (add-listener (cons cb-inject cb-taps)
-    ;;               (proxy [ActionListener][]
-    ;;                 (actionPerformed [evn]
-    ;;                   (let [prog (.current-program bank)
-    ;;                         val (get-bar-value cb-taps)]
-    ;;                     (.sr-taps! prog seq-id val)
-    ;;                     (.taps! xseq val (.isSelected cb-inject))))))
-
     (add-listener (cons cb-inject cb-taps)
                   (proxy [ActionListener][]
                     (actionPerformed [evn]
@@ -102,7 +87,6 @@
                         (.sr-taps! prog seq-id val)
                         (.sr-inject! prog seq-id inject)
                         (.taps! xseq val inject)))))
-                        
     (add-listener cb-seed (proxy [ActionListener][]
                             (actionPerformed [evn]
                               (let [prog (.current-program bank)
@@ -118,10 +102,5 @@
     (doseq [bar [cb-taps cb-seed cb-mask labs]]
       (doseq [cb bar]
         (.add pan-buttons cb)))
-    
-
     {:pan-main pan-main
-     :sync-fn sync-fn
-     }))
-        
-        
+     :sync-fn sync-fn}))

@@ -114,10 +114,6 @@
                          :else
                          (timebase/sync-clock)))
 
-                 ;; (advance [this]
-                 ;;   (if @enabled* 
-                 ;;     (.step rhythm-counter)))
-
                  (advance [this]
                    (if @enabled*
                      (do
@@ -202,11 +198,7 @@
                          (if (>= prognum 0)
                            (do 
                              (@program-function* prognum)
-                           )
-                           ))))
-                   )
-
-                           
+                           ))))))
 
                  (current-rhythm-value [this]
                    (.value rhythm-pattern))
@@ -257,7 +249,6 @@
 
                                    :else
                                    nil)
-
                              :else
                              nil)))) )]
     (.action! rhythm-counter

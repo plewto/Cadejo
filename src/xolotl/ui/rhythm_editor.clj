@@ -1,3 +1,4 @@
+(println "    --> xolotl.ui.rhythm-editor")
 (ns xolotl.ui.rhythm-editor
   (:require [xolotl.util :as util])
   (:require [xolotl.ui.factory :as factory])
@@ -5,7 +6,7 @@
   (:import javax.swing.event.ChangeListener))
 
 
-;; Maps keywords to clock periods.24 = quarter note
+;; Maps keywords to clock periods. 24 = quarter note
 ;;
 (def ^:private rhythm-map {:W 96, :WT 64, :W. 144,
                            :H 48, :HT 32, :H.  72,

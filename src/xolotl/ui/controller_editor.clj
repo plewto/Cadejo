@@ -1,3 +1,4 @@
+(println "    --> xolotl.ui.controller-editor")
 (ns xolotl.ui.controller-editor
   (:require [xolotl.util :as util])
   (:require [xolotl.ui.factory :as factory])

@@ -1,3 +1,4 @@
+(println "    --> xolotl.ui.bank-editor")
 (ns xolotl.ui.bank-editor
   (:require [xolotl.program-bank])
   (:require [xolotl.ui.factory :as factory])

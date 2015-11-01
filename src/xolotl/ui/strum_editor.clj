@@ -1,3 +1,4 @@
+(println "    --> xolotl.ui.strum-editor")
 (ns xolotl.ui.strum-editor
   (:require [xolotl.ui.factory :as factory])
   (:import java.awt.event.ActionListener

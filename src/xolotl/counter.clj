@@ -1,5 +1,5 @@
+(println "    --> xolotl.counter")
 (ns xolotl.counter)
-
 
 (defprotocol Counter
 

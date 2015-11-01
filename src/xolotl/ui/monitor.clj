@@ -2,9 +2,7 @@
   (:require [xolotl.shift-register])
   (:require [xolotl.util :as util])
   (:require [xolotl.ui.rhythm-editor])
-  (:require [seesaw.core :as ss])
-  
-  )
+  (:require [seesaw.core :as ss]))
 
 ;; clock
 ;;    rhythm

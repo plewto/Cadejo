@@ -1,6 +1,6 @@
+(println "    --> xolotl.shift-register")
 (ns xolotl.shift-register
   (:require [xolotl.util]))
-
 
 (def default-length 12)
 
@@ -201,7 +201,3 @@
            (printf "\tTaps  : %s\n" (.toString b))
            (printf "\tMask  : %s\n" (.toString c))
            (println (format "\tValue : %d" (.value this))))) ))))
-
-
-       
-    

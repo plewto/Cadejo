@@ -1,3 +1,4 @@
+(println "    --> xolotl.ui.channel-editor")
 (ns xolotl.ui.channel-editor
   (:require [xolotl.ui.factory :as factory])
   (:require [seesaw.core :as ss])
@@ -53,7 +54,6 @@
                                             :south (factory/label "Transpose"))
         pan-program (factory/border-panel :center spin-program
                                           :south   (factory/label "Program"))
-                                        ;pan-south (factory/horizontal-panel pan-transpose pan-program)
         pan-south (factory/grid-panel 1 2 pan-transpose pan-program)
         pan-main (factory/border-panel :north pan-channels
                                        :center pan-key-mode

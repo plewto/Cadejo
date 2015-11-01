@@ -1,3 +1,4 @@
+(println "    --> xololt.ui.factory")
 (ns xolotl.ui.factory
   (:require [xolotl.util :as util])
   (:require [seesaw.font :as ssf])
@@ -53,9 +54,7 @@
    (padding 4)))
 
 (defn border [title]
-  (BorderFactory/createTitledBorder (str title))
-  )
-
+  (BorderFactory/createTitledBorder (str title)))
 
 (defn horizontal-strut
   ([n]

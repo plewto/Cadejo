@@ -1,3 +1,4 @@
+(println "    --> xolotl.ui.velocity-editor")
 (ns xolotl.ui.velocity-editor
   (:require [xolotl.util :as util])
   (:require [xolotl.ui.factory :as factory])

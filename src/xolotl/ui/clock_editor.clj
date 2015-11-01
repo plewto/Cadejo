@@ -1,3 +1,4 @@
+(println "    --> xolotl.ui.clock-editor")
 (ns xolotl.ui.clock-editor
   (:require [xolotl.ui.factory :as factory])
   (:import java.awt.event.ActionListener

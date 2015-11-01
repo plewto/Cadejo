@@ -1,4 +1,4 @@
-(println "--> xolotl.program")
+(println "    --> xolotl.program")
 (ns xolotl.program
   (:require [xolotl.util :as util]))
 
@@ -182,8 +182,7 @@
   
   (dump [this])
 
-  (to-map [this])
-  )
+  (to-map [this]))
 
 
 (defn program-to-map [prog]
@@ -293,8 +292,6 @@
      (.strum-mode! prog :B (:strum-mode B :forward))
      (.strum-delay! prog :B (:strum-delay B 0))
      (.midi-program! prog :B (:midi-program B -1))
-     ;; (.repeat! prog :B 0)
-     ;; (.jump! prog :B -1)
      prog)))
 
     
@@ -510,7 +507,6 @@
                           pad2 (str pad pad)]
                       (.append sb "XolotlProgram\n")
                       (.append sb (format "%sname  -> '%s'\n" pad (.program-name this)))
-                                        ; (.append sb (format "%sclock -> %s\n" pad (.clock-source this)))
                       (.append sb (format "%stempo -> %s\n" pad (.tempo this)))
                       (doseq [id [:A :B]]
                         (.append sb (format "%sseq %s\n" pad id))
@@ -518,8 +514,7 @@
                               keys (sort (map first pmap))]
                           (doseq [k keys]
                             (.append sb (format "%s%-21s -> %s\n" pad2 k (get pmap k))))))
-                      (println (.toString sb)))
-                    )) )]
+                      (println (.toString sb))) )))]
     xpobj)) 
  
 
