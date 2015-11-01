@@ -104,6 +104,11 @@
         enable-selection-listener* (atom true)
         lst-programs (ss/listbox :model (create-program-list bank)
                                  :size [180 :by 320])
+        rebuild-list (fn []
+                       (let [model (create-program-list bank)
+                             slot (.getSelectedIndex lst-programs)]
+                         (ss/config! lst-programs :model model)
+                         (.setSelectedIndex lst-programs slot)))
         spin-slot (factory/spinner 0 (dec xolotl.program-bank/bank-length) 1)
         jb-store (factory/button "Store" :font :small)
         tf (factory/text-field "Name")
@@ -122,6 +127,7 @@
                                name (.getText (:text-field tf))]
                            (.program-name! prog name)
                            (.store-program! bank slot prog)
+                           (rebuild-list)
                            (.status! @parent-editor* (format "Xolotl program '%s' saved" name)))))
         
         open-action (proxy [ActionListener][]

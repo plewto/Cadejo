@@ -58,18 +58,30 @@
         pan-main (factory/border-panel :north pan-channels
                                        :center pan-key-mode
                                        :south pan-south)
-        reset-action (proxy [ActionListener][]
-                       (actionPerformed [_]
-                         (.enable-reset-on-first-key! xseq (.isSelected cb-reset))))
         enable-action (proxy [ActionListener][]
                         (actionPerformed [_]
-                          (.enable! xseq (.isSelected cb-enable))))
-        gate-action (proxy [ActionListener][]
+                          (let [flag (.isSelected cb-enable)
+                                prog (.current-program bank)]
+                            (.enable! xseq flag)
+                            (.enable! prog seq-id flag))))
+        reset-action (proxy [ActionListener][]
                        (actionPerformed [_]
-                         (.enable-key-gate! xseq (.isSelected cb-gate))))
+                         (let [flag (.isSelected cb-reset)
+                               prog (.current-program bank)]
+                           (.enable-reset-on-first-key! xseq flag)
+                           (.key-reset! prog seq-id flag))))
+        gate-action (proxy [ActionListener][]
+                      (actionPerformed [_]
+                        (let [flag (.isSelected cb-gate)
+                              prog (.current-program bank)]
+                          (.enable-key-gate! xseq flag) 
+                          (.key-gate! prog seq-id flag))))
         track-action (proxy [ActionListener][]
                        (actionPerformed [_]
-                         (.enable-key-track! xseq (.isSelected cb-track))))
+                         (let [flag (.isSelected cb-track)
+                               prog (.current-program bank)]
+                           (.enable-key-track! xseq flag)
+                           (.key-track! prog seq-id flag))))
         input-chan-listener (proxy [ChangeListener][]
                               (stateChanged [_]
                                 (.input-channel! xseq (dec (int (.getValue spin-input))))))
@@ -85,12 +97,17 @@
                                  (.setText lab-warning msg01)))))
         transpose-listener (proxy [ChangeListener][]
                              (stateChanged [_]
-                               (.transpose! xseq (int (.getValue spin-transpose)))))
+                               (let [n (int (.getValue spin-transpose))
+                                     prog (.current-program bank)]
+                                 (.transpose! xseq n)
+                                 (.transpose! prog seq-id n))))
         midi-program-listener (proxy [ChangeListener][]
                                 (stateChanged [_]
-                                  (let [prognum (.getValue spin-program)]
-                                    (.generate-program-change transmitter prognum)
-                                    (.midi-program-number! xseq (int (.getValue spin-program))))))
+                                  (let [n (.getValue spin-program)
+                                        prog (.current-program bank)]
+                                    (.generate-program-change transmitter n)
+                                    (.midi-program-number! xseq n)
+                                    (.midi-program! prog seq-id n)))) 
         sync-fn (fn [prog]
                   (let [true? (fn [obj]
                                 (if (or (not obj)(= obj 0)) false true))
@@ -117,6 +134,5 @@
                                      (actionPerformed [_]
                                        (let [mon (.get-monitor xseq)]
                                          ((:fn-enable mon)(.isSelected cb-monitor))))))
-
     {:pan-main pan-main
-     :sync-fn sync-fn}))
+     :sync-fn sync-fn})) 

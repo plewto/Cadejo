@@ -72,9 +72,9 @@
                                        :center pan-buttons
                                        :west pan-west
                                        :border (factory/border "Shift Register"))
-        add-listener (fn [bb f]
-                       (doseq [b bb]
-                         (.addActionListener b f)))
+        add-listener (fn [blst listener]
+                       (doseq [b blst]
+                         (.addActionListener b listener)))
         sync-fn (fn [prog]
                   (let [taps (.sr-taps prog seq-id)
                         seed (.sr-seed prog seq-id)
@@ -84,13 +84,25 @@
                     (set-bar-value! cb-seed seed)
                     (set-bar-value! cb-mask mask)
                     (.setSelected cb-inject (util/->bool inject))))]
+    
+    ;; (add-listener (cons cb-inject cb-taps)
+    ;;               (proxy [ActionListener][]
+    ;;                 (actionPerformed [evn]
+    ;;                   (let [prog (.current-program bank)
+    ;;                         val (get-bar-value cb-taps)]
+    ;;                     (.sr-taps! prog seq-id val)
+    ;;                     (.taps! xseq val (.isSelected cb-inject))))))
+
     (add-listener (cons cb-inject cb-taps)
                   (proxy [ActionListener][]
                     (actionPerformed [evn]
                       (let [prog (.current-program bank)
-                            val (get-bar-value cb-taps)]
+                            val (get-bar-value cb-taps)
+                            inject (.isSelected cb-inject)]
                         (.sr-taps! prog seq-id val)
-                        (.taps! xseq val (.isSelected cb-inject))))))
+                        (.sr-inject! prog seq-id inject)
+                        (.taps! xseq val inject)))))
+                        
     (add-listener cb-seed (proxy [ActionListener][]
                             (actionPerformed [evn]
                               (let [prog (.current-program bank)
