@@ -126,7 +126,8 @@
                          (let [event {:command :program-change
                                       :channel @input-channel*
                                       :data @jump*}]
-                           (@program-function* @jump*))))))
+                           (@program-function* @jump*)
+                           (.midi-reset this))))))
                  
                  (tempo! [this bpm]
                    (reset! tempo* (float bpm)))

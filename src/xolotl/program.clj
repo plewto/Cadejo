@@ -69,6 +69,8 @@
 
 (defprotocol XolotlProgram
 
+  (clone [this])
+  
   (program-name [this])
 
   (program-name! [this txt])
@@ -267,8 +269,8 @@
      (.strum-mode! prog :A (:strum-mode A :forward))
      (.strum-delay! prog :A (:strum-delay A 0))
      (.midi-program! prog :A (:midi-program A -1))
-     (.repeat! prog :A (:repeat A 0))
-     (.jump! prog :A (:jump A -1))
+     (.repeat! prog (:repeat A 0))
+     (.jump! prog (:jump A -1))
      (.enable! prog :B (:enabled B true))
      (.key-reset! prog :B (:key-reset B false))
      (.key-track! prog :B (:key-track B true))
@@ -310,6 +312,10 @@
                          (throw (IllegalArgumentException. (format msg00 key)))))))
         xpobj (reify XolotlProgram
 
+                (clone [this]
+                  (let [pmap (program-to-map this)]
+                    (map-to-program pmap)))
+                
                 (program-name [this] 
                   @name*)
 

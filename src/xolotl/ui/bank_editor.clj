@@ -121,8 +121,13 @@
                                        )
         store-action (proxy [ActionListener][]
                        (actionPerformed [_]
-                         (println "ISSUE: bank-editor.store-action NOT implemented")
-                         ))
+                         (let [prog (.clone (.current-program bank))
+                               slot (int (.getValue spin-slot))
+                               name (.getText (:text-field tf))]
+                           (.program-name! prog name)
+                           (.store-program! bank slot prog)
+                           (.status! @parent-editor* (format "Xolotl program '%s' saved" name)))))
+        
         open-action (proxy [ActionListener][]
                       (actionPerformed [_]
                         (println "ISSUE: bank-editor.open-action NOT implemented")
