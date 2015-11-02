@@ -78,18 +78,23 @@
                        (swap! acc* (fn [q](conj q (format "%-12s" (.program-name p)))))))
                    @acc*))
 
+               ;; return file name if sucess
+               ;; return nil on IOException
                (write-bank [this filename]
-                 (let [data (let [acc* (atom {})]
-                              (doseq [[k p] @programs*]
-                                (swap! acc* (fn [q](assoc q k (.to-map p)))))
-                              @acc*)
-                       rec {:file-type :xolotl-bank
-                            :data-format :xolotl
-                            :name ""
-                            :remarks ""
-                            :programs data}]
-                   (spit filename (pr-str rec))
-                   filename))
+                 (try
+                   (let [data (let [acc* (atom {})]
+                                (doseq [[k p] @programs*]
+                                  (swap! acc* (fn [q](assoc q k (.to-map p)))))
+                                @acc*)
+                         rec {:file-type :xolotl-bank
+                              :data-format :xolotl
+                              :name ""
+                              :remarks ""
+                              :programs data}]
+                     (spit filename (pr-str rec))
+                     filename)
+                   (catch java.io.IOException ex
+                     nil)))
 
                (read-bank! [this filename]
                  (let [rec (read-string (slurp filename))

@@ -90,7 +90,7 @@
                    (.midi-reset xs)))
 
                (kill-all-notes [this]
-                 (doseq [xs xseq]
+                 (doseq [xs xseqs]
                    (.kill-all-notes xs)))
                
                (global-param! [this key val]

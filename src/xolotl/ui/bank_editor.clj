@@ -1,5 +1,7 @@
 (println "    --> xolotl.ui.bank-editor")
 (ns xolotl.ui.bank-editor
+  (:require [cadejo.util.path :as path])
+  (:require [cadejo.ui.util.overwrite-warning])
   (:require [xolotl.program-bank])
   (:require [xolotl.ui.factory :as factory])
   (:require [xolotl.util :as util])
@@ -12,6 +14,11 @@
 
 (def bank-length xolotl.program-bank/bank-length)
 (def bank-extension xolotl.program-bank/bank-extension)
+
+(def file-filter (seesaw.chooser/file-filter
+                  (format "%s Bank" bank-extension)
+                  (fn [f] 
+                    (path/has-extension? (.getAbsolutePath f) bank-extension))))
 
 ;; Holds Program bank editor in JPanel
 ;; widgets:
@@ -58,38 +65,48 @@
     (ss/show! dia)
     @selection*))
 
-;; (defn bank-overwrite-warning [parent filename]
-;;    (let [selection* (atom false)
-;;         msg (format "Replace xolotl bank '%s'" filename)
-;;         yes-fn (fn [d] 
-;;                  (swap! selection* (fn [n] true))
-;;                  (ss/return-from-dialog d true))
-;;         no-fn (fn [d] 
-;;                 (swap! selection* (fn [n] false))
-;;                 (ss/return-from-dialog d false))
-;;         dia (ss/dialog 
-;;              :content msg
-;;              :option-type :yes-no
-;;              :type :warning
-;;              :default-option :no
-;;              :modal? true
-;;              :parent parent
-;;              :success-fn yes-fn
-;;              :no-fn no-fn)]
-;;     (ss/pack! dia)
-;;     (ss/show! dia)
-;;     @selection*))
+(defn- save-dialog [editor bank]
+  (let [cancel (fn [& _](.status! editor "Bank Save Canceled"))
+        success (fn [_ f]
+                  (let [abs (path/append-extension (.getAbsolutePath f)
+                                                   bank-extension)]
+                    (if (cadejo.ui.util.overwrite-warning/overwrite-warning
+                         (:pan-main editor) "Xolotl Bank" abs)
+                      (if (.write-bank bank abs)
+                        (.status! editor (format "Bank saved to '%s'" abs))
+                        (.warning! editor (format "Can not save bank to '%s'" abs)))
+                      (cancel))))
+        dia (seesaw.chooser/choose-file
+             :type "Save Xolotl Bank"
+             :multi? false
+             :selection-mode :files-only
+             :filters [file-filter]
+             :remember-directory? true
+             :success-fn success
+             :cancel-fn cancel)]
+    dia))
 
-;; (defn save-dialog [bank parent]
-;;   (let [cancel (fn [& _] (.status! parent "Bank Save Canceld"))
-;;         success (fn [_ f]
-;;                   (let [abs (util/append-extension (.getAbsolutePath f) bank-extension)]
-;;                     (if (bank-overwrite-warning parent abs)
-;;                       (do 
-;;                         (.write-bank bank abs)
-;;                         (.status! parent (format "Xolotl bankd saved to '%s'" abs)))
-;;                       (cancel))))
-;;         dia (
+(defn- open-dialog [editor bank]
+  (let [cancel (fn [& _](.status! editor "bank Read Canceled"))
+        success (fn [_ f]
+                  (let [abs (.getAbsolutePath f)]
+                    (if (.read-bank! bank abs)
+                      (do
+                        (.sync-ui! editor)
+                        (.status! editor (format "Read Xolotl Bank '%s'" abs)))
+                      (do
+                        (.warning! bank (format "Could not read '%s' as Xolotl bank"))))))
+        dia (seesaw.chooser/choose-file
+             :type "Open Xolotl bank"
+             :multi? false
+             :selection-mode :files-only
+             :filters [file-filter]
+             :remember-directory? true
+             :success-fn success
+             :cancel-fn cancel)]
+    dia))
+                        
+                        
 
 
 ;; Creates bank-editor panel
@@ -130,16 +147,6 @@
                            (.store-program! bank slot prog)
                            (rebuild-list)
                            (.status! @parent-editor* (format "Xolotl program '%s' saved" name)))))
-        
-        open-action (proxy [ActionListener][]
-                      (actionPerformed [_]
-                        (println "ISSUE: bank-editor.open-action NOT implemented")
-                        ))
-        save-action (proxy [ActionListener][]
-                      (actionPerformed [_]
-                        (println "ISSUE: bank-editor.save-action NOT implemented")
-                        ))
-
         selection-listener (proxy [ListSelectionListener][]
                              (valueChanged [_]
                                (cond
@@ -172,14 +179,22 @@
                                         (.setListData lst-programs (create-program-list bank))
                                         (.use-program bank 0)
                                         (.sync-ui! @parent-editor*)
-                                        (.status! @parent-editor* "Xolotl Bank Initilized"))
-                                      (.status! @parent-editor* "Bank initilization canceld")))))
+                                        (.status! @parent-editor* "Xolotl Bank Initialized"))
+                                      (.status! @parent-editor* "Bank initialization canceled")))))
     
     (.addActionListener jb-store store-action)
-    (.addActionListener jb-open open-action)
-    (.addActionListener jb-save save-action)
+    (.addActionListener jb-save (proxy [ActionListener][]
+                                  (actionPerformed [_]
+                                    (save-dialog @parent-editor* bank))))
+    (.addActionListener jb-open (proxy [ActionListener][]
+                                  (actionPerformed [_]
+                                    (try
+                                      (open-dialog @parent-editor* bank)
+                                      (rebuild-list)
+                                      (catch Exception ex
+                                        (.warning! @parent-editor* (.getMessage ex)))))))
+                                                   
     (.addListSelectionListener lst-programs selection-listener)
-    
     {:pan-main pan-main
      :set-parent-editor (fn [ed](reset! parent-editor* ed))
      :sync-fn sync-fn}))

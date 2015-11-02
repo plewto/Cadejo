@@ -66,7 +66,7 @@
   (let [enabled* (atom true)
         clock-mode* (atom :internal)
         tempo* (atom 60)
-        input-channel* (atom 0)
+        input-channel* (atom 15)
         reset-on-key* (atom false)
         key-track-scale* (atom 1)  ;; 0 (disabled) or 1 (enabled)
         key-gate-mode* (atom false)

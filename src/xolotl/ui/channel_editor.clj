@@ -120,6 +120,7 @@
                     (.setSelected cb-track (true? (.key-track prog seq-id)))
                     (.setSelected cb-gate (true? (.key-gate prog seq-id)))))]
     (.setBorder pan-channels (factory/border "MIDI Channels"))
+    (.setValue spin-input 16)
     (.addActionListener cb-reset reset-action)
     (.addActionListener cb-enable enable-action)
     (.addActionListener cb-gate gate-action)
