@@ -11,5 +11,3 @@
                  [overtone "0.9.1"]]
   :jvm-opts ^:replace []
   :main cadejo.core)
-  ;:main xolotl.xobj)
-
