@@ -40,7 +40,7 @@
         plst (.program-names bank)]
     (doseq [pn plst]
       (.add vcc (format-program-cell @slot* pn))
-      (swap! slot* +))
+      (swap! slot* inc))
     vcc))
 
 (defn bank-init-warning [parent]
