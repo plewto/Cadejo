@@ -217,14 +217,14 @@
 
 (defn combo-poly [scene chan id & {:keys [cc1 voice-count main-out]
                                    :or {cc1 1
-                                        voice-count 8
+                                        voice-count 6
                                         main-out 0}}]
   (let [km (cadejo.midi.poly-mode/poly-keymode :Combo voice-count)]
     (--combo-poly scene chan id km cc1 voice-count main-out)))
 
 (defn combo-poly-rotate [scene chan id & {:keys [cc1 voice-count main-out]
                                           :or {cc1 1
-                                               voice-count 8
+                                               voice-count 6
                                                main-out 0}}]
   (let [km (cadejo.midi.poly-rotate-mode/poly-rotate-mode :Combo voice-count)]
     (--combo-poly scene chan id km cc1 voice-count main-out)))

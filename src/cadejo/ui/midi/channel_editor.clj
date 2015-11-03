@@ -54,7 +54,7 @@
         pan-mainbus (ss/vertical-panel :items [spin-mainbus]
                                        :border (factory/title "Output bus"))
         spin-voice-count (ss/spinner
-                          :model (ss/spinner-model 8 :from 1 :to 32 :by 1))
+                          :model (ss/spinner-model 6 :from 1 :to 32 :by 1))
         pan-voice-count (ss/vertical-panel
                          :items [spin-voice-count]
                          :border (factory/title "Voice Count"))
