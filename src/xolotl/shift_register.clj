@@ -98,6 +98,14 @@
      RETURNS: - int, the value of the register after shifting contents
                 right and adding in feedback.")
 
+  (period [this ibnject]
+    "(.period ShiftRegister)
+     Determin period of shift-register
+     Register is first initialized and then stepped through a fixed number
+     of 'prerun' iterations to elimnate any transients.
+     After the prerun the register value is sampled and then steeped until
+     it's output agian matches the sampled value.")
+  
   (dump [this]
     "(.dump ShiftRegister)
      Print diagnostics of current register state."))
@@ -180,6 +188,18 @@
          (let [fb (.feedback this inject)]
            (swap! value* (fn [q](bit-and limit-mask (+ (* 2 q) fb))))
            @value*))
+
+       (period [this inject]
+         (let [prerun 100
+               counter* (atom 0)
+               ivalue* (atom 0)]
+           (.midi-reset this)
+           (dotimes [i prerun](.shift this inject))
+           (reset! ivalue* (.value this))
+           (while (or (not (= (.value this) @ivalue*))(zero? @counter*))
+             (swap! counter* inc)
+             (.shift this inject))
+           @counter*))
        
        (dump [this]
          (let [state (.stages this)

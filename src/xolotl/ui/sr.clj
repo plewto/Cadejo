@@ -49,6 +49,7 @@
         cb-seed (button-bar :seed)
         cb-mask (button-bar :mask)
         cb-inject (factory/checkbox "Inject")
+        jb-period (factory/button "P?")
         labs (let [acc* (atom [])]
                (dotimes [i bits]
                  (let [lb (factory/label (format "%2d" (inc i)))]
@@ -61,6 +62,7 @@
                                      (factory/label "Mask")
                                      (factory/label ""))
         pan-north (factory/border-panel
+                   :west jb-period
                    :east cb-inject)
         pan-main (factory/border-panel :north pan-north
                                        :center pan-buttons
@@ -78,6 +80,13 @@
                     (set-bar-value! cb-seed seed)
                     (set-bar-value! cb-mask mask)
                     (.setSelected cb-inject (util/->bool inject))))]
+    (.addActionListener jb-period (proxy [ActionListener][]
+                                    (actionPerformed [_]
+                                      (let [sr (.get-shift-register xseq)
+                                            inj (if (.isSelected cb-inject) 0 1)
+                                            p (.period sr inj)]
+                                        (.status! parent-editor
+                                                  (format "Shift Register period is %s" p))))))
     (add-listener (cons cb-inject cb-taps)
                   (proxy [ActionListener][]
                     (actionPerformed [evn]

@@ -14,6 +14,8 @@
 
   (midi-reset [this])
 
+  (get-shift-register [this])
+  
   (velocity-mode! [this vmode]
     "(.velocity-mode! PitchBlock vmode)
      Sets velocity pattern index mode.
@@ -119,6 +121,8 @@
                         velocity-counter pitch-counter)]
           (.midi-reset c)))
 
+      (get-shift-register [this] sregister)
+      
       (velocity-mode! [this vmode]
         (reset! velocity-mode* vmode))
 

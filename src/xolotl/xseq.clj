@@ -21,6 +21,8 @@
   
   (get-clock [this])  ;; return clock module
 
+  (get-shift-register [this])
+  
   (get-transmitter [this])
   
   (clock-select! [this mode])
@@ -78,7 +80,11 @@
   ;; General 
 
   (dump-state [this])
-  
+
+  ;; Return period of shift-register
+  ;; For lone registers this may taks some time
+  (sr-period [this])
+
   (enable! [this flag])
 
   (kill-all-notes [this])
@@ -128,6 +134,9 @@
                
                (get-clock [this] clock)
 
+               (get-shift-register [this]
+                 (.get-shift-register pitch-block))
+               
                (get-transmitter [this] transmitter)
                
                (clock-select! [this mode]
