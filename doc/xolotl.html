@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="index,follow,archive">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'/>
+  <title>Xolotl Sequencer</title>
+</head>
+<body>
+<div id="page_wrapper">
+  <!-- START HEADER -->
+  <header>
+    <img class="banner_image" src="images/xolotl_logo.png" alt="Xolotl Sequencer"/>
+    <h1 class="banner_text">Xolotl Sequencer</h1>
+  </header>
+  <!-- END HEADER -->
+  <!-- START NAVIGATION -->
+  <p class="static_navigation">
+      <a class="navigation" href="cobalt.html">Previous</a>
+      <a class="navigation" href="#.html">Next</a>
+      <a class="navigation" href="xolotl.html">Home</a>
+  </p>
+
+<ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#clock">Clock and Tempo</a></li>
+    <li><a href="#seq">Sequences A and B</a></li>
+    <li><a href="#channels">MIDI channels</a></li>
+    <li><a href="#options">Enable</a></li>
+    <li><a href="#options">Key Reset, Gate and Track</a></li>
+    <li><a href="#options">Transpose</a></li>
+    <li><a href="#options">Program Changes</a></li>
+    <li><a href="#rhythm">Rhythm Pattern</a></li>
+    <li><a href="#hold">Hold Pattern</a></li>
+    <li><a href="#pitch">Pitch Pattern</a></li>
+    <li><a href="#velocity">Velocity Pattern</a></li>
+    <li><a href="#velocity">Controller Patterns</a></li>
+    <li><a href="#shiftregister">Shift Register</a></li>
+    <li><a href="#toolbar">Toolbar</a></li>
+    <li><a href="#bank">Program Bank</a></li>
+</ul>  <!-- END NAVIGATION -->
+  <!-- START SECTION Overview -->
+  <a id="overview"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Overview</h2>
+    </div>
+<p>Xolotl (pronounced "szho-low-till") is a "recombinant" sequencer and MIDI
+pattern generator. <br>
+
+Rhythm and pitch patterns are specified separately. If the patterns have<br>
+the same length they will always produce the same sequence of events. If<br>
+they have different lengths then each time through the rhythm pattern the<br>
+pitch pattern will start at a different location, thus the term<br>
+recombinant. There are two independent sequences (A and B) which may<br>
+operate on different MIDI channels. In addition to rhythm and pitch<br>
+patterns each sequence also contains hold time, velocity and 2 MIDI<br>
+controller patterns. A sequence may transmit a MIDI program change when it<br>
+starts.<p>
+
+Elements in the pitch and velocity patterns may be selected either in<br>
+sequence, at random or by the output of a linear-feedback shift register.<p>
+
+There is a bank of 128 xolotl programs which may be recalled either by<br>
+external MIDI program change or by clicking on the bank list. Xolotl<br>
+programs may be chained together, after a specified number of repeats one<br>
+xolotl program may jump to another program.<p>  </div>
+  </section>
+  <!-- END SECTION Overview -->
+    <div class="section_image1">
+      <img class="image1" src="images/xolotl_frame.png" alt="Xolotl Frame"/>
+    </div><br>
+  <!-- START SECTION Clocks and Tempo -->
+  <a id="clock"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Clocks and Tempo</h2>
+    </div>
+<p>
+The two sequences A and B share a common clock source. By default an<br>
+internal clock is used.  Provisions for using an external MIDI clock are<br>
+provided but have not been tested. One caveat when using an external clock<br>
+is that you must tell Xolotl what the tempo is. The clock resolution is 24<br>
+ticks per quarter note. The internal clock is global and all instances of<br>
+cadejo/Xolotl use the same clock. Tempo may be set between 20 and 300 
+BPM.</p>  </div>
+  </section>
+  <!-- END SECTION Clocks and Tempo -->
+  <!-- START SECTION Squences A and B -->
+  <a id="seq"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Squences A and B</h2>
+    </div>
+<p>
+Each instance of Xolotl contains two independent sequences; 'A' and 'B'.<br>
+With exception of the clock source, tempo and current program, these two<br>
+sequences are completely independent. The parameters for A and B are nearly<br>
+identical. The only exception is that sequence A has parameters related to<br>
+jumping to another Xolotl program after a predetermined number of
+iterations.</p>  </div>
+  </section>
+  <!-- END SECTION Squences A and B -->
+  <!-- START SECTION MIDI Channels -->
+  <a id="channels"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">MIDI Channels</h2>
+    </div>
+    <div class="section_image2">
+      <div class="section_image2_left">
+        <p>Each sequence has independent MIDI input and output channels.</p>
+        
+        <p>MIDI input is used for three purposes:<p>
+        <ul>
+           <li>Program Changes<br>
+               External program changes may be used to select a Xolotl program.
+               <p class="footnote">A and B may have different input channels. Program
+               changes on either input channel will change the program for both A and
+               B.</li>
+           <li>Transposition<br>
+               MIDI key events may be used to transpose the sequencer.  For example
+               if a sequencer is playing a major arpeggio, press a C key causes a
+               c-major arpeggio, pressing G produces a G arpeggio etc.<br><p></p></li>
+           <li>Gating sequencer output<br>
+               MIDI key events may be set to turn sequencer output on or off.</li>
+        </ul>
+        
+        <p>MIDI output channel sets the channel on which the sequence transmits
+        events. </p>
+        <p class="footnote">Note the input and output channels should not be the
+        same as this may set up a feedback situation. A small warning message
+        appears whenever the input and output channels are identical.</p>
+      </div>
+      <div class="section_image2_right">
+        <img src="images/xolotl_channel.png" alt="Xolotl Channel Selection" />
+      </div>
+    </div><p></p>
+  </div>
+  </section>
+  <!-- END SECTION MIDI Channels -->
+  <!-- START SECTION Options -->
+  <a id="options"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Options</h2>
+    </div>
+    <div class="section_image2">
+      <div class="section_image2_left">
+        <ul>
+          <li>Enable - enable/disable sequence<p></p></li>
+          <li>Key Reset<br>
+              If selected every time an initial key is played from an external
+              source a MIDI reset event is generated. This has the effect of
+              starting the sequence over. A rest is only generated on an initial
+              key press.<p><p></li>
+          <li>Key Gate<br>
+              If selected the sequencer will only produce events if a key is
+              being held down on the input channel.<p></p></li>
+          <li>Key Track<br>
+              If selected the sequencer pitch pattern is transposed by incoming
+              key events. If key track is not selected a reasonable transpose value
+              should be set.<p></p></li>
+          <li>Transpose<br>
+              Transposition amount in MIDI key numbers. A transpose value of 0
+              corresponds with middle C, key-number 60.<p></p></li>
+          <li>Program<br>
+              MIDI program number to transmit when sequence starts. A value of -1
+              turns this feature off.
+              <p class="footnote">This value should not be confused with the Xolotl
+              program number. Briefly the Xolotl program number sets the
+              current configuration of Xolotl. This program value causes a program
+              change event to be transmitted by Xolotl to select a synth patch.
+              </p></li>
+           <li>Mon<br>
+               Selecting the mon checkbox enables a debug monitor. Selected
+               information is printed to the terminal whenever the sequencer is
+               stepped. There is no monitor output while the sequencer is running.</li>
+        </ul>
+      </div>
+      <div class="section_image2_right">
+        <img src="images/xolotl_options.png" alt="Xolotl Seq Options" />
+      </div>
+    </div><p></p>
+  </div>
+  </section>
+  <!-- END SECTION Options -->
+  <!-- START SECTION Rhythm Pattern -->
+  <a id="rhythm"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Rhythm Pattern</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/xolotl_rhythm.png" alt="Xolotl Rhythm editor"/>
+    </div><br>
+
+<p>The rhythm pattern sets the master rhythmic motif and is repeated endlessly<br>
+unless steps are taken otherwise. The rhythm may be specified either<br>
+numerically or symbolically. If number are used they must be positive<br>
+integers where 24 indicates a quarter note. The pattern '24 12 12'<br>
+indicates a quarter note followed by two eighth notes. A more friendly<br>
+method is to specify the rhythm symbolically. The following basic symbols are<br>
+recognized: W, H, Q, E, S and T for whole, half, quarter, eighth, sixteenth<br>
+and thirty-second note respectively.</p>
+
+<p>Dotted times are indicated by placing a period to the right of the root<br>
+time. thus 'H.' indicates a dotted half note.  Dotted notes are not<br>
+available for thirty-second notes.</p>
+
+<p>Triplets are indicated by a 't' to the right of the root time. 'QT'<br>
+indicates a quarter note triplet.</p>
+
+<p>All of the pattern editors actively monitor their contents for<br>
+validity. When invalid text is entered the background switches to an<br>
+alarming color and a descriptive message appears on the status line. The<br>
+internal sequencer state is updated automatically as soon as the pattern<br>
+text is valid.</p>
+
+<p>In general pattern text is not case sensitive and white space is used to<br>
+separate values.</p>
+
+<p>The sequence A pattern contains two controls missing with sequence B;<br>
+'repeat' and 'jump'. The repeat value sets the number of times <br>
+the rhythm pattern is played before switching to another Xolotl<br>
+program. If repeat is set to 0 the pattern will play indefinitely.</p>
+
+<p>The jump value indicates which Xolotl program to switch to. If jump is set<br>
+to -1 it is disabled and the pattern will repeat indefinitely.</p>  </div>
+  </section>
+  <!-- END SECTION Rhythm Pattern -->
+  <!-- START SECTION Hold Pattern -->
+  <a id="hold"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Hold Pattern</h2>
+    </div>
+<b>The hold pattern sets how each note is articulated in terms of relative<br>
+note duration. A hold value of 1.00 holds a note for 100 percent of it's<br>
+duration. Values greater then 1.0 sustain notes over each other while<br>
+values less then 1.0 cause a staccato articulation.</p>
+
+<p>The length of the hold pattern interacts with the length of the rhythm<br>
+pattern. The default hold pattern is simply the single value '1.00' which<br>
+means every note gets it's entire duration. A rhythm pattern 'Q' with<br>
+a hold pattern of '1.00' indicates an endless string of quarter notes. If<br>
+we change the hold pattern to '1.00 &nbsp;&nbsp;0.50' the resulting pattern is more<br>
+like a quarter note followed by an eighth note followed by an eighth
+rest.</p>  </div>
+  </section>
+  <!-- END SECTION Hold Pattern -->
+  <!-- START SECTION Pitch patterns -->
+  <a id="pitch"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Pitch patterns</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/xolotl_pitch.png" alt="Xolotl Pitch Editor"/>
+    </div><br>
+<p>Pitches may be specified either numerically or symbolically. Pitch<br>
+values are relative to the external key number (if key-track is enabled)<br>
+and the transpose amount. A pitch value of 0 indicates that the pitch of<br>
+the most recent key pressed is to be used, or if key-track is disabled the<br>
+value of transpose. A pitch value of -12 indicates an octave lower etc. By<br>
+default the external key number is 60 (middle C) whether a key has been<br>
+depressed or not.  The sequence '0 2 4 5 7 9 10' indicates an acceding<br>
+major scale.</p>
+
+<p>A better way is to use symbolic pitch names. All pitch names have the form<br>
+'P[M]O' where P is the root pitch and one of C D E F G A or B, and O is an<br>
+octave number and must be one of -4 -3 -2 -1 0 1 2 3 or 4. The pitch 'C0'<br>
+corresponds to integer value 0, C-1 to -12 and C1 to +12 etc.  The M<br>
+component is an optional modifier and may be either 'F' for flat or 'S' for<br>
+sharp. Enharmonic values are defined so that 'CF0' is a valid pitch for<br>
+C-flat zero.</P
+
+<p>The special pitch 'R' indicates a rest. Internally rest are indicated by<br>
+negative pitch values. The numeric value of R is -1000.</p>
+
+<p>Chords are defined by enclosing a sequence of pitches in square brackets.<br>
+The sequence 'C0 D0 E0 F0 G0 A0 B0 C1 [C0 E0 G0]' produces a c-major scale<br>
+followed by a major chord. Brackets must be balanced and nested brackets<br>
+are not allowed.</p>
+
+
+<p>There are three ways notes from the pitch pattern are selected.</p>
+<ul>
+   <li>SEQ - notes are used in strict sequence</li>
+   <li>RND - notes are selected randomly</li>
+   <li>SR  - notes are selected by the output of a <a href="#shiftregister">shift-register</a></li>
+</ul>
+
+<p>As with the hold pattern if the pitch pattern length does not match the<br>
+length of the rhythm pattern then the two patterns interact to produce an<br>
+evolving sequence of events. </p>
+
+<p>To the left of the pitch pattern and immediately below the transpose slider<br>
+is a small box for setting how chords are played. There are two values, a<br>
+delay time and a direction mode. If the delay time is greater then 0 <br>
+all chords are "strummed" with each note being delayed by the indicated<br>
+time in milliseconds. The four radio buttons select the direction the strum.</p>  </div>
+  </section>
+  <!-- END SECTION Pitch patterns -->
+  <!-- START SECTION Velocity and Controllers -->
+  <a id="velocity"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Velocity and Controllers</h2>
+    </div>
+<p>The velocity and controller patterns are similar to the hold pattern<br>
+except are specified as integers between 0 and 127 inclusive. The velocity<br>
+pattern has the same selection options as the pitch pattern. The two<br>
+controls below the controller pattern editors select the MIDI controller<br>
+number. A value of -1 turns the controller off.</p>  </div>
+  </section>
+  <!-- END SECTION Velocity and Controllers -->
+  <!-- START SECTION Shift Register -->
+  <a id="shiftregister"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Shift Register</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/xolotl_shift_register_banner.png" alt="Shift Register"/>
+    </div><br>
+<b>The <a
+href="https://en.wikipedia.org/wiki/Shift_register">Shift Register</a>
+is used to produce complex periodic signals. Conceptually a<br>
+shift-register (as used by Xolotl) is a linear array of cells, each holding a<br>
+binary value of either 0 or 1. At intervals determined by the rhythm-pattern<br>
+the cell contents are shifted to the right and a new value is shifted into<br>
+the vacated left-most cell. The value shifted into the left is determined<br>
+by selecting or "tapping" some of the cells and summing their values. If<br>
+the sum is even the new value is 0 otherwise it is 1. A separate "inject"<br>
+value may optionally be added to the feedback sum.</p>
+
+<b>At any single time the 'value' of the register is taken as the weighted<br>
+sum of the cells from left to right (MSB on the right).  The exact sequence<br>
+of values produced by the register is largely determined by the selection of<br>
+taps and the initial or "seed" value.  The 'period' of the register is the<br>
+number of values it produces in sequence before returning to the initial<br>
+state.  For a register of n-bits the maximum period is 2^n. The shift<br>
+register used by Xolotl has a maximum length of 12 bits so the upper limit<br>
+of period length is 4096 steps. The reality however is that most<br>
+tap combinations do not produce the maximum period. These shorter patterns<br>
+are actually more interesting as longer periods tend to sound random.</p>
+
+<b>The shift-register output may be used to select notes or chords from the<br>
+pitch pattern or velocity values from the velocity pattern. Since the range<br>
+of values an n-bit register may produce (between 0 and 2^n-1) is likely<br>
+larger then the number of elements to be selected, the register value is<br>
+taken modulo to the pattern length. Changes made to a pattern, either by<br>
+insertion, deletion or rearrangement will produce different sequences.</p>
+
+<b>There are three sets of shift-register controls in the form of three rows<br>
+of radio buttons. The top row selects which stages are to be used for<br>
+feedback.</p>
+
+<b>The middle row selects the initial or "seed" value.</p>
+
+<b>The bottom row is a mask applied to the registers output. You may shorten<br>
+the register by unselected all buttons to the right of the desired<br>
+length. The mask does not effect the tap values so any selected tap to the<br>
+right may still influence the register's behavior.  The mask may also be<br>
+used to eliminate selected bits from contributing to the output.</p>
+
+<b>The final shift-register control is the inject button. When selected<br>
+inject adds one to the feedback count. Usually this results in a different <br>
+pattern. It may also be used to prevent the register from freezing up. If<br>
+the register ever contains all zeros then it is frozen. Using inject<br>
+ensures at least one cell will contain a one. </p>    <div class="section_image1">
+      <img class="image1" src="images/xolotl_shift_register.png" alt="Shift Register"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION Shift Register -->
+  <!-- START SECTION Toolbar -->
+  <a id="toolbar"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Toolbar</h2>
+    </div>
+    <div class="section_image1">
+      <img class="image1" src="images/xolotl_toolbar.png" alt="Xolotl Toolbar"/>
+    </div><br>
+  </div>
+  </section>
+  <!-- END SECTION Toolbar -->
+  <!-- START SECTION Program Bank -->
+  <a id="bank"></a>
+  <br><br>
+  <section>
+  <div class="section">
+    <hr class="section"/>
+    <a class="top" href="#top">Top</a>
+    <div class="section_head">
+      <h2 class="section_head">Program Bank</h2>
+    </div>
+    <div class="section_image2">
+      <div class="section_image2_left">
+        <p>The Xolotl program bank stores up to 128 sequencer<br>
+        configurations which may be saved to an external file.<br>
+        The three components below the bank list are for storing<br>
+        the current program into the bank. The spinner selects<br>
+        the destination slot number between 0 and 127.</p>
+      </div>
+      <div class="section_image2_right">
+        <img src="images/xolotl_bank.png" alt="Xolotl Program Bank" />
+      </div>
+    </div><p></p>
+  </div>
+  </section>
+  <!-- END SECTION Program Bank -->
+</div> <!-- END page wrapper -->
+</body>
+</html>
