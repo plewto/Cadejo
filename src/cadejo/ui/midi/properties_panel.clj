@@ -517,13 +517,13 @@
         tick-length 16
         tick-x0 (- xc (* 0.5 tick-length))
         tick-x1 (+ xc (* 0.5 tick-length))
-        y-db0 (+ y0 75)
+        y-db0 (+ y0 90)
         y-db60 (+ y0 200)
-        y-db12 (- y-db60 slider-length)
+        y-db24 (- y-db60 slider-length)
         tx-value (text drw [(+ x0 24)(+ y0 40)] (format "%+3d db" 0)
                        :style :mono 
                        :size 5)
-        s-scale (slider/slider tool [xc (+ y0 200)] slider-length -60 12
+        s-scale (slider/slider tool [xc (+ y0 200)] slider-length -60 24
                                :gap 8
                                :track1-color (lnf/passive-track)
                                :track2-color (lnf/active-track)
@@ -549,7 +549,6 @@
                                     (format "%+3d db" (.get-property node :dbscale)))
                     (.use-attributes! occ :disabled)
                     (.put-property! tx-value :text "")))
-                    ;(.render drw)))
         enable (fn []
                  (let [node (get-node)
                        db (slider/get-slider-value s-scale)]
@@ -558,7 +557,6 @@
                    (.put-property! tx-inherit :text "")
                    (.use-attributes! occ :enabled)
                    (.put-property! tx-value :text (format "%+3d db" (.get-property node :dbscale)))))
-                   ;(.render drw)))
         cb-inherit (inherit-checkbox tool [(+ x0 8)(+ y0 225)]
                                      (fn [b _]
                                        (let [inherit (= (first (msb/current-multistate-button-state b)) 1)]
@@ -568,10 +566,10 @@
                                          (.render drw))))]
     (border root p0 [(+ x0 w)(+ y0 h)])
     (title drw [(+ x0 6)(+ y0 25)] "DB Scale")
-    (line/line root [tick-x0 y-db12][tick-x1 y-db12] :color (lnf/major-tick))
+    (line/line root [tick-x0 y-db24][tick-x1 y-db24] :color (lnf/major-tick))
     (line/line root [tick-x0 y-db0][tick-x1 y-db0] :color (lnf/major-tick))
     (line/line root [tick-x0 y-db60][tick-x1 y-db60] :color (lnf/major-tick))
-    (text drw [(+ tick-x0 27)(+ y-db12 4)] "+12" :style :mono :size 5)
+    (text drw [(+ tick-x0 27)(+ y-db24 4)] "+24" :style :mono :size 5)
     (text drw [(+ tick-x0 27)(+ y-db0 4)] " 0" :style :mono :size 5)
     (text drw [(+ tick-x0 27)(+ y-db60 4)] "-60" :style :mono :size 5)
 
