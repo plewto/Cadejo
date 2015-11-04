@@ -15,6 +15,8 @@
   (midi-reset [this])
 
   (get-shift-register [this])
+
+  (get-pitch-cycle [this])
   
   (velocity-mode! [this vmode]
     "(.velocity-mode! PitchBlock vmode)
@@ -122,6 +124,8 @@
           (.midi-reset c)))
 
       (get-shift-register [this] sregister)
+
+      (get-pitch-cycle [this] pitch-cycle)
       
       (velocity-mode! [this vmode]
         (reset! velocity-mode* vmode))

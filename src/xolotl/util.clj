@@ -87,3 +87,13 @@
   (if (not (has-extension? filename ext))
     (str filename "." ext)
     filename))
+
+
+(defn format-binary [n bits]
+  (let [sb (StringBuilder. bits)
+        weight* (atom 1)]
+    (dotimes [i bits]
+      (let [b (bit-and @weight* n)]
+        (.append sb (if (zero? b) "_" "+"))
+        (swap! weight* (fn [q](* q 2)))))
+    (.toString sb)))

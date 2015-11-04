@@ -1,6 +1,7 @@
 (println "    --> xolotl.ui.sr")
 (ns xolotl.ui.sr
   (:require [xolotl.ui.factory :as factory])
+  (:require [xolotl.ui.pitch-map :as pmap])
   (:require [xolotl.util :as util])
   (:import java.awt.event.ActionListener
            javax.swing.JRadioButton))
@@ -49,7 +50,8 @@
         cb-seed (button-bar :seed)
         cb-mask (button-bar :mask)
         cb-inject (factory/checkbox "Inject")
-        jb-period (factory/button "P?")
+        ;jb-period (factory/button "Periiod ?")
+        jb-pattern (factory/button "Pattern ?")
         labs (let [acc* (atom [])]
                (dotimes [i bits]
                  (let [lb (factory/label (format "%2d" (inc i)))]
@@ -62,8 +64,7 @@
                                      (factory/label "Mask")
                                      (factory/label ""))
         pan-north (factory/border-panel
-                   :west jb-period
-                   :east cb-inject)
+                   :center (factory/grid-panel 1 2 jb-pattern cb-inject))
         pan-main (factory/border-panel :north pan-north
                                        :center pan-buttons
                                        :west pan-west
@@ -80,13 +81,41 @@
                     (set-bar-value! cb-seed seed)
                     (set-bar-value! cb-mask mask)
                     (.setSelected cb-inject (util/->bool inject))))]
-    (.addActionListener jb-period (proxy [ActionListener][]
-                                    (actionPerformed [_]
-                                      (let [sr (.get-shift-register xseq)
-                                            inj (if (.isSelected cb-inject) 0 1)
-                                            p (.period sr inj)]
-                                        (.status! parent-editor
-                                                  (format "Shift Register period is %s" p))))))
+    ;; (.addActionListener jb-period (proxy [ActionListener][]
+    ;;                                 (actionPerformed [_]
+    ;;                                   (let [sr (.get-shift-register xseq)
+    ;;                                         inj (if (.isSelected cb-inject) 0 1)
+    ;;                                         p (.period sr inj)]
+    ;;                                     (.status! parent-editor
+    ;;                                               (format "Shift Register period is %s" p))))))
+    (.addActionListener jb-pattern (proxy [ActionListener][]
+                                     (actionPerformed [_]
+                                       (let [sr (.get-shift-register xseq)
+                                             pcycle (.get-pitch-cycle xseq)
+                                             pperiod (.period pcycle)
+                                             inj (if (.isSelected cb-inject) 0 1)
+                                             p (.period sr inj)
+                                             sb1 (StringBuilder. (* p 16))
+                                             sb2 (StringBuilder. (* p 4))]
+                                         (.midi-reset sr)
+                                         (dotimes [i p]
+                                           (let [v (.value sr)
+                                                 keynum (.value pcycle v)
+                                                 pitch (pmap/int->pitch keynum)]
+                                             (.append sb1 (format "[%12s] %%[%3d] -> %3s\n"
+                                                                  (util/format-binary v 12)
+                                                                  (rem v pperiod) pitch))
+                                             (.append sb2 (format "%3s " pitch))
+                                             (.shift sr inj)))
+                                         (.append sb2 "\n")
+                                         (.midi-reset sr)
+                                         (.status! parent-editor
+                                                   (format "Shift Register Period is %s" p))
+                                         (println)
+                                         (println (.toString sb1))
+                                         (println (format "Period is %s" p))
+                                         (println (.toString sb2))))))
+
     (add-listener (cons cb-inject cb-taps)
                   (proxy [ActionListener][]
                     (actionPerformed [evn]

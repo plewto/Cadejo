@@ -1,16 +1,17 @@
 (println "    --> xolotl.ui.pitch-editor")
 (ns xolotl.ui.pitch-editor
+  (:use [xolotl.ui.pitch-map :only [REST-LIMIT REST pitch-map reverse-map int->pitch]])
   (:require [xolotl.util :as util])
   (:require [xolotl.ui.factory :as factory])
   (:require [clojure.string :as str])
   (:require [seesaw.core :as ss])
   (:import java.awt.event.ActionListener))
 
-(def ^:private octaves (range -4 5))
-(def ^:private roots {"C" 0, "D" 2, "E" 4, "F" 5, "G" 7, "A" 9, "B" 11})
-(def ^:private modifiers {"F" -1, "" 0, "S" 1})
-(def ^:private REST-LIMIT -1)            ; Any value <= REST-LIMIT is a rest.
-(def REST -1000)                         ; The canonical rest value.
+;; (def ^:private octaves (range -4 5))
+;; (def ^:private roots {"C" 0, "D" 2, "E" 4, "F" 5, "G" 7, "A" 9, "B" 11})
+;; (def ^:private modifiers {"F" -1, "" 0, "S" 1})
+;; (def ^:private REST-LIMIT -1)            ; Any value <= REST-LIMIT is a rest.
+;; (def REST -1000)                         ; The canonical rest value.
 
 (def ^:private msg00 "Nested Xolotl chord list")
 (def ^:private msg01 "Invalid pitch token: %s")
@@ -27,38 +28,38 @@
 ;;           M -> optional modifier         : F = flat, S = sharp
 ;;           O -> octave number             : 0,1,2,3,4,5,6,7,8
 ;;                              
-(def ^:private pitch-map (let [acc* (atom {})]
-                           (doseq [oct octaves]
-                             (let [oct-val (* 12 oct)]
-                               (doseq [root (seq roots)]
-                                 (doseq [mod (seq modifiers)]
-                                   (let [sym (keyword (format "%s%s%d" (first root)(first mod) oct))
-                                         val (+ oct-val (second root)(second mod))]
-                                     (swap! acc* (fn [q](assoc q sym val))))))))
-                           (swap! acc* (fn [q](assoc q :R REST)))
-                           @acc*))
+;; (def ^:private pitch-map (let [acc* (atom {})]
+;;                            (doseq [oct octaves]
+;;                              (let [oct-val (* 12 oct)]
+;;                                (doseq [root (seq roots)]
+;;                                  (doseq [mod (seq modifiers)]
+;;                                    (let [sym (keyword (format "%s%s%d" (first root)(first mod) oct))
+;;                                          val (+ oct-val (second root)(second mod))]
+;;                                      (swap! acc* (fn [q](assoc q sym val))))))))
+;;                            (swap! acc* (fn [q](assoc q :R REST)))
+;;                            @acc*))
 
 
 ;; Map int MIDI key-numbers to to symbolic tokens
 ;; For accidentals "sharp" keys are used.
 ;;
-(def ^:private reverse-map (let [acc* (atom {})]
-                             (doseq [val (keys pitch-map)]
-                               (let [key (get pitch-map val)
-                                     is-flat (= (second (name val)) \F)]
-                                 (if (not is-flat)
-                                   (swap! acc* (fn [q](assoc q key val))))))
-                             @acc*))
+;; (def ^:private reverse-map (let [acc* (atom {})]
+;;                              (doseq [val (keys pitch-map)]
+;;                                (let [key (get pitch-map val)
+;;                                      is-flat (= (second (name val)) \F)]
+;;                                  (if (not is-flat)
+;;                                    (swap! acc* (fn [q](assoc q key val))))))
+;;                              @acc*))
 
 ;; Convert int to pitch token
 ;;
-(defn int->pitch [n]
-  (if (<= n REST-LIMIT)
-    "R"
-    (let [token (get reverse-map n)]
-      (if token
-        (name token)
-        (int n)))))
+;; (defn int->pitch [n]
+;;   (if (<= n REST-LIMIT)
+;;     "R"
+;;     (let [token (get reverse-map n)]
+;;       (if token
+;;         (name token)
+;;         (int n)))))
 
 
 ;; Convert list of MIDI key-numbers to string

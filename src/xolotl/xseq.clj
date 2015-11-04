@@ -22,6 +22,8 @@
   (get-clock [this])  ;; return clock module
 
   (get-shift-register [this])
+
+  (get-pitch-cycle [this])
   
   (get-transmitter [this])
   
@@ -136,6 +138,9 @@
 
                (get-shift-register [this]
                  (.get-shift-register pitch-block))
+
+               (get-pitch-cycle [this]
+                 (.get-pitch-cycle pitch-block))
                
                (get-transmitter [this] transmitter)
                
