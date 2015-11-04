@@ -66,7 +66,10 @@ in rotation is up."
           (swap! voice-assignments* (fn [q](assoc q previous-voice-number nil)))))
       (reset! counter* (next-voice voice-count @counter* voice-assignments*))
       (let [current-voice (nth voices @counter*)]
-        (ot/ctl current-voice :gate 1 :note keynum :freq freq :velocity vel :dbscale dbscale)
+
+        (ot/ctl (cons current-voice (.synths @parent*))
+                :gate 1 :note keynum :freq freq :velocity vel :dbscale dbscale)
+
         (swap! keymap* (fn [q](assoc q keynum @counter*)))
         (swap! voice-assignments* (fn [q](assoc q @counter* keynum))))
       (if @trace*
