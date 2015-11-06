@@ -196,7 +196,7 @@
    RETURNS: Transmitter"
   (let [enabled* (atom true)  ;; DEPRECIATE
         previous-program* (atom -1)
-        channel* (atom 1)
+        channel* (atom 0)
         current-keylist* (atom [])
         strum* (atom 0)
         strum-mode* (atom :forward)]
