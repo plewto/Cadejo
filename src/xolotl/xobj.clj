@@ -129,6 +129,7 @@
                            (.enable-reset-on-first-key! xs (get pmap :key-reset false))
                            (.enable-key-track! xs (get pmap :key-track true))
                            (.enable-key-gate! xs (get pmap :key-gate false))
+                           (.enable! xs (get pmap :enable true))
                            (.transpose! xs (get pmap :transpose 0))
                            (.rhythm-pattern! xs (get pmap :rhythm-pattern [24]))
                            (.hold-pattern! xs (get pmap :hold-pattern [1.0]))
