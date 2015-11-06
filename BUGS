@@ -134,3 +134,11 @@ cadejo.instruments.alias.editor.test=> Exception in thread "AWT-EventQueue-0" ja
 	at java.awt.Component.processEvent(Component.java:6290)
 	at java.awt.Container.processEvent(Container.java:2234)
 	at sgwr.components.drawing.proxy$javax.swing.JPanel$0.processEvent(Unknown Source)
+
+# ---------------------------------------------------------- BUG 0012 OPEN
+2015.11.06 At times Cadejo instrument editors freeze. This appears to be
+related somehow to Xolotl.
+
+Clicking the instrument's program bank list changes program as expected but
+scroll bars do not work or any other controls. This includes the window close button
+possible not all Java Swing events are being processed? 
