@@ -226,6 +226,6 @@
     (.program-function! (.get-clock (first xseqs))
                         (fn [slot]
                           (.use-program xobj slot)))
-    ;(.show! @editor*)
+    (.hide! @editor*)
     xobj))
 
