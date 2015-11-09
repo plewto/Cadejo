@@ -42,7 +42,7 @@
                       lab-warning)
         cb-enable (ss/toggle :text "Enable")
         cb-monitor (factory/checkbox "MON")
-        pan-enable (factory/border-panel :center cb-enable :east cb-monitor)
+        pan-enable (factory/border-panel :center cb-enable ) ;:east cb-monitor)
         cb-reset (factory/checkbox "Key Reset")
         cb-gate (factory/checkbox "Key Gate")
         cb-track (factory/checkbox "Key Track")
