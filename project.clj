@@ -3,6 +3,9 @@
   :url "https://github.com/plewto/cadejo"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :repl-options {
+                 :timeout 120000
+                 }
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/math.numeric-tower "0.0.2"]
                  [seesaw "1.4.4"]
