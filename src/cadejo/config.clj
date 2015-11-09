@@ -5,7 +5,7 @@
   (:require [cadejo.util.midi])
   (:import org.pushingpixels.substance.api.SubstanceLookAndFeel))
 
-(def ^:private +VERSION+ "0.4.0-SNAPSHOT")
+(def ^:private +VERSION+ "0.4.0")
 
 (def ^:private available-skins (map str (keys (SubstanceLookAndFeel/getAllSkins))))
 
@@ -438,7 +438,7 @@
 (displaybar-style! nil)    ; nil -> use lnf
 (enable-pp! false)
 (maximum-undo-count! 10)
-(warn-on-exit! false)
+(warn-on-exit! true)
 (warn-on-file-overwrite! true)
 (warn-on-unsaved-data! true)  ;; ISSUE not honored
 (enable-tooltips! true)
