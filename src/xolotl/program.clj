@@ -25,17 +25,17 @@
                            rhythm-pattern [24]
                            hold-pattern [1.0]
                            controller-1-number -1
-                           controller-1-pattern [0 16 32 64 127]
+                           controller-1-pattern [0]
                            controller-2-number -1
-                           controller-2-pattern [0 16 32 64 127 64 32 16]
+                           controller-2-pattern [0]
                            velocity-mode :seq
                            velocity-pattern [100]
                            pitch-mode :seq
-                           pitch-pattern [0 2 4 5 7 9 11 [0 4 7 12]]
+                           pitch-pattern [-1000]
                            sr-inject 0
-                           sr-taps 2r100000000000
+                           sr-taps 2r000010000000
                            sr-seed 2r000000000001
-                           sr-mask 2r111111111111
+                           sr-mask 2r000011111111
                            strum-mode :forward
                            strum-delay 0
                            midi-program -1
@@ -520,21 +520,20 @@
 
 
 ; ---------------------------------------------------------------------- 
-;                               Test Programs
+;                               Initial Programs
 
-;; seq a only
-;;
+
 (def alpha (let [xp (xolotl-program)]
-             (.program-name! xp "Alpha")
+             (.program-name! xp "Minor 1")
              (.tempo! xp 120)
              (.enable! xp :A true)
-             (.repeat! xp 2)
-             (.jump! xp 1)
+             (.repeat! xp 0)
+             (.jump! xp -1)
              (.key-reset! xp :A false)
              (.key-track! xp :A true)
              (.key-gate! xp :A false)
              (.transpose! xp :A 0)
-             (.rhythm-pattern! xp :A [12 12 12])
+             (.rhythm-pattern! xp :A [12])
              (.hold-pattern! xp :A [1.0])
              (.controller-1-number! xp :A -1)
              (.controller-1-pattern! xp :A [0])
@@ -542,22 +541,22 @@
              (.controller-2-pattern! xp :A [0])
              (.velocity-mode! xp :A :seq)
              (.velocity-pattern! xp :A [127])
-             (.pitch-mode! xp :A :seq)
-             (.pitch-pattern! xp :A [0 3 7])
+             (.pitch-mode! xp :A :sr)
+             (.pitch-pattern! xp :A [2 0 3 5 7 9 10])
              (.sr-inject! xp :A 0)
-             (.sr-taps! xp :A 2r10000000)
+             (.sr-taps! xp :A 2r10100000)
              (.sr-seed! xp :A 2r00000001)
              (.sr-mask! xp :A 2r11111111)
              (.strum-mode! xp :A :forward)
              (.strum-delay! xp :A 0)
-             (.midi-program! xp :A 0)
+             (.midi-program! xp :A -1)
              
              (.enable! xp :B false)
              (.key-reset! xp :B false)
              (.key-track! xp :B true)
              (.key-gate! xp :B false)
              (.transpose! xp :B 0)
-             (.rhythm-pattern! xp :B [24])
+             (.rhythm-pattern! xp :B [24 12 12])
              (.hold-pattern! xp :B [1.0])
              (.controller-1-number! xp :B -1)
              (.controller-1-pattern! xp :B [0])
@@ -565,109 +564,67 @@
              (.controller-2-pattern! xp :B [0])
              (.velocity-mode! xp :B :seq)
              (.velocity-pattern! xp :B [127])
-             (.pitch-mode! xp :B :seq)
-             (.pitch-pattern! xp :B [12 15 19 24 19 15 12])
+             (.pitch-mode! xp :B :sr)
+             (.pitch-pattern! xp :B [3 0 5 7])
              (.sr-inject! xp :B 0)
-             (.sr-taps! xp :B 2r10000000)
+             (.sr-taps! xp :B 2r10001010)
              (.sr-seed! xp :B 2r00000001)
              (.sr-mask! xp :B 2r11111111)
-             (.strum-mode! xp :B :reverse)
-             (.strum-delay! xp :B 10)
-             (.midi-program! xp :B 1)
+             (.strum-mode! xp :B :forward)
+             (.strum-delay! xp :B 0)
+             (.midi-program! xp :B -1)
              xp))
-                   
+
 (def beta (let [xp (xolotl-program)]
-            (.program-name! xp "Beta")
-                     (.tempo! xp 120)
-                     (.enable! xp :A true)
-                     (.repeat! xp 2)
-                     (.jump! xp 0)
-                     (.key-reset! xp :A false)
-                     (.key-track! xp :A true)
-                     (.key-gate! xp :A false)
-                     (.transpose! xp :A -24)
-                     (.rhythm-pattern! xp :A [24 12 12])
-                     (.hold-pattern! xp :A [1.0])
-                     (.controller-1-number! xp :A -1)
-                     (.controller-2-number! xp :A -1)
-                     (.velocity-mode! xp :A :seq)
-                     (.velocity-pattern! xp :A [127])
-                     (.pitch-mode! xp :A :seq)
-                     (.pitch-pattern! xp :A [9 6 4])
-                     (.sr-inject! xp :A 0)
-                     (.sr-taps! xp :A 2r11000000)
-                     (.sr-seed! xp :A 2r00000011)
-                     (.sr-mask! xp :A 2r11111111)
-                     (.strum-mode! xp :A :alternate)
-                     (.strum-delay! xp :A 100)
-                     (.midi-program! xp :A 2)
+            (.program-name! xp "Whole Tone 1")
+            (.tempo! xp 140)
+            (.enable! xp :A true)
+            (.repeat! xp 0)
+            (.jump! xp -1)
+            (.key-reset! xp :A false)
+            (.key-track! xp :A true)
+            (.key-gate! xp :A false)
+            (.transpose! xp :A 0)
+            (.rhythm-pattern! xp :A [12 12 12 12 12 12 18 6])
+            (.hold-pattern! xp :A [1.0])
+            (.controller-1-number! xp :A -1)
+            (.controller-1-pattern! xp :A [0])
+            (.controller-2-number! xp :A -1)
+            (.controller-2-pattern! xp :A [0])
+            (.velocity-mode! xp :A :seq)
+            (.velocity-pattern! xp :A [127])
+            (.pitch-mode! xp :A :sr)
+            (.pitch-pattern! xp :A [0 2 4 6 8 10 12 14 16 18 20 22
+                                    20 18 16 14 12 10 8 6 4 2])
+            (.sr-inject! xp :A 0)
+            (.sr-taps! xp :A 2r01101000)
+            (.sr-seed! xp :A 2r00000001)
+            (.sr-mask! xp :A 2r01111111)
+            (.strum-mode! xp :A :forward)
+            (.strum-delay! xp :A 0)
+            (.midi-program! xp :A -1)   
+            
+            (.enable! xp :B true)
+            (.key-reset! xp :B false)
+            (.key-track! xp :B true)
+            (.key-gate! xp :B false)
+            (.transpose! xp :B -24)
+            (.rhythm-pattern! xp :B [12])
+            (.hold-pattern! xp :B [1.0])
+            (.controller-1-number! xp :B -1)
+            (.controller-1-pattern! xp :B [0])
+            (.controller-2-number! xp :B -1)
+            (.controller-2-pattern! xp :B [0])
+            (.velocity-mode! xp :B :seq)
+            (.velocity-pattern! xp :B [127])
+            (.pitch-mode! xp :B :sr)
+            (.pitch-pattern! xp :B [-12 -14 -16 -18 -20 -22 -24 -26 -28 -30 -28 -26])
+            (.sr-inject! xp :B 0)
+            (.sr-taps! xp :B 2r01001000)
+            (.sr-seed! xp :B 2r00000001)
+            (.sr-mask! xp :B 2r01111111)
+            (.strum-mode! xp :B :forward)
+            (.strum-delay! xp :B 0)
+            (.midi-program! xp :B -1) 
+            xp)) 
 
-                     (.enable! xp :B false)
-                     (.key-reset! xp :B false)
-                     (.key-track! xp :B true)
-                     (.key-gate! xp :B false)
-                     (.transpose! xp :B 24)
-                     (.rhythm-pattern! xp :B [6])
-                     (.hold-pattern! xp :B [1.0])
-                     (.controller-1-number! xp :B -1)
-                     (.controller-2-number! xp :B -1)
-                     (.velocity-mode! xp :B :seq)
-                     (.velocity-pattern! xp :B [127])
-                     (.pitch-mode! xp :B :seq)
-                     (.pitch-pattern! xp :B [9 12 15 18 21])
-                     (.sr-inject! xp :B 0)
-                     (.sr-taps! xp :B 2r10000000)
-                     (.sr-seed! xp :B 2r00000001)
-                     (.sr-mask! xp :B 2r11111111)
-                     (.strum-mode! xp :B :random)
-                     (.strum-delay! xp :B 200)
-                     (.midi-program! xp :B 3)
-                     xp)) 
-
-
-(def gamma (let [xp (xolotl-program)]
-                     (.program-name! xp "Gamma")
-                     (.tempo! xp 60)
-                     
-                     (.enable! xp :A true)
-                     (.key-reset! xp :A false)
-                     (.key-track! xp :A true)
-                     (.key-gate! xp :A false)
-                     (.transpose! xp :A 0)
-                     (.rhythm-pattern! xp :A [96 48 24 12 6 3])  ; ERROR ERROR ERROR
-                     (.hold-pattern! xp :A [1.0])
-                     (.controller-1-number! xp :A -1)
-                     (.controller-2-number! xp :A -1)
-                     (.velocity-mode! xp :A :seq)
-                     (.velocity-pattern! xp :A [127])
-                     (.pitch-mode! xp :A :seq)
-                     (.pitch-pattern! xp :A [0 2 4 5 7 9 11 [4 7 12] 11 9 7 5 4 2])
-                     (.sr-inject! xp :A 0)
-                     (.sr-taps! xp :A 2r10100000)
-                     (.sr-seed! xp :A 2r00000111)
-                     (.sr-mask! xp :A 2r10101011)
-                     (.strum-mode! xp :A :forward) 
-                     (.strum-delay! xp :A 0)
-                     (.midi-program! xp :A 4)
-
-                     (.enable! xp :B true)
-                     (.key-reset! xp :B false)
-                     (.key-track! xp :B true)
-                     (.key-gate! xp :B false)
-                     (.transpose! xp :B 0)
-                     (.rhythm-pattern! xp :B [24])
-                     (.hold-pattern! xp :B [1.0])
-                     (.controller-1-number! xp :B -1)
-                     (.controller-2-number! xp :B -1)
-                     (.velocity-mode! xp :B :seq)
-                     (.velocity-pattern! xp :B [127])
-                     (.pitch-mode! xp :B :seq)
-                     (.pitch-pattern! xp :B [[-12 -8 -5] -1000 [12 16 19 22 24] -1000])
-                     (.sr-inject! xp :B 0)
-                     (.sr-taps! xp :B 2r10000000)
-                     (.sr-seed! xp :B 2r00000001)
-                     (.sr-mask! xp :B 2r11111111)
-                     (.strum-mode! xp :B :forward)
-                     (.strum-delay! xp :B 0)
-                     (.midi-program! xp :B 5)
-                     xp))

@@ -114,7 +114,6 @@
                    (println (format "    %s" p)))) )]
 
     (.init! bank)
-    (.store-program! bank 0 xolotl.program/alpha) ; TEST
-    (.store-program! bank 1 xolotl.program/beta)  ; TEST
-    (.store-program! bank 2 xolotl.program/gamma) ; TEST
+    (.store-program! bank 0 xolotl.program/alpha)
+    (.store-program! bank 1 xolotl.program/beta)
     bank))
