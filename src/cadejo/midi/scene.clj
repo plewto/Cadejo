@@ -1,7 +1,8 @@
 (println "--> cadejo.midi.scene")
 (ns cadejo.midi.scene
   "A scene is the top-level cadejo structure. Each scene connects
-   to a single MIDI in port and contains 16 MIDI channels."
+  to a single MIDI in port and contains 16 MIDI channels."
+  (:require [cadejo.util.trace :as trace])
   (:require [cadejo.config])
   (:require [cadejo.midi.node])
   (:require [cadejo.midi.channel])
@@ -128,6 +129,7 @@
     
     (event-dispatcher [this]
       (fn [event]
+        (trace/trace-event "Scene" event)
         (let [ci (:channel event)]
           (if ci
             (let [chanobj (.channel this ci)
@@ -136,7 +138,11 @@
             (do
               ;; FUTURE handle non-channel events here
               )
-            ))))
+            ))
+        (trace/trace-event-exit event)
+        ))
+            
+           
     
     SceneProtocol 
 
@@ -205,7 +211,6 @@
 (def global-scenes* (atom []))
 
 (defn scene []
-  ;;(println (format ";; Creating scene-%d" @id-counter*))
   (let [channels* (atom [])
         properties* (atom {:id (keyword (format "scene-%d" @id-counter*))
                            :velocity-map :linear

@@ -438,7 +438,7 @@
 (displaybar-style! nil)    ; nil -> use lnf
 (enable-pp! false)
 (maximum-undo-count! 10)
-(warn-on-exit! true)
+(warn-on-exit! false)
 (warn-on-file-overwrite! true)
 (warn-on-unsaved-data! true)  ;; ISSUE not honored
 (enable-tooltips! true)

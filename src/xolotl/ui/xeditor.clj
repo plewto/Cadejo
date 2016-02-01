@@ -211,6 +211,5 @@
                        ((:sync-fn xseq-b-editor) prog)
                        ((:sync-fn clock-editor) prog))) )]
       ((:set-parent-editor bank-editor) editor)
-      (.show! editor)
       editor)))
      

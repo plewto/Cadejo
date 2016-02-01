@@ -232,5 +232,4 @@
     (ss/config! (.jframe sed) :on-close :nothing)
     (ss/show-card! pan-cards :midi)
     (.size! (.cframe basic-ed) width height)
-    (.show-vkbd sed)
     sed))

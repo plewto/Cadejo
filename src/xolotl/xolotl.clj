@@ -31,9 +31,3 @@
 (defn create-sequencer [nodes*]
   (xolotl.xobj/xolotl nodes*))
 
-
-;;;; TEST TEST TEST TEST TEST
-;;;; TEST TEST TEST TEST TEST
-;;;; TEST TEST TEST TEST TEST
-
-;(def x (create-sequencer nil))

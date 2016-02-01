@@ -31,13 +31,16 @@
       (swap! stack* (fn [n](conj n msg))))
     return))
 
-(defn trace-exit [& {:keys [msg return]
+(defn trace-exit [& {:keys [msg silent return]
                      :or {msg nil
+                          silent nil
                           return nil}}]
   (if @enable*
     (do
       (decrement)
-      (println (format ";; %s<--[%d] %s " @pad* @depth* (or msg (last @stack*))))
+      (if (not silent)
+        (println (format ";; %s<--[%d] %s " @pad* @depth* (or msg (last @stack*))))
+        (println))
       (try
         (swap! stack* pop)
         (catch Exception ex
@@ -60,3 +63,38 @@
     (println (format ";; %s   [%d] MARK: %s" p d msg))))
   (first args))
 
+
+;; (defn trace-event [where event & {:keys [permissive]
+;;                                   :or {permissive false}}]
+;;   (if (or permissive (and (= (:status event) :note-on)
+;;                           (pos? (:data2 event)))) ;; ignore note-on running-status masquerading as note-off           
+;;     (let [note (:data1 event)
+;;           velocity (:data2 event)
+;;           chan (+ 1 (:channel event))
+;;           msg (format "%s %s chan %2d note %3d vel %3d"
+;;                       where (:status event) chan note velocity)]
+;;       (trace-enter msg))))
+      
+
+;; (defn trace-event-exit [event & {:keys [permissive]
+;;                                  :or {permissive false}}]
+;;   (if (or permissive (and (= (:status event) :note-on)
+;;                           (pos? (:data2 event))))
+;;     (trace-exit)))
+
+
+
+(defn trace-event [where event]
+  (if (not (= (:status event) :active-sensing))
+    (let [command (:command event)
+          chan (+ 1 (:channel event))
+          data1 (:data1 event)
+          data2 (:data2 event)
+          msg (format "%s %s chan %2d  data1 %3s data2 %3s"
+                      where command chan data1 data2)]
+      (trace-enter msg))))
+
+(defn trace-event-exit [event]
+  (if (not (= (:status event) :active-sensing))
+    (trace-exit :silent true)))
+      

@@ -1,5 +1,6 @@
 (ns cadejo.midi.input-port
   "Defines MIDI input port"
+  (:require [cadejo.util.trace :as trace])
   (:require [cadejo.config :as config])
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.cadejo-frame])
@@ -96,8 +97,11 @@
 
   (event-dispatcher [this]
     (fn [event]
+      (trace/trace-event "InputPort" event)
       (doseq [c (.children this)]
-        ((.event-dispatcher c) event))))
+        ((.event-dispatcher c) event))
+      (trace/trace-event-exit event)
+      ))
   
   (get-editor [this] @editor*)
 
