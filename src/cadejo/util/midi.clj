@@ -1,4 +1,5 @@
 (ns cadejo.util.midi
+  ;(:require [cadejo.util.trace :as trace])
   (:use [clojure.string :only [trim]])
   (:import javax.sound.midi.MidiSystem
            javax.sound.midi.MidiDevice
@@ -7,13 +8,23 @@
 ;; Split descriptive part of MIDI device name from hardware device part
 ;; Return tupel of strings [name hw-dev]
 ;; 
+;; (defn parse-device-name [mdn]
+;;   (trace/trace-enter (format "parse-device-name mdn = '%s'" mdn))
+;;   (let [i (.indexOf mdn "[")]
+;;     (if (pos? i)
+;;       (let [n (trim (subs mdn 0 (dec i)))
+;;             hw (trim (subs mdn i))]
+;;         (trace/trace-mark (format "n = %s   hw= '%s'" n hw))
+;;         (trace/trace-exit)
+;;         [n hw])
+;;       (do
+;;         (trace/trace-mark "nil result")
+;;         (trace/trace-exit)
+;;         ["" mdn]))))
+
+;; Thanks Andreas Stenius
 (defn parse-device-name [mdn]
-  (let [i (.indexOf mdn "[")]
-    (if (pos? i)
-      (let [n (trim (subs mdn 0 (dec i)))
-            hw (trim (subs mdn i))]
-        [n hw])
-      nil)))
+  ["" mdn])
 
 (defn provides-transmitter [dev]
   (try
