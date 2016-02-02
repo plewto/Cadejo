@@ -10,8 +10,9 @@
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.icon :as icon])
   (:require [cadejo.ui.util.lnf :as lnf])
-  (:require [cadejo.util.midi :as midi])
+;  (:require [cadejo.util.midi :as midi])
   (:require [cadejo.util.user-message :as umsg])
+  (:require [overtone.core :as ot])
   (:require [seesaw.core :as ss])
   (:require [seesaw.font :as ssf])
   (:import java.awt.BorderLayout
@@ -131,23 +132,23 @@
                                   :west pan-device)
         jb-connect (ss/button :text "Connect"
                               :enabled? false)]
-    (doseq [t (midi/transmitters)]
-      (let [[flag device] t
-            info (.getDeviceInfo device)
-            [hw-name sys-device](midi/parse-device-name (.getName info))
-            tb (ss/radio :text (format "%s %s " hw-name sys-device)
+    (doseq [d (ot/midi-connected-devices)]
+      (let [;[flag device] t
+            ;info (.getDeviceInfo device)
+            ;[hw-name sys-device](midi/parse-device-name (.getName info))
+            tb (ss/radio :text (format "%s " (:description d))
                          :group grp
-                         :enabled? flag)]
-        (.putClientProperty tb :name hw-name)
-        (.putClientProperty tb :device sys-device)
-        (if hw-name
+                         :enabled? true)]
+        (.putClientProperty tb :name (:name d))
+        (.putClientProperty tb :device d)
+        (if true
           (do
             (swap! device-buttons* (fn [n](conj n tb)))
             (ss/listen tb :action
                        (fn [_]
                          (ss/config! jb-connect :enabled? true)
-                         (reset! selected-device* hw-name)
-                         (.status! (.get-editor scene) (format "%s input selected" sys-device))))))))
+                         (reset! selected-device* (:name d))
+                         (.status! (.get-editor scene) (format "%s input selected" (:description d)))))))))
     (swap! device-buttons* (fn [q](conj q jb-connect)))
     (while (< (count @device-buttons*) 8)
       (swap! device-buttons* (fn [q](conj q (ss/vertical-panel)))))
