@@ -129,7 +129,7 @@
     
     (event-dispatcher [this]
       (fn [event]
-        (trace/trace-event "Scene" event)
+        ;(trace/trace-event "Scene" event)
         (let [ci (:channel event)]
           (if ci
             (let [chanobj (.channel this ci)
@@ -139,7 +139,7 @@
               ;; FUTURE handle non-channel events here
               )
             ))
-        (trace/trace-event-exit event)
+        ;(trace/trace-event-exit event)
         ))
             
            

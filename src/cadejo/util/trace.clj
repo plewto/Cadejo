@@ -64,37 +64,23 @@
   (first args))
 
 
-;; (defn trace-event [where event & {:keys [permissive]
-;;                                   :or {permissive false}}]
-;;   (if (or permissive (and (= (:status event) :note-on)
-;;                           (pos? (:data2 event)))) ;; ignore note-on running-status masquerading as note-off           
-;;     (let [note (:data1 event)
-;;           velocity (:data2 event)
-;;           chan (+ 1 (:channel event))
-;;           msg (format "%s %s chan %2d note %3d vel %3d"
-;;                       where (:status event) chan note velocity)]
-;;       (trace-enter msg))))
-      
-
-;; (defn trace-event-exit [event & {:keys [permissive]
-;;                                  :or {permissive false}}]
-;;   (if (or permissive (and (= (:status event) :note-on)
-;;                           (pos? (:data2 event))))
-;;     (trace-exit)))
-
-
-
 (defn trace-event [where event]
-  (if (not (= (:status event) :active-sensing))
+  (if true ; (not (= (:status event) :active-sensing))
     (let [command (:command event)
-          chan (+ 1 (:channel event))
+          status (:status event)
+          chan (:channel event)
           data1 (:data1 event)
           data2 (:data2 event)
-          msg (format "%s %s chan %2d  data1 %3s data2 %3s"
-                      where command chan data1 data2)]
+          msg (format "%s status %s command %s chan %2d data1 %3s data2 %3s"
+                      where status command chan data1 data2)]
       (trace-enter msg))))
 
+;; (defn trace-event-exit [event]
+;;   (if (not (= (:status event) :active-sensing))
+;;     (trace-exit :silent true)))
+
 (defn trace-event-exit [event]
-  (if (not (= (:status event) :active-sensing))
-    (trace-exit :silent true)))
+  (trace-exit :silent true))
+
+
       
