@@ -1,4 +1,4 @@
-(println "    --> xololt.ui.factory")
+(println "    --> xolotl.ui.factory")
 (ns xolotl.ui.factory
   (:require [xolotl.util :as util])
   (:require [seesaw.font :as ssf])
