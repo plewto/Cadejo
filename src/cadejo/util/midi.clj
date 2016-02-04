@@ -23,8 +23,9 @@
 ;;         ["" mdn]))))
 
 ;; Thanks Andreas Stenius
-(defn parse-device-name [mdn]
-  ["" mdn])
+;; DEPRECIATED
+;; (defn parse-device-name [mdn]
+;;   ["" mdn])
 
 (defn provides-transmitter [dev]
   (try
@@ -94,15 +95,15 @@
 
 ;; Informational only
 ;; Prints list of MIDI devices to terminal
-(defn list-midi-info []
-  (let [sb (StringBuilder.)]
-    (.append sb "MIDI Transmitters:\n")
-    (doseq [t (transmitters)]
-      (let [mdi (.getDeviceInfo (second t))]
-        (.append sb (format "  Available %-5s %s\n" (first t)(parse-device-name (.getName mdi))))))
-    (.append sb "MIDI Receivers:\n")
-    (doseq [r (receivers)]
-      (let [mdi (.getDeviceInfo (second r))]
-        (.append sb (format "  Available %-5s %s\n" (first r)(parse-device-name (.getName mdi))))))
-    (.toString sb)))
+;; (defn list-midi-info []
+;;   (let [sb (StringBuilder.)]
+;;     (.append sb "MIDI Transmitters:\n")
+;;     (doseq [t (transmitters)]
+;;       (let [mdi (.getDeviceInfo (second t))]
+;;         (.append sb (format "  Available %-5s %s\n" (first t)(parse-device-name (.getName mdi))))))
+;;     (.append sb "MIDI Receivers:\n")
+;;     (doseq [r (receivers)]
+;;       (let [mdi (.getDeviceInfo (second r))]
+;;         (.append sb (format "  Available %-5s %s\n" (first r)(parse-device-name (.getName mdi))))))
+;;     (.toString sb)))
 

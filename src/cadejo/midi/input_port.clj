@@ -97,11 +97,11 @@
 
   (event-dispatcher [this]
     (fn [event]
-      (trace/trace-event "InputPort" event)
       (doseq [c (.children this)]
         ((.event-dispatcher c) event))
-      (trace/trace-event-exit event)
       ))
+      
+      
   
   (get-editor [this] @editor*)
 
@@ -202,19 +202,45 @@
     (.set-editor! mip ed)
     ed))
 
-(defn midi-input-port
-  ([parent device-name]
-   (let [parent* (atom parent)
-         children* (atom [])
-         properties* (atom {})
-         editor* (atom nil)
-         transmitter (ot-midi/midi-in device-name)
-         port-node (MidiInputPort. parent* children* properties* editor*)]
-     (.put-property! port-node :id device-name)
-     (.put-property! port-node :midi-device (:device transmitter))
-     (ot-midi/midi-handle-events transmitter (.event-dispatcher port-node))
-     (if (config/load-gui)
-       (.set-editor! port-node (mip-editor port-node)))
-     port-node))
-  ([device-name]
-   (midi-input-port nil device-name)))
+;; (defn midi-input-port
+;;   ([parent device-name]
+;;    (let [parent* (atom parent)
+;;          children* (atom [])
+;;          properties* (atom {})
+;;          editor* (atom nil)
+;;          transmitter (ot-midi/midi-in device-name)
+;;          port-node (MidiInputPort. parent* children* properties* editor*)]
+;;      (.put-property! port-node :id device-name)
+;;      (.put-property! port-node :midi-device (:device transmitter))
+;;      (ot-midi/midi-handle-events transmitter (.event-dispatcher port-node))
+;;      (if (config/load-gui)
+;;        (.set-editor! port-node (mip-editor port-node)))
+;;      port-node))
+;;   ([device-name]
+;;    (midi-input-port nil device-name)))
+
+(defn midi-input-port [device]
+  (let [parent* (atom nil)
+        children* (atom [])
+        properties* (atom {})
+        editor* (atom nil)
+        ;; transmitter (ot-midi/midi-in device-name)
+        transmitter (.getTransmitter device)
+        port-node (MidiInputPort. parent* children* properties* editor*)]
+    ;;(.put-property! port-node :id device-name)
+    (.put-property! port-node :id "")
+    (.put-property! port-node :midi-device (:device transmitter))
+    ;; START DEBUG
+    ;; Keep getting mysterius NullPointerException in
+    ;;   (ot-midi/midi-handle-events transmitter (.event-dispatcher port-node))
+    ;; yet all arguments look good
+    (println "START DEBUG ***********************************************")
+    (println (format "DEBUG port-node        --> %s" port-node))
+    (println (format "DEBUG event-dispatcher --> %s" (.event-dispatcher port-node)))
+    (println (format "DEBUG transmitter      --> %s %s" (type transmitter) transmitter))
+    (println "END DEBUG ***********************************************")
+    (ot-midi/midi-handle-events transmitter (.event-dispatcher port-node))
+    (if (config/load-gui)
+      (.set-editor! port-node (mip-editor port-node)))
+    port-node))
+
