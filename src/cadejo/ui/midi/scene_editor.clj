@@ -147,7 +147,7 @@
             (ss/listen tb :action
                        (fn [_]
                          (ss/config! jb-connect :enabled? true)
-                         (reset! selected-device* (:name d))
+                         (reset! selected-device* d)
                          (.status! (.get-editor scene) (format "%s input selected" (:description d)))))))))
     (swap! device-buttons* (fn [q](conj q jb-connect)))
     (while (< (count @device-buttons*) 8)
@@ -162,7 +162,7 @@
                                     (let [dev @selected-device*
                                           ip (cadejo.midi.input-port/midi-input-port dev)
                                           vkb (.get-property scene :virtual-keyboard)]
-                                      (.status! (.get-editor scene)(format "Connecting to %s" dev))
+                                      (.status! (.get-editor scene)(format "Connecting to %s" (:name dev)))
                                       (.add-child! ip vkb)
                                       (ss/config! lab-help :text "Select channel button to add instruments..."))))
     pan-main))

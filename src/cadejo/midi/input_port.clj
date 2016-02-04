@@ -224,8 +224,8 @@
         children* (atom [])
         properties* (atom {})
         editor* (atom nil)
-        ;; transmitter (ot-midi/midi-in device-name)
-        transmitter (.getTransmitter device)
+        transmitter (ot-midi/midi-in device)
+        ;; transmitter (.getTransmitter device)
         port-node (MidiInputPort. parent* children* properties* editor*)]
     ;;(.put-property! port-node :id device-name)
     (.put-property! port-node :id "")
