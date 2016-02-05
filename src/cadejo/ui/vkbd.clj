@@ -1,6 +1,5 @@
 (ns cadejo.ui.vkbd
   "Provides virtual onscreen keyboard"
-  (:require [cadejo.util.trace :as trace])
   (:require [cadejo.midi.node])
   (:require [cadejo.ui.cadejo-frame :as cframe])
   (:require [cadejo.ui.midi.node-editor])
@@ -162,12 +161,10 @@
     (.status! this "All notes off"))
 
   (note-on [this kn vel]
-    ;;(trace/trace-enter (format "VKbd.note-on kn = %3s  vel = %3s", kn, vel))
     (let [c0 (dec (.channel this))
           v127 (int (math/clamp (* vel 127) 0 127))
           ev {:channel c0 :command :note-on :note kn :data1 kn :data2 v127}]
       ((.event-dispatcher this) ev)
-      ;;(trace/trace-exit :silent true)
       ev))
 
   (note-off [this kn]
@@ -259,12 +256,8 @@
   
   (event-dispatcher [this]
     (fn [event]
-      ;(trace/trace-event "VKbd.event-dispatcher" event)
       (doseq [c (.children this)]
-        ((.event-dispatcher c) event))
-      ;(trace/trace-event-exit event)
-      )
-    )
+        ((.event-dispatcher c) event))))
   
   (get-editor [this]
     this)
@@ -348,19 +341,14 @@
                               vel (map-y mouse-y)
                               v127 (int (* vel 127))
                               c1 (get @properties* :channel)]
-                          ;;(trace/trace-enter "vkbd down-action")
                           (.note-on vnode keynum vel)
-                          ;;(trace/trace-exit :silent true)
                           (.status! vnode (format "Chan %2d  Key %3d  Vel %3d" c1 keynum v127))))
           up-action (fn [b _]
                       (let [id (.get-property b :id)
                             octave (get @properties* :octave)
                             keynum (+ (* 12 octave) id)
                             c1 (get @properties* :channel)]
-                        ;;(trace/trace-enter "VKbd up-action")
-                        (.note-off vnode keynum)
-                        ;;(trace/trace-exit :silent true)
-                        ))]
+                        (.note-off vnode keynum)))]
       (dotimes [i white-key-count]
         (let [p0 [@x* y0]
               p1 [(+ @x* white-key-width) y1]

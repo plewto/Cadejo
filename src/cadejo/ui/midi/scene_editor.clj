@@ -10,7 +10,6 @@
   (:require [cadejo.ui.util.factory :as factory])
   (:require [cadejo.ui.util.icon :as icon])
   (:require [cadejo.ui.util.lnf :as lnf])
-;  (:require [cadejo.util.midi :as midi])
   (:require [cadejo.util.user-message :as umsg])
   (:require [overtone.core :as ot])
   (:require [seesaw.core :as ss])
@@ -133,10 +132,7 @@
         jb-connect (ss/button :text "Connect"
                               :enabled? false)]
     (doseq [d (ot/midi-connected-devices)]
-      (let [;[flag device] t
-            ;info (.getDeviceInfo device)
-            ;[hw-name sys-device](midi/parse-device-name (.getName info))
-            tb (ss/radio :text (format "%s " (:description d))
+      (let [tb (ss/radio :text (format "%s " (:description d))
                          :group grp
                          :enabled? true)]
         (.putClientProperty tb :name (:name d))

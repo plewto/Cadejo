@@ -1,31 +1,8 @@
 (ns cadejo.util.midi
-  ;(:require [cadejo.util.trace :as trace])
   (:use [clojure.string :only [trim]])
   (:import javax.sound.midi.MidiSystem
            javax.sound.midi.MidiDevice
            javax.sound.midi.MidiUnavailableException))
-
-;; Split descriptive part of MIDI device name from hardware device part
-;; Return tupel of strings [name hw-dev]
-;; 
-;; (defn parse-device-name [mdn]
-;;   (trace/trace-enter (format "parse-device-name mdn = '%s'" mdn))
-;;   (let [i (.indexOf mdn "[")]
-;;     (if (pos? i)
-;;       (let [n (trim (subs mdn 0 (dec i)))
-;;             hw (trim (subs mdn i))]
-;;         (trace/trace-mark (format "n = %s   hw= '%s'" n hw))
-;;         (trace/trace-exit)
-;;         [n hw])
-;;       (do
-;;         (trace/trace-mark "nil result")
-;;         (trace/trace-exit)
-;;         ["" mdn]))))
-
-;; Thanks Andreas Stenius
-;; DEPRECIATED
-;; (defn parse-device-name [mdn]
-;;   ["" mdn])
 
 (defn provides-transmitter [dev]
   (try
@@ -80,30 +57,3 @@
             (catch MidiUnavailableException ex
               (swap! acc* (fn [n](conj n [false mdev]))))))))
     @acc*))    
-
-;; ;; Return MIDI receiver with given name
-;; ;; name MUST match exactly.
-;; (defn midi-in [device-name]
-;;   (let [rlst (receivers)
-;;         rs* (atom nil)]
-;;     (doseq [r rlst]
-;;       (let [mdi (.getDeviceInfo (second r))
-;;             name (.getName mdi)]
-;;         (if (= name device-name)
-;;           (reset! rs* (second r)))))
-;;     @rs*))
-
-;; Informational only
-;; Prints list of MIDI devices to terminal
-;; (defn list-midi-info []
-;;   (let [sb (StringBuilder.)]
-;;     (.append sb "MIDI Transmitters:\n")
-;;     (doseq [t (transmitters)]
-;;       (let [mdi (.getDeviceInfo (second t))]
-;;         (.append sb (format "  Available %-5s %s\n" (first t)(parse-device-name (.getName mdi))))))
-;;     (.append sb "MIDI Receivers:\n")
-;;     (doseq [r (receivers)]
-;;       (let [mdi (.getDeviceInfo (second r))]
-;;         (.append sb (format "  Available %-5s %s\n" (first r)(parse-device-name (.getName mdi))))))
-;;     (.toString sb)))
-
